@@ -7,9 +7,9 @@ os.environ.setdefault("LIDRA_SKIP_INIT", "true")
 
 import numpy as np
 import torch
+import wandb
 from hydra.utils import instantiate
 from omegaconf import OmegaConf
-from torch.utils.tensorboard import SummaryWriter
 
 from dataloader import build_dataloader, load_data_config
 from sam3d_objects.data.dataset.tdfy.img_and_mask_transforms import _apply_metric_to_ssi
@@ -195,7 +195,13 @@ def main():
         step = checkpoint["step"]
         best_val_loss = checkpoint.get("best_val_loss", best_val_loss)
 
-    writer = SummaryWriter(args.output_dir / "tensorboard", purge_step=step if step else None)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    run = wandb.init(
+        project="sam-3d-touch", name=args.output_dir.name,
+        dir=str(args.output_dir), config=vars(args)
+    )
+    run.define_metric("global_step")
+    run.define_metric("*", step_metric="global_step")
     print(f"train samples: {len(loader.dataset)}")
     print(f"val samples: {len(val_loader.dataset)}")
     print(f"touch parameters: {sum(p.numel() for p in encoder.parameters()):,}")
@@ -236,12 +242,16 @@ def main():
             if step == 1 or step % args.log_every == 0:
                 mean_train_loss = train_loss / train_samples
                 print(f"epoch {epoch + 1}/{args.epochs} step {step} train_loss {mean_train_loss:.6f}", flush=True)
-                writer.add_scalar("loss/train", mean_train_loss, step)
+                metrics = {
+                    "global_step": step,
+                    "loss/train": mean_train_loss,
+                    "learning_rate/touch_encoder": optimizer.param_groups[0]["lr"],
+                }
                 if args.gradient_clip:
-                    writer.add_scalar("optimization/gradient_norm", gradient_norm, step)
-                writer.add_scalar("learning_rate/touch_encoder", optimizer.param_groups[0]["lr"], step)
+                    metrics["optimization/gradient_norm"] = gradient_norm.item()
                 if cross_attention_kv:
-                    writer.add_scalar("learning_rate/cross_attention", optimizer.param_groups[1]["lr"], step)
+                    metrics["learning_rate/cross_attention"] = optimizer.param_groups[1]["lr"]
+                run.log(metrics)
                 train_loss = 0
                 train_samples = 0
             if args.save_every and step % args.save_every == 0:
@@ -253,7 +263,7 @@ def main():
                 break
 
         val_loss = validate(pipeline, encoder, val_loader, device, args, seed + 1)
-        writer.add_scalar("loss/val", val_loss, step)
+        run.log({"global_step": step, "loss/val": val_loss})
         improved = val_loss < best_val_loss
         if improved:
             best_val_loss = val_loss
@@ -267,11 +277,10 @@ def main():
         )
         suffix = " best" if improved else ""
         print(f"epoch {epoch + 1}/{args.epochs} step {step} val_loss {val_loss:.6f}{suffix}", flush=True)
-        writer.flush()
         if args.max_steps and step >= args.max_steps:
             break
 
-    writer.close()
+    run.finish()
 
 
 if __name__ == "__main__":
