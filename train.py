@@ -1,6 +1,7 @@
 import argparse
 import os
 import random
+import time
 from pathlib import Path
 
 os.environ.setdefault("LIDRA_SKIP_INIT", "true")
@@ -209,10 +210,15 @@ def main():
     print(f"cross-attention K/V parameters: {kv_parameters:,}")
     print(f"condition width: {pipeline.backbone.cond_channels}")
 
+    total_train_steps = args.epochs * len(loader)
+    if args.max_steps:
+        total_train_steps = min(total_train_steps, args.max_steps)
+
     for epoch in range(start_epoch, args.epochs):
         encoder.train()
         train_loss = 0
         train_samples = 0
+        log_start_time = time.perf_counter()
         for batch in loader:
             inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
             touch_xyz = normalize_touch(batch["touch_xyz"].to(device), inputs, pipeline.ss_preprocessor)
@@ -241,10 +247,18 @@ def main():
 
             if step == 1 or step % args.log_every == 0:
                 mean_train_loss = train_loss / train_samples
-                print(f"epoch {epoch + 1}/{args.epochs} step {step} train_loss {mean_train_loss:.6f}", flush=True)
+                samples_per_second = train_samples / (time.perf_counter() - log_start_time)
+                eta_seconds = max(total_train_steps - step, 0) * args.batch_size / samples_per_second
+                train_eta = time.strftime("%H:%M:%S", time.gmtime(eta_seconds))
+                print(
+                    f"epoch {epoch + 1}/{args.epochs} step {step} train_loss {mean_train_loss:.6f} "
+                    f"throughput {samples_per_second:.2f} samples/s train_eta {train_eta}", flush=True
+                )
                 metrics = {
                     "global_step": step,
                     "loss/train": mean_train_loss,
+                    "performance/samples_per_second": samples_per_second,
+                    "performance/train_eta_seconds": eta_seconds,
                     "learning_rate/touch_encoder": optimizer.param_groups[0]["lr"],
                 }
                 if args.gradient_clip:
@@ -254,6 +268,7 @@ def main():
                 run.log(metrics)
                 train_loss = 0
                 train_samples = 0
+                log_start_time = time.perf_counter()
             if args.save_every and step % args.save_every == 0:
                 save_checkpoint(
                     args.output_dir / "last.pt", encoder, cross_attention_kv,
