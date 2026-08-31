@@ -36,13 +36,14 @@ class SelfAttention(nn.Module):
         self.qkv = nn.Linear(width, 3 * width, bias=True)
         self.proj = nn.Linear(width, width)
 
-    def forward(self, x):
+    def forward(self, x, point_mask=None):
         batch_size, sequence_length, width = x.shape
         qkv = self.qkv(x).reshape(
             batch_size, sequence_length, 3, self.num_heads, self.head_width
         )
         q, k, v = qkv.permute(2, 0, 3, 1, 4).unbind(0)
-        attended = F.scaled_dot_product_attention(q, k, v)
+        attention_mask = point_mask[:, None, None, :] if point_mask is not None else None
+        attended = F.scaled_dot_product_attention(q, k, v, attn_mask=attention_mask)
         attended = attended.transpose(1, 2).reshape(batch_size, sequence_length, width)
         return self.proj(attended)
 
@@ -58,12 +59,15 @@ class LocalCPE(nn.Module):
         self.proj = nn.Linear(width, width)
         self.norm = nn.LayerNorm(width)
 
-    def forward(self, x, xyz, neighbor_indices):
+    def forward(self, x, xyz, neighbor_indices, neighbor_mask):
         batch_indices = torch.arange(x.shape[0], device=x.device)[:, None, None]
         neighbor_features = x[batch_indices, neighbor_indices]
         neighbor_xyz = xyz[batch_indices, neighbor_indices]
         relative_xyz = neighbor_xyz - xyz[:, :, None, :]
-        local_features = (neighbor_features + self.position_mlp(relative_xyz)).mean(dim=2)
+        relative_xyz = relative_xyz.masked_fill(~neighbor_mask[..., None], 0)
+        local_features = neighbor_features + self.position_mlp(relative_xyz)
+        local_features = local_features * neighbor_mask[..., None]
+        local_features = local_features.sum(dim=2) / neighbor_mask.sum(dim=2, keepdim=True).clamp_min(1)
         return x + self.norm(self.proj(local_features))
 
 
@@ -79,11 +83,11 @@ class PointTransformerBlock(nn.Module):
         self.mlp = MLP(width, mlp_ratio)
         self.drop_path = DropPath(drop_path)
 
-    def forward(self, x, xyz, neighbor_indices):
-        x = self.cpe(x, xyz, neighbor_indices)
-        x = x + self.drop_path(self.attention(self.norm1(x)))
+    def forward(self, x, xyz, point_mask, neighbor_indices, neighbor_mask):
+        x = self.cpe(x, xyz, neighbor_indices, neighbor_mask)
+        x = x + self.drop_path(self.attention(self.norm1(x), point_mask))
         x = x + self.drop_path(self.mlp(self.norm2(x)))
-        return x
+        return x * point_mask[..., None]
 
 
 class ContactTransformerBlock(nn.Module):
@@ -145,17 +149,22 @@ class TouchEncoder(nn.Module):
             if module.bias is not None:
                 nn.init.zeros_(module.bias)
 
-    def _neighbors(self, relative_xyz):
+    def _neighbors(self, relative_xyz, point_mask):
         neighbor_count = min(self.num_neighbors, relative_xyz.shape[1])
         with torch.no_grad():
             distances = torch.cdist(relative_xyz.float(), relative_xyz.float())
-            return distances.topk(neighbor_count, dim=-1, largest=False).indices
+            distances = distances.masked_fill(~point_mask[:, None, :], float("inf"))
+            indices = distances.topk(neighbor_count, dim=-1, largest=False).indices
+            batch_indices = torch.arange(point_mask.shape[0], device=point_mask.device)[:, None, None]
+            return indices, point_mask[batch_indices, indices]
 
-    def forward(self, xyz):
+    def forward(self, xyz, point_mask=None):
         if not torch.isfinite(xyz).all():
             raise ValueError("Touch input contains non-finite coordinates")
 
         batch_size, contact_count, point_count, _ = xyz.shape
+        if point_mask is None:
+            point_mask = torch.ones(xyz.shape[:-1], dtype=torch.bool, device=xyz.device)
         centers = xyz[:, :, :1]
         relative_xyz = xyz - centers
 
@@ -164,9 +173,11 @@ class TouchEncoder(nn.Module):
 
         x = x.reshape(batch_size * contact_count, point_count, -1)
         flat_relative_xyz = relative_xyz.reshape(batch_size * contact_count, point_count, 3)
-        neighbor_indices = self._neighbors(flat_relative_xyz)
+        point_mask = point_mask.reshape(batch_size * contact_count, point_count)
+        x = x * point_mask[..., None]
+        neighbor_indices, neighbor_mask = self._neighbors(flat_relative_xyz, point_mask)
         for block in self.point_blocks:
-            x = block(x, flat_relative_xyz, neighbor_indices)
+            x = block(x, flat_relative_xyz, point_mask, neighbor_indices, neighbor_mask)
 
         # The data loader guarantees that point zero is the physical contact center.
         x = x[:, 0].reshape(batch_size, contact_count, -1)

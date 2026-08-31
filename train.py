@@ -9,6 +9,7 @@ import numpy as np
 import torch
 from hydra.utils import instantiate
 from omegaconf import OmegaConf
+from torch.utils.tensorboard import SummaryWriter
 
 from dataloader import build_dataloader, load_data_config
 from sam3d_objects.data.dataset.tdfy.img_and_mask_transforms import _apply_metric_to_ssi
@@ -58,6 +59,7 @@ def parse_args():
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--max-steps", type=int, default=0)
     parser.add_argument("--learning-rate", type=float, default=1e-4)
+    parser.add_argument("--cross-attention-learning-rate", type=float, default=1e-5)
     parser.add_argument("--gradient-clip", type=float, default=1.0)
     parser.add_argument("--log-every", type=int, default=10)
     parser.add_argument("--save-every", type=int, default=1000)
@@ -98,11 +100,49 @@ def make_targets(shape, backbone):
     return targets
 
 
-def save_checkpoint(path, encoder, optimizer, epoch, step):
+def validate(pipeline, encoder, loader, device, args, seed):
+    encoder.eval()
+    python_state = random.getstate()
+    cuda_devices = [device.index or 0] if device.type == "cuda" else []
+    total_loss = 0
+    total_samples = 0
+
+    with torch.random.fork_rng(devices=cuda_devices):
+        random.seed(seed)
+        torch.manual_seed(seed)
+        with torch.no_grad():
+            for batch in loader:
+                inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
+                touch_xyz = normalize_touch(batch["touch_xyz"].to(device), inputs, pipeline.ss_preprocessor)
+                touch_mask = batch["touch_mask"].to(device)
+                shape = batch["target_shape"].to(device)
+                with torch.autocast(
+                    device.type, dtype=torch.bfloat16,
+                    enabled=not args.no_amp and device.type == "cuda"
+                ):
+                    touch_tokens = encoder(touch_xyz, touch_mask)
+                    condition_args, condition_kwargs = pipeline.get_condition_input(
+                        pipeline.ss_condition_embedder, inputs, pipeline.ss_condition_input_mapping
+                    )
+                    loss, _ = pipeline.ss_generator.loss(
+                        make_targets(shape, pipeline.backbone), *condition_args,
+                        touch_tokens=touch_tokens, **condition_kwargs
+                    )
+                total_loss += loss.item() * shape.shape[0]
+                total_samples += shape.shape[0]
+
+    random.setstate(python_state)
+    encoder.train()
+    return total_loss / total_samples
+
+
+def save_checkpoint(path, encoder, cross_attention_kv, optimizer, epoch, step, best_val_loss):
     path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(
-        {"touch_encoder": encoder.state_dict(), "optimizer": optimizer.state_dict(),
-         "epoch": epoch, "step": step}, path
+        {"touch_encoder": encoder.state_dict(),
+         "shape_cross_attention_kv": [module.state_dict() for module in cross_attention_kv],
+         "optimizer": optimizer.state_dict(), "epoch": epoch, "step": step,
+         "best_val_loss": best_val_loss}, path
     )
 
 
@@ -116,9 +156,27 @@ def main():
 
     device = torch.device(args.device)
     loader = build_dataloader(config, args.batch_size, args.workers)
+    val_config = load_data_config(args.data_config)
+    val_config["dataset"]["split"] = "val"
+    val_config["touch"]["contacts"]["shuffle_after_selection"] = False
+    val_loader = build_dataloader(val_config, args.batch_size, args.workers, shuffle=False)
+
     pipeline = Stage1TrainingPipeline(args.pipeline_config, device)
     encoder = TouchEncoder(pipeline.backbone.cond_channels).to(device)
-    optimizer = torch.optim.AdamW(encoder.parameters(), lr=args.learning_rate, weight_decay=0)
+    cross_attention_kv = []
+    if args.cross_attention_learning_rate:
+        cross_attention_kv = [block.cross_attn["shape"].to_kv for block in pipeline.backbone.blocks]
+        for module in cross_attention_kv:
+            module.requires_grad_(True)
+
+    optimizer_groups = [{"params": encoder.parameters(), "lr": args.learning_rate}]
+    if cross_attention_kv:
+        optimizer_groups.append({
+            "params": [parameter for module in cross_attention_kv for parameter in module.parameters()],
+            "lr": args.cross_attention_learning_rate,
+        })
+    optimizer = torch.optim.AdamW(optimizer_groups, weight_decay=0)
+    trainable_parameters = [parameter for group in optimizer_groups for parameter in group["params"]]
 
     pipeline.ss_generator.loss_weights = {
         name: float(name == "shape") for name in pipeline.backbone.latent_mapping
@@ -126,27 +184,38 @@ def main():
 
     start_epoch = 0
     step = 0
+    best_val_loss = float("inf")
     if args.resume:
         checkpoint = torch.load(args.resume, map_location="cpu", weights_only=False)
         encoder.load_state_dict(checkpoint["touch_encoder"])
+        for module, state in zip(cross_attention_kv, checkpoint.get("shape_cross_attention_kv", [])):
+            module.load_state_dict(state)
         optimizer.load_state_dict(checkpoint["optimizer"])
         start_epoch = checkpoint["epoch"]
         step = checkpoint["step"]
+        best_val_loss = checkpoint.get("best_val_loss", best_val_loss)
 
-    print(f"samples: {len(loader.dataset)}")
+    writer = SummaryWriter(args.output_dir / "tensorboard", purge_step=step if step else None)
+    print(f"train samples: {len(loader.dataset)}")
+    print(f"val samples: {len(val_loader.dataset)}")
     print(f"touch parameters: {sum(p.numel() for p in encoder.parameters()):,}")
+    kv_parameters = sum(p.numel() for module in cross_attention_kv for p in module.parameters())
+    print(f"cross-attention K/V parameters: {kv_parameters:,}")
     print(f"condition width: {pipeline.backbone.cond_channels}")
 
     for epoch in range(start_epoch, args.epochs):
         encoder.train()
+        train_loss = 0
+        train_samples = 0
         for batch in loader:
             inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
             touch_xyz = normalize_touch(batch["touch_xyz"].to(device), inputs, pipeline.ss_preprocessor)
+            touch_mask = batch["touch_mask"].to(device)
             shape = batch["target_shape"].to(device)
 
             optimizer.zero_grad(set_to_none=True)
             with torch.autocast(device.type, dtype=torch.bfloat16, enabled=not args.no_amp and device.type == "cuda"):
-                touch_tokens = encoder(touch_xyz)
+                touch_tokens = encoder(touch_xyz, touch_mask)
                 with torch.no_grad():
                     condition_args, condition_kwargs = pipeline.get_condition_input(
                         pipeline.ss_condition_embedder, inputs, pipeline.ss_condition_input_mapping
@@ -158,20 +227,51 @@ def main():
 
             loss.backward()
             if args.gradient_clip:
-                torch.nn.utils.clip_grad_norm_(encoder.parameters(), args.gradient_clip)
+                gradient_norm = torch.nn.utils.clip_grad_norm_(trainable_parameters, args.gradient_clip)
             optimizer.step()
             step += 1
+            train_loss += loss.item() * shape.shape[0]
+            train_samples += shape.shape[0]
 
             if step == 1 or step % args.log_every == 0:
-                print(f"epoch {epoch + 1}/{args.epochs} step {step} loss {loss.item():.6f}", flush=True)
+                mean_train_loss = train_loss / train_samples
+                print(f"epoch {epoch + 1}/{args.epochs} step {step} train_loss {mean_train_loss:.6f}", flush=True)
+                writer.add_scalar("loss/train", mean_train_loss, step)
+                if args.gradient_clip:
+                    writer.add_scalar("optimization/gradient_norm", gradient_norm, step)
+                writer.add_scalar("learning_rate/touch_encoder", optimizer.param_groups[0]["lr"], step)
+                if cross_attention_kv:
+                    writer.add_scalar("learning_rate/cross_attention", optimizer.param_groups[1]["lr"], step)
+                train_loss = 0
+                train_samples = 0
             if args.save_every and step % args.save_every == 0:
-                save_checkpoint(args.output_dir / f"step_{step:08d}.pt", encoder, optimizer, epoch, step)
+                save_checkpoint(
+                    args.output_dir / "last.pt", encoder, cross_attention_kv,
+                    optimizer, epoch, step, best_val_loss
+                )
             if args.max_steps and step >= args.max_steps:
                 break
 
-        save_checkpoint(args.output_dir / "last.pt", encoder, optimizer, epoch + 1, step)
+        val_loss = validate(pipeline, encoder, val_loader, device, args, seed + 1)
+        writer.add_scalar("loss/val", val_loss, step)
+        improved = val_loss < best_val_loss
+        if improved:
+            best_val_loss = val_loss
+            save_checkpoint(
+                args.output_dir / "best.pt", encoder, cross_attention_kv,
+                optimizer, epoch + 1, step, best_val_loss
+            )
+        save_checkpoint(
+            args.output_dir / "last.pt", encoder, cross_attention_kv,
+            optimizer, epoch + 1, step, best_val_loss
+        )
+        suffix = " best" if improved else ""
+        print(f"epoch {epoch + 1}/{args.epochs} step {step} val_loss {val_loss:.6f}{suffix}", flush=True)
+        writer.flush()
         if args.max_steps and step >= args.max_steps:
             break
+
+    writer.close()
 
 
 if __name__ == "__main__":

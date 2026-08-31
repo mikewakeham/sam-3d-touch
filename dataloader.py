@@ -50,6 +50,7 @@ class TouchDataset(Dataset):
                 raise ValueError(f"Unsupported touch format in {path}")
 
             contacts = []
+            point_masks = []
             for contact in range(self.contact_count):
                 start, end = data["offsets"][contact : contact + 2]
                 point_ids = data["point_ids"][start:end]
@@ -61,24 +62,31 @@ class TouchDataset(Dataset):
 
                 center = center[0]
                 others = eligible[eligible != center]
-                if len(others) + 1 < self.points_per_contact:
-                    raise ValueError(f"Contact {contact} in {path} has fewer than {self.points_per_contact} points")
-
                 priorities = data["keep_priority"][start + others]
                 others = others[np.argsort(priorities)[: self.points_per_contact - 1]]
-                selected = start + np.concatenate(([center], others))
+                selected = np.concatenate(([center], others))
+                valid_count = len(selected)
+                selected = np.pad(
+                    selected, (0, self.points_per_contact - valid_count),
+                    constant_values=center
+                )
+                selected = start + selected
 
                 points = data["points_local"][selected]
                 rotation = data["R_camera_from_local"][contact]
                 center_camera = data["centers_camera"][contact]
                 contacts.append(points @ rotation.T + center_camera)
+                point_masks.append(np.arange(self.points_per_contact) < valid_count)
 
         touch_xyz = np.stack(contacts).astype(np.float32)
+        touch_mask = np.stack(point_masks)
         if not np.isfinite(touch_xyz).all():
             raise ValueError(f"Non-finite touch points in {path}")
         if self.shuffle_contacts:
-            touch_xyz = touch_xyz[np.random.permutation(len(touch_xyz))]
-        return np.ascontiguousarray(touch_xyz)
+            order = np.random.permutation(len(touch_xyz))
+            touch_xyz = touch_xyz[order]
+            touch_mask = touch_mask[order]
+        return np.ascontiguousarray(touch_xyz), np.ascontiguousarray(touch_mask)
 
     def load_target(self, path):
         with np.load(path, allow_pickle=False) as data:
@@ -92,13 +100,14 @@ class TouchDataset(Dataset):
         with Image.open(self.path(record["image_path"])) as image:
             image = np.array(image.convert("RGBA"), dtype=np.uint8)
         pointmap = np.load(self.path(record["pointmap_path"]), allow_pickle=False).astype(np.float32)
-        touch_xyz = self.load_touch(self.path(record["touch_path"]))
+        touch_xyz, touch_mask = self.load_touch(self.path(record["touch_path"]))
         target = self.load_target(self.path(record["target_path"]))
 
         return {
             "image": torch.from_numpy(image.copy()),
             "pointmap": torch.from_numpy(pointmap),
             "touch_xyz": torch.from_numpy(touch_xyz),
+            "touch_mask": torch.from_numpy(touch_mask),
             "target_shape": torch.from_numpy(target),
             "sample_id": record["sample_id"],
         }
