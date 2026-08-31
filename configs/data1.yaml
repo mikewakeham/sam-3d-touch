@@ -1,0 +1,26 @@
+seed: 29
+
+dataset:
+  root: /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy
+  manifest: generated_data/samples.jsonl
+  split_file: generated_data/splits.json
+  split: train
+
+touch:
+  contacts:
+    count: 32
+    selection: first_k
+    shuffle_after_selection: true
+
+  neighborhood:
+    max_geodesic_distance: 0.10
+    visibility: all
+
+  point_sampling:
+    method: priority_top_k
+    points_per_contact: 256
+    force_include_center: true
+
+  features:
+    xyz: true
+    normals: false

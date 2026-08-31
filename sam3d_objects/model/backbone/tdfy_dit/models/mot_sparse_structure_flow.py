@@ -210,13 +210,15 @@ class SparseStructureFlowTdfyWrapper(SparseStructureFlowModel):
         **condition_kwargs,
     ) -> dict:
         d = condition_kwargs.pop("d", None)
-            
+        touch_tokens = condition_kwargs.pop("touch_tokens", None)
         cfg_activate = condition_kwargs.pop("cfg", False)
+        cond = self.condition_embedder(*condition_args, **condition_kwargs)
+
+        if touch_tokens is not None:
+            cond = torch.cat((cond, touch_tokens.to(cond)), dim=1)
+
         if self.force_zeros_cond and cfg_activate:
-            cond = self.condition_embedder(*condition_args, **condition_kwargs)
             cond = cond * 0
-        else:
-            cond = self.condition_embedder(*condition_args, **condition_kwargs)
 
         # concatenate input
         latent_dict = self.project_input(latents_dict)
