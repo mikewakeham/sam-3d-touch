@@ -12,12 +12,11 @@
 #SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/jobs/%x-%j.err
 
 set -e
-source activate sam3d-objects
 cd /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch
 export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 
-torchrun --standalone --nproc_per_node=4 train.py \
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 train.py \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data1.yaml \
   --output-dir outputs/s1_touch_kv0_gbs16_s29 \
