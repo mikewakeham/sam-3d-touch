@@ -15,7 +15,6 @@ import trimesh
 import yaml
 from omegaconf import OmegaConf
 from scipy.spatial import cKDTree
-from tqdm.auto import tqdm
 
 from dataloader import build_dataloader, load_data_config
 from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
@@ -34,7 +33,7 @@ def parse_args():
     parser.add_argument("--data-config", type=Path, default=Path("configs/data1.yaml"))
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/evaluation"))
     parser.add_argument("--split", default="val")
-    parser.add_argument("--max-samples", type=int, default=16)
+    parser.add_argument("--max-samples", type=int, default=50)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--workers", type=int, default=0)
     parser.add_argument("--inference-steps", type=int, default=25)
@@ -43,6 +42,7 @@ def parse_args():
     parser.add_argument("--icp-points", type=int, default=20_000)
     parser.add_argument("--emd-points", type=int, default=2048)
     parser.add_argument("--save-points", type=int, default=8192)
+    parser.add_argument("--selection-seed", type=int, default=29)
     parser.add_argument("--seed", type=int, default=29)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--no-amp", action="store_true")
@@ -53,116 +53,30 @@ def safe_name(value):
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", value)
 
 
-def selected_touch_indices(data, contact, radius, points_per_contact):
-    start, end = data["offsets"][contact:contact + 2]
-    point_ids = data["point_ids"][start:end]
-    center = np.flatnonzero(point_ids == data["center_point_ids"][contact])[0]
-    eligible = np.flatnonzero(data["geodesic_distance"][start:end] <= radius)
-    others = eligible[eligible != center]
-    priorities = data["keep_priority"][start + others]
-    others = others[np.argsort(priorities)[:points_per_contact - 1]]
-    return start + np.concatenate(([center], others))
+def select_records(dataset, max_samples, seed):
+    records_by_object = {}
+    for record in dataset.records:
+        records_by_object.setdefault(record["object_id"], []).append(record)
 
+    rng = random.Random(seed)
+    object_ids = sorted(records_by_object)
+    if max_samples and max_samples < len(object_ids):
+        object_ids = sorted(rng.sample(object_ids, max_samples))
 
-def view_information(record, dataset, data_config):
-    touch_config = data_config["touch"]
-    contact_count = touch_config["contacts"]["count"]
-    radius = touch_config["neighborhood"]["max_geodesic_distance"]
-    points_per_contact = touch_config["point_sampling"]["points_per_contact"]
+    selected = []
+    for object_id in object_ids:
+        views = sorted(records_by_object[object_id], key=lambda record: record["sample_id"])
+        selected.append(rng.choice(views))
 
-    with np.load(dataset.path(record["touch_path"]), allow_pickle=False) as data:
-        indices = []
-        count = min(contact_count, len(data["offsets"]) - 1)
-        for contact in range(count):
-            indices.append(selected_touch_indices(data, contact, radius, points_per_contact))
-        indices = np.concatenate(indices)
-        visibility = data["point_visibility"][indices]
-        point_ids = data["point_ids"][indices]
-        centers = data["centers_camera"][:count]
-
-    hidden_fraction = float(np.mean(visibility == 0))
-    unique_fraction = float(len(np.unique(point_ids)) / len(point_ids))
-    valid_fraction = float(len(point_ids) / (contact_count * points_per_contact))
-    if len(centers) > 1:
-        distances = np.linalg.norm(centers[:, None] - centers[None, :], axis=-1)
-        spread = float(distances[np.triu_indices(len(centers), 1)].mean())
-        spread /= float(distances.max() + 1e-8)
-    else:
-        spread = 0.0
-
-    with np.load(dataset.path(record["camera_path"]), allow_pickle=False) as data:
-        camera_center = np.linalg.inv(data["T_camera_from_object"])[:3, 3]
-    camera_direction = camera_center / (np.linalg.norm(camera_center) + 1e-8)
-
-    return {
-        "hidden_fraction": hidden_fraction,
-        "unique_fraction": unique_fraction,
-        "valid_fraction": valid_fraction,
-        "contact_spread": spread,
-        "information_score": hidden_fraction + unique_fraction + 0.25 * valid_fraction + 0.25 * spread,
-        "camera_direction": camera_direction,
-    }
-
-
-def select_records(dataset, data_config, max_samples):
-    best_by_object = {}
-    for record in tqdm(
-        dataset.records, desc="scanning validation views", unit="view", dynamic_ncols=True
-    ):
-        information = view_information(record, dataset, data_config)
-        candidate = {"record": record, **information}
-        current = best_by_object.get(record["object_id"])
-        if current is None or information["information_score"] > current["information_score"] or (
-            information["information_score"] == current["information_score"]
-            and record["sample_id"] < current["record"]["sample_id"]
-        ):
-            best_by_object[record["object_id"]] = candidate
-
-    candidates = list(best_by_object.values())
-    candidates.sort(key=lambda item: (-item["information_score"], item["record"]["sample_id"]))
-    if not max_samples or max_samples >= len(candidates):
-        selected = candidates
-    else:
-        scores = np.asarray([item["information_score"] for item in candidates])
-        quality = (scores - scores.min()) / max(float(np.ptp(scores)), 1e-8)
-        remaining = list(range(len(candidates)))
-        chosen = []
-        while remaining and len(chosen) < max_samples:
-            best_index = None
-            best_score = None
-            for index in remaining:
-                if chosen:
-                    direction = candidates[index]["camera_direction"]
-                    angles = [
-                        np.arccos(np.clip(direction @ candidates[other]["camera_direction"], -1, 1))
-                        for other in chosen
-                    ]
-                    diversity = min(angles) / np.pi
-                else:
-                    diversity = 1.0
-                score = 0.85 * quality[index] + 0.15 * diversity
-                tie_break = candidates[index]["record"]["sample_id"]
-                value = (score, tie_break)
-                if best_score is None or value > best_score:
-                    best_index, best_score = index, value
-            chosen.append(best_index)
-            remaining.remove(best_index)
-        selected = [candidates[index] for index in chosen]
-
-    details = []
-    for item in selected:
-        details.append({
-            "sample_id": item["record"]["sample_id"],
-            "object_id": item["record"]["object_id"],
-            "view_id": item["record"]["view_id"],
-            "information_score": item["information_score"],
-            "hidden_fraction": item["hidden_fraction"],
-            "unique_fraction": item["unique_fraction"],
-            "valid_fraction": item["valid_fraction"],
-            "contact_spread": item["contact_spread"],
-            "camera_direction": item["camera_direction"].tolist(),
-        })
-    return [item["record"] for item in selected], details
+    details = [
+        {
+            "sample_id": record["sample_id"],
+            "object_id": record["object_id"],
+            "view_id": record["view_id"],
+        }
+        for record in selected
+    ]
+    return selected, details
 
 
 def build_pipeline(config_path, device):
@@ -755,8 +669,16 @@ def main():
     data_config["dataset"]["split"] = args.split
     data_config["touch"]["contacts"]["shuffle_after_selection"] = False
     loader = build_dataloader(data_config, 1, args.workers, shuffle=False)
-    print(f"scanning {len(loader.dataset)} views for informative samples", flush=True)
-    selected, selection_details = select_records(loader.dataset, data_config, args.max_samples)
+    available_objects = len({record["object_id"] for record in loader.dataset.records})
+    selected_objects = min(args.max_samples, available_objects) if args.max_samples else available_objects
+    print(
+        f"uniformly selecting {selected_objects} of {available_objects} objects "
+        f"and one view per object with seed {args.selection_seed}",
+        flush=True,
+    )
+    selected, selection_details = select_records(
+        loader.dataset, args.max_samples, args.selection_seed
+    )
     loader.dataset.records = selected
     with open(args.output_dir / "selected_samples.yaml", "w") as file:
         yaml.safe_dump(selection_details, file, sort_keys=False)
@@ -768,9 +690,7 @@ def main():
     for index, item in enumerate(selection_details, 1):
         print(
             f"selected {index}/{len(selection_details)}: {item['sample_id']} "
-            f"object {item['object_id']} view {item['view_id']} "
-            f"score {item['information_score']:.4f} hidden {item['hidden_fraction']:.4f} "
-            f"unique {item['unique_fraction']:.4f}",
+            f"object {item['object_id']} view {item['view_id']}",
             flush=True,
         )
 
@@ -855,8 +775,8 @@ def main():
             "selected_objects": len(selected),
             "selection": {
                 "one_view_per_object": True,
-                "view_score": "hidden_fraction + unique_fraction + 0.25 * valid_fraction + 0.25 * contact_spread",
-                "subset_greedy_score": "0.85 * normalized_view_score + 0.15 * camera_direction_diversity",
+                "method": "uniform objects without replacement, then one uniform view per object",
+                "seed": args.selection_seed,
             },
             "mesh_protocol": {
                 "normalization": "each mesh independently centered and longest bounding-box extent scaled to 2",
