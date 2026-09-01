@@ -2,3 +2,4 @@ __pycache__
 doc/touch_training_context
 splat.ply
 outputs
+logs

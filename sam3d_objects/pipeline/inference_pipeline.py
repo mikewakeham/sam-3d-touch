@@ -630,11 +630,11 @@ class InferencePipeline:
         condition_kwargs = {
             k: v for k, v in input_dict.items() if k not in input_mapping
         }
-        logger.info("Running condition embedder ...")
+        # logger.info("Running condition embedder ...")
         embedded_cond, condition_args, condition_kwargs = self.embed_condition(
             condition_embedder, *condition_args, **condition_kwargs
         )
-        logger.info("Condition embedder finishes!")
+        # logger.info("Condition embedder finishes!")
         if embedded_cond is not None:
             condition_args = (embedded_cond,)
             condition_kwargs = {}
