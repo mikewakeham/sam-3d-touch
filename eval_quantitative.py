@@ -105,7 +105,8 @@ def view_information(record, dataset, data_config):
 
 def select_records(dataset, data_config, max_samples):
     best_by_object = {}
-    for record in dataset.records:
+    total = len(dataset.records)
+    for index, record in enumerate(dataset.records, 1):
         information = view_information(record, dataset, data_config)
         candidate = {"record": record, **information}
         current = best_by_object.get(record["object_id"])
@@ -114,6 +115,8 @@ def select_records(dataset, data_config, max_samples):
             and record["sample_id"] < current["record"]["sample_id"]
         ):
             best_by_object[record["object_id"]] = candidate
+        if index == 1 or index % 100 == 0 or index == total:
+            print(f"scanning validation views: {index}/{total}", flush=True)
 
     candidates = list(best_by_object.values())
     candidates.sort(key=lambda item: (-item["information_score"], item["record"]["sample_id"]))
@@ -270,11 +273,12 @@ def load_run(run_dir, pipeline, cross_attention_kv, official_kv, device):
 def make_touch_cache(loader, pipeline, device):
     cache = {}
     with torch.no_grad():
-        for batch in loader:
+        for batch_index, batch in enumerate(loader, 1):
             inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
             xyz = normalize_touch(batch["touch_xyz"].to(device), inputs, pipeline.ss_preprocessor).cpu()
             for index, sample_id in enumerate(batch["sample_id"]):
                 cache[sample_id] = (xyz[index], batch["touch_mask"][index].clone())
+            print(f"preparing normalized touch inputs: {batch_index}/{len(loader)}", flush=True)
     return cache
 
 
@@ -534,6 +538,7 @@ def evaluate_condition(name, pipeline, encoder, loader, touch_cache, donor_ids,
     voxel_dir = args.output_dir / "voxels" / safe_name(name)
     voxel_dir.mkdir(parents=True, exist_ok=True)
     dtype = pipeline.shape_model_dtype
+    print(f"evaluating {name} ({mode}): {len(loader.dataset)} samples", flush=True)
 
     with torch.inference_mode():
         for batch_index, batch in enumerate(loader):
@@ -750,6 +755,7 @@ def main():
     data_config["dataset"]["split"] = args.split
     data_config["touch"]["contacts"]["shuffle_after_selection"] = False
     loader = build_dataloader(data_config, 1, args.workers, shuffle=False)
+    print(f"scanning {len(loader.dataset)} views for informative samples", flush=True)
     selected, selection_details = select_records(loader.dataset, data_config, args.max_samples)
     loader.dataset.records = selected
     with open(args.output_dir / "selected_samples.yaml", "w") as file:
@@ -759,8 +765,18 @@ def main():
     object_ids = {sample_id: record["object_id"] for sample_id, record in records.items()}
     sample_ids = list(records)
     print(f"selected {len(selected)} views from {len(set(object_ids.values()))} objects", flush=True)
+    for index, item in enumerate(selection_details, 1):
+        print(
+            f"selected {index}/{len(selection_details)}: {item['sample_id']} "
+            f"object {item['object_id']} view {item['view_id']} "
+            f"score {item['information_score']:.4f} hidden {item['hidden_fraction']:.4f} "
+            f"unique {item['unique_fraction']:.4f}",
+            flush=True,
+        )
 
+    print("loading Stage-1 and Stage-2 evaluation pipeline", flush=True)
     pipeline, pipeline_config = build_pipeline(args.pipeline_config, args.device)
+    print("evaluation pipeline loaded", flush=True)
     pipeline.ss_generator.no_shortcut = True
     cross_attention_kv = [block.cross_attn["shape"].to_kv for block in pipeline.backbone.blocks]
     official_kv = [
@@ -768,14 +784,18 @@ def main():
         for module in cross_attention_kv
     ]
 
+    print("preparing normalized touch inputs", flush=True)
     touch_cache = make_touch_cache(loader, pipeline, args.device)
+    print("normalized touch inputs ready", flush=True)
     donor_ids = shuffled_ids(sample_ids, object_ids, args.seed + 1)
     target_cache = {}
     for index, record in enumerate(selected):
+        print(f"preparing target meshes: {index + 1}/{len(selected)}", flush=True)
         target_cache[record["object_id"]] = load_target_mesh(
             record, loader.dataset, args.output_dir,
             args.surface_points, args.icp_points, args.save_points, args.seed + index,
         )
+    print("target meshes ready", flush=True)
 
     rows = []
     primary_conditions = ["official"]
