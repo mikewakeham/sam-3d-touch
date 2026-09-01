@@ -15,6 +15,7 @@ import trimesh
 import yaml
 from omegaconf import OmegaConf
 from scipy.spatial import cKDTree
+from tqdm.auto import tqdm
 
 from dataloader import build_dataloader, load_data_config
 from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
@@ -105,8 +106,9 @@ def view_information(record, dataset, data_config):
 
 def select_records(dataset, data_config, max_samples):
     best_by_object = {}
-    total = len(dataset.records)
-    for index, record in enumerate(dataset.records, 1):
+    for record in tqdm(
+        dataset.records, desc="scanning validation views", unit="view", dynamic_ncols=True
+    ):
         information = view_information(record, dataset, data_config)
         candidate = {"record": record, **information}
         current = best_by_object.get(record["object_id"])
@@ -115,8 +117,6 @@ def select_records(dataset, data_config, max_samples):
             and record["sample_id"] < current["record"]["sample_id"]
         ):
             best_by_object[record["object_id"]] = candidate
-        if index == 1 or index % 100 == 0 or index == total:
-            print(f"scanning validation views: {index}/{total}", flush=True)
 
     candidates = list(best_by_object.values())
     candidates.sort(key=lambda item: (-item["information_score"], item["record"]["sample_id"]))
