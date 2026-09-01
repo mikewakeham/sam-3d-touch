@@ -4,6 +4,7 @@ import itertools
 import os
 import random
 import re
+import shutil
 from pathlib import Path
 
 os.environ.setdefault("LIDRA_SKIP_INIT", "true")
@@ -680,6 +681,13 @@ def main():
         loader.dataset, args.max_samples, args.selection_seed
     )
     loader.dataset.records = selected
+    views_dir = args.output_dir / "selected_views"
+    views_dir.mkdir(parents=True, exist_ok=True)
+    for index, (record, details) in enumerate(zip(selected, selection_details), 1):
+        source = loader.dataset.path(record["image_path"])
+        destination = views_dir / f"{index:03d}_{safe_name(record['sample_id'])}{source.suffix}"
+        shutil.copy2(source, destination)
+        details["image_path"] = str(destination.relative_to(args.output_dir))
     with open(args.output_dir / "selected_samples.yaml", "w") as file:
         yaml.safe_dump(selection_details, file, sort_keys=False)
 
