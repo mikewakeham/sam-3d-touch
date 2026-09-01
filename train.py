@@ -8,9 +8,15 @@ os.environ.setdefault("LIDRA_SKIP_INIT", "true")
 
 import numpy as np
 import torch
+import torch.distributed as dist
 import wandb
 from hydra.utils import instantiate
+from loguru import logger
 from omegaconf import OmegaConf
+from torch.nn.parallel import DistributedDataParallel
+
+if int(os.environ.get("LOCAL_RANK", -1)) > 0:
+    logger.remove()
 
 from dataloader import build_dataloader, load_data_config
 from sam3d_objects.data.dataset.tdfy.img_and_mask_transforms import _apply_metric_to_ssi
@@ -48,6 +54,20 @@ class Stage1TrainingPipeline(InferencePipelinePointMap):
             self.backbone.condition_embedder.normalize_images = True
 
 
+class TouchTrainingModel(torch.nn.Module):
+    def __init__(self, generator, touch_encoder):
+        super().__init__()
+        self.generator = generator
+        self.touch_encoder = touch_encoder
+
+    def forward(self, targets, touch_xyz, touch_mask, condition_args, condition_kwargs):
+        touch_tokens = self.touch_encoder(touch_xyz, touch_mask)
+        loss, _ = self.generator.loss(
+            targets, *condition_args, touch_tokens=touch_tokens, **condition_kwargs
+        )
+        return loss
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-config", type=Path, default=Path("configs/data1.yaml"))
@@ -65,7 +85,20 @@ def parse_args():
     parser.add_argument("--log-every", type=int, default=10)
     parser.add_argument("--save-every", type=int, default=1000)
     parser.add_argument("--no-amp", action="store_true")
+    parser.add_argument("--local-rank", "--local_rank", type=int,
+                        default=int(os.environ.get("LOCAL_RANK", -1)))
     return parser.parse_args()
+
+
+def setup_distributed(args):
+    local_rank = args.local_rank
+    if local_rank < 0:
+        return False, 0, 1, torch.device(args.device)
+
+    torch.cuda.set_device(local_rank)
+    dist.init_process_group(backend="nccl")
+    rank = dist.get_rank()
+    return True, rank, dist.get_world_size(), torch.device("cuda", local_rank)
 
 
 def preprocess_batch(pipeline, images, pointmaps):
@@ -101,16 +134,16 @@ def make_targets(shape, backbone):
     return targets
 
 
-def validate(pipeline, encoder, loader, device, args, seed):
-    encoder.eval()
+def validate(pipeline, model, loader, device, args, seed, distributed, rank):
+    model.touch_encoder.eval()
     python_state = random.getstate()
     cuda_devices = [device.index or 0] if device.type == "cuda" else []
     total_loss = 0
     total_samples = 0
 
     with torch.random.fork_rng(devices=cuda_devices):
-        random.seed(seed)
-        torch.manual_seed(seed)
+        random.seed(seed + rank)
+        torch.manual_seed(seed + rank)
         with torch.no_grad():
             for batch in loader:
                 inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
@@ -121,19 +154,23 @@ def validate(pipeline, encoder, loader, device, args, seed):
                     device.type, dtype=torch.bfloat16,
                     enabled=not args.no_amp and device.type == "cuda"
                 ):
-                    touch_tokens = encoder(touch_xyz, touch_mask)
                     condition_args, condition_kwargs = pipeline.get_condition_input(
                         pipeline.ss_condition_embedder, inputs, pipeline.ss_condition_input_mapping
                     )
-                    loss, _ = pipeline.ss_generator.loss(
-                        make_targets(shape, pipeline.backbone), *condition_args,
-                        touch_tokens=touch_tokens, **condition_kwargs
+                    loss = model(
+                        make_targets(shape, pipeline.backbone), touch_xyz, touch_mask,
+                        condition_args, condition_kwargs
                     )
                 total_loss += loss.item() * shape.shape[0]
                 total_samples += shape.shape[0]
 
+    if distributed:
+        totals = torch.tensor([total_loss, total_samples], dtype=torch.float64, device=device)
+        dist.all_reduce(totals)
+        total_loss, total_samples = totals.tolist()
+
     random.setstate(python_state)
-    encoder.train()
+    model.touch_encoder.train()
     return total_loss / total_samples
 
 
@@ -149,18 +186,24 @@ def save_checkpoint(path, encoder, cross_attention_kv, optimizer, epoch, step, b
 
 def main():
     args = parse_args()
+    distributed, rank, world_size, device = setup_distributed(args)
+    main_process = rank == 0
+
     config = load_data_config(args.data_config)
     seed = config.get("seed", 0)
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
+    random.seed(seed + rank)
+    np.random.seed(seed + rank)
+    torch.manual_seed(seed + rank)
 
-    device = torch.device(args.device)
-    loader = build_dataloader(config, args.batch_size, args.workers)
+    loader = build_dataloader(
+        config, args.batch_size, args.workers, distributed=distributed
+    )
     val_config = load_data_config(args.data_config)
     val_config["dataset"]["split"] = "val"
     val_config["touch"]["contacts"]["shuffle_after_selection"] = False
-    val_loader = build_dataloader(val_config, args.batch_size, args.workers, shuffle=False)
+    val_loader = build_dataloader(
+        val_config, args.batch_size, args.workers, shuffle=False, distributed=distributed
+    )
 
     pipeline = Stage1TrainingPipeline(args.pipeline_config, device)
     encoder = TouchEncoder(pipeline.backbone.cond_channels).to(device)
@@ -196,26 +239,47 @@ def main():
         step = checkpoint["step"]
         best_val_loss = checkpoint.get("best_val_loss", best_val_loss)
 
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    run = wandb.init(
-        project="sam-3d-touch", name=args.output_dir.name,
-        dir=str(args.output_dir), config=vars(args)
-    )
-    run.define_metric("global_step")
-    run.define_metric("*", step_metric="global_step")
-    print(f"train samples: {len(loader.dataset)}")
-    print(f"val samples: {len(val_loader.dataset)}")
-    print(f"touch parameters: {sum(p.numel() for p in encoder.parameters()):,}")
+    model = TouchTrainingModel(pipeline.ss_generator, encoder)
+    if distributed:
+        model = DistributedDataParallel(
+            model, device_ids=[device.index], broadcast_buffers=False
+        )
+    raw_model = model.module if distributed else model
+
+    if main_process:
+        args.output_dir.mkdir(parents=True, exist_ok=True)
+    if distributed:
+        dist.barrier()
+
+    run = None
+    if main_process:
+        run_config = vars(args).copy()
+        run_config["world_size"] = world_size
+        run_config["global_batch_size"] = args.batch_size * world_size
+        run = wandb.init(
+            project="sam-3d-touch", name=args.output_dir.name,
+            dir=str(args.output_dir), config=run_config
+        )
+        run.define_metric("global_step")
+        run.define_metric("*", step_metric="global_step")
+        print(f"train samples: {len(loader.dataset)}")
+        print(f"val samples: {len(val_loader.dataset)}")
+        print(f"GPUs: {world_size}")
+        print(f"batch size: {args.batch_size} per GPU, {args.batch_size * world_size} global")
+        print(f"touch parameters: {sum(p.numel() for p in encoder.parameters()):,}")
     kv_parameters = sum(p.numel() for module in cross_attention_kv for p in module.parameters())
-    print(f"cross-attention K/V parameters: {kv_parameters:,}")
-    print(f"condition width: {pipeline.backbone.cond_channels}")
+    if main_process:
+        print(f"cross-attention K/V parameters: {kv_parameters:,}")
+        print(f"condition width: {pipeline.backbone.cond_channels}")
 
     total_train_steps = args.epochs * len(loader)
     if args.max_steps:
         total_train_steps = min(total_train_steps, args.max_steps)
 
     for epoch in range(start_epoch, args.epochs):
-        encoder.train()
+        if distributed:
+            loader.sampler.set_epoch(epoch)
+        raw_model.touch_encoder.train()
         train_loss = 0
         train_samples = 0
         log_start_time = time.perf_counter()
@@ -227,14 +291,13 @@ def main():
 
             optimizer.zero_grad(set_to_none=True)
             with torch.autocast(device.type, dtype=torch.bfloat16, enabled=not args.no_amp and device.type == "cuda"):
-                touch_tokens = encoder(touch_xyz, touch_mask)
                 with torch.no_grad():
                     condition_args, condition_kwargs = pipeline.get_condition_input(
                         pipeline.ss_condition_embedder, inputs, pipeline.ss_condition_input_mapping
                     )
-                loss, _ = pipeline.ss_generator.loss(
-                    make_targets(shape, pipeline.backbone), *condition_args,
-                    touch_tokens=touch_tokens, **condition_kwargs
+                loss = model(
+                    make_targets(shape, pipeline.backbone), touch_xyz, touch_mask,
+                    condition_args, condition_kwargs
                 )
 
             loss.backward()
@@ -246,56 +309,77 @@ def main():
             train_samples += shape.shape[0]
 
             if step == 1 or step % args.log_every == 0:
-                mean_train_loss = train_loss / train_samples
-                samples_per_second = train_samples / (time.perf_counter() - log_start_time)
-                eta_seconds = max(total_train_steps - step, 0) * args.batch_size / samples_per_second
-                train_eta = time.strftime("%H:%M:%S", time.gmtime(eta_seconds))
-                print(
-                    f"epoch {epoch + 1}/{args.epochs} step {step} train_loss {mean_train_loss:.6f} "
-                    f"throughput {samples_per_second:.2f} samples/s train_eta {train_eta}", flush=True
+                elapsed = time.perf_counter() - log_start_time
+                totals = torch.tensor([train_loss, train_samples], dtype=torch.float64, device=device)
+                elapsed = torch.tensor(elapsed, dtype=torch.float64, device=device)
+                if distributed:
+                    dist.all_reduce(totals)
+                    dist.all_reduce(elapsed, op=dist.ReduceOp.MAX)
+
+                global_loss, global_samples = totals.tolist()
+                mean_train_loss = global_loss / global_samples
+                samples_per_second = global_samples / elapsed.item()
+                eta_seconds = (
+                    max(total_train_steps - step, 0) * args.batch_size * world_size
+                    / samples_per_second
                 )
-                metrics = {
-                    "global_step": step,
-                    "loss/train": mean_train_loss,
-                    "performance/samples_per_second": samples_per_second,
-                    "performance/train_eta_seconds": eta_seconds,
-                    "learning_rate/touch_encoder": optimizer.param_groups[0]["lr"],
-                }
-                if args.gradient_clip:
-                    metrics["optimization/gradient_norm"] = gradient_norm.item()
-                if cross_attention_kv:
-                    metrics["learning_rate/cross_attention"] = optimizer.param_groups[1]["lr"]
-                run.log(metrics)
+                if main_process:
+                    train_eta = time.strftime("%H:%M:%S", time.gmtime(eta_seconds))
+                    print(
+                        f"epoch {epoch + 1}/{args.epochs} step {step} train_loss {mean_train_loss:.6f} "
+                        f"throughput {samples_per_second:.2f} samples/s train_eta {train_eta}", flush=True
+                    )
+                    metrics = {
+                        "global_step": step,
+                        "loss/train": mean_train_loss,
+                        "performance/samples_per_second": samples_per_second,
+                        "performance/train_eta_seconds": eta_seconds,
+                        "learning_rate/touch_encoder": optimizer.param_groups[0]["lr"],
+                    }
+                    if args.gradient_clip:
+                        metrics["optimization/gradient_norm"] = gradient_norm.item()
+                    if cross_attention_kv:
+                        metrics["learning_rate/cross_attention"] = optimizer.param_groups[1]["lr"]
+                    run.log(metrics)
                 train_loss = 0
                 train_samples = 0
                 log_start_time = time.perf_counter()
-            if args.save_every and step % args.save_every == 0:
+            if main_process and args.save_every and step % args.save_every == 0:
                 save_checkpoint(
-                    args.output_dir / "last.pt", encoder, cross_attention_kv,
+                    args.output_dir / "last.pt", raw_model.touch_encoder, cross_attention_kv,
                     optimizer, epoch, step, best_val_loss
                 )
             if args.max_steps and step >= args.max_steps:
                 break
 
-        val_loss = validate(pipeline, encoder, val_loader, device, args, seed + 1)
-        run.log({"global_step": step, "loss/val": val_loss})
+        val_loss = validate(
+            pipeline, raw_model, val_loader, device, args, seed + 1, distributed, rank
+        )
+        if main_process:
+            run.log({"global_step": step, "loss/val": val_loss})
         improved = val_loss < best_val_loss
         if improved:
             best_val_loss = val_loss
+            if main_process:
+                save_checkpoint(
+                    args.output_dir / "best.pt", raw_model.touch_encoder, cross_attention_kv,
+                    optimizer, epoch + 1, step, best_val_loss
+                )
+        if main_process:
             save_checkpoint(
-                args.output_dir / "best.pt", encoder, cross_attention_kv,
+                args.output_dir / "last.pt", raw_model.touch_encoder, cross_attention_kv,
                 optimizer, epoch + 1, step, best_val_loss
             )
-        save_checkpoint(
-            args.output_dir / "last.pt", encoder, cross_attention_kv,
-            optimizer, epoch + 1, step, best_val_loss
-        )
-        suffix = " best" if improved else ""
-        print(f"epoch {epoch + 1}/{args.epochs} step {step} val_loss {val_loss:.6f}{suffix}", flush=True)
+            suffix = " best" if improved else ""
+            print(f"epoch {epoch + 1}/{args.epochs} step {step} val_loss {val_loss:.6f}{suffix}", flush=True)
         if args.max_steps and step >= args.max_steps:
             break
 
-    run.finish()
+    if main_process:
+        run.finish()
+    if distributed:
+        dist.barrier()
+        dist.destroy_process_group()
 
 
 if __name__ == "__main__":

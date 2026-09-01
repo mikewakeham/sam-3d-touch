@@ -4,9 +4,10 @@ from pathlib import Path
 
 import numpy as np
 import torch
+import torch.distributed as dist
 import yaml
 from PIL import Image
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, DistributedSampler, Sampler
 
 
 def load_data_config(path):
@@ -119,12 +120,48 @@ def seed_worker(_):
     random.seed(seed)
 
 
-def build_dataloader(config, batch_size, num_workers, shuffle=True):
+class DistributedEvalSampler(Sampler):
+    """Detectron2-style exact validation sharding without padding."""
+
+    def __init__(self, dataset, num_replicas=None, rank=None):
+        self.dataset = dataset
+        self.num_replicas = dist.get_world_size() if num_replicas is None else num_replicas
+        self.rank = dist.get_rank() if rank is None else rank
+
+        shard_size = len(dataset) // self.num_replicas
+        shard_sizes = [shard_size + int(rank < len(dataset) % self.num_replicas)
+                       for rank in range(self.num_replicas)]
+        begin = sum(shard_sizes[:self.rank])
+        self.indices = range(begin, begin + shard_sizes[self.rank])
+
+    def __iter__(self):
+        return iter(self.indices)
+
+    def __len__(self):
+        return len(self.indices)
+
+
+def build_dataloader(config, batch_size, num_workers, shuffle=True, distributed=False):
     if isinstance(config, (str, Path)):
         config = load_data_config(config)
-    generator = torch.Generator().manual_seed(config.get("seed", 0))
-    return DataLoader(
-        TouchDataset(config), batch_size=batch_size, shuffle=shuffle, num_workers=num_workers,
+
+    dataset = TouchDataset(config)
+    sampler = None
+    rank = 0
+    if distributed:
+        rank = dist.get_rank()
+        if shuffle:
+            sampler = DistributedSampler(dataset, shuffle=True, seed=config.get("seed", 0))
+        else:
+            sampler = DistributedEvalSampler(dataset)
+
+    generator = torch.Generator().manual_seed(config.get("seed", 0) + rank)
+    loader_args = dict(
+        dataset=dataset, batch_size=batch_size, shuffle=shuffle and sampler is None,
+        sampler=sampler, num_workers=num_workers,
         pin_memory=torch.cuda.is_available(), persistent_workers=num_workers > 0,
         worker_init_fn=seed_worker, generator=generator,
     )
+    if distributed and num_workers > 0:
+        loader_args["multiprocessing_context"] = "spawn"
+    return DataLoader(**loader_args)
