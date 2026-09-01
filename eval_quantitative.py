@@ -251,7 +251,17 @@ def load_run(run_dir, pipeline, cross_attention_kv, official_kv, device):
 
     encoder = None
     if checkpoint["touch_encoder"] is not None:
-        encoder = TouchEncoder(pipeline.backbone.cond_channels).to(device)
+        config = checkpoint.get("touch_encoder_config")
+        if config is None:
+            config = {
+                "output_dim": pipeline.backbone.cond_channels,
+                "tokens_per_contact": 1,
+                "architecture_version": "center_v1",
+            }
+        else:
+            config = dict(config)
+            config["output_dim"] = pipeline.backbone.cond_channels
+        encoder = TouchEncoder(**config).to(device)
         encoder.load_state_dict(checkpoint["touch_encoder"])
         encoder.eval()
     return encoder

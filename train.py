@@ -91,6 +91,12 @@ def parse_args():
     parser.add_argument("--save-every", type=int, default=1000)
     parser.add_argument("--no-amp", action="store_true")
     parser.add_argument("--no-touch", action="store_true")
+    parser.add_argument("--tokens-per-contact", type=int, default=1)
+    parser.add_argument(
+        "--touch-encoder-version",
+        choices=["auto", "center_v1", "query_pool_v1"],
+        default="auto",
+    )
     parser.add_argument("--local-rank", "--local_rank", type=int,
                         default=int(os.environ.get("LOCAL_RANK", -1)))
     return parser.parse_args()
@@ -107,7 +113,7 @@ def setup_distributed(args):
     return True, rank, dist.get_world_size(), torch.device("cuda", local_rank)
 
 
-def save_run_config(path, args, data_config, world_size):
+def save_run_config(path, args, data_config, world_size, touch_encoder_config):
     from omegaconf import OmegaConf
 
     if path.exists() and not args.resume:
@@ -128,6 +134,7 @@ def save_run_config(path, args, data_config, world_size):
             "val_workers_per_gpu": args.val_workers,
             "total_val_workers": args.val_workers * world_size,
         },
+        "touch_encoder": touch_encoder_config,
         "data_config": data_config,
         "pipeline_config": OmegaConf.to_container(
             OmegaConf.load(args.pipeline_config), resolve=True
@@ -223,10 +230,45 @@ def save_checkpoint(path, encoder, cross_attention_kv, optimizer, epoch, step, b
     path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(
         {"touch_encoder": encoder.state_dict() if encoder is not None else None,
+         "touch_encoder_config": encoder.get_config() if encoder is not None else None,
          "shape_cross_attention_kv": [module.state_dict() for module in cross_attention_kv],
          "optimizer": optimizer.state_dict(), "epoch": epoch, "step": step,
          "best_val_loss": best_val_loss}, path
     )
+
+
+def resolve_touch_encoder_config(args, output_dim, checkpoint=None):
+    if checkpoint is not None:
+        if checkpoint["touch_encoder"] is None:
+            args.no_touch = True
+            return None
+        if args.no_touch:
+            raise ValueError("Cannot resume a touch checkpoint with --no-touch")
+        config = checkpoint.get("touch_encoder_config")
+        if config is None:
+            config = {
+                "output_dim": output_dim,
+                "tokens_per_contact": 1,
+                "architecture_version": "center_v1",
+            }
+        else:
+            config = dict(config)
+            config["output_dim"] = output_dim
+    else:
+        if args.no_touch:
+            return None
+        version = args.touch_encoder_version
+        if version == "auto":
+            version = "center_v1" if args.tokens_per_contact == 1 else "query_pool_v1"
+        config = {
+            "output_dim": output_dim,
+            "tokens_per_contact": args.tokens_per_contact,
+            "architecture_version": version,
+        }
+
+    args.tokens_per_contact = config["tokens_per_contact"]
+    args.touch_encoder_version = config["architecture_version"]
+    return config
 
 
 def main():
@@ -261,7 +303,13 @@ def main():
     )
 
     pipeline = build_stage1_pipeline(args.pipeline_config, device)
-    encoder = None if args.no_touch else TouchEncoder(pipeline.backbone.cond_channels).to(device)
+    checkpoint = None
+    if args.resume:
+        checkpoint = torch.load(args.resume, map_location="cpu", weights_only=False)
+    touch_encoder_config = resolve_touch_encoder_config(
+        args, pipeline.backbone.cond_channels, checkpoint
+    )
+    encoder = TouchEncoder(**touch_encoder_config).to(device) if touch_encoder_config else None
     cross_attention_kv = []
     if args.cross_attention_learning_rate:
         cross_attention_kv = [block.cross_attn["shape"].to_kv for block in pipeline.backbone.blocks]
@@ -290,8 +338,7 @@ def main():
     start_epoch = 0
     step = 0
     best_val_loss = float("inf")
-    if args.resume:
-        checkpoint = torch.load(args.resume, map_location="cpu", weights_only=False)
+    if checkpoint is not None:
         if encoder is not None:
             encoder.load_state_dict(checkpoint["touch_encoder"])
         for module, state in zip(cross_attention_kv, checkpoint.get("shape_cross_attention_kv", [])):
@@ -311,7 +358,8 @@ def main():
     if main_process:
         args.output_dir.mkdir(parents=True, exist_ok=True)
         save_run_config(
-            args.output_dir / "config.yaml", args, config, world_size
+            args.output_dir / "config.yaml", args, config, world_size,
+            encoder.get_config() if encoder is not None else None,
         )
     if distributed:
         dist.barrier()
@@ -336,6 +384,12 @@ def main():
         print(f"workers: {args.workers} train, {args.val_workers} val per GPU")
         touch_parameters = sum(p.numel() for p in encoder.parameters()) if encoder is not None else 0
         print(f"touch parameters: {touch_parameters:,}")
+        if encoder is not None:
+            touch_tokens = config["touch"]["contacts"]["count"] * encoder.tokens_per_contact
+            print(
+                f"touch encoder: {encoder.architecture_version}, "
+                f"{encoder.tokens_per_contact} tokens/contact, {touch_tokens} tokens total"
+            )
     kv_parameters = sum(p.numel() for module in cross_attention_kv for p in module.parameters())
     if main_process:
         print(f"cross-attention K/V parameters: {kv_parameters:,}")
