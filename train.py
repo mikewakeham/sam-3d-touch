@@ -10,6 +10,7 @@ import numpy as np
 import torch
 import torch.distributed as dist
 import wandb
+import yaml
 from hydra.utils import instantiate
 from loguru import logger
 from omegaconf import OmegaConf
@@ -99,6 +100,32 @@ def setup_distributed(args):
     dist.init_process_group(backend="nccl")
     rank = dist.get_rank()
     return True, rank, dist.get_world_size(), torch.device("cuda", local_rank)
+
+
+def save_run_config(path, args, data_config, world_size):
+    if path.exists():
+        return
+
+    arguments = {
+        name: str(value) if isinstance(value, Path) else value
+        for name, value in vars(args).items()
+    }
+    config = {
+        "arguments": arguments,
+        "distributed": {
+            "world_size": world_size,
+            "batch_size_per_gpu": args.batch_size,
+            "global_batch_size": args.batch_size * world_size,
+            "workers_per_gpu": args.workers,
+            "total_workers": args.workers * world_size,
+        },
+        "data_config": data_config,
+        "pipeline_config": OmegaConf.to_container(
+            OmegaConf.load(args.pipeline_config), resolve=True
+        ),
+    }
+    with open(path, "w") as file:
+        yaml.safe_dump(config, file, sort_keys=False)
 
 
 def preprocess_batch(pipeline, images, pointmaps):
@@ -248,6 +275,9 @@ def main():
 
     if main_process:
         args.output_dir.mkdir(parents=True, exist_ok=True)
+        save_run_config(
+            args.output_dir / "config.yaml", args, config, world_size
+        )
     if distributed:
         dist.barrier()
 
