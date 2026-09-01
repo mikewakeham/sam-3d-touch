@@ -1,9 +1,12 @@
 import argparse
 import copy
 import csv
+import os
 import random
 import re
 from pathlib import Path
+
+os.environ.setdefault("LIDRA_SKIP_INIT", "true")
 
 import numpy as np
 import torch
