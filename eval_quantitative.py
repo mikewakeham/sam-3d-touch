@@ -1,6 +1,6 @@
 import argparse
-import copy
 import csv
+import itertools
 import os
 import random
 import re
@@ -9,13 +9,21 @@ from pathlib import Path
 os.environ.setdefault("LIDRA_SKIP_INIT", "true")
 
 import numpy as np
+import open3d as o3d
 import torch
+import trimesh
 import yaml
 from omegaconf import OmegaConf
+from scipy.spatial import cKDTree
 
 from dataloader import build_dataloader, load_data_config
 from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
-from train import build_stage1_pipeline, normalize_touch, preprocess_batch
+from sam3d_objects.pipeline.inference_pipeline import InferencePipeline
+from sam3d_objects.pipeline.inference_utils import (
+    downsample_sparse_structure,
+    prune_sparse_structure,
+)
+from train import normalize_touch, preprocess_batch
 
 
 def parse_args():
@@ -25,10 +33,15 @@ def parse_args():
     parser.add_argument("--data-config", type=Path, default=Path("configs/data1.yaml"))
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/evaluation"))
     parser.add_argument("--split", default="val")
-    parser.add_argument("--max-samples", type=int, default=128)
+    parser.add_argument("--max-samples", type=int, default=16)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--workers", type=int, default=0)
     parser.add_argument("--inference-steps", type=int, default=25)
+    parser.add_argument("--stage2-inference-steps", type=int, default=25)
+    parser.add_argument("--surface-points", type=int, default=1_000_000)
+    parser.add_argument("--icp-points", type=int, default=20_000)
+    parser.add_argument("--emd-points", type=int, default=2048)
+    parser.add_argument("--save-points", type=int, default=8192)
     parser.add_argument("--seed", type=int, default=29)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--no-amp", action="store_true")
@@ -37,6 +50,150 @@ def parse_args():
 
 def safe_name(value):
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", value)
+
+
+def selected_touch_indices(data, contact, radius, points_per_contact):
+    start, end = data["offsets"][contact:contact + 2]
+    point_ids = data["point_ids"][start:end]
+    center = np.flatnonzero(point_ids == data["center_point_ids"][contact])[0]
+    eligible = np.flatnonzero(data["geodesic_distance"][start:end] <= radius)
+    others = eligible[eligible != center]
+    priorities = data["keep_priority"][start + others]
+    others = others[np.argsort(priorities)[:points_per_contact - 1]]
+    return start + np.concatenate(([center], others))
+
+
+def view_information(record, dataset, data_config):
+    touch_config = data_config["touch"]
+    contact_count = touch_config["contacts"]["count"]
+    radius = touch_config["neighborhood"]["max_geodesic_distance"]
+    points_per_contact = touch_config["point_sampling"]["points_per_contact"]
+
+    with np.load(dataset.path(record["touch_path"]), allow_pickle=False) as data:
+        indices = []
+        count = min(contact_count, len(data["offsets"]) - 1)
+        for contact in range(count):
+            indices.append(selected_touch_indices(data, contact, radius, points_per_contact))
+        indices = np.concatenate(indices)
+        visibility = data["point_visibility"][indices]
+        point_ids = data["point_ids"][indices]
+        centers = data["centers_camera"][:count]
+
+    hidden_fraction = float(np.mean(visibility == 0))
+    unique_fraction = float(len(np.unique(point_ids)) / len(point_ids))
+    valid_fraction = float(len(point_ids) / (contact_count * points_per_contact))
+    if len(centers) > 1:
+        distances = np.linalg.norm(centers[:, None] - centers[None, :], axis=-1)
+        spread = float(distances[np.triu_indices(len(centers), 1)].mean())
+        spread /= float(distances.max() + 1e-8)
+    else:
+        spread = 0.0
+
+    with np.load(dataset.path(record["camera_path"]), allow_pickle=False) as data:
+        camera_center = np.linalg.inv(data["T_camera_from_object"])[:3, 3]
+    camera_direction = camera_center / (np.linalg.norm(camera_center) + 1e-8)
+
+    return {
+        "hidden_fraction": hidden_fraction,
+        "unique_fraction": unique_fraction,
+        "valid_fraction": valid_fraction,
+        "contact_spread": spread,
+        "information_score": hidden_fraction + unique_fraction + 0.25 * valid_fraction + 0.25 * spread,
+        "camera_direction": camera_direction,
+    }
+
+
+def select_records(dataset, data_config, max_samples):
+    best_by_object = {}
+    for record in dataset.records:
+        information = view_information(record, dataset, data_config)
+        candidate = {"record": record, **information}
+        current = best_by_object.get(record["object_id"])
+        if current is None or information["information_score"] > current["information_score"] or (
+            information["information_score"] == current["information_score"]
+            and record["sample_id"] < current["record"]["sample_id"]
+        ):
+            best_by_object[record["object_id"]] = candidate
+
+    candidates = list(best_by_object.values())
+    candidates.sort(key=lambda item: (-item["information_score"], item["record"]["sample_id"]))
+    if not max_samples or max_samples >= len(candidates):
+        selected = candidates
+    else:
+        scores = np.asarray([item["information_score"] for item in candidates])
+        quality = (scores - scores.min()) / max(float(np.ptp(scores)), 1e-8)
+        remaining = list(range(len(candidates)))
+        chosen = []
+        while remaining and len(chosen) < max_samples:
+            best_index = None
+            best_score = None
+            for index in remaining:
+                if chosen:
+                    direction = candidates[index]["camera_direction"]
+                    angles = [
+                        np.arccos(np.clip(direction @ candidates[other]["camera_direction"], -1, 1))
+                        for other in chosen
+                    ]
+                    diversity = min(angles) / np.pi
+                else:
+                    diversity = 1.0
+                score = 0.85 * quality[index] + 0.15 * diversity
+                tie_break = candidates[index]["record"]["sample_id"]
+                value = (score, tie_break)
+                if best_score is None or value > best_score:
+                    best_index, best_score = index, value
+            chosen.append(best_index)
+            remaining.remove(best_index)
+        selected = [candidates[index] for index in chosen]
+
+    details = []
+    for item in selected:
+        details.append({
+            "sample_id": item["record"]["sample_id"],
+            "object_id": item["record"]["object_id"],
+            "view_id": item["record"]["view_id"],
+            "information_score": item["information_score"],
+            "hidden_fraction": item["hidden_fraction"],
+            "unique_fraction": item["unique_fraction"],
+            "valid_fraction": item["valid_fraction"],
+            "contact_spread": item["contact_spread"],
+            "camera_direction": item["camera_direction"].tolist(),
+        })
+    return [item["record"] for item in selected], details
+
+
+def build_pipeline(config_path, device):
+    from hydra.utils import instantiate
+
+    config_path = config_path.resolve()
+    config = OmegaConf.load(config_path)
+    OmegaConf.set_struct(config, False)
+    config.workspace_dir = str(config_path.parent)
+    config.device = device
+    config.compile_model = False
+    config.decode_formats = ["mesh"]
+    config.depth_model = None
+    config.slat_decoder_gs_config_path = None
+    config.slat_decoder_gs_ckpt_path = None
+    config.slat_decoder_gs_4_config_path = None
+    config.slat_decoder_gs_4_ckpt_path = None
+    pipeline = instantiate(config)
+    pipeline.ss_generator = pipeline.models["ss_generator"]
+    pipeline.ss_condition_embedder = pipeline.condition_embedders["ss_condition_embedder"]
+    pipeline.backbone = pipeline.ss_generator.reverse_fn.backbone
+    pipeline.models.eval()
+    for embedder in pipeline.condition_embedders.values():
+        if embedder is not None:
+            embedder.eval()
+    return pipeline, config
+
+
+def preprocess_stage2(pipeline, images):
+    items = [
+        InferencePipeline.preprocess_image(pipeline, image.numpy(), pipeline.slat_preprocessor)
+        for image in images
+    ]
+    return {key: torch.cat([item[key] for item in items]) for key in items[0]}
 
 
 def latent_cube(latent):
@@ -65,15 +222,17 @@ def voxel_metrics(prediction, target):
     }
 
 
-def sample_shape(pipeline, condition_args, touch_tokens, batch_size, inference_steps, device):
+def sample_shape(pipeline, condition_args, condition_kwargs, touch_tokens, inference_steps, device):
     generator = pipeline.ss_generator
     previous_steps = generator.inference_steps
     generator.inference_steps = inference_steps
     latent_shapes = {
-        name: (batch_size, mapping.pos_emb.shape[0], mapping.input_layer.in_features)
+        name: (1, mapping.pos_emb.shape[0], mapping.input_layer.in_features)
         for name, mapping in pipeline.backbone.latent_mapping.items()
     }
-    condition_kwargs = {"touch_tokens": touch_tokens} if touch_tokens is not None else {}
+    condition_kwargs = dict(condition_kwargs)
+    if touch_tokens is not None:
+        condition_kwargs["touch_tokens"] = touch_tokens
     result = generator(latent_shapes, device, *condition_args, **condition_kwargs)
     generator.inference_steps = previous_steps
     return result["shape"]
@@ -116,82 +275,412 @@ def shuffled_ids(sample_ids, object_ids, seed):
     rng = random.Random(seed)
     for _ in range(100):
         rng.shuffle(donors)
-        if all(object_ids[sample] != object_ids[donor]
-               for sample, donor in zip(sample_ids, donors)):
+        if all(object_ids[sample] != object_ids[donor] for sample, donor in zip(sample_ids, donors)):
             return dict(zip(sample_ids, donors))
-    return {sample: next(donor for donor in donors if object_ids[sample] != object_ids[donor])
-            for sample in sample_ids}
+    return {
+        sample: next(donor for donor in donors if object_ids[sample] != object_ids[donor])
+        for sample in sample_ids
+    }
 
 
-def evaluate_condition(name, pipeline, decoder, encoder, loader, touch_cache, donor_ids,
-                       records, args, mode="correct"):
+def trimesh_from_result(result):
+    return trimesh.Trimesh(
+        vertices=result.vertices.detach().float().cpu().numpy(),
+        faces=result.faces.detach().cpu().numpy(),
+        process=False,
+    )
+
+
+def normalize_mesh(mesh):
+    mesh = mesh.copy()
+    bounds = mesh.bounds
+    center = bounds.mean(axis=0)
+    scale = 2.0 / (bounds[1] - bounds[0]).max()
+    transform = np.eye(4)
+    transform[:3, :3] *= scale
+    transform[:3, 3] = -scale * center
+    mesh.apply_transform(transform)
+    return mesh, transform
+
+
+def sample_surface(mesh, count, seed):
+    points, faces = trimesh.sample.sample_surface(mesh, count, seed=seed)
+    normals = np.asarray(mesh.face_normals[faces], dtype=np.float32)
+    return points.astype(np.float32), normals
+
+
+def proper_axis_rotations():
+    rotations = []
+    for permutation in itertools.permutations(range(3)):
+        for signs in itertools.product((-1.0, 1.0), repeat=3):
+            rotation = np.zeros((3, 3))
+            rotation[range(3), permutation] = signs
+            if np.linalg.det(rotation) > 0:
+                rotations.append(rotation)
+    return rotations
+
+
+def principal_basis(points):
+    covariance = np.cov(points, rowvar=False)
+    _, vectors = np.linalg.eigh(covariance)
+    basis = vectors[:, ::-1]
+    if np.linalg.det(basis) < 0:
+        basis[:, -1] *= -1
+    return basis
+
+
+def symmetric_distance(source, target):
+    source_to_target = cKDTree(target).query(source, workers=-1)[0].mean()
+    target_to_source = cKDTree(source).query(target, workers=-1)[0].mean()
+    return float((source_to_target + target_to_source) / 2)
+
+
+def align_mesh(prediction_mesh, target_mesh, prediction_points, target_points):
+    source_basis = principal_basis(prediction_points)
+    target_basis = principal_basis(target_points)
+    source_center = prediction_points.mean(axis=0)
+    target_center = target_points.mean(axis=0)
+    source_radius = np.sqrt(np.mean(np.sum((prediction_points - source_center) ** 2, axis=1)))
+    target_radius = np.sqrt(np.mean(np.sum((target_points - target_center) ** 2, axis=1)))
+    scale = target_radius / source_radius
+    candidates = []
+    coarse_source = prediction_points[::5]
+    coarse_target = target_points[::5]
+    for axis_rotation in proper_axis_rotations():
+        transform = np.eye(4)
+        transform[:3, :3] = scale * target_basis @ axis_rotation @ source_basis.T
+        transform[:3, 3] = target_center - transform[:3, :3] @ source_center
+        transformed = trimesh.transform_points(coarse_source, transform)
+        candidates.append((symmetric_distance(transformed, coarse_target), transform))
+
+    source_cloud = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(prediction_points))
+    target_cloud = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(target_points))
+    refined = []
+    for _, transform in sorted(candidates, key=lambda item: item[0])[:4]:
+        registration = o3d.pipelines.registration.registration_icp(
+            source_cloud,
+            target_cloud,
+            0.2,
+            transform,
+            o3d.pipelines.registration.TransformationEstimationPointToPoint(),
+            o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=50),
+        )
+        transformed = trimesh.transform_points(prediction_points, registration.transformation)
+        refined.append((symmetric_distance(transformed, target_points), registration.transformation))
+
+    error, transform = min(refined, key=lambda item: item[0])
+    aligned = prediction_mesh.copy()
+    aligned.apply_transform(transform)
+    return aligned, transform, error
+
+
+def voxelize_points(points, resolution=64):
+    occupancy = np.zeros((resolution, resolution, resolution), dtype=bool)
+    coords = np.floor((points + 1) * resolution / 2).astype(np.int64)
+    if len(coords):
+        coords = coords[np.all((coords >= 0) & (coords < resolution), axis=1)]
+        occupancy[coords[:, 0], coords[:, 1], coords[:, 2]] = True
+    return occupancy
+
+
+def sinkhorn_emd(prediction, target, device, epsilon=0.01, iterations=100):
+    prediction = torch.from_numpy(prediction).to(device=device, dtype=torch.float32)
+    target = torch.from_numpy(target).to(device=device, dtype=torch.float32)
+    cost = torch.cdist(prediction, target).square()
+    log_kernel = -cost / epsilon
+    log_mass_prediction = -np.log(len(prediction))
+    log_mass_target = -np.log(len(target))
+    log_u = torch.zeros(len(prediction), device=device)
+    log_v = torch.zeros(len(target), device=device)
+    for _ in range(iterations):
+        log_u = log_mass_prediction - torch.logsumexp(log_kernel + log_v[None], dim=1)
+        log_v = log_mass_target - torch.logsumexp(log_kernel + log_u[:, None], dim=0)
+    transport = torch.exp(log_kernel + log_u[:, None] + log_v[None])
+    return float(torch.sqrt((transport * cost).sum()).cpu())
+
+
+def mesh_metrics(prediction_points, prediction_normals, target_points, target_normals,
+                 emd_points, device):
+    target_tree = cKDTree(target_points)
+    prediction_tree = cKDTree(prediction_points)
+    prediction_distances, prediction_neighbors = target_tree.query(prediction_points, workers=-1)
+    target_distances, target_neighbors = prediction_tree.query(target_points, workers=-1)
+
+    threshold = 0.01
+    f_precision = float(np.mean(prediction_distances < threshold))
+    f_recall = float(np.mean(target_distances < threshold))
+    fscore = 2 * f_precision * f_recall / max(f_precision + f_recall, 1e-12)
+    normal_forward = np.abs(np.sum(prediction_normals * target_normals[prediction_neighbors], axis=1)).mean()
+    normal_backward = np.abs(np.sum(target_normals * prediction_normals[target_neighbors], axis=1)).mean()
+
+    prediction_voxels = voxelize_points(prediction_points)
+    target_voxels = voxelize_points(target_points)
+    intersection = np.logical_and(prediction_voxels, target_voxels).sum()
+    union = np.logical_or(prediction_voxels, target_voxels).sum()
+    emd_count = min(emd_points, len(prediction_points), len(target_points))
+    return {
+        "fscore_0.01": fscore,
+        "f_precision_0.01": f_precision,
+        "f_recall_0.01": f_recall,
+        "voxel_iou_64": float(intersection / max(union, 1)),
+        "chamfer": float((prediction_distances.mean() + target_distances.mean()) / 2),
+        "normal_consistency": float((normal_forward + normal_backward) / 2),
+        "emd": sinkhorn_emd(
+            prediction_points[:emd_count], target_points[:emd_count], device
+        ),
+    }
+
+
+def load_target_mesh(record, dataset, output_dir, surface_points, icp_points, save_points, seed):
+    object_id = record["object_id"]
+    mesh_path = dataset.root / "objects" / object_id / "model.obj"
+    mesh = trimesh.load(str(mesh_path), force="mesh", process=False, skip_materials=True)
+    with np.load(dataset.path(record["object_transform_path"]), allow_pickle=False) as data:
+        dataset_transform = data["T_normalized_from_source"].astype(np.float64)
+    mesh.apply_transform(dataset_transform)
+    mesh, normalization = normalize_mesh(mesh)
+
+    target_dir = output_dir / "targets" / safe_name(object_id)
+    target_dir.mkdir(parents=True, exist_ok=True)
+    mesh_path = target_dir / "mesh_normalized.ply"
+    mesh.export(mesh_path)
+    icp_points_array, _ = sample_surface(mesh, icp_points, seed + 1)
+    points, normals = sample_surface(mesh, surface_points, seed + 2)
+    saved = min(save_points, len(points))
+    points_path = target_dir / "points.npz"
+    np.savez_compressed(
+        points_path,
+        points=points[:saved],
+        normals=normals[:saved],
+        dataset_transform=dataset_transform,
+        evaluation_normalization=normalization,
+        icp_seed=np.int64(seed + 1),
+        surface_seed=np.int64(seed + 2),
+    )
+    return {
+        "mesh": mesh,
+        "icp_points": icp_points_array,
+        "points": points,
+        "normals": normals,
+        "mesh_path": mesh_path,
+        "points_path": points_path,
+    }
+
+
+def save_generated_artifacts(output_dir, condition, sample_id, prediction, predicted_voxels,
+                             target_voxels, coords_original, coords, downsample_factor, slat,
+                             raw_mesh, normalized_mesh, aligned_mesh, normalization, alignment,
+                             icp_error, points, normals, touch_centers, seed, save_points):
+    artifact_dir = output_dir / "artifacts" / safe_name(condition) / safe_name(sample_id)
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    stage1_path = artifact_dir / "stage1.npz"
+    slat_path = artifact_dir / "slat.npz"
+    raw_path = artifact_dir / "mesh_raw.ply"
+    normalized_path = artifact_dir / "mesh_normalized.ply"
+    aligned_path = artifact_dir / "mesh_aligned.ply"
+    alignment_path = artifact_dir / "alignment.npz"
+
+    factor = downsample_factor.item() if torch.is_tensor(downsample_factor) else downsample_factor
+    np.savez_compressed(
+        stage1_path,
+        latent=prediction.detach().float().cpu().numpy(),
+        prediction=predicted_voxels.cpu().numpy(),
+        target=target_voxels.cpu().numpy(),
+        coords_original=coords_original.cpu().numpy(),
+        coords=coords.cpu().numpy(),
+        downsample_factor=np.asarray(factor),
+        touch_centers=touch_centers,
+    )
+    np.savez_compressed(
+        slat_path,
+        coords=slat.coords.detach().cpu().numpy(),
+        feats=slat.feats.detach().float().cpu().numpy(),
+    )
+    raw_mesh.export(raw_path)
+    normalized_mesh.export(normalized_path)
+    aligned_mesh.export(aligned_path)
+    np.savez_compressed(
+        alignment_path,
+        prediction_normalization=normalization,
+        icp_transform=alignment,
+        icp_error=np.float64(icp_error),
+        points=points[:save_points],
+        normals=normals[:save_points],
+        stage1_seed=np.int64(seed),
+        stage2_seed=np.int64(seed + 1_000_000),
+        icp_seed=np.int64(seed + 1),
+        surface_seed=np.int64(seed + 2),
+    )
+    return stage1_path, slat_path, raw_path, normalized_path, aligned_path, alignment_path
+
+
+def relative(path, root):
+    return str(path.relative_to(root))
+
+
+def evaluate_condition(name, pipeline, encoder, loader, touch_cache, donor_ids,
+                       records, target_cache, args, mode="correct"):
     rows = []
-    condition_dir = args.output_dir / "voxels" / safe_name(name)
-    condition_dir.mkdir(parents=True, exist_ok=True)
+    voxel_dir = args.output_dir / "voxels" / safe_name(name)
+    voxel_dir.mkdir(parents=True, exist_ok=True)
     dtype = pipeline.shape_model_dtype
-    completed = 0
 
     with torch.inference_mode():
         for batch_index, batch in enumerate(loader):
-            inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
+            sample_id = batch["sample_id"][0]
+            record = records[sample_id]
             touch_xyz = None
             if encoder is not None and mode != "omitted":
-                ids = batch["sample_id"]
-                if mode == "shuffled":
-                    ids = [donor_ids[sample_id] for sample_id in ids]
-                touch_xyz = torch.stack([touch_cache[sample_id][0] for sample_id in ids]).to(args.device)
-                touch_mask = torch.stack([touch_cache[sample_id][1] for sample_id in ids]).to(args.device)
+                touch_id = donor_ids[sample_id] if mode == "shuffled" else sample_id
+                touch_xyz = touch_cache[touch_id][0][None].to(args.device)
+                touch_mask = touch_cache[touch_id][1][None].to(args.device)
 
-            torch.manual_seed(args.seed + batch_index)
-            with torch.autocast(
-                device_type=torch.device(args.device).type, dtype=dtype,
-                enabled=not args.no_amp and torch.device(args.device).type == "cuda"
-            ):
-                condition_args, _ = pipeline.get_condition_input(
-                    pipeline.ss_condition_embedder, inputs, pipeline.ss_condition_input_mapping
+            seed = args.seed + batch_index
+            voxel_path = voxel_dir / f"{safe_name(sample_id)}.npz"
+            try:
+                stage1_inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
+                stage2_inputs = preprocess_stage2(pipeline, batch["image"])
+                torch.manual_seed(seed)
+                with torch.autocast(
+                    device_type=torch.device(args.device).type,
+                    dtype=dtype,
+                    enabled=not args.no_amp and torch.device(args.device).type == "cuda",
+                ):
+                    condition_args, condition_kwargs = pipeline.get_condition_input(
+                        pipeline.ss_condition_embedder,
+                        stage1_inputs,
+                        pipeline.ss_condition_input_mapping,
+                    )
+                    touch_tokens = encoder(touch_xyz, touch_mask) if touch_xyz is not None else None
+                    prediction = sample_shape(
+                        pipeline, condition_args, condition_kwargs, touch_tokens,
+                        args.inference_steps, args.device,
+                    )
+                    predicted_voxels = decode_voxels(pipeline.models["ss_decoder"], prediction)
+                    target_voxels = decode_voxels(
+                        pipeline.models["ss_decoder"], batch["target_shape"].to(args.device)
+                    )
+
+                coords_original = torch.argwhere(predicted_voxels).int()
+                coords = coords_original
+                if pipeline.downsample_ss_dist > 0:
+                    coords = prune_sparse_structure(coords, pipeline.downsample_ss_dist)
+                coords, downsample_factor = downsample_sparse_structure(coords)
+
+                torch.manual_seed(seed + 1_000_000)
+                slat = pipeline.sample_slat(
+                    stage2_inputs, coords,
+                    inference_steps=args.stage2_inference_steps,
+                    use_distillation=False,
                 )
-                touch_tokens = encoder(touch_xyz, touch_mask) if touch_xyz is not None else None
-                prediction = sample_shape(
-                    pipeline, condition_args, touch_tokens, len(batch["sample_id"]),
-                    args.inference_steps, args.device
+                result = pipeline.decode_slat(slat, ["mesh"])["mesh"][0]
+                if not result.success:
+                    raise RuntimeError("Stage-2 mesh decoder returned an empty mesh")
+
+                raw_mesh = trimesh_from_result(result)
+                normalized_mesh, normalization = normalize_mesh(raw_mesh)
+                prediction_icp_points, _ = sample_surface(normalized_mesh, args.icp_points, seed + 1)
+                target = target_cache[record["object_id"]]
+                aligned_mesh, alignment, icp_error = align_mesh(
+                    normalized_mesh, target["mesh"], prediction_icp_points, target["icp_points"]
                 )
-                predicted_voxels = decode_voxels(decoder, prediction)
-                target = batch["target_shape"].to(args.device)
-                target_voxels = decode_voxels(decoder, target)
+                points, normals = sample_surface(aligned_mesh, args.surface_points, seed + 2)
+                metrics = mesh_metrics(
+                    points, normals, target["points"], target["normals"],
+                    args.emd_points, args.device,
+                )
 
-            metrics = voxel_metrics(predicted_voxels, target_voxels)
-            latent_mse = (prediction.float() - target.float()).square().mean(dim=(1, 2))
-
-            for index, sample_id in enumerate(batch["sample_id"]):
-                path = condition_dir / f"{safe_name(sample_id)}.npz"
-                centers = touch_cache[sample_id][0][:, 0].numpy()
+                old_metrics = voxel_metrics(predicted_voxels, target_voxels)
+                latent_mse = float(
+                    (prediction.float() - batch["target_shape"].to(args.device).float()).square().mean()
+                )
+                touch_centers = touch_cache[sample_id][0][:, 0].numpy()
                 np.savez_compressed(
-                    path,
-                    prediction=predicted_voxels[index].cpu().numpy(),
-                    target=target_voxels[index].cpu().numpy(),
-                    touch_centers=centers,
+                    voxel_path,
+                    prediction=predicted_voxels[0].cpu().numpy(),
+                    target=target_voxels[0].cpu().numpy(),
+                    touch_centers=touch_centers,
                 )
-                record = records[sample_id]
+                paths = save_generated_artifacts(
+                    args.output_dir, name, sample_id, prediction, predicted_voxels[0],
+                    target_voxels[0], coords_original, coords, downsample_factor, slat,
+                    raw_mesh, normalized_mesh, aligned_mesh, normalization, alignment,
+                    icp_error, points, normals, touch_centers, seed, args.save_points,
+                )
+                stage1_path, slat_path, raw_path, normalized_path, aligned_path, alignment_path = paths
                 row = {
                     "condition": name,
                     "sample_id": sample_id,
                     "object_id": record["object_id"],
+                    "view_id": record["view_id"],
                     "image_path": str(loader.dataset.path(record["image_path"])),
-                    "voxel_path": str(path.relative_to(args.output_dir)),
-                    "latent_mse": float(latent_mse[index]),
+                    "voxel_path": relative(voxel_path, args.output_dir),
+                    "stage1_path": relative(stage1_path, args.output_dir),
+                    "slat_path": relative(slat_path, args.output_dir),
+                    "mesh_raw_path": relative(raw_path, args.output_dir),
+                    "mesh_normalized_path": relative(normalized_path, args.output_dir),
+                    "mesh_aligned_path": relative(aligned_path, args.output_dir),
+                    "alignment_path": relative(alignment_path, args.output_dir),
+                    "target_mesh_path": relative(target["mesh_path"], args.output_dir),
+                    "target_points_path": relative(target["points_path"], args.output_dir),
+                    **metrics,
+                    "icp_error": icp_error,
+                    "latent_mse": latent_mse,
+                    **{metric: float(values[0]) for metric, values in old_metrics.items()},
+                    "error": "",
                 }
-                for metric, values in metrics.items():
-                    row[metric] = float(values[index])
-                rows.append(row)
-
-            completed += len(batch["sample_id"])
-            print(f"{name}: {completed}/{len(loader.dataset)}", flush=True)
+            except Exception as error:
+                row = {
+                    "condition": name,
+                    "sample_id": sample_id,
+                    "object_id": record["object_id"],
+                    "view_id": record["view_id"],
+                    "image_path": str(loader.dataset.path(record["image_path"])),
+                    "voxel_path": "",
+                    "stage1_path": "",
+                    "slat_path": "",
+                    "mesh_raw_path": "",
+                    "mesh_normalized_path": "",
+                    "mesh_aligned_path": "",
+                    "alignment_path": "",
+                    "target_mesh_path": relative(target_cache[record["object_id"]]["mesh_path"], args.output_dir),
+                    "target_points_path": relative(target_cache[record["object_id"]]["points_path"], args.output_dir),
+                    "fscore_0.01": np.nan,
+                    "f_precision_0.01": np.nan,
+                    "f_recall_0.01": np.nan,
+                    "voxel_iou_64": np.nan,
+                    "chamfer": np.nan,
+                    "normal_consistency": np.nan,
+                    "emd": np.nan,
+                    "icp_error": np.nan,
+                    "latent_mse": np.nan,
+                    "iou": np.nan,
+                    "dice": np.nan,
+                    "precision": np.nan,
+                    "recall": np.nan,
+                    "predicted_voxels": np.nan,
+                    "target_voxels": np.nan,
+                    "volume_error": np.nan,
+                    "error": f"{type(error).__name__}: {error}",
+                }
+                print(f"{name}: {sample_id} failed: {row['error']}", flush=True)
+            rows.append(row)
+            print(f"{name}: {batch_index + 1}/{len(loader.dataset)}", flush=True)
     return rows
 
 
 def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_touch):
-    metrics = ["iou", "dice", "precision", "recall", "volume_error", "latent_mse"]
+    metrics = [
+        "fscore_0.01", "f_precision_0.01", "f_recall_0.01", "voxel_iou_64",
+        "chamfer", "normal_consistency", "emd", "icp_error",
+        "iou", "dice", "precision", "recall", "volume_error", "latent_mse",
+    ]
+    higher_is_better = {
+        "fscore_0.01", "f_precision_0.01", "f_recall_0.01", "voxel_iou_64",
+        "normal_consistency", "iou", "dice", "precision", "recall",
+    }
     summary = {
+        "primary_metric": "fscore_0.01",
         "primary_conditions": primary_conditions,
         "diagnostic_conditions": diagnostic_conditions,
         "no_touch": no_touch,
@@ -204,13 +693,13 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
         by_condition.setdefault(row["condition"], {})[row["sample_id"]] = row
 
     for condition, samples in by_condition.items():
-        summary["conditions"][condition] = {
-            metric: {
-                "mean": float(np.mean([row[metric] for row in samples.values()])),
-                "median": float(np.median([row[metric] for row in samples.values()])),
+        summary["conditions"][condition] = {"failed": sum(bool(row["error"]) for row in samples.values())}
+        for metric in metrics:
+            values = np.asarray([row[metric] for row in samples.values()], dtype=float)
+            summary["conditions"][condition][metric] = {
+                "mean": float(np.nanmean(values)),
+                "median": float(np.nanmedian(values)),
             }
-            for metric in metrics
-        }
 
     baselines = ["official"] + ([no_touch] if no_touch else [])
     for condition in primary_conditions + diagnostic_conditions:
@@ -218,18 +707,30 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
             if condition == baseline:
                 continue
             common = sorted(set(by_condition[condition]) & set(by_condition[baseline]))
-            deltas = [by_condition[condition][sample]["iou"] - by_condition[baseline][sample]["iou"]
-                      for sample in common]
-            summary["comparisons"][f"{condition}_vs_{baseline}"] = {
-                "mean_iou_delta": float(np.mean(deltas)),
-                "median_iou_delta": float(np.median(deltas)),
-                "improved_fraction": float(np.mean(np.asarray(deltas) > 0)),
-            }
+            comparison = {}
+            for metric in metrics:
+                pairs = [
+                    (by_condition[condition][sample][metric], by_condition[baseline][sample][metric])
+                    for sample in common
+                ]
+                pairs = [(value, base) for value, base in pairs if np.isfinite(value) and np.isfinite(base)]
+                if not pairs:
+                    continue
+                sign = 1 if metric in higher_is_better else -1
+                improvements = np.asarray([sign * (value - base) for value, base in pairs])
+                comparison[metric] = {
+                    "mean_improvement": float(improvements.mean()),
+                    "median_improvement": float(np.median(improvements)),
+                    "improved_fraction": float(np.mean(improvements > 0)),
+                }
+            summary["comparisons"][f"{condition}_vs_{baseline}"] = comparison
     return summary
 
 
 def main():
     args = parse_args()
+    if args.batch_size != 1:
+        raise ValueError("Full Stage-2 mesh evaluation currently requires --batch-size 1")
     args.output_dir.mkdir(parents=True, exist_ok=True)
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -238,33 +739,19 @@ def main():
     data_config = load_data_config(args.data_config)
     data_config["dataset"]["split"] = args.split
     data_config["touch"]["contacts"]["shuffle_after_selection"] = False
-    loader = build_dataloader(data_config, args.batch_size, args.workers, shuffle=False)
-    if args.max_samples and args.max_samples < len(loader.dataset.records):
-        loader.dataset.records = random.Random(args.seed).sample(
-            loader.dataset.records, args.max_samples
-        )
+    loader = build_dataloader(data_config, 1, args.workers, shuffle=False)
+    selected, selection_details = select_records(loader.dataset, data_config, args.max_samples)
+    loader.dataset.records = selected
+    with open(args.output_dir / "selected_samples.yaml", "w") as file:
+        yaml.safe_dump(selection_details, file, sort_keys=False)
 
-    records = {record["sample_id"]: record for record in loader.dataset.records}
+    records = {record["sample_id"]: record for record in selected}
     object_ids = {sample_id: record["object_id"] for sample_id, record in records.items()}
     sample_ids = list(records)
+    print(f"selected {len(selected)} views from {len(set(object_ids.values()))} objects", flush=True)
 
-    pipeline = build_stage1_pipeline(args.pipeline_config, args.device)
-    config = OmegaConf.load(args.pipeline_config)
-    decoder = pipeline.init_ss_decoder(config.ss_decoder_config_path, config.ss_decoder_ckpt_path)
-    dtype = config.get("shape_model_dtype") or config.get("dtype", "float16")
-    pipeline.shape_model_dtype = pipeline._get_dtype(dtype)
-    pipeline.override_ss_generator_cfg_config(
-        pipeline.ss_generator,
-        cfg_strength=config.get("ss_cfg_strength", 7),
-        inference_steps=args.inference_steps,
-        rescale_t=config.get("ss_rescale_t", 3),
-        cfg_interval=config.get("ss_cfg_interval", [0, 500]),
-        cfg_strength_pm=config.get("ss_cfg_strength_pm", 0.0),
-    )
+    pipeline, pipeline_config = build_pipeline(args.pipeline_config, args.device)
     pipeline.ss_generator.no_shortcut = True
-    pipeline.ss_generator.eval()
-    decoder.eval()
-
     cross_attention_kv = [block.cross_attn["shape"].to_kv for block in pipeline.backbone.blocks]
     official_kv = [
         {key: value.detach().cpu().clone() for key, value in module.state_dict().items()}
@@ -273,14 +760,20 @@ def main():
 
     touch_cache = make_touch_cache(loader, pipeline, args.device)
     donor_ids = shuffled_ids(sample_ids, object_ids, args.seed + 1)
+    target_cache = {}
+    for index, record in enumerate(selected):
+        target_cache[record["object_id"]] = load_target_mesh(
+            record, loader.dataset, args.output_dir,
+            args.surface_points, args.icp_points, args.save_points, args.seed + index,
+        )
+
     rows = []
     primary_conditions = ["official"]
     diagnostic_conditions = []
-
     restore_official_kv(cross_attention_kv, official_kv)
     rows += evaluate_condition(
-        "official", pipeline, decoder, None, loader, touch_cache, donor_ids,
-        records, args
+        "official", pipeline, None, loader, touch_cache, donor_ids,
+        records, target_cache, args,
     )
 
     touch_runs = []
@@ -289,8 +782,8 @@ def main():
         name = safe_name(run_dir.name)
         encoder = load_run(run_dir, pipeline, cross_attention_kv, official_kv, args.device)
         rows += evaluate_condition(
-            name, pipeline, decoder, encoder, loader, touch_cache, donor_ids,
-            records, args
+            name, pipeline, encoder, loader, touch_cache, donor_ids,
+            records, target_cache, args,
         )
         primary_conditions.append(name)
         if encoder is None:
@@ -299,7 +792,7 @@ def main():
             touch_runs.append((name, run_dir))
 
     means = {
-        name: np.mean([row["iou"] for row in rows if row["condition"] == name])
+        name: np.nanmean([row["fscore_0.01"] for row in rows if row["condition"] == name])
         for name, _ in touch_runs
     }
     best_touch = max(means, key=means.get) if means else None
@@ -310,32 +803,44 @@ def main():
         for mode in modes:
             name = f"{best_touch}_{mode}"
             rows += evaluate_condition(
-                name, pipeline, decoder, encoder, loader, touch_cache,
-                donor_ids, records, args, mode=mode
+                name, pipeline, encoder, loader, touch_cache, donor_ids,
+                records, target_cache, args, mode=mode,
             )
             diagnostic_conditions.append(name)
 
-    fieldnames = list(rows[0])
     with open(args.output_dir / "metrics.csv", "w", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer = csv.DictWriter(file, fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
 
-    summary = summarize(
-        rows, primary_conditions, diagnostic_conditions, no_touch, best_touch
-    )
+    summary = summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_touch)
     with open(args.output_dir / "summary.yaml", "w") as file:
         yaml.safe_dump(summary, file, sort_keys=False)
     with open(args.output_dir / "config.yaml", "w") as file:
         yaml.safe_dump({
-            "run_dirs": [str(path) for path in args.run_dirs],
-            "pipeline_config": str(args.pipeline_config),
-            "data_config": str(args.data_config),
-            "split": args.split,
-            "samples": len(loader.dataset),
-            "batch_size": args.batch_size,
-            "inference_steps": args.inference_steps,
-            "seed": args.seed,
+            "arguments": {
+                key: [str(path) for path in value] if key == "run_dirs" else str(value) if isinstance(value, Path) else value
+                for key, value in vars(args).items()
+            },
+            "selected_objects": len(selected),
+            "selection": {
+                "one_view_per_object": True,
+                "view_score": "hidden_fraction + unique_fraction + 0.25 * valid_fraction + 0.25 * contact_spread",
+                "subset_greedy_score": "0.85 * normalized_view_score + 0.15 * camera_direction_diversity",
+            },
+            "mesh_protocol": {
+                "normalization": "each mesh independently centered and longest bounding-box extent scaled to 2",
+                "alignment": "PCA 24-orientation similarity initialization; best four refined by point-to-point ICP",
+                "icp_threshold": 0.2,
+                "icp_iterations": 50,
+                "fscore_threshold": 0.01,
+                "voxel_resolution": 64,
+                "chamfer": "symmetric mean Euclidean nearest-neighbor distance",
+                "emd": "entropic Sinkhorn approximation of Wasserstein-2; epsilon 0.01; 100 iterations",
+                "normal_consistency": "symmetric mean absolute nearest-neighbor normal dot product",
+            },
+            "pipeline_config": OmegaConf.to_container(pipeline_config, resolve=True),
+            "data_config": data_config,
         }, file, sort_keys=False)
     print(f"saved evaluation to {args.output_dir}")
 

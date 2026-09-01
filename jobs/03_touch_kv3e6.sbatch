@@ -23,5 +23,7 @@ export PYTHONUNBUFFERED=1
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
-  --epochs 10 \
+  --epochs 20 \
+  --resume outputs/s1_touch_kv3e-6_gbs16_s29/last.pt \
+  --wandb-id nl8lqa5q \
   --cross-attention-learning-rate 3e-6

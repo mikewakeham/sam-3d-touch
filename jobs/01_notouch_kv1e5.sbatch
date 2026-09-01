@@ -23,5 +23,7 @@ export PYTHONUNBUFFERED=1
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
-  --epochs 10 \
+  --epochs 20 \
+  --resume outputs/s1_notouch_kv1e-5_gbs16_s29/last.pt \
+  --wandb-id r7hd80ag \
   --no-touch

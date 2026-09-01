@@ -77,6 +77,7 @@ def parse_args():
     parser.add_argument("--pipeline-config", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/touch_stage1"))
     parser.add_argument("--resume", type=Path)
+    parser.add_argument("--wandb-id")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--workers", type=int, default=4)
@@ -109,7 +110,7 @@ def setup_distributed(args):
 def save_run_config(path, args, data_config, world_size):
     from omegaconf import OmegaConf
 
-    if path.exists():
+    if path.exists() and not args.resume:
         return
 
     arguments = {
@@ -322,8 +323,10 @@ def main():
         run_config["global_batch_size"] = args.batch_size * world_size
         run = wandb.init(
             project="sam-3d-touch", name=args.output_dir.name,
-            dir=str(args.output_dir), config=run_config
+            dir=str(args.output_dir), config=run_config,
+            id=args.wandb_id, resume="must" if args.wandb_id else None
         )
+        run.config.update(run_config, allow_val_change=True)
         run.define_metric("global_step")
         run.define_metric("*", step_metric="global_step")
         print(f"train samples: {len(loader.dataset)}")
