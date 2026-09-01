@@ -1,5 +1,6 @@
 import argparse
 import csv
+import hashlib
 import itertools
 import os
 import random
@@ -16,6 +17,7 @@ import trimesh
 import yaml
 from omegaconf import OmegaConf
 from scipy.spatial import cKDTree
+from tqdm.auto import tqdm
 
 from dataloader import build_dataloader, load_data_config
 from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
@@ -34,6 +36,7 @@ def parse_args():
     parser.add_argument("--data-config", type=Path, default=Path("configs/data1.yaml"))
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/evaluation"))
     parser.add_argument("--split", default="val")
+    parser.add_argument("--selection", choices=["random", "hidden"], default="random")
     parser.add_argument("--max-samples", type=int, default=50)
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--workers", type=int, default=0)
@@ -54,29 +57,72 @@ def safe_name(value):
     return re.sub(r"[^A-Za-z0-9_.-]+", "_", value)
 
 
-def select_records(dataset, max_samples, seed):
+def stable_seed(seed, value):
+    digest = hashlib.sha256(f"{seed}:{value}".encode()).digest()
+    return int.from_bytes(digest[:8], "little") % (2**63 - 1_000_001)
+
+
+def selected_touch_indices(data, contact, radius, points_per_contact):
+    start, end = data["offsets"][contact:contact + 2]
+    point_ids = data["point_ids"][start:end]
+    center = np.flatnonzero(point_ids == data["center_point_ids"][contact])[0]
+    eligible = np.flatnonzero(data["geodesic_distance"][start:end] <= radius)
+    others = eligible[eligible != center]
+    priorities = data["keep_priority"][start + others]
+    others = others[np.argsort(priorities)[:points_per_contact - 1]]
+    return start + np.concatenate(([center], others))
+
+
+def hidden_fraction(record, dataset, data_config):
+    touch = data_config["touch"]
+    count = touch["contacts"]["count"]
+    radius = touch["neighborhood"]["max_geodesic_distance"]
+    points_per_contact = touch["point_sampling"]["points_per_contact"]
+    with np.load(dataset.path(record["touch_path"]), allow_pickle=False) as data:
+        count = min(count, len(data["offsets"]) - 1)
+        indices = [
+            selected_touch_indices(data, contact, radius, points_per_contact)
+            for contact in range(count)
+        ]
+        visibility = data["point_visibility"][np.concatenate(indices)]
+    return float(np.mean(visibility == 0))
+
+
+def select_records(dataset, data_config, max_samples, seed, selection):
     records_by_object = {}
     for record in dataset.records:
         records_by_object.setdefault(record["object_id"], []).append(record)
 
     rng = random.Random(seed)
     object_ids = sorted(records_by_object)
-    if max_samples and max_samples < len(object_ids):
-        object_ids = sorted(rng.sample(object_ids, max_samples))
+    rng.shuffle(object_ids)
+    if max_samples:
+        object_ids = object_ids[:max_samples]
+    object_ids.sort()
 
     selected = []
-    for object_id in object_ids:
+    details = []
+    iterator = (
+        tqdm(object_ids, desc="choosing most-hidden views", unit="object")
+        if selection == "hidden" else object_ids
+    )
+    for object_id in iterator:
         views = sorted(records_by_object[object_id], key=lambda record: record["sample_id"])
-        selected.append(rng.choice(views))
-
-    details = [
-        {
+        if selection == "random":
+            record = random.Random(stable_seed(seed, object_id)).choice(views)
+            score = None
+        else:
+            scores = [(hidden_fraction(view, dataset, data_config), view) for view in views]
+            score, record = max(scores, key=lambda item: item[0])
+        selected.append(record)
+        item = {
             "sample_id": record["sample_id"],
             "object_id": record["object_id"],
             "view_id": record["view_id"],
         }
-        for record in selected
-    ]
+        if score is not None:
+            item["hidden_fraction"] = score
+        details.append(item)
     return selected, details
 
 
@@ -447,17 +493,44 @@ def relative(path, root):
     return str(path.relative_to(root))
 
 
+def load_metrics(path):
+    if not path.exists():
+        return []
+    with open(path, newline="") as file:
+        return list(csv.DictReader(file))
+
+
+def append_metric(path, row):
+    write_header = not path.exists() or path.stat().st_size == 0
+    with open(path, "a", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=list(row))
+        if write_header:
+            writer.writeheader()
+        writer.writerow(row)
+
+
 def evaluate_condition(name, pipeline, encoder, loader, touch_cache, donor_ids,
-                       records, target_cache, args, mode="correct"):
+                       records, target_cache, completed, args, mode="correct"):
     rows = []
     voxel_dir = args.output_dir / "voxels" / safe_name(name)
     voxel_dir.mkdir(parents=True, exist_ok=True)
     dtype = pipeline.shape_model_dtype
-    print(f"evaluating {name} ({mode}): {len(loader.dataset)} samples", flush=True)
+    remaining = sum(
+        (name, record["sample_id"]) not in completed for record in loader.dataset.records
+    )
+    print(
+        f"evaluating {name} ({mode}): {remaining} new, "
+        f"{len(loader.dataset) - remaining} already complete",
+        flush=True,
+    )
 
     with torch.inference_mode():
-        for batch_index, batch in enumerate(loader):
+        progress = 0
+        for batch in loader:
             sample_id = batch["sample_id"][0]
+            key = (name, sample_id)
+            if key in completed:
+                continue
             record = records[sample_id]
             touch_xyz = None
             if encoder is not None and mode != "omitted":
@@ -465,7 +538,7 @@ def evaluate_condition(name, pipeline, encoder, loader, touch_cache, donor_ids,
                 touch_xyz = touch_cache[touch_id][0][None].to(args.device)
                 touch_mask = touch_cache[touch_id][1][None].to(args.device)
 
-            seed = args.seed + batch_index
+            seed = stable_seed(args.seed, sample_id)
             voxel_path = voxel_dir / f"{safe_name(sample_id)}.npz"
             try:
                 stage1_inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
@@ -595,7 +668,11 @@ def evaluate_condition(name, pipeline, encoder, loader, touch_cache, donor_ids,
                 }
                 print(f"{name}: {sample_id} failed: {row['error']}", flush=True)
             rows.append(row)
-            print(f"{name}: {batch_index + 1}/{len(loader.dataset)}", flush=True)
+            append_metric(args.output_dir / "metrics.csv", row)
+            if not row["error"]:
+                completed.add(key)
+            progress += 1
+            print(f"{name}: {progress}/{remaining} new samples", flush=True)
     return rows
 
 
@@ -670,25 +747,34 @@ def main():
     data_config["dataset"]["split"] = args.split
     data_config["touch"]["contacts"]["shuffle_after_selection"] = False
     loader = build_dataloader(data_config, 1, args.workers, shuffle=False)
+    selection_path = args.output_dir / "selected_samples.yaml"
+    previous_samples = set()
+    if selection_path.exists():
+        with open(selection_path) as file:
+            previous_samples = {
+                item["sample_id"] for item in (yaml.safe_load(file) or [])
+            }
     available_objects = len({record["object_id"] for record in loader.dataset.records})
-    selected_objects = min(args.max_samples, available_objects) if args.max_samples else available_objects
+    selected_objects = (
+        min(args.max_samples, available_objects) if args.max_samples else available_objects
+    )
+    view_selection = "one random view" if args.selection == "random" else "the most-hidden view"
     print(
-        f"uniformly selecting {selected_objects} of {available_objects} objects "
-        f"and one view per object with seed {args.selection_seed}",
-        flush=True,
+        f"uniformly selecting {selected_objects} of {available_objects} objects and "
+        f"{view_selection} per object with seed {args.selection_seed}", flush=True,
     )
     selected, selection_details = select_records(
-        loader.dataset, args.max_samples, args.selection_seed
+        loader.dataset, data_config, args.max_samples, args.selection_seed, args.selection
     )
     loader.dataset.records = selected
     views_dir = args.output_dir / "selected_views"
     views_dir.mkdir(parents=True, exist_ok=True)
-    for index, (record, details) in enumerate(zip(selected, selection_details), 1):
+    for record, details in zip(selected, selection_details):
         source = loader.dataset.path(record["image_path"])
-        destination = views_dir / f"{index:03d}_{safe_name(record['sample_id'])}{source.suffix}"
+        destination = views_dir / f"{safe_name(record['sample_id'])}{source.suffix}"
         shutil.copy2(source, destination)
         details["image_path"] = str(destination.relative_to(args.output_dir))
-    with open(args.output_dir / "selected_samples.yaml", "w") as file:
+    with open(selection_path, "w") as file:
         yaml.safe_dump(selection_details, file, sort_keys=False)
 
     records = {record["sample_id"]: record for record in selected}
@@ -696,11 +782,28 @@ def main():
     sample_ids = list(records)
     print(f"selected {len(selected)} views from {len(set(object_ids.values()))} objects", flush=True)
     for index, item in enumerate(selection_details, 1):
+        hidden = f" hidden {item['hidden_fraction']:.4f}" if "hidden_fraction" in item else ""
         print(
             f"selected {index}/{len(selection_details)}: {item['sample_id']} "
-            f"object {item['object_id']} view {item['view_id']}",
+            f"object {item['object_id']} view {item['view_id']}{hidden}",
             flush=True,
         )
+
+    metrics_path = args.output_dir / "metrics.csv"
+    rows_by_key = {}
+    for row in load_metrics(metrics_path):
+        rows_by_key[(row["condition"], row["sample_id"])] = row
+    completed = {key for key, row in rows_by_key.items() if not row["error"]}
+    selection_changed = bool(previous_samples and previous_samples != set(sample_ids))
+    if selection_changed:
+        completed = {
+            key for key in completed
+            if not key[0].endswith(("_shuffled", "_omitted"))
+        }
+    if rows_by_key:
+        print(f"resume: found {len(completed)} completed evaluations", flush=True)
+    if selection_changed:
+        print("resume: sample set changed; diagnostic conditions will be refreshed", flush=True)
 
     print("loading Stage-1 and Stage-2 evaluation pipeline", flush=True)
     pipeline, pipeline_config = build_pipeline(args.pipeline_config, args.device)
@@ -721,36 +824,44 @@ def main():
         print(f"preparing target meshes: {index + 1}/{len(selected)}", flush=True)
         target_cache[record["object_id"]] = load_target_mesh(
             record, loader.dataset, args.output_dir,
-            args.surface_points, args.icp_points, args.save_points, args.seed + index,
+            args.surface_points, args.icp_points, args.save_points,
+            stable_seed(args.seed, f"target:{record['object_id']}"),
         )
     print("target meshes ready", flush=True)
 
-    rows = []
     primary_conditions = ["official"]
     diagnostic_conditions = []
     restore_official_kv(cross_attention_kv, official_kv)
-    rows += evaluate_condition(
+    new_rows = evaluate_condition(
         "official", pipeline, None, loader, touch_cache, donor_ids,
-        records, target_cache, args,
+        records, target_cache, completed, args,
     )
+    for row in new_rows:
+        rows_by_key[(row["condition"], row["sample_id"])] = row
 
     touch_runs = []
     no_touch = None
     for run_dir in args.run_dirs:
         name = safe_name(run_dir.name)
         encoder = load_run(run_dir, pipeline, cross_attention_kv, official_kv, args.device)
-        rows += evaluate_condition(
+        new_rows = evaluate_condition(
             name, pipeline, encoder, loader, touch_cache, donor_ids,
-            records, target_cache, args,
+            records, target_cache, completed, args,
         )
+        for row in new_rows:
+            rows_by_key[(row["condition"], row["sample_id"])] = row
         primary_conditions.append(name)
         if encoder is None:
             no_touch = name
         else:
             touch_runs.append((name, run_dir))
 
+    rows = list(rows_by_key.values())
     means = {
-        name: np.nanmean([row["fscore_0.01"] for row in rows if row["condition"] == name])
+        name: np.nanmean([
+            float(row["fscore_0.01"]) for row in rows
+            if row["condition"] == name and row["sample_id"] in sample_ids
+        ])
         for name, _ in touch_runs
     }
     best_touch = max(means, key=means.get) if means else None
@@ -760,18 +871,28 @@ def main():
         modes = ["omitted"] if donor_ids is None else ["shuffled", "omitted"]
         for mode in modes:
             name = f"{best_touch}_{mode}"
-            rows += evaluate_condition(
+            new_rows = evaluate_condition(
                 name, pipeline, encoder, loader, touch_cache, donor_ids,
-                records, target_cache, args, mode=mode,
+                records, target_cache, completed, args, mode=mode,
             )
+            for row in new_rows:
+                rows_by_key[(row["condition"], row["sample_id"])] = row
             diagnostic_conditions.append(name)
 
-    with open(args.output_dir / "metrics.csv", "w", newline="") as file:
+    rows = list(rows_by_key.values())
+    with open(metrics_path, "w", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=list(rows[0]))
         writer.writeheader()
         writer.writerows(rows)
 
-    summary = summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_touch)
+    active_conditions = set(primary_conditions + diagnostic_conditions)
+    summary_rows = [
+        row for row in rows
+        if row["condition"] in active_conditions and row["sample_id"] in sample_ids
+    ]
+    summary = summarize(
+        summary_rows, primary_conditions, diagnostic_conditions, no_touch, best_touch
+    )
     with open(args.output_dir / "summary.yaml", "w") as file:
         yaml.safe_dump(summary, file, sort_keys=False)
     with open(args.output_dir / "config.yaml", "w") as file:
@@ -783,7 +904,11 @@ def main():
             "selected_objects": len(selected),
             "selection": {
                 "one_view_per_object": True,
-                "method": "uniform objects without replacement, then one uniform view per object",
+                "mode": args.selection,
+                "method": "uniform objects without replacement, then " + (
+                    "one uniform view per object" if args.selection == "random"
+                    else "the view with the largest hidden fraction per object"
+                ),
                 "seed": args.selection_seed,
             },
             "mesh_protocol": {
