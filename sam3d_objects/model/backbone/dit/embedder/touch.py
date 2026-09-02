@@ -28,7 +28,7 @@ VECSETX_ENCODE_PARAMETER_PREFIXES = (
 )
 
 class TouchEncoder(nn.Module):
-    def __init__(self, encoder_name="vecsetx", trainable=False):
+    def __init__(self, encoder_name="vecsetx", output_dim=1024, trainable=False):
         super().__init__()
 
         if encoder_name not in ENCODERS:
@@ -37,6 +37,7 @@ class TouchEncoder(nn.Module):
         config = ENCODERS[encoder_name]
 
         self.encoder_name = encoder_name
+        self.output_dim = output_dim
         self.encoder = config["constructor"]()
         self.num_points = getattr(self.encoder, "num_inputs", None)
 
@@ -44,6 +45,9 @@ class TouchEncoder(nn.Module):
         checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
         state_dict = checkpoint.get("model", checkpoint)
         self.encoder.load_state_dict(state_dict, strict=True)
+
+        latent_dim = self.encoder.bottleneck.pre_bottleneck_proj.out_features
+        self.output_projection = nn.Linear(latent_dim, output_dim)
 
         self.set_trainable(trainable)
 
@@ -70,53 +74,40 @@ class TouchEncoder(nn.Module):
             "trainable": self.encoder_trainable,
         }
 
-    def forward(self, points):
+    def forward(self, points, point_mask=None):
         if points.ndim != 3 or points.shape[-1] != 3:
             raise ValueError(f"Expected points shaped [B, N, 3], got {tuple(points.shape)}")
 
-        points, point_mask = self.prepare_points(points)
+        points, point_mask = self.prepare_points(points, point_mask)
         return self.encoder.encode(points, point_mask)["x"]
 
-    def prepare_points(self, points):
-        batch_size, current_count, _ = points.shape
+    def prepare_points(self, points, point_mask=None):
+        batch_size, point_count, _ = points.shape
 
-        point_mask = torch.ones(
-            batch_size,
-            current_count,
-            dtype=torch.bool,
-            device=points.device,
-        )
+        if point_mask is None:
+            point_mask = torch.ones(batch_size, point_count, dtype=torch.bool, device=points.device)
+        else:
+            if point_mask.shape != points.shape[:2]:
+                raise ValueError("Point mask shape does not match points")
 
-        if self.num_points is None:
+            point_mask = point_mask.to(device=points.device,dtype=torch.bool)
+
+        if (point_mask[:, 1:] & ~point_mask[:, :-1]).any():
+            raise ValueError("point_mask must be packed to the front")
+
+        lengths = point_mask.sum(dim=1)
+
+        if (lengths == 0).any():
+            raise ValueError("Point cloud contains no valid points")
+
+        if self.num_points is None or point_count == self.num_points:
             return points, point_mask
 
-        if current_count > self.num_points:
-            points, _ = sample_farthest_points(
-                points,
-                K=self.num_points,
-                random_start_point=False,
-            )
+        points, indices = sample_farthest_points(
+            points,
+            lengths=lengths,
+            K=self.num_points,
+            random_start_point=False,
+        )
 
-            point_mask = torch.ones(
-                batch_size,
-                self.num_points,
-                dtype=torch.bool,
-                device=points.device,
-            )
-
-        elif current_count < self.num_points:
-            padding = self.num_points - current_count
-
-            points = F.pad(
-                points,
-                (0, 0, 0, padding),
-                value=0,
-            )
-
-            point_mask = F.pad(
-                point_mask,
-                (0, padding),
-                value=False,
-            )
-
-        return points, point_mask
+        return points, indices >= 0
