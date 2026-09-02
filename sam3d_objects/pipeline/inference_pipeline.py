@@ -603,7 +603,7 @@ class InferencePipeline:
         Returns:
             dict: The decoded structured latent.
         """
-        logger.info("Decoding sparse latent...")
+        # logger.info("Decoding sparse latent...")
         ret = {}
         with torch.no_grad():
             if "mesh" in formats:
@@ -741,13 +741,13 @@ class InferencePipeline:
             slat_generator.no_shortcut = True
             slat_generator.reverse_fn.strength = self.slat_cfg_strength
 
-        logger.info(
-            "Sampling sparse latent: inference_steps={}, strength={}, interval={}, rescale_t={}",
-            slat_generator.inference_steps,
-            slat_generator.reverse_fn.strength,
-            slat_generator.reverse_fn.interval,
-            slat_generator.rescale_t,
-        )
+        # logger.info(
+        #     "Sampling sparse latent: inference_steps={}, strength={}, interval={}, rescale_t={}",
+        #     slat_generator.inference_steps,
+        #     slat_generator.reverse_fn.strength,
+        #     slat_generator.reverse_fn.interval,
+        #     slat_generator.rescale_t,
+        # )
 
         with torch.autocast(device_type="cuda", dtype=self.dtype):
             with torch.no_grad():
