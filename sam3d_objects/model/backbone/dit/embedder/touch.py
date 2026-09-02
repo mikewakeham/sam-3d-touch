@@ -1,12 +1,12 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from pytorch3d.ops import sample_farthest_points
 
 from huggingface_hub import hf_hub_download
 
 from .vecsetx import autoencoder as vecsetx
+from sam3d_objects.model.layers.llama3.ff import FeedForward
 
 ENCODERS = {
     "vecsetx": {
@@ -47,7 +47,17 @@ class TouchEncoder(nn.Module):
         self.encoder.load_state_dict(state_dict, strict=True)
 
         latent_dim = self.encoder.bottleneck.pre_bottleneck_proj.out_features
-        self.output_projection = nn.Linear(latent_dim, output_dim)
+        self.output_projection = nn.Sequential(
+            nn.LayerNorm(latent_dim),
+            FeedForward(
+                dim=latent_dim,
+                hidden_dim=4 * output_dim,
+                output_dim=output_dim,
+            ),
+        )
+
+        self.touch_embedding = nn.Parameter(torch.empty(1, 1, output_dim))
+        nn.init.normal_(self.touch_embedding, mean=0.0, std=1.0 / output_dim**0.5)
 
         self.set_trainable(trainable)
 
@@ -71,6 +81,7 @@ class TouchEncoder(nn.Module):
     def get_config(self):
         return {
             "encoder_name": self.encoder_name,
+            "output_dim": self.output_dim,
             "trainable": self.encoder_trainable,
         }
 
@@ -79,7 +90,9 @@ class TouchEncoder(nn.Module):
             raise ValueError(f"Expected points shaped [B, N, 3], got {tuple(points.shape)}")
 
         points, point_mask = self.prepare_points(points, point_mask)
-        return self.encoder.encode(points, point_mask)["x"]
+        tokens = self.encoder.encode(points, point_mask)["x"]
+        tokens = self.output_projection(tokens)
+        return tokens + self.touch_embedding
 
     def prepare_points(self, points, point_mask=None):
         batch_size, point_count, _ = points.shape
