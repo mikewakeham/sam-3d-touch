@@ -1,5 +1,8 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
+
+from pytorch3d.ops import sample_farthest_points
 
 from huggingface_hub import hf_hub_download
 
@@ -35,6 +38,7 @@ class TouchEncoder(nn.Module):
 
         self.encoder_name = encoder_name
         self.encoder = config["constructor"]()
+        self.num_points = getattr(self.encoder, "num_inputs", None)
 
         checkpoint_path = hf_hub_download(repo_id=config["repo_id"], filename=config["filename"])
         checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
@@ -70,4 +74,49 @@ class TouchEncoder(nn.Module):
         if points.ndim != 3 or points.shape[-1] != 3:
             raise ValueError(f"Expected points shaped [B, N, 3], got {tuple(points.shape)}")
 
-        return self.encoder.encode(points)["x"]
+        points, point_mask = self.prepare_points(points)
+        return self.encoder.encode(points, point_mask)["x"]
+
+    def prepare_points(self, points):
+        batch_size, current_count, _ = points.shape
+
+        point_mask = torch.ones(
+            batch_size,
+            current_count,
+            dtype=torch.bool,
+            device=points.device,
+        )
+
+        if self.num_points is None:
+            return points, point_mask
+
+        if current_count > self.num_points:
+            points, _ = sample_farthest_points(
+                points,
+                K=self.num_points,
+                random_start_point=False,
+            )
+
+            point_mask = torch.ones(
+                batch_size,
+                self.num_points,
+                dtype=torch.bool,
+                device=points.device,
+            )
+
+        elif current_count < self.num_points:
+            padding = self.num_points - current_count
+
+            points = F.pad(
+                points,
+                (0, 0, 0, padding),
+                value=0,
+            )
+
+            point_mask = F.pad(
+                point_mask,
+                (0, padding),
+                value=False,
+            )
+
+        return points, point_mask

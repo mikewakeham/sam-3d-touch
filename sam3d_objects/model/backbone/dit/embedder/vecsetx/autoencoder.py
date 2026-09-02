@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 
 from einops import rearrange, repeat
+from pytorch3d.ops import sample_farthest_points
 
 import math
 
@@ -71,7 +72,7 @@ class VecSetAutoEncoder(nn.Module):
         self.bottleneck = bottleneck(**bottleneck_args)
 
 
-    def encode(self, pc):
+    def encode(self, pc, point_mask=None):
         B, N, _ = pc.shape
         assert N == self.num_inputs
         
@@ -85,7 +86,7 @@ class VecSetAutoEncoder(nn.Module):
 
         cross_attn, cross_ff = self.cross_attend_blocks
 
-        x = cross_attn(x, context = pc_embeddings, mask = None) + x
+        x = cross_attn(x, context=pc_embeddings, mask=point_mask) + x
         x = cross_ff(x) + x
 
         bottleneck = self.bottleneck.pre(x)

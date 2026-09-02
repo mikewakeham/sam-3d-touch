@@ -5,6 +5,7 @@ import numpy as np
 import torch
 from torch import nn, einsum
 import torch.nn.functional as F
+from pytorch3d.ops import sample_farthest_points
 
 from einops import rearrange, repeat
 
@@ -67,9 +68,23 @@ class Attention(nn.Module):
         q = rearrange(q, 'b n (h d) -> b n h d', h = h)
         kv = rearrange(kv, 'b n (p h d) -> b n p h d', h = h, p=2)
 
-        out = flash_attn_kvpacked_func(q.bfloat16(), kv.bfloat16(), window_size=(window_size, window_size))
-        out = out.to(x.dtype)
+        if mask is None:
+            out = flash_attn_kvpacked_func(q.bfloat16(), kv.bfloat16(), window_size=(window_size, window_size))
+        else:
+            if mask.shape != context.shape[:2]:
+                raise ValueError(f"Expected mask shaped {tuple(context.shape[:2])}, got {tuple(mask.shape)}")
 
+            q = rearrange(q.bfloat16(), "b n h d -> b h n d")
+            k, v = kv.bfloat16().unbind(dim=2)
+            k = rearrange(k, "b n h d -> b h n d")
+            v = rearrange(v, "b n h d -> b h n d")
+            
+            attention_mask = mask.to(device=q.device, dtype=torch.bool)[:, None, None, :]
+
+            out = F.scaled_dot_product_attention(q, k, v, attn_mask=attention_mask)
+            out = rearrange(out, "b h n d -> b n h d")
+
+        out = out.to(x.dtype)
         return self.to_out(rearrange(out, 'b n h d -> b n (h d)'))
         
 class PointEmbed(nn.Module):
