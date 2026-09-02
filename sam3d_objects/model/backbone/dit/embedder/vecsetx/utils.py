@@ -70,7 +70,7 @@ class Attention(nn.Module):
 
         if mask is None:
             out = flash_attn_kvpacked_func(q.bfloat16(), kv.bfloat16(), window_size=(window_size, window_size))
-        else:
+        else: # doesn't have flash_attn added yet, can add later?
             if mask.shape != context.shape[:2]:
                 raise ValueError(f"Expected mask shaped {tuple(context.shape[:2])}, got {tuple(mask.shape)}")
 

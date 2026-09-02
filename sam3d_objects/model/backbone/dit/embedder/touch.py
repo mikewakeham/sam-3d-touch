@@ -3,8 +3,6 @@ import torch.nn as nn
 
 from pytorch3d.ops import sample_farthest_points
 
-from huggingface_hub import hf_hub_download
-
 from .vecsetx import autoencoder as vecsetx
 from sam3d_objects.model.layers.llama3.ff import FeedForward
 
@@ -40,8 +38,8 @@ class TouchEncoder(nn.Module):
         self.output_dim = output_dim
         self.encoder = config["constructor"]()
         self.num_points = getattr(self.encoder, "num_inputs", None)
-
-        checkpoint_path = hf_hub_download(repo_id=config["repo_id"], filename=config["filename"])
+g
+        checkpoint_path = "/n/home12/mwakeham/.cache/huggingface/hub/models--Zbalpha--VecSetX/snapshots/5fb84917189d2bee8392404f833f42ca5c067e0b/learnable_vec1024x32_dim1024_depth24_sdf_nb/checkpoint-125.pth"
         checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
         state_dict = checkpoint.get("model", checkpoint)
         self.encoder.load_state_dict(state_dict, strict=True)
