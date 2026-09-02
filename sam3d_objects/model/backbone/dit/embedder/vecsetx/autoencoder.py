@@ -3,8 +3,6 @@
 import torch
 import torch.nn as nn
 
-from torch_cluster import fps
-
 from einops import rearrange, repeat
 
 import math

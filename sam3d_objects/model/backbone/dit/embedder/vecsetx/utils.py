@@ -8,8 +8,6 @@ import torch.nn.functional as F
 
 from einops import rearrange, repeat
 
-from torch_cluster import fps
-
 import math
 
 from flash_attn import flash_attn_kvpacked_func
@@ -180,25 +178,38 @@ class DiagonalGaussianDistribution(object):
         return self.mean
     
 
-def subsample(pc, N, M):
-    # pc: B x N x 3
-    B, N0, D = pc.shape
-    assert N == N0
+# def subsample(pc, N, M):
+#     # pc: B x N x 3
+#     B, N0, D = pc.shape
+#     assert N == N0
     
-    ###### fps
-    flattened = pc.view(B*N, D)
+#     ###### fps
+#     flattened = pc.view(B*N, D)
 
-    batch = torch.arange(B).to(pc.device)
-    batch = torch.repeat_interleave(batch, N)
+#     batch = torch.arange(B).to(pc.device)
+#     batch = torch.repeat_interleave(batch, N)
 
-    pos = flattened
+#     pos = flattened
 
-    ratio = 1.0 * M / N
+#     ratio = 1.0 * M / N
 
-    idx = fps(pos, batch, ratio=ratio)
+#     idx = fps(pos, batch, ratio=ratio)
 
-    sampled_pc = pos[idx]
-    sampled_pc = sampled_pc.view(B, -1, 3)
-    ######
+#     sampled_pc = pos[idx]
+#     sampled_pc = sampled_pc.view(B, -1, 3)
+#     ######
+
+#     return sampled_pc
+
+def subsample(pc, N, M):
+    batch_size, point_count, dimensions = pc.shape
+    assert point_count == N
+    assert dimensions == 3
+
+    sampled_pc, _ = sample_farthest_points(
+        pc,
+        K=M,
+        random_start_point=True,
+    )
 
     return sampled_pc

@@ -1,12 +1,18 @@
 import torch
 import torch.nn as nn
 
+from huggingface_hub import hf_hub_download
+
 from .vecsetx import autoencoder as vecsetx
 
 ENCODERS = {
     "vecsetx": {
         "constructor": vecsetx.learnable_vec1024x32_dim1024_depth24_nb,
-        "checkpoint": "/path/to/learnable_vec1024x32_dim1024_depth24_sdf_nb.pth",
+        "repo_id": "Zbalpha/VecSetX",
+        "filename": (
+            "learnable_vec1024x32_dim1024_depth24_sdf_nb/"
+            "checkpoint-125.pth"
+        ),
     },
 }
 
@@ -30,7 +36,8 @@ class TouchEncoder(nn.Module):
         self.encoder_name = encoder_name
         self.encoder = config["constructor"]()
 
-        checkpoint = torch.load(config["checkpoint"], map_location="cpu", weights_only=False)
+        checkpoint_path = hf_hub_download(repo_id=config["repo_id"], filename=config["filename"])
+        checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
         state_dict = checkpoint.get("model", checkpoint)
         self.encoder.load_state_dict(state_dict, strict=True)
 
