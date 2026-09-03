@@ -38,6 +38,9 @@ def parse_args():
     parser.add_argument("--data-config", type=Path, default=Path("configs/data1.yaml"))
     parser.add_argument("--split", default="val")
     parser.add_argument("--device", default="cuda")
+    parser.add_argument("--batch-size", type=int, default=4)
+    parser.add_argument("--workers", type=int, default=2)
+    parser.add_argument("--batches", type=int, default=25)
     parser.add_argument("--precision", choices=["bf16", "fp32"], default="bf16")
     return parser.parse_args()
 
@@ -109,7 +112,7 @@ def report_parameter_changes(model, checkpoint_state, reference_state):
             print(f"output_projection.{name}: {tensor_stats(parameter)}")
 
 
-def report_raw_coordinates(record, dataset):
+def report_raw_coordinates(record, dataset, verbose=True):
     # Same reconstruction and visibility test as sam-3d-touch-data/sample_touch.py.
     with np.load(
         dataset.resolve_path(record["touch_path"]), allow_pickle=False
@@ -155,33 +158,40 @@ def report_raw_coordinates(record, dataset):
 
     visible_error = np.abs(depth_difference[labels == 1])
     hidden_difference = depth_difference[labels == 0]
-    if not len(visible_error) or not len(hidden_difference):
-        raise ValueError("Raw coordinate check requires visible and hidden touch points")
-    visible_max = np.nanmax(visible_error)
-    hidden_min = np.nanmin(hidden_difference)
+    visible_median = np.nanmedian(visible_error) if len(visible_error) else np.nan
+    hidden_median = (
+        np.nanmedian(hidden_difference) if len(hidden_difference) else np.nan
+    )
+    visible_max = np.nanmax(visible_error) if len(visible_error) else np.nan
+    hidden_min = np.nanmin(hidden_difference) if len(hidden_difference) else np.nan
     pointmap_matches_depth = np.allclose(pointmap[..., 2], depth, equal_nan=True)
     passed = (
-        visible_max <= tolerance + 1e-6
-        and hidden_min > tolerance
+        (not len(visible_error) or visible_max <= tolerance + 1e-6)
+        and (not len(hidden_difference) or hidden_min > tolerance)
+        and (len(visible_error) + len(hidden_difference) > 0)
         and pointmap_matches_depth
     )
 
-    heading("Raw SAM/PyTorch3D camera coordinates")
-    print(f"status: {'PASS' if passed else 'FAIL'}")
-    print(f"visibility_tolerance: {tolerance:.6g}")
-    print(
-        f"visible_depth_error: median={np.nanmedian(visible_error):.6g} max={visible_max:.6g}"
-    )
-    print(
-        f"hidden_depth_difference: median={np.nanmedian(hidden_difference):.6g} min={hidden_min:.6g}"
-    )
-    print(f"pointmap_z_matches_depth: {pointmap_matches_depth}")
+    if verbose:
+        heading("Raw SAM/PyTorch3D camera coordinates")
+        print(f"status: {'PASS' if passed else 'FAIL'}")
+        print(f"visibility_tolerance: {tolerance:.6g}")
+        print(
+            f"visible_depth_error: median={visible_median:.6g} "
+            f"max={visible_max:.6g}"
+        )
+        print(
+            f"hidden_depth_difference: median={hidden_median:.6g} "
+            f"min={hidden_min:.6g}"
+        )
+        print(f"pointmap_z_matches_depth: {pointmap_matches_depth}")
+    return passed
 
 
-def report_canonical_coordinates(record, dataset, batch):
+def report_canonical_coordinates(record, dataset, batch, index=0, verbose=True):
     # The target builder voxelizes the normalized object inside [-0.5, 0.5]^3.
-    mask = batch["touch_mask"][0].numpy()
-    points = batch["touch_xyz"][0, mask].numpy()
+    mask = batch["touch_mask"][index].numpy()
+    points = batch["touch_xyz"][index, mask].numpy()
     with np.load(
         dataset.resolve_path(record["camera_path"]), allow_pickle=False
     ) as camera:
@@ -196,37 +206,43 @@ def report_canonical_coordinates(record, dataset, batch):
     inside_target_cube = np.abs(canonical).max() <= 0.501
     rotation_error = np.abs(rotation.T @ rotation - np.eye(3)).max()
 
-    heading("Canonical shape-target coordinates")
-    print(
-        f"status: {'PASS' if inside_target_cube and rotation_error < 1e-5 else 'FAIL'}"
-    )
-    print(f"bounds: min={minimum} max={maximum}")
-    print(f"bbox_center: {center}")
-    print(f"max_radius: {np.linalg.norm(canonical, axis=1).max():.6g}")
-    print(f"rotation_orthogonality_error: {rotation_error:.6g}")
+    passed = inside_target_cube and rotation_error < 1e-5
+    if verbose:
+        heading("Canonical shape-target coordinates")
+        print(f"status: {'PASS' if passed else 'FAIL'}")
+        print(f"bounds: min={minimum} max={maximum}")
+        print(f"bbox_center: {center}")
+        print(f"max_radius: {np.linalg.norm(canonical, axis=1).max():.6g}")
+        print(f"rotation_orthogonality_error: {rotation_error:.6g}")
     # TODO: Add an independent point-to-target-mesh distance once there is one
     # authoritative target-mesh loader shared by training and diagnostics.
+    return passed
 
 
-def report_vecsetx_coordinates(touch_encoder, points, point_mask):
+def report_vecsetx_coordinates(touch_encoder, points, point_mask, verbose=True):
     # Same bbox-center/max-radius normalization as VecSetX README and infer.py.
     points, point_mask = touch_encoder.prepare_points(points, point_mask)
-    points = points[0, point_mask[0]].detach().float()
-    minimum = points.min(dim=0).values
-    maximum = points.max(dim=0).values
-    center = (minimum + maximum) / 2
-    centered = points - center
-    radius = centered.norm(dim=1).max()
-    expected = centered / radius
-    error = (points - expected).square().mean().sqrt()
-    passed = center.norm().item() <= 1e-3 and abs(radius.item() - 1.0) <= 1e-3
+    passed_count = 0
+    for index in range(len(points)):
+        sample = points[index, point_mask[index]].detach().float()
+        minimum = sample.min(dim=0).values
+        maximum = sample.max(dim=0).values
+        center = (minimum + maximum) / 2
+        centered = sample - center
+        radius = centered.norm(dim=1).max()
+        expected = centered / radius
+        error = (sample - expected).square().mean().sqrt()
+        passed = center.norm().item() <= 1e-3 and abs(radius.item() - 1.0) <= 1e-3
+        passed_count += passed
 
-    heading("VecSetX pretraining-coordinate normalization")
-    print(f"status: {'PASS' if passed else 'FAIL'}")
-    print(f"bounds: min={minimum.cpu().numpy()} max={maximum.cpu().numpy()}")
-    print(f"bbox_center: {center.cpu().numpy()}")
-    print(f"max_radius_about_bbox_center: {radius.item():.6g}")
-    print(f"rms_difference_from_vecsetx_normalization: {error.item():.6g}")
+        if verbose and index == 0:
+            heading("VecSetX pretraining-coordinate normalization")
+            print(f"status: {'PASS' if passed else 'FAIL'}")
+            print(f"bounds: min={minimum.cpu().numpy()} max={maximum.cpu().numpy()}")
+            print(f"bbox_center: {center.cpu().numpy()}")
+            print(f"max_radius_about_bbox_center: {radius.item():.6g}")
+            print(f"rms_difference_from_vecsetx_normalization: {error.item():.6g}")
+    return passed_count
 
 
 def install_activation_hooks(model):
@@ -318,6 +334,15 @@ def report_gradients(model):
 
 def main():
     args = parse_args()
+    if args.batch_size < 1 or args.workers < 0 or args.batches < 1:
+        raise ValueError(
+            "batch size and batches must be positive; workers cannot be negative"
+        )
+    if int(os.environ.get("WORLD_SIZE", "1")) != 1:
+        raise ValueError(
+            "diagnostics.py is single-GPU; run it with python, not torchrun"
+        )
+
     device = torch.device(args.device)
     data_config = load_data_config(args.data_config)
     data_config["dataset"]["split"] = args.split
@@ -330,18 +355,15 @@ def main():
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
     loader = build_dataloader(
         data_config,
-        batch_size=1,
-        num_workers=0,
+        batch_size=args.batch_size,
+        num_workers=args.workers,
         shuffle=False,
         distributed=False,
         include_touch=True,
     )
-    batch = next(iter(loader))
-    record = next(
-        item
-        for item in loader.dataset.records
-        if item["sample_id"] == batch["sample_id"][0]
-    )
+    records = {record["sample_id"]: record for record in loader.dataset.records}
+    batches_to_run = min(args.batches, len(loader))
+    examples_to_run = min(args.batch_size * batches_to_run, len(loader.dataset))
 
     pipeline = build_stage1_pipeline(args.pipeline_config, device)
     touch_encoder = None
@@ -365,38 +387,79 @@ def main():
 
     heading("Run")
     print(f"checkpoint: {args.checkpoint}")
-    print(f"sample: {record['sample_id']}")
     print(f"mode: {checkpoint['mode']}")
     print(f"touch_config: {checkpoint['touch_config']}")
+    print(f"device: {device} (one process, one GPU)")
+    print(f"split: {args.split}")
+    print(f"precision: {args.precision}")
+    print(f"batch_size: {args.batch_size}")
+    print(f"workers: {args.workers}")
+    print(f"batches: {batches_to_run}")
+    print(f"examples: {examples_to_run}")
 
-    report_raw_coordinates(record, loader.dataset)
-    report_canonical_coordinates(record, loader.dataset, batch)
     report_parameter_changes(model, checkpoint["model"], reference_state)
-
-    prepared = prepare_batch(
-        pipeline,
-        batch,
-        device,
-        args.precision,
-        touch_encoder is not None,
-    )
-    if touch_encoder is not None:
-        report_vecsetx_coordinates(touch_encoder, prepared[-2], prepared[-1])
 
     activations, handles = install_activation_hooks(model)
     model.zero_grad(set_to_none=True)
+    raw_passes = canonical_passes = vecsetx_passes = 0
+    total_loss = 0.0
+    example_count = 0
     try:
-        with amp(device, args.precision):
-            loss = model(*prepared)
-        loss.backward()
+        for batch_index, batch in enumerate(loader):
+            if batch_index == batches_to_run:
+                break
+
+            for index, sample_id in enumerate(batch["sample_id"]):
+                verbose = batch_index == 0 and index == 0
+                record = records[sample_id]
+                if verbose:
+                    print(f"sample_detail: {sample_id}")
+                raw_passes += report_raw_coordinates(
+                    record, loader.dataset, verbose=verbose
+                )
+                canonical_passes += report_canonical_coordinates(
+                    record, loader.dataset, batch, index=index, verbose=verbose
+                )
+
+            prepared = prepare_batch(
+                pipeline,
+                batch,
+                device,
+                args.precision,
+                touch_encoder is not None,
+            )
+            if touch_encoder is not None:
+                vecsetx_passes += report_vecsetx_coordinates(
+                    touch_encoder,
+                    prepared[-2],
+                    prepared[-1],
+                    verbose=batch_index == 0,
+                )
+
+            batch_size = len(batch["sample_id"])
+            with amp(device, args.precision):
+                loss = model(*prepared)
+            (loss * batch_size / examples_to_run).backward()
+            total_loss += loss.item() * batch_size
+            example_count += batch_size
     finally:
         for handle in handles:
             handle.remove()
 
-    heading("Forward pass")
-    print(f"loss: {loss.item():.6g}")
+    heading("Coordinate summary")
+    print(f"raw_camera: {raw_passes}/{example_count} passed")
+    print(f"canonical_target: {canonical_passes}/{example_count} passed")
+    if touch_encoder is not None:
+        print(
+            f"vecsetx_pretraining_normalization: {vecsetx_passes}/{example_count} passed"
+        )
+
+    heading("Forward/backward summary")
+    print(f"mean_loss: {total_loss / example_count:.6g}")
+    print("activations_and_token_gradients: final batch")
     for name, stats in activations.items():
         print(f"{name}: {stats}")
+    print("parameter_gradients: mean loss over all examples")
     report_gradients(model)
 
 
