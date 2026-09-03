@@ -18,5 +18,10 @@ export PYTHONUNBUFFERED=1
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 train.py \
   --pipeline-config checkpoints/hf/pipeline.yaml \
+  --data-config configs/data1.yaml \
   --output-dir outputs/stage1_image \
+  --batch-size 4 \
+  --workers 8 \
+  --val-workers 2 \
+  --epochs 20 \
   --no-touch
