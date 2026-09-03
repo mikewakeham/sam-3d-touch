@@ -51,10 +51,18 @@ def resolve(root, path):
 
 def load_sample(args):
     with open(args.evaluation_dir / "metrics.csv", newline="") as file:
-        rows = [
-            row for row in csv.DictReader(file)
-            if row["sample_id"] == args.sample_id and not row["error"]
-        ]
+        all_rows = [row for row in csv.DictReader(file) if not row["error"]]
+    rows = [row for row in all_rows if row["sample_id"] == args.sample_id]
+    if not rows:
+        object_id = args.sample_id.rsplit("_", 1)[0]
+        sample_ids = sorted({
+            row["sample_id"] for row in all_rows
+            if row["object_id"] in {args.sample_id, object_id}
+        })
+        if len(sample_ids) == 1:
+            print(f"using selected sample {sample_ids[0]} for object {object_id}")
+            args.sample_id = sample_ids[0]
+            rows = [row for row in all_rows if row["sample_id"] == args.sample_id]
     rows = {row["condition"]: row for row in rows}
     if not rows:
         raise ValueError(f"No completed results found for {args.sample_id}")
