@@ -1,0 +1,404 @@
+import argparse
+import json
+import os
+import random
+from pathlib import Path
+
+os.environ.setdefault("LIDRA_SKIP_INIT", "true")
+
+import numpy as np
+import torch
+
+from dataloader import build_dataloader, load_data_config
+from train import (
+    TouchTrainingModel,
+    amp,
+    build_optimizer,
+    build_stage1_pipeline,
+    load_trainable_state_dict,
+    prepare_batch,
+)
+
+PARAMETER_PATTERNS = {
+    "vecsetx_latents": "touch_encoder.encoder.latents.",
+    "vecsetx_point_embed": "touch_encoder.encoder.point_embed.",
+    "vecsetx_cross_attention": "touch_encoder.encoder.cross_attend_blocks.",
+    "vecsetx_bottleneck": ("touch_encoder.encoder.bottleneck.pre_bottleneck_proj."),
+    "touch_projection": "touch_encoder.output_projection.",
+    "touch_embedding": "touch_encoder.touch_embedding",
+    "shape_cross_attention_kv": ".cross_attn.shape.to_kv.",
+}
+VECSETX_GROUPS = tuple(PARAMETER_PATTERNS)[:4]
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--checkpoint", type=Path, required=True)
+    parser.add_argument("--pipeline-config", type=Path, required=True)
+    parser.add_argument("--data-config", type=Path, default=Path("configs/data1.yaml"))
+    parser.add_argument("--split", default="val")
+    parser.add_argument("--device", default="cuda")
+    parser.add_argument("--precision", choices=["bf16", "fp32"], default="bf16")
+    return parser.parse_args()
+
+
+def heading(title):
+    print(f"\n{title}")
+
+
+def tensor_stats(tensor):
+    tensor = tensor.detach().float()
+    finite = tensor[torch.isfinite(tensor)]
+    if finite.numel() == 0:
+        return f"shape={tuple(tensor.shape)} finite=0/{tensor.numel()}"
+    return (
+        f"shape={tuple(tensor.shape)} mean={finite.mean().item():.6g} "
+        f"std={finite.std(unbiased=False).item():.6g} "
+        f"rms={finite.square().mean().sqrt().item():.6g} "
+        f"min={finite.min().item():.6g} max={finite.max().item():.6g} "
+        f"finite={finite.numel()}/{tensor.numel()}"
+    )
+
+
+def in_group(name, group):
+    pattern = PARAMETER_PATTERNS[group]
+    return pattern in name if pattern.startswith(".") else name.startswith(pattern)
+
+
+def parameter_group(name):
+    return next(
+        (group for group in PARAMETER_PATTERNS if in_group(name, group)), "other"
+    )
+
+
+def norm(values):
+    return sum(value.detach().float().square().sum().item() for value in values) ** 0.5
+
+
+def report_parameter_changes(model, checkpoint_state, reference_state):
+    heading("Checkpoint parameters")
+    for group in PARAMETER_PATTERNS:
+        tensors = [
+            value
+            for name, value in checkpoint_state.items()
+            if parameter_group(name) == group
+        ]
+        print(
+            f"{group}: saved_tensors={len(tensors)} saved_parameters={sum(x.numel() for x in tensors):,}"
+        )
+
+    heading("Changes from released weights")
+    current = dict(model.named_parameters())
+    for group in (*VECSETX_GROUPS, "shape_cross_attention_kv"):
+        names = [name for name in reference_state if parameter_group(name) == group]
+        if not names:
+            print(f"{group}: unavailable")
+            continue
+        difference = norm(
+            current[name].detach().cpu() - reference_state[name] for name in names
+        )
+        reference = norm(reference_state[name] for name in names)
+        ratio = difference / reference if reference else float("nan")
+        print(f"{group}: change_norm={difference:.6g} relative_change={ratio:.6g}")
+    if model.touch_encoder is not None:
+        print("touch_projection: initial weights were not saved; change is unavailable")
+        print("touch_embedding: initial value was not saved; change is unavailable")
+        heading("Touch adapter parameters")
+        print(f"touch_embedding: {tensor_stats(model.touch_encoder.touch_embedding)}")
+        for name, parameter in model.touch_encoder.output_projection.named_parameters():
+            print(f"output_projection.{name}: {tensor_stats(parameter)}")
+
+
+def report_raw_coordinates(record, dataset):
+    # Same reconstruction and visibility test as sam-3d-touch-data/sample_touch.py.
+    with np.load(
+        dataset.resolve_path(record["touch_path"]), allow_pickle=False
+    ) as touch:
+        points = []
+        labels = []
+        for index, (start, end) in enumerate(
+            zip(touch["offsets"][:-1], touch["offsets"][1:])
+        ):
+            start, end = int(start), int(end)
+            points.append(
+                touch["points_local"][start:end] @ touch["R_camera_from_local"][index].T
+                + touch["centers_camera"][index]
+            )
+            labels.append(touch["point_visibility"][start:end])
+        points = np.concatenate(points)
+        labels = np.concatenate(labels)
+        tolerance = float(json.loads(touch["method_args"].item())["tolerance"])
+
+    depth = np.load(dataset.resolve_path(record["depth_path"]), allow_pickle=False)
+    pointmap = np.load(
+        dataset.resolve_path(record["pointmap_path"]), allow_pickle=False
+    )
+    with np.load(
+        dataset.resolve_path(record["camera_path"]), allow_pickle=False
+    ) as camera:
+        intrinsics = camera["K"]
+
+    points_opencv = points * np.array([-1.0, -1.0, 1.0])
+    projected = points_opencv @ intrinsics.T
+    pixels = np.rint(projected[:, :2] / projected[:, 2:3]).astype(np.int64)
+    height, width = depth.shape
+    inside = (
+        (points_opencv[:, 2] > 0)
+        & (pixels[:, 0] >= 0)
+        & (pixels[:, 0] < width)
+        & (pixels[:, 1] >= 0)
+        & (pixels[:, 1] < height)
+    )
+    observed = np.full(len(points), np.nan)
+    observed[inside] = depth[pixels[inside, 1], pixels[inside, 0]]
+    depth_difference = points_opencv[:, 2] - observed
+
+    visible_error = np.abs(depth_difference[labels == 1])
+    hidden_difference = depth_difference[labels == 0]
+    if not len(visible_error) or not len(hidden_difference):
+        raise ValueError("Raw coordinate check requires visible and hidden touch points")
+    visible_max = np.nanmax(visible_error)
+    hidden_min = np.nanmin(hidden_difference)
+    pointmap_matches_depth = np.allclose(pointmap[..., 2], depth, equal_nan=True)
+    passed = (
+        visible_max <= tolerance + 1e-6
+        and hidden_min > tolerance
+        and pointmap_matches_depth
+    )
+
+    heading("Raw SAM/PyTorch3D camera coordinates")
+    print(f"status: {'PASS' if passed else 'FAIL'}")
+    print(f"visibility_tolerance: {tolerance:.6g}")
+    print(
+        f"visible_depth_error: median={np.nanmedian(visible_error):.6g} max={visible_max:.6g}"
+    )
+    print(
+        f"hidden_depth_difference: median={np.nanmedian(hidden_difference):.6g} min={hidden_min:.6g}"
+    )
+    print(f"pointmap_z_matches_depth: {pointmap_matches_depth}")
+
+
+def report_canonical_coordinates(record, dataset, batch):
+    # The target builder voxelizes the normalized object inside [-0.5, 0.5]^3.
+    mask = batch["touch_mask"][0].numpy()
+    points = batch["touch_xyz"][0, mask].numpy()
+    with np.load(
+        dataset.resolve_path(record["camera_path"]), allow_pickle=False
+    ) as camera:
+        transform = np.diag([-1.0, -1.0, 1.0, 1.0]) @ camera["T_camera_from_object"]
+
+    rotation = transform[:3, :3]
+    translation = transform[:3, 3]
+    canonical = (points - translation) @ np.linalg.inv(rotation).T
+    minimum = canonical.min(axis=0)
+    maximum = canonical.max(axis=0)
+    center = (minimum + maximum) / 2
+    inside_target_cube = np.abs(canonical).max() <= 0.501
+    rotation_error = np.abs(rotation.T @ rotation - np.eye(3)).max()
+
+    heading("Canonical shape-target coordinates")
+    print(
+        f"status: {'PASS' if inside_target_cube and rotation_error < 1e-5 else 'FAIL'}"
+    )
+    print(f"bounds: min={minimum} max={maximum}")
+    print(f"bbox_center: {center}")
+    print(f"max_radius: {np.linalg.norm(canonical, axis=1).max():.6g}")
+    print(f"rotation_orthogonality_error: {rotation_error:.6g}")
+    # TODO: Add an independent point-to-target-mesh distance once there is one
+    # authoritative target-mesh loader shared by training and diagnostics.
+
+
+def report_vecsetx_coordinates(touch_encoder, points, point_mask):
+    # Same bbox-center/max-radius normalization as VecSetX README and infer.py.
+    points, point_mask = touch_encoder.prepare_points(points, point_mask)
+    points = points[0, point_mask[0]].detach().float()
+    minimum = points.min(dim=0).values
+    maximum = points.max(dim=0).values
+    center = (minimum + maximum) / 2
+    centered = points - center
+    radius = centered.norm(dim=1).max()
+    expected = centered / radius
+    error = (points - expected).square().mean().sqrt()
+    passed = center.norm().item() <= 1e-3 and abs(radius.item() - 1.0) <= 1e-3
+
+    heading("VecSetX pretraining-coordinate normalization")
+    print(f"status: {'PASS' if passed else 'FAIL'}")
+    print(f"bounds: min={minimum.cpu().numpy()} max={maximum.cpu().numpy()}")
+    print(f"bbox_center: {center.cpu().numpy()}")
+    print(f"max_radius_about_bbox_center: {radius.item():.6g}")
+    print(f"rms_difference_from_vecsetx_normalization: {error.item():.6g}")
+
+
+def install_activation_hooks(model):
+    activations = {}
+    handles = []
+    touch_state = {"tokens": 0}
+
+    if model.touch_encoder is not None:
+
+        def vecsetx_hook(_module, inputs):
+            activations["vecsetx_tokens"] = tensor_stats(inputs[0])
+            if inputs[0].requires_grad:
+                inputs[0].register_hook(
+                    lambda gradient: activations.__setitem__(
+                        "vecsetx_token_gradient", tensor_stats(gradient)
+                    )
+                )
+            else:
+                activations["vecsetx_token_gradient"] = "not tracked (encoder frozen)"
+
+        def projection_hook(_module, _inputs, output):
+            activations["projected_touch_tokens"] = tensor_stats(output)
+
+        def touch_hook(_module, _inputs, output):
+            touch_state["tokens"] = output.shape[1]
+            activations["touch_tokens_with_embedding"] = tensor_stats(output)
+            output.register_hook(
+                lambda gradient: activations.__setitem__(
+                    "touch_token_gradient", tensor_stats(gradient)
+                )
+            )
+
+        handles.append(
+            model.touch_encoder.output_projection.register_forward_pre_hook(
+                vecsetx_hook
+            )
+        )
+        handles.append(
+            model.touch_encoder.output_projection.register_forward_hook(projection_hook)
+        )
+        handles.append(model.touch_encoder.register_forward_hook(touch_hook))
+
+    blocks = model.generator.reverse_fn.backbone.blocks
+    for index in sorted({0, len(blocks) - 1}):
+        block = blocks[index]
+
+        def kv_hook(_module, _inputs, output, block_index=index):
+            key, value = output.chunk(2, dim=-1)
+            touch_count = touch_state["tokens"]
+            image_end = key.shape[1] - touch_count
+            activations[f"block_{block_index:02d}_image_key"] = tensor_stats(
+                key[:, :image_end]
+            )
+            activations[f"block_{block_index:02d}_image_value"] = tensor_stats(
+                value[:, :image_end]
+            )
+            if touch_count:
+                activations[f"block_{block_index:02d}_touch_key"] = tensor_stats(
+                    key[:, image_end:]
+                )
+                activations[f"block_{block_index:02d}_touch_value"] = tensor_stats(
+                    value[:, image_end:]
+                )
+
+        handles.append(block.cross_attn["shape"].to_kv.register_forward_hook(kv_hook))
+
+    return activations, handles
+
+
+def report_gradients(model):
+    named_parameters = list(model.named_parameters())
+    heading("Gradients")
+    for group in PARAMETER_PATTERNS:
+        parameters = [
+            parameter for name, parameter in named_parameters if in_group(name, group)
+        ]
+        gradients = [
+            parameter.grad for parameter in parameters if parameter.grad is not None
+        ]
+        parameter_norm = norm(parameters) if parameters else 0.0
+        gradient_norm = norm(gradients) if gradients else 0.0
+        ratio = gradient_norm / parameter_norm if parameter_norm else float("nan")
+        print(
+            f"{group}: parameters={sum(x.numel() for x in parameters):,} "
+            f"with_gradient={sum(x.numel() for x in gradients):,} "
+            f"gradient_norm={gradient_norm:.6g} gradient_parameter_ratio={ratio:.6g}"
+        )
+
+
+def main():
+    args = parse_args()
+    device = torch.device(args.device)
+    data_config = load_data_config(args.data_config)
+    data_config["dataset"]["split"] = args.split
+    seed = int(data_config.get("seed", 0))
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.set_float32_matmul_precision("high")
+
+    checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
+    loader = build_dataloader(
+        data_config,
+        batch_size=1,
+        num_workers=0,
+        shuffle=False,
+        distributed=False,
+        include_touch=True,
+    )
+    batch = next(iter(loader))
+    record = next(
+        item
+        for item in loader.dataset.records
+        if item["sample_id"] == batch["sample_id"][0]
+    )
+
+    pipeline = build_stage1_pipeline(args.pipeline_config, device)
+    touch_encoder = None
+    if checkpoint["touch_config"] is not None:
+        from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
+
+        touch_encoder = TouchEncoder(**checkpoint["touch_config"]).to(device)
+
+    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder)
+    build_optimizer(
+        touch_encoder,
+        pipeline.backbone,
+        argparse.Namespace(learning_rate=0.0, cross_attention_learning_rate=1.0),
+    )
+    reference_state = {
+        name: parameter.detach().cpu().clone()
+        for name, parameter in model.named_parameters()
+        if parameter_group(name) in {*VECSETX_GROUPS, "shape_cross_attention_kv"}
+    }
+    load_trainable_state_dict(model, checkpoint["model"])
+
+    heading("Run")
+    print(f"checkpoint: {args.checkpoint}")
+    print(f"sample: {record['sample_id']}")
+    print(f"mode: {checkpoint['mode']}")
+    print(f"touch_config: {checkpoint['touch_config']}")
+
+    report_raw_coordinates(record, loader.dataset)
+    report_canonical_coordinates(record, loader.dataset, batch)
+    report_parameter_changes(model, checkpoint["model"], reference_state)
+
+    prepared = prepare_batch(
+        pipeline,
+        batch,
+        device,
+        args.precision,
+        touch_encoder is not None,
+    )
+    if touch_encoder is not None:
+        report_vecsetx_coordinates(touch_encoder, prepared[-2], prepared[-1])
+
+    activations, handles = install_activation_hooks(model)
+    model.zero_grad(set_to_none=True)
+    try:
+        with amp(device, args.precision):
+            loss = model(*prepared)
+        loss.backward()
+    finally:
+        for handle in handles:
+            handle.remove()
+
+    heading("Forward pass")
+    print(f"loss: {loss.item():.6g}")
+    for name, stats in activations.items():
+        print(f"{name}: {stats}")
+    report_gradients(model)
+
+
+if __name__ == "__main__":
+    main()
