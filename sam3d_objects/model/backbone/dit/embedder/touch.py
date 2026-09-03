@@ -38,7 +38,7 @@ class TouchEncoder(nn.Module):
         self.output_dim = output_dim
         self.encoder = config["constructor"]()
         self.num_points = getattr(self.encoder, "num_inputs", None)
-
+g
         checkpoint_path = "/n/home12/mwakeham/.cache/huggingface/hub/models--Zbalpha--VecSetX/snapshots/5fb84917189d2bee8392404f833f42ca5c067e0b/learnable_vec1024x32_dim1024_depth24_sdf_nb/checkpoint-125.pth"
         checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
         state_dict = checkpoint.get("model", checkpoint)
