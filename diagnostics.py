@@ -8,6 +8,7 @@ os.environ.setdefault("LIDRA_SKIP_INIT", "true")
 
 import numpy as np
 import torch
+import torch.nn.functional as F
 
 from dataloader import build_dataloader, load_data_config
 from train import (
@@ -30,6 +31,71 @@ PARAMETER_PATTERNS = {
     "shape_cross_attention_kv": ".cross_attn.shape.to_kv.",
 }
 VECSETX_GROUPS = tuple(PARAMETER_PATTERNS)[:4]
+
+
+def representation_stats(tensor):
+    tensor = tensor.detach().float()
+    flat = tensor.flatten(1)
+    rms = flat.square().mean().sqrt()
+    sample_rms = (tensor - tensor.mean(dim=0)).square().mean().sqrt()
+    token_rms = (tensor - tensor.mean(dim=1, keepdim=True)).square().mean().sqrt()
+
+    normalized = F.normalize(flat, dim=1)
+    pairs = torch.triu_indices(len(flat), len(flat), offset=1, device=flat.device)
+    if pairs.shape[1] == 0:
+        unavailable = rms.new_full((), float("nan"))
+        return torch.stack(
+            [
+                rms,
+                sample_rms,
+                sample_rms / rms.clamp_min(1e-12),
+                token_rms,
+                *([unavailable] * 6),
+            ]
+        ).cpu()
+    cosine = (normalized @ normalized.T)[pairs[0], pairs[1]]
+    square_norm = flat.square().sum(dim=1)
+    difference = (
+        (square_norm[:, None] + square_norm[None, :] - 2 * flat @ flat.T)
+        .clamp_min(0)
+        .div(flat.shape[1])
+        .sqrt()[pairs[0], pairs[1]]
+    )
+    item_rms = square_norm.div(flat.shape[1]).sqrt()
+    reference = (item_rms[:, None] + item_rms[None, :]) / 2
+    distance = difference / reference[pairs[0], pairs[1]].clamp_min(1e-12)
+    return torch.stack([
+        rms,
+        sample_rms,
+        sample_rms / rms.clamp_min(1e-12),
+        token_rms,
+        cosine.mean(),
+        cosine.min(),
+        cosine.max(),
+        distance.mean(),
+        distance.min(),
+        distance.max(),
+    ]).cpu()
+
+
+def report_representation(name, batches):
+    values = torch.stack(batches)
+    means = values.mean(dim=0)
+    print(
+        f"{name}: rms={means[0]:.6g} across_sample_rms={means[1]:.6g} "
+        f"across_sample_ratio={means[2]:.6g} within_token_rms={means[3]:.6g}"
+    )
+    if torch.isnan(values[:, 4:]).all():
+        print("  pair statistics unavailable for batch size 1")
+        return
+    print(
+        f"  pair_cosine: mean={means[4]:.6g} "
+        f"min={values[:, 5].min():.6g} max={values[:, 6].max():.6g}"
+    )
+    print(
+        f"  normalized_pair_rms: mean={means[7]:.6g} "
+        f"min={values[:, 8].min():.6g} max={values[:, 9].max():.6g}"
+    )
 
 
 def parse_args():
@@ -226,9 +292,16 @@ def report_canonical_coordinates(record, dataset, batch, index=0, verbose=True):
     return passed
 
 
-def report_vecsetx_coordinates(touch_encoder, points, point_mask, verbose=True):
+def report_vecsetx_coordinates(
+    touch_encoder, points, point_mask, sample_ids, position_stats, verbose=True
+):
     # Same bbox-center/max-radius normalization as VecSetX README and infer.py.
-    points, point_mask, _, _ = touch_encoder.prepare_points(points, point_mask)
+    points, point_mask, shifts, scales = touch_encoder.prepare_points(
+        points, point_mask
+    )
+    position_stats["sample_ids"].extend(sample_ids)
+    position_stats["shifts"].append(shifts.detach().float().cpu())
+    position_stats["scales"].append(scales.detach().float().cpu())
     passed_count = 0
     for index in range(len(points)):
         sample = points[index, point_mask[index]].detach().float()
@@ -252,15 +325,73 @@ def report_vecsetx_coordinates(touch_encoder, points, point_mask, verbose=True):
     return passed_count
 
 
-def install_activation_hooks(model):
+def attention_stats(module, inputs, output, touch_count):
+    x, context = inputs
+    native_count = context.shape[1] - touch_count
+    query_count = min(32, x.shape[1])
+    query_indices = torch.linspace(
+        0, x.shape[1] - 1, query_count, device=x.device
+    ).long()
+
+    with torch.no_grad():
+        q = module.to_q(x)[:, query_indices]
+        kv = module.to_kv(context)
+        q = q.reshape(q.shape[0], query_count, module.num_heads, -1)
+        kv = kv.reshape(kv.shape[0], kv.shape[1], 2, module.num_heads, -1)
+        k, v = kv.unbind(dim=2)
+        if module.qk_rms_norm:
+            q = module.q_rms_norm(q)
+            k = module.k_rms_norm(k)
+
+        logits = torch.einsum(
+            "bqhd,bnhd->bhqn", q.float(), k.float()
+        ) * module.head_dim**-0.5
+        weights = logits.softmax(dim=-1)
+        touch_mass = weights[..., native_count:].sum(dim=-1).mean()
+
+        native_weights = logits[..., :native_count].softmax(dim=-1)
+        native_output = torch.einsum(
+            "bhqn,bnhd->bqhd", native_weights, v[:, :native_count].float()
+        ).reshape(x.shape[0], query_count, -1)
+        native_output = F.linear(
+            native_output,
+            module.to_out.weight.float(),
+            None if module.to_out.bias is None else module.to_out.bias.float(),
+        )
+        full_output = output[:, query_indices].float()
+        output_rms = full_output.square().mean().sqrt()
+        touch_effect = (full_output - native_output).square().mean().sqrt()
+
+    token_fraction = touch_count / context.shape[1]
+    return {
+        "touch_mass": touch_mass.item(),
+        "token_fraction": token_fraction,
+        "relative_mass": touch_mass.item() / token_fraction,
+        "touch_effect_ratio": (touch_effect / output_rms.clamp_min(1e-12)).item(),
+        "native_key_rms": k[:, :native_count].float().square().mean().sqrt().item(),
+        "touch_key_rms": k[:, native_count:].float().square().mean().sqrt().item(),
+        "native_value_rms": v[:, :native_count].float().square().mean().sqrt().item(),
+        "touch_value_rms": v[:, native_count:].float().square().mean().sqrt().item(),
+    }
+
+
+def install_activation_hooks(model, representation, position_stats):
     activations = {}
     handles = []
     touch_state = {"tokens": 0}
+    hook_state = {
+        "collect": False,
+        "attention": False,
+        "sample_ids": (),
+        "attention_stats": {},
+    }
 
     if model.touch_encoder is not None:
 
         def vecsetx_hook(_module, inputs):
             activations["vecsetx_tokens"] = tensor_stats(inputs[0])
+            if hook_state["collect"]:
+                representation["vecsetx"].append(representation_stats(inputs[0]))
             if inputs[0].requires_grad:
                 inputs[0].register_hook(
                     lambda gradient: activations.__setitem__(
@@ -272,9 +403,34 @@ def install_activation_hooks(model):
 
         def projection_hook(_module, _inputs, output):
             activations["projected_touch_tokens"] = tensor_stats(output)
+            if hook_state["collect"]:
+                representation["projected"].append(representation_stats(output))
+                position_stats["projected_rms"].extend(
+                    output.detach().float().flatten(1).square().mean(1).sqrt().cpu()
+                )
 
         def position_hook(_module, _inputs, output):
             activations["touch_position_embedding"] = tensor_stats(output)
+            if hook_state["collect"]:
+                position_stats["output_rms"].extend(
+                    output.detach().float().flatten(1).square().mean(1).sqrt().cpu()
+                )
+                sample_ids = tuple(hook_state["sample_ids"])
+                output.register_hook(
+                    lambda gradient: position_stats["gradient_rms"].extend(
+                        zip(
+                            sample_ids,
+                            gradient.detach()
+                            .float()
+                            .flatten(1)
+                            .square()
+                            .mean(1)
+                            .sqrt()
+                            .cpu()
+                            .tolist(),
+                        )
+                    )
+                )
 
         def touch_hook(_module, _inputs, output):
             touch_state["tokens"] = output.shape[1]
@@ -299,10 +455,11 @@ def install_activation_hooks(model):
         handles.append(model.touch_encoder.register_forward_hook(touch_hook))
 
     blocks = model.generator.reverse_fn.backbone.blocks
-    for index in sorted({0, len(blocks) - 1}):
-        block = blocks[index]
-
+    edge_blocks = {0, len(blocks) - 1}
+    for index, block in enumerate(blocks):
         def kv_hook(_module, _inputs, output, block_index=index):
+            if block_index not in edge_blocks:
+                return
             key, value = output.chunk(2, dim=-1)
             touch_count = touch_state["tokens"]
             image_end = key.shape[1] - touch_count
@@ -322,7 +479,18 @@ def install_activation_hooks(model):
 
         handles.append(block.cross_attn["shape"].to_kv.register_forward_hook(kv_hook))
 
-    return activations, handles
+        def cross_attention_hook(module, inputs, output, block_index=index):
+            touch_count = touch_state["tokens"]
+            if hook_state["attention"] and touch_count:
+                hook_state["attention_stats"][block_index] = attention_stats(
+                    module, inputs, output, touch_count
+                )
+
+        handles.append(
+            block.cross_attn["shape"].register_forward_hook(cross_attention_hook)
+        )
+
+    return activations, handles, hook_state
 
 
 def report_gradients(model):
@@ -342,6 +510,74 @@ def report_gradients(model):
             f"{group}: parameters={sum(x.numel() for x in parameters):,} "
             f"with_gradient={sum(x.numel() for x in gradients):,} "
             f"gradient_norm={gradient_norm:.6g} gradient_parameter_ratio={ratio:.6g}"
+        )
+
+
+def describe_values(name, values):
+    values = torch.as_tensor(values, dtype=torch.float32).flatten()
+    finite = values[torch.isfinite(values)]
+    if finite.numel() == 0:
+        print(f"{name}: finite=0/{values.numel()}")
+        return
+    quantiles = torch.quantile(
+        finite, torch.tensor([0.0, 0.5, 0.95, 0.99, 1.0])
+    )
+    print(
+        f"{name}: min={quantiles[0].item():.6g} "
+        f"median={quantiles[1].item():.6g} p95={quantiles[2].item():.6g} "
+        f"p99={quantiles[3].item():.6g} max={quantiles[4].item():.6g} "
+        f"finite={finite.numel()}/{values.numel()}"
+    )
+
+
+def report_position_embedding(model, stats):
+    heading("Position embedding")
+    print(f"position_scale_input: {model.touch_encoder.position_scale}")
+    shifts = torch.cat(stats["shifts"])
+    scales = torch.cat(stats["scales"]).flatten()
+    for index, axis in enumerate("xyz"):
+        describe_values(f"shift_{axis}", shifts[:, index])
+    describe_values("radius", scales.reciprocal())
+    describe_values("scale", scales)
+    describe_values("log_scale", scales.log())
+
+    largest_scale = torch.nan_to_num(scales, nan=-float("inf")).argmax().item()
+    print(
+        f"largest_scale_sample: {stats['sample_ids'][largest_scale]} "
+        f"scale={scales[largest_scale].item():.6g}"
+    )
+    if not model.touch_encoder.use_position:
+        print("position_projection: disabled")
+        return
+
+    output_rms = torch.stack(stats["output_rms"])
+    projected_rms = torch.stack(stats["projected_rms"])
+    embedding_rms = model.touch_encoder.touch_embedding.detach().float().square().mean().sqrt()
+    describe_values("position_output_rms", output_rms)
+    describe_values("position_to_projected_ratio", output_rms / projected_rms)
+    describe_values("position_to_touch_embedding_ratio", output_rms / embedding_rms.cpu())
+    largest_output = output_rms.argmax().item()
+    print(
+        f"largest_position_output_sample: {stats['sample_ids'][largest_output]} "
+        f"rms={output_rms[largest_output].item():.6g}"
+    )
+    if stats["gradient_rms"]:
+        gradient_values = [value for _, value in stats["gradient_rms"]]
+        describe_values("position_output_gradient_rms", gradient_values)
+
+
+def report_attention(stats):
+    heading("Cross-attention usage")
+    for block_index, values in sorted(stats.items()):
+        print(
+            f"block_{block_index:02d}: touch_mass={values['touch_mass']:.6g} "
+            f"token_fraction={values['token_fraction']:.6g} "
+            f"relative_mass={values['relative_mass']:.6g} "
+            f"touch_effect_ratio={values['touch_effect_ratio']:.6g} "
+            f"key_rms(native/touch)={values['native_key_rms']:.6g}/"
+            f"{values['touch_key_rms']:.6g} "
+            f"value_rms(native/touch)={values['native_value_rms']:.6g}/"
+            f"{values['touch_value_rms']:.6g}"
         )
 
 
@@ -383,7 +619,13 @@ def main():
     if checkpoint["touch_config"] is not None:
         from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
 
-        touch_encoder = TouchEncoder(**checkpoint["touch_config"]).to(device)
+        touch_config = dict(checkpoint["touch_config"])
+        if "use_position" not in touch_config:
+            touch_config["use_position"] = any(
+                name.startswith("touch_encoder.position_projection.")
+                for name in checkpoint["model"]
+            )
+        touch_encoder = TouchEncoder(**touch_config).to(device)
 
     model = TouchTrainingModel(pipeline.ss_generator, touch_encoder)
     build_optimizer(
@@ -417,7 +659,21 @@ def main():
 
     report_parameter_changes(model, checkpoint["model"], reference_state)
 
-    activations, handles = install_activation_hooks(model)
+    representation = {
+        "vecsetx": [],
+        "projected": [],
+    }
+    position_stats = {
+        "sample_ids": [],
+        "shifts": [],
+        "scales": [],
+        "projected_rms": [],
+        "output_rms": [],
+        "gradient_rms": [],
+    }
+    activations, handles, hook_state = install_activation_hooks(
+        model, representation, position_stats
+    )
     model.zero_grad(set_to_none=True)
     raw_passes = canonical_passes = vecsetx_passes = 0
     total_loss = 0.0
@@ -452,12 +708,19 @@ def main():
                     touch_encoder,
                     prepared[-2],
                     prepared[-1],
+                    batch["sample_id"],
+                    position_stats,
                     verbose=batch_index == 0,
                 )
 
             batch_size = len(batch["sample_id"])
+            hook_state["sample_ids"] = tuple(batch["sample_id"])
+            hook_state["collect"] = True
+            hook_state["attention"] = batch_index == 0
             with amp(device, args.precision):
                 loss = model(*prepared)
+            hook_state["collect"] = False
+            hook_state["attention"] = False
             (loss * batch_size / examples_to_run).backward()
             total_loss += loss.item() * batch_size
             example_count += batch_size
@@ -472,6 +735,12 @@ def main():
         print(
             f"vecsetx_pretraining_normalization: {vecsetx_passes}/{example_count} passed"
         )
+
+        heading("Representation discriminability")
+        report_representation("vecsetx_bottleneck", representation["vecsetx"])
+        report_representation("projected_touch_tokens", representation["projected"])
+        report_attention(hook_state["attention_stats"])
+        report_position_embedding(model, position_stats)
 
     heading("Forward/backward summary")
     print(f"mean_loss: {total_loss / example_count:.6g}")

@@ -32,6 +32,7 @@ class TouchEncoder(nn.Module):
         output_dim=1024,
         trainable=False,
         use_position=True,
+        position_scale="raw",
     ):
         super().__init__()
 
@@ -43,6 +44,9 @@ class TouchEncoder(nn.Module):
         self.encoder_name = encoder_name
         self.output_dim = output_dim
         self.use_position = bool(use_position)
+        self.position_scale = position_scale
+        if self.position_scale not in ("raw", "log"):
+            raise ValueError(f"Unknown position scale {self.position_scale!r}")
         self.encoder = config["constructor"]()
         self.num_points = getattr(self.encoder, "num_inputs", None)
 
@@ -98,6 +102,8 @@ class TouchEncoder(nn.Module):
         }
         if not self.use_position:
             config["use_position"] = False
+        elif self.position_scale == "log":
+            config["position_scale"] = "log"
         return config
 
     def forward(self, points, point_mask=None):
@@ -108,8 +114,9 @@ class TouchEncoder(nn.Module):
         tokens = self.encoder.encode(points, point_mask)["x"]
         tokens = self.output_projection(tokens)
         if self.use_position:
+            position_scale = scales.log() if self.position_scale == "log" else scales
             position = self.position_projection(
-                torch.cat((shifts, scales.log()), dim=-1)
+                torch.cat((shifts, position_scale), dim=-1)
             )
             tokens = tokens + position.unsqueeze(1)
         return tokens + self.touch_embedding

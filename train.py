@@ -524,6 +524,7 @@ def main():
             output_dim=pipeline.backbone.cond_channels,
             trainable=args.train_vecsetx,
             use_position=not args.no_touch_position,
+            position_scale="log",
         ).to(device)
 
     model = TouchTrainingModel(pipeline.ss_generator, touch_encoder)
