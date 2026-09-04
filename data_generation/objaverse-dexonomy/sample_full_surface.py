@@ -109,20 +109,15 @@ def main():
             if record["object_transform_path"] != first["object_transform_path"]:
                 raise ValueError(f"Object transform differs between views: {object_id}")
             with np.load(args.data_root / record["touch_path"], allow_pickle=False) as touch:
-                centers = touch["center_point_ids"]
-                # Catch incompatible regenerated pools (e.g. different mesh/library versions).
+                # Match sampling settings, not historical random points or face IDs.
+                # Exported point_ids refer only to this newly generated pool.
                 if (
                     surface_settings(touch) != settings
                     or not np.array_equal(touch["surface_seed_parts"], surface["seed_parts"])
                     or int(touch["surface_point_count"]) != len(surface["points"])
                     or not np.isclose(float(touch["surface_area"]), surface["mesh"].area)
-                    or not np.array_equal(touch["center_face_ids"], surface["face_ids"][centers])
-                    or not np.allclose(
-                        touch["center_barycentric"], surface["barycentric"][centers],
-                        rtol=0, atol=1e-8,
-                    )
                 ):
-                    raise ValueError(f"Regenerated pool does not match {record['touch_path']}")
+                    raise ValueError(f"Surface settings, seed, count or area differ from {record['touch_path']}")
                 tolerance = float(json.loads(touch["method_args"].item())["tolerance"])
             camera_path = args.data_root / record["camera_path"]
             arrays = sample_full_surface(
