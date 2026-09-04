@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 
 import numpy as np
-import potpourri3d as pp3d
 import trimesh
 from scipy.sparse import coo_matrix
 from scipy.sparse.csgraph import connected_components
@@ -174,6 +173,8 @@ def classify_visibility(points, K, camera_transform, depth, tolerance):
 
 def geodesic_distances(surface, source_point):
     """Distances from one master-pool point to every master-pool point."""
+    import potpourri3d as pp3d
+
     mesh = surface["mesh"]
     source_face = int(surface["face_ids"][source_point])
     component = int(surface["point_components"][source_point])

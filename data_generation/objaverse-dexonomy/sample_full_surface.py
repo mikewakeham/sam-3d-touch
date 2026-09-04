@@ -1,35 +1,25 @@
-"""Export globally sampled surfaces for existing rendered samples; no rendering."""
+"""Sample mesh surfaces directly for existing rendered samples; no rendering."""
 
 import argparse
 import json
 from pathlib import Path
 
 import numpy as np
+import trimesh
 
+from generate_target_latents import load_normalized_mesh
 from sample_touch import (
     DEFAULT_DATA_ROOT,
     classify_visibility,
-    prepare_surface,
     transform_points,
 )
 
 
-def surface_settings(touch):
-    if int(touch["format_version"]) != 4:
-        raise ValueError("Expected existing format-4 touch data")
-    return {
-        "density": float(touch["density"]),
-        "seed": int(touch["surface_seed_parts"][0]),
-        "max_edge": float(touch["max_edge"]),
-    }
-
-
-def sample_full_surface(surface, point_ids, camera_path, depth_path, tolerance):
+def sample_full_surface(points, camera_path, depth_path, tolerance):
     with np.load(camera_path, allow_pickle=False) as camera:
         K = camera["K"]
         camera_transform = camera["T_camera_from_object"]
     depth = np.load(depth_path, allow_pickle=False)
-    points = surface["points"][point_ids]
     # Same OpenCV -> SAM camera transform as sample_touch.pack_touch().
     T_sam_from_object = np.diag([-1.0, -1.0, 1.0, 1.0]) @ camera_transform
     points_camera = transform_points(points, T_sam_from_object).astype(np.float32)
@@ -40,16 +30,12 @@ def sample_full_surface(surface, point_ids, camera_path, depth_path, tolerance):
         "point_visibility": classify_visibility(
             points, K, camera_transform, depth, tolerance
         ),
-        "point_ids": point_ids,
-        "keep_priority": surface["keep_priority"][point_ids],
+        # IDs identify this object's new sample, not the historical touch pool.
+        "point_ids": np.arange(len(points), dtype=np.int64),
         "format_version": np.int64(1),
         "data_kind": "full_surface",
         "coordinate_frame": "sam_camera",
-        "density": surface["density"],
-        "max_edge": surface["max_edge"],
-        "surface_point_count": len(surface["points"]),
-        "surface_area": surface["mesh"].area,
-        "surface_seed_parts": surface["seed_parts"],
+        "sampling_method": "area_weighted_direct",
         "visibility_tolerance": tolerance,
     }
 
@@ -97,42 +83,39 @@ def main():
     for object_index, (object_id, views) in enumerate(objects.items(), 1):
         first = views[0]
         with np.load(args.data_root / first["touch_path"], allow_pickle=False) as touch:
-            settings = surface_settings(touch)
-        surface = prepare_surface(
+            seed_parts = touch["surface_seed_parts"].astype(np.int64)
+        mesh = load_normalized_mesh(
             args.data_root / "objects" / object_id / "model.obj",
             args.data_root / first["object_transform_path"],
-            # These objects are already accepted; do not reapply the touch component limit.
-            max_added_components=None,
-            **settings,
         )
-        # Same stable priority ranking as dataloader.load_touch(), but globally.
-        point_ids = np.argsort(surface["keep_priority"], kind="stable")[:args.num_points].astype(np.int64)
+        if not np.isfinite(mesh.area) or mesh.area <= 0:
+            raise ValueError(f"Mesh must have positive finite surface area: {object_id}")
+        sample_seed = int(np.random.default_rng(seed_parts).integers(2**31))
+        points, _ = trimesh.sample.sample_surface(mesh, args.num_points, seed=sample_seed)
         for record in views:
             if record["object_transform_path"] != first["object_transform_path"]:
                 raise ValueError(f"Object transform differs between views: {object_id}")
             with np.load(args.data_root / record["touch_path"], allow_pickle=False) as touch:
-                # Match sampling settings, not historical random points or face IDs.
-                # Exported point_ids refer only to this newly generated pool.
-                if (
-                    surface_settings(touch) != settings
-                    or not np.array_equal(touch["surface_seed_parts"], surface["seed_parts"])
-                    or int(touch["surface_point_count"]) != len(surface["points"])
-                    or not np.isclose(float(touch["surface_area"]), surface["mesh"].area)
-                ):
-                    raise ValueError(f"Surface settings, seed, count or area differ from {record['touch_path']}")
+                if int(touch["format_version"]) != 4:
+                    raise ValueError("Expected existing format-4 touch data")
+                if not np.array_equal(touch["surface_seed_parts"], seed_parts):
+                    raise ValueError(f"Object seed differs between views: {object_id}")
                 tolerance = float(json.loads(touch["method_args"].item())["tolerance"])
             camera_path = args.data_root / record["camera_path"]
             arrays = sample_full_surface(
-                surface, point_ids, camera_path,
+                points, camera_path,
                 args.data_root / record["depth_path"], tolerance,
             )
             arrays["requested_point_count"] = args.num_points
+            arrays["sample_seed_parts"] = seed_parts
+            arrays["sample_seed"] = sample_seed
+            arrays["surface_area"] = mesh.area
             output_path = camera_path.with_name("full_surface.npz")
             save_surface(output_path, arrays, args.overwrite)
             record["full_surface_path"] = str(output_path.relative_to(args.data_root))
         print(
             f"[{object_index}/{len(objects)}] {object_id}: "
-            f"{len(point_ids)} points/view, {len(views)} views", flush=True,
+            f"{len(points)} points/view, {len(views)} views", flush=True,
         )
 
     temporary = output_manifest.with_suffix(".tmp.jsonl")

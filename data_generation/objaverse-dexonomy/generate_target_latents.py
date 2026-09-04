@@ -5,16 +5,10 @@ import json
 from pathlib import Path
 
 import numpy as np
-import open3d as o3d
-import torch
 import trimesh
 
 import os
 os.environ["LIDRA_SKIP_INIT"] = "true"
-
-from sam3d_objects.model.backbone.tdfy_dit.models.sparse_structure_vae import (
-    SparseStructureEncoderTdfyWrapper,
-)
 
 
 DEFAULT_DATA_ROOT = Path(
@@ -113,6 +107,9 @@ def load_normalized_mesh(model_path, object_transform_path):
 
 
 def voxelize_mesh(mesh, resolution=64):
+    import open3d as o3d
+    import torch
+
     vertices = np.clip(
         np.asarray(mesh.vertices),
         -0.5 + 1e-6,
@@ -161,6 +158,10 @@ def voxelize_mesh(mesh, resolution=64):
 
 
 def load_encoder(checkpoint_path, device):
+    from sam3d_objects.model.backbone.tdfy_dit.models.sparse_structure_vae import (
+        SparseStructureEncoderTdfyWrapper,
+    )
+
     if not checkpoint_path.is_file():
         raise FileNotFoundError(checkpoint_path)
 
@@ -208,6 +209,8 @@ def save_target(mean, output_path):
 
 
 def generate_target(object_id, data_root, encoder, device, overwrite):
+    import torch
+
     model_path = data_root / "objects" / object_id / "model.obj"
     object_dir = data_root / "generated_data" / object_id
     object_transform_path = object_dir / "object_transform.npz"
@@ -307,6 +310,8 @@ def update_manifest(manifest_path, data_root):
 
 
 def main():
+    import torch
+
     args = parse_args()
 
     generated_dir = args.data_root / "generated_data"
