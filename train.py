@@ -141,7 +141,7 @@ def preprocess_batch(pipeline, images, pointmaps):
     return {key: torch.cat([item[key] for item in items]) for key in items[0]}
 
 
-def normalize_touch(touch_xyz, touch_mask, inputs, preprocessor):
+def normalize_touch_to_pointmap_frame(touch_xyz, touch_mask, inputs, preprocessor):
     from sam3d_objects.data.dataset.tdfy.img_and_mask_transforms import (
         _apply_metric_to_ssi,
     )
@@ -189,7 +189,7 @@ def prepare_batch(pipeline, batch, device, precision, use_touch):
     if use_touch:
         touch_mask = batch["touch_mask"].to(device, non_blocking=True)
         with torch.no_grad():
-            touch_xyz = normalize_touch(
+            touch_xyz = normalize_touch_to_pointmap_frame(
                 batch["touch_xyz"].to(device, non_blocking=True),
                 touch_mask,
                 inputs,
@@ -230,6 +230,50 @@ def trainable_state_dict(model):
         name: parameter.detach().cpu()
         for name, parameter in model.named_parameters()
         if parameter.requires_grad
+    }
+
+
+def touch_adapter_state_dict(model):
+    prefixes = (
+        "touch_encoder.output_projection.",
+        "touch_encoder.position_projection.",
+        "touch_encoder.touch_embedding",
+    )
+    return {
+        name: parameter.detach().cpu()
+        for name, parameter in model.named_parameters()
+        if name.startswith(prefixes)
+    }
+
+
+def gradient_norm(parameters):
+    total = None
+    for parameter in parameters:
+        if parameter.grad is None:
+            continue
+        value = parameter.grad.detach().float().square().sum()
+        total = value if total is None else total + value
+    return 0.0 if total is None else total.sqrt().item()
+
+
+def component_gradient_norms(model):
+    groups = {
+        "shape_cross_attention_kv": (
+            parameter
+            for block in model.generator.reverse_fn.backbone.blocks
+            for parameter in block.cross_attn["shape"].to_kv.parameters()
+        ),
+    }
+    if model.touch_encoder is not None:
+        groups.update({
+            "touch_output_projection": model.touch_encoder.output_projection.parameters(),
+            "touch_position_projection": model.touch_encoder.position_projection.parameters(),
+            "touch_embedding": (model.touch_encoder.touch_embedding,),
+            "vecsetx_encoder": model.touch_encoder.encoder.parameters(),
+        })
+    return {
+        f"gradients/{name}": gradient_norm(parameters)
+        for name, parameters in groups.items()
     }
 
 
@@ -301,6 +345,16 @@ def train_epoch(
         with amp(device, args.precision):
             loss = model(*prepared)
         loss.backward()
+        should_log = (
+            step == 0
+            or (step + 1) % args.log_every == 0
+            or batch_index + 1 == len(loader)
+        )
+        component_gradients = (
+            component_gradient_norms(raw_model)
+            if main_process and should_log
+            else {}
+        )
         gradient_norm = None
         if args.gradient_clip > 0:
             gradient_norm = torch.nn.utils.clip_grad_norm_(
@@ -349,6 +403,7 @@ def train_epoch(
                 }
                 if gradient_norm is not None:
                     metrics["optimization/gradient_norm"] = gradient_norm.item()
+                metrics.update(component_gradients)
                 for group in optimizer.param_groups:
                     metrics[f"learning_rate/{group['name']}"] = group["lr"]
                 run.log(metrics)
@@ -477,6 +532,12 @@ def main():
             }
             with open(config_path, "w") as file:
                 yaml.safe_dump(run_config, file, sort_keys=False)
+
+            if touch_encoder is not None and not args.resume:
+                torch.save(
+                    touch_adapter_state_dict(raw_model),
+                    args.output_dir / "initial_touch_adapter.pt",
+                )
 
         print(f"mode: {mode}")
         print(f"precision: {args.precision}")

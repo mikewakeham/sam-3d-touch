@@ -25,6 +25,7 @@ PARAMETER_PATTERNS = {
     "vecsetx_cross_attention": "touch_encoder.encoder.cross_attend_blocks.",
     "vecsetx_bottleneck": ("touch_encoder.encoder.bottleneck.pre_bottleneck_proj."),
     "touch_projection": "touch_encoder.output_projection.",
+    "touch_position_projection": "touch_encoder.position_projection.",
     "touch_embedding": "touch_encoder.touch_embedding",
     "shape_cross_attention_kv": ".cross_attn.shape.to_kv.",
 }
@@ -90,9 +91,15 @@ def report_parameter_changes(model, checkpoint_state, reference_state):
             f"{group}: saved_tensors={len(tensors)} saved_parameters={sum(x.numel() for x in tensors):,}"
         )
 
-    heading("Changes from released weights")
+    heading("Changes from reference initialization")
     current = dict(model.named_parameters())
-    for group in (*VECSETX_GROUPS, "shape_cross_attention_kv"):
+    for group in (
+        *VECSETX_GROUPS,
+        "touch_projection",
+        "touch_position_projection",
+        "touch_embedding",
+        "shape_cross_attention_kv",
+    ):
         names = [name for name in reference_state if parameter_group(name) == group]
         if not names:
             print(f"{group}: unavailable")
@@ -104,12 +111,12 @@ def report_parameter_changes(model, checkpoint_state, reference_state):
         ratio = difference / reference if reference else float("nan")
         print(f"{group}: change_norm={difference:.6g} relative_change={ratio:.6g}")
     if model.touch_encoder is not None:
-        print("touch_projection: initial weights were not saved; change is unavailable")
-        print("touch_embedding: initial value was not saved; change is unavailable")
         heading("Touch adapter parameters")
         print(f"touch_embedding: {tensor_stats(model.touch_encoder.touch_embedding)}")
         for name, parameter in model.touch_encoder.output_projection.named_parameters():
             print(f"output_projection.{name}: {tensor_stats(parameter)}")
+        for name, parameter in model.touch_encoder.position_projection.named_parameters():
+            print(f"position_projection.{name}: {tensor_stats(parameter)}")
 
 
 def report_raw_coordinates(record, dataset, verbose=True):
@@ -221,7 +228,7 @@ def report_canonical_coordinates(record, dataset, batch, index=0, verbose=True):
 
 def report_vecsetx_coordinates(touch_encoder, points, point_mask, verbose=True):
     # Same bbox-center/max-radius normalization as VecSetX README and infer.py.
-    points, point_mask = touch_encoder.prepare_points(points, point_mask)
+    points, point_mask, _, _ = touch_encoder.prepare_points(points, point_mask)
     passed_count = 0
     for index in range(len(points)):
         sample = points[index, point_mask[index]].detach().float()
@@ -266,6 +273,9 @@ def install_activation_hooks(model):
         def projection_hook(_module, _inputs, output):
             activations["projected_touch_tokens"] = tensor_stats(output)
 
+        def position_hook(_module, _inputs, output):
+            activations["touch_position_embedding"] = tensor_stats(output)
+
         def touch_hook(_module, _inputs, output):
             touch_state["tokens"] = output.shape[1]
             activations["touch_tokens_with_embedding"] = tensor_stats(output)
@@ -282,6 +292,9 @@ def install_activation_hooks(model):
         )
         handles.append(
             model.touch_encoder.output_projection.register_forward_hook(projection_hook)
+        )
+        handles.append(
+            model.touch_encoder.position_projection.register_forward_hook(position_hook)
         )
         handles.append(model.touch_encoder.register_forward_hook(touch_hook))
 
@@ -383,6 +396,11 @@ def main():
         for name, parameter in model.named_parameters()
         if parameter_group(name) in {*VECSETX_GROUPS, "shape_cross_attention_kv"}
     }
+    initial_adapter_path = args.checkpoint.parent / "initial_touch_adapter.pt"
+    if initial_adapter_path.exists():
+        reference_state.update(
+            torch.load(initial_adapter_path, map_location="cpu", weights_only=False)
+        )
     load_trainable_state_dict(model, checkpoint["model"])
 
     heading("Run")

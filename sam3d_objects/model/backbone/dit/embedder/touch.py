@@ -54,6 +54,12 @@ class TouchEncoder(nn.Module):
             ),
         )
 
+        self.position_projection = FeedForward(
+            dim=4,
+            hidden_dim=4 * output_dim,
+            output_dim=output_dim,
+        )
+
         self.touch_embedding = nn.Parameter(torch.empty(1, 1, output_dim))
         nn.init.normal_(self.touch_embedding, mean=0.0, std=1.0 / output_dim**0.5)
 
@@ -87,10 +93,11 @@ class TouchEncoder(nn.Module):
         if points.ndim != 3 or points.shape[-1] != 3:
             raise ValueError(f"Expected points shaped [B, N, 3], got {tuple(points.shape)}")
 
-        points, point_mask = self.prepare_points(points, point_mask)
+        points, point_mask, shifts, scales = self.prepare_points(points, point_mask)
         tokens = self.encoder.encode(points, point_mask)["x"]
         tokens = self.output_projection(tokens)
-        return tokens + self.touch_embedding
+        position = self.position_projection(torch.cat((shifts, scales), dim=-1))
+        return tokens + self.touch_embedding + position.unsqueeze(1)
 
     def prepare_points(self, points, point_mask=None):
         batch_size, point_count, _ = points.shape
@@ -111,8 +118,10 @@ class TouchEncoder(nn.Module):
         if (lengths == 0).any():
             raise ValueError("Point cloud contains no valid points")
 
+        points, shifts, scales = self.normalize_points_for_vecsetx(points, point_mask)
+
         if self.num_points is None or point_count == self.num_points:
-            return points, point_mask
+            return points, point_mask, shifts, scales
 
         points, indices = sample_farthest_points(
             points,
@@ -121,4 +130,21 @@ class TouchEncoder(nn.Module):
             random_start_point=False,
         )
 
-        return points, indices >= 0
+        return points, indices >= 0, shifts, scales
+
+    def normalize_points_for_vecsetx(self, points, point_mask):
+        normalized = torch.zeros_like(points)
+        shifts = []
+        scales = []
+
+        for index in range(len(points)):
+            surface = points[index, point_mask[index]]
+            shift = (surface.max(dim=0).values + surface.min(dim=0).values) / 2
+            surface = surface - shift
+            distances = torch.linalg.vector_norm(surface, dim=1)
+            scale = 1 / distances.max()
+            normalized[index, point_mask[index]] = surface * scale
+            shifts.append(shift)
+            scales.append(scale)
+
+        return normalized, torch.stack(shifts), torch.stack(scales).unsqueeze(1)
