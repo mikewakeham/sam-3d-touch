@@ -56,7 +56,7 @@ def split_vertex_nonmanifold(mesh, max_added_components=32):
     return mesh
 
 
-def load_mesh(model_path, object_transform_path):
+def load_mesh(model_path, object_transform_path, max_added_components=32):
     mesh = trimesh.load(str(model_path), force="mesh", process=False, skip_materials=True)
 
     with np.load(object_transform_path) as data:
@@ -71,7 +71,7 @@ def load_mesh(model_path, object_transform_path):
 
     # Undo nonmanifold vertex connections accidentally present in the mesh
     # or created by aggressive vertex merging.
-    mesh = split_vertex_nonmanifold(mesh)
+    mesh = split_vertex_nonmanifold(mesh, max_added_components=max_added_components)
 
     mesh.fix_normals(multibody=True)
 
@@ -135,9 +135,12 @@ def build_surface(mesh, density, seed_parts):
     }
 
 
-def prepare_surface(model_path, object_transform_path, density, seed=29, max_edge=0.03):
+def prepare_surface(
+    model_path, object_transform_path, density, seed=29, max_edge=0.03,
+    max_added_components=32,
+):
     model_path = Path(model_path)
-    mesh = load_mesh(model_path, object_transform_path)
+    mesh = load_mesh(model_path, object_transform_path, max_added_components=max_added_components)
     mesh = refine_mesh(mesh, max_edge)
     seed_parts = [seed, int(model_path.parent.name[:8], 16)]
     surface = build_surface(mesh, density, seed_parts)

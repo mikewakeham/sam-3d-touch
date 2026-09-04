@@ -101,6 +101,8 @@ def main():
         surface = prepare_surface(
             args.data_root / "objects" / object_id / "model.obj",
             args.data_root / first["object_transform_path"],
+            # These objects are already accepted; do not reapply the touch component limit.
+            max_added_components=None,
             **settings,
         )
         # Same stable priority ranking as dataloader.load_touch(), but globally.
