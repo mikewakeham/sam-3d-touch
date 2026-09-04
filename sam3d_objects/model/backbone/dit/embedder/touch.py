@@ -108,7 +108,9 @@ class TouchEncoder(nn.Module):
         tokens = self.encoder.encode(points, point_mask)["x"]
         tokens = self.output_projection(tokens)
         if self.use_position:
-            position = self.position_projection(torch.cat((shifts, scales), dim=-1))
+            position = self.position_projection(
+                torch.cat((shifts, scales.log()), dim=-1)
+            )
             tokens = tokens + position.unsqueeze(1)
         return tokens + self.touch_embedding
 
