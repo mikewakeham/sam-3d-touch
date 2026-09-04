@@ -1,0 +1,10 @@
+seed: 29
+
+dataset:
+  root: /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy
+  manifest: generated_data/samples_full_surface.jsonl
+  split_file: generated_data/splits.json
+  split: train
+
+touch:
+  source: full_surface

@@ -29,7 +29,10 @@ class TouchDataset(Dataset):
         dataset_config = config["dataset"]
         self.root = Path(dataset_config["root"])
         self.include_touch = include_touch
-        if include_touch:
+        self.point_source = config.get("touch", {}).get("source", "touch")
+        if self.point_source not in ("touch", "full_surface"):
+            raise ValueError(f"Unknown point source: {self.point_source}")
+        if include_touch and self.point_source == "touch":
             touch_config = config["touch"]
             self.contact_count = int(touch_config["contacts"]["count"])
             self.radius = float(touch_config["neighborhood"]["max_geodesic_distance"])
@@ -118,6 +121,22 @@ class TouchDataset(Dataset):
 
         return np.ascontiguousarray(mean.transpose(1, 2, 3, 0).reshape(4096, 8))
 
+    def load_full_surface(self, path):
+        with np.load(path, allow_pickle=False) as data:
+            if (
+                int(data["format_version"]) != 1
+                or data["data_kind"].item() != "full_surface"
+                or data["coordinate_frame"].item() != "sam_camera"
+            ):
+                raise ValueError(f"Unsupported full-surface format in {path}")
+            points = data["points_camera"]
+        if (
+            points.ndim != 2 or points.shape[1] != 3 or len(points) == 0
+            or points.dtype != np.float32 or not np.isfinite(points).all()
+        ):
+            raise ValueError(f"Expected finite float32 surface [N,3] in {path}")
+        return np.ascontiguousarray(points)
+
     def __getitem__(self, index):
         record = self.records[index]
 
@@ -136,7 +155,10 @@ class TouchDataset(Dataset):
             "sample_id": record["sample_id"],
         }
         if self.include_touch:
-            touch_xyz = self.load_touch(self.resolve_path(record["touch_path"]))
+            if self.point_source == "full_surface":
+                touch_xyz = self.load_full_surface(self.resolve_path(record["full_surface_path"]))
+            else:
+                touch_xyz = self.load_touch(self.resolve_path(record["touch_path"]))
             sample["touch_xyz"] = torch.from_numpy(touch_xyz)
         return sample
 
