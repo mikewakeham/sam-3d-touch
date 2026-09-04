@@ -17,16 +17,31 @@ export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
-  --checkpoint outputs/stage1_image/best.pt \
-  --pipeline-config checkpoints/hf/pipeline.yaml \
-  --data-config configs/data1.yaml
-
-/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
   --checkpoint outputs/stage1_touch/best.pt \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data1.yaml
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
   --checkpoint outputs/stage1_touch_train_vecsetx/best.pt \
+  --pipeline-config checkpoints/hf/pipeline.yaml \
+  --data-config configs/data1.yaml
+
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
+  --checkpoint outputs/stage1_touch_joint/best.pt \
+  --pipeline-config checkpoints/hf/pipeline.yaml \
+  --data-config configs/data1.yaml
+
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
+  --checkpoint outputs/stage1_touch_joint_train_vecsetx/best.pt \
+  --pipeline-config checkpoints/hf/pipeline.yaml \
+  --data-config configs/data1.yaml
+
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
+  --checkpoint outputs/stage1_touch_position/best.pt \
+  --pipeline-config checkpoints/hf/pipeline.yaml \
+  --data-config configs/data1.yaml
+
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
+  --checkpoint outputs/stage1_touch_position_train_vecsetx/best.pt \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data1.yaml

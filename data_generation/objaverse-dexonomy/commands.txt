@@ -1,0 +1,46 @@
+python make_data.py --object-id 003d24749f2e4047b95f9d04a7c7957b --num-views 1
+python view_data.py --object-id 003d24749f2e4047b95f9d04a7c7957b --view-id 0
+
+python make_data.py --object-id 0088cc8d1ae746038f091c8e459e2f38 --num-views 1
+python view_data.py --object-id 0088cc8d1ae746038f091c8e459e2f38 --view-id 0
+
+python make_data.py --object-id 01248b992e5949caae4fce4c572414a2 --num-views 1
+python view_data.py --object-id 01248b992e5949caae4fce4c572414a2 --view-id 0
+
+python view_data.py --object-id 94aaa0526f4a4abb87f161db210c0aea
+
+
+python /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/make_orbit.py \
+  --object-id e03c939a9d9b4e689f2e15707b05c0d4 \
+  --view-id 015 \
+  --variants '[
+    ["mesh_textured"],
+    ["mesh", "touch"],
+    ["mesh", "pointmap"],
+    ["pointmap", "touch"],
+    ["touch"],
+    ["pointmap"]
+  ]' \
+  --touch-levels '[
+    {"name": "low", "contacts": 16, "radius": 0.06, "points_per_contact": 150},
+    {"name": "medium", "contacts": 24, "radius": 0.08, "points_per_contact": 200},
+    {"name": "full", "contacts": 32, "radius": 0.10, "points_per_contact": 256}
+  ]' \
+  --frames 120 \
+  --fps 15 \
+  --width 1024 \
+  --height 1024 \
+  --output-dir /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/orbit_outputs \
+  --high-quality-transparency
+
+
+# 2 A100 gpu, 32 cpu total
+salloc --partition=kempner --account=kempner_qianqian_lab --time=0-01:00:00 --mem=512G --gres=gpu:4 --cpus-per-task=64
+
+export OMP_NUM_THREADS=1
+export OPENBLAS_NUM_THREADS=1
+export MKL_NUM_THREADS=1
+
+python make_data.py \
+    --workers 32 \
+    --render-workers-per-gpu 2
