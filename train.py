@@ -11,6 +11,7 @@ import torch
 import torch.distributed as dist
 import yaml
 from torch.nn.parallel import DistributedDataParallel
+from torch.nn.utils.rnn import pad_sequence
 
 from dataloader import build_dataloader, load_data_config
 
@@ -35,6 +36,8 @@ def parse_args():
     parser.add_argument("--precision", choices=["bf16", "fp32"], default="bf16")
     parser.add_argument("--no-touch", action="store_true")
     parser.add_argument("--train-vecsetx", action="store_true")
+    parser.add_argument("--joint-pointmap", action="store_true")
+    parser.add_argument("--no-touch-position", action="store_true")
     parser.add_argument(
         "--local-rank", "--local_rank", type=int,
         default=int(os.environ.get("LOCAL_RANK", -1)),
@@ -163,6 +166,23 @@ def normalize_touch_to_pointmap_frame(touch_xyz, touch_mask, inputs, preprocesso
     return torch.stack(normalized)
 
 
+def combine_pointmap_and_touch(inputs, touch_xyz, touch_mask):
+    pointmap = inputs["pointmap"].permute(0, 2, 3, 1).flatten(1, 2)
+    pointmap_mask = inputs["mask"].flatten(1) > 0.5
+    pointmap_mask &= torch.isfinite(pointmap).all(dim=-1)
+
+    clouds = [
+        torch.cat((points[valid], touch[mask]), dim=0)
+        for points, valid, touch, mask in zip(
+            pointmap, pointmap_mask, touch_xyz, touch_mask
+        )
+    ]
+    lengths = torch.tensor([len(cloud) for cloud in clouds], device=pointmap.device)
+    clouds = pad_sequence(clouds, batch_first=True)
+    mask = torch.arange(clouds.shape[1], device=clouds.device)[None] < lengths[:, None]
+    return clouds, mask
+
+
 def make_targets(shape, backbone):
     targets = {}
     for name, mapping in backbone.latent_mapping.items():
@@ -175,7 +195,9 @@ def make_targets(shape, backbone):
     return targets
 
 
-def prepare_batch(pipeline, batch, device, precision, use_touch):
+def prepare_batch(
+    pipeline, batch, device, precision, use_touch, joint_pointmap=False
+):
     inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
     with torch.no_grad(), amp(device, precision):
         condition_args, condition_kwargs = pipeline.get_condition_input(
@@ -195,6 +217,10 @@ def prepare_batch(pipeline, batch, device, precision, use_touch):
                 inputs,
                 pipeline.ss_preprocessor,
             )
+            if joint_pointmap:
+                touch_xyz, touch_mask = combine_pointmap_and_touch(
+                    inputs, touch_xyz, touch_mask
+                )
 
     return make_targets(shape, pipeline.backbone), condition_args, condition_kwargs, touch_xyz, touch_mask
 
@@ -340,6 +366,7 @@ def train_epoch(
         prepared = prepare_batch(
             pipeline, batch, device, args.precision,
             raw_model.touch_encoder is not None,
+            args.joint_pointmap,
         )
         optimizer.zero_grad(set_to_none=True)
         with amp(device, args.precision):
@@ -436,6 +463,7 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
                 prepared = prepare_batch(
                     pipeline, batch, device, args.precision,
                     model.touch_encoder is not None,
+                    args.joint_pointmap,
                 )
                 with amp(device, args.precision):
                     loss = model(*prepared)
@@ -457,6 +485,8 @@ def main():
     args = parse_args()
     if args.no_touch and args.train_vecsetx:
         raise ValueError("--train-vecsetx cannot be used with --no-touch")
+    if args.no_touch and args.joint_pointmap:
+        raise ValueError("--joint-pointmap cannot be used with --no-touch")
 
     distributed, rank, world_size, device = setup_distributed(args)
     main_process = rank == 0
@@ -493,11 +523,17 @@ def main():
             encoder_name="vecsetx",
             output_dim=pipeline.backbone.cond_channels,
             trainable=args.train_vecsetx,
+            use_position=not args.no_touch_position,
         ).to(device)
 
     model = TouchTrainingModel(pipeline.ss_generator, touch_encoder)
     optimizer, parameters = build_optimizer(touch_encoder, pipeline.backbone, args)
-    mode = "image" if args.no_touch else "image_touch"
+    if args.no_touch:
+        mode = "image"
+    elif args.joint_pointmap:
+        mode = "image_touch_joint"
+    else:
+        mode = "image_touch"
     start_epoch, step, best_loss = 0, 0, float("inf")
     if args.resume:
         start_epoch, step, best_loss = load_checkpoint(

@@ -445,6 +445,7 @@ def main():
                 device,
                 args.precision,
                 touch_encoder is not None,
+                checkpoint["mode"] == "image_touch_joint",
             )
             if touch_encoder is not None:
                 vecsetx_passes += report_vecsetx_coordinates(

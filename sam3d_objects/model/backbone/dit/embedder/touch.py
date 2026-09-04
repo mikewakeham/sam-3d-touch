@@ -26,7 +26,13 @@ VECSETX_ENCODE_PARAMETER_PREFIXES = (
 )
 
 class TouchEncoder(nn.Module):
-    def __init__(self, encoder_name="vecsetx", output_dim=1024, trainable=False):
+    def __init__(
+        self,
+        encoder_name="vecsetx",
+        output_dim=1024,
+        trainable=False,
+        use_position=True,
+    ):
         super().__init__()
 
         if encoder_name not in ENCODERS:
@@ -36,6 +42,7 @@ class TouchEncoder(nn.Module):
 
         self.encoder_name = encoder_name
         self.output_dim = output_dim
+        self.use_position = bool(use_position)
         self.encoder = config["constructor"]()
         self.num_points = getattr(self.encoder, "num_inputs", None)
 
@@ -59,6 +66,7 @@ class TouchEncoder(nn.Module):
             hidden_dim=4 * output_dim,
             output_dim=output_dim,
         )
+        self.position_projection.requires_grad_(self.use_position)
 
         self.touch_embedding = nn.Parameter(torch.empty(1, 1, output_dim))
         nn.init.normal_(self.touch_embedding, mean=0.0, std=1.0 / output_dim**0.5)
@@ -83,11 +91,14 @@ class TouchEncoder(nn.Module):
         )
 
     def get_config(self):
-        return {
+        config = {
             "encoder_name": self.encoder_name,
             "output_dim": self.output_dim,
             "trainable": self.encoder_trainable,
         }
+        if not self.use_position:
+            config["use_position"] = False
+        return config
 
     def forward(self, points, point_mask=None):
         if points.ndim != 3 or points.shape[-1] != 3:
@@ -96,8 +107,10 @@ class TouchEncoder(nn.Module):
         points, point_mask, shifts, scales = self.prepare_points(points, point_mask)
         tokens = self.encoder.encode(points, point_mask)["x"]
         tokens = self.output_projection(tokens)
-        position = self.position_projection(torch.cat((shifts, scales), dim=-1))
-        return tokens + self.touch_embedding + position.unsqueeze(1)
+        if self.use_position:
+            position = self.position_projection(torch.cat((shifts, scales), dim=-1))
+            tokens = tokens + position.unsqueeze(1)
+        return tokens + self.touch_embedding
 
     def prepare_points(self, points, point_mask=None):
         batch_size, point_count, _ = points.shape
