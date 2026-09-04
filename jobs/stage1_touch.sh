@@ -4,7 +4,7 @@
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=60
+#SBATCH --cpus-per-task=64
 #SBATCH --mem=256G
 #SBATCH --gres=gpu:4
 #SBATCH --time=12:00:00
