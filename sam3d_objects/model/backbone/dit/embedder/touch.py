@@ -70,6 +70,7 @@ class TouchEncoder(nn.Module):
             hidden_dim=4 * output_dim,
             output_dim=output_dim,
         )
+        nn.init.zeros_(self.position_projection.w2.weight)
         self.position_projection.requires_grad_(self.use_position)
 
         self.touch_embedding = nn.Parameter(torch.empty(1, 1, output_dim))
@@ -164,7 +165,10 @@ class TouchEncoder(nn.Module):
             shift = (surface.max(dim=0).values + surface.min(dim=0).values) / 2
             surface = surface - shift
             distances = torch.linalg.vector_norm(surface, dim=1)
-            scale = 1 / distances.max()
+            radius = distances.max()
+            if not torch.isfinite(radius) or radius <= 0:
+                raise ValueError(f"Point cloud {index} must have a positive finite radius")
+            scale = 1 / radius
             normalized[index, point_mask[index]] = surface * scale
             shifts.append(shift)
             scales.append(scale)
