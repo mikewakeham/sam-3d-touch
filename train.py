@@ -31,6 +31,10 @@ def parse_args():
     parser.add_argument("--max-steps", type=int, default=0)
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--cross-attention-learning-rate", type=float, default=1e-5)
+    parser.add_argument(
+        "--cross-attention-scope", choices=["kv", "full"], default="kv",
+        help="Train shape K/V only, or full shape cross-attention plus its input norm",
+    )
     parser.add_argument("--gradient-clip", type=float, default=1.0)
     parser.add_argument("--log-every", type=int, default=10)
     parser.add_argument("--precision", choices=["bf16", "fp32"], default="bf16")
@@ -236,6 +240,12 @@ def build_optimizer(touch_encoder, backbone, args):
 
     if args.cross_attention_learning_rate > 0:
         modules = [block.cross_attn["shape"].to_kv for block in backbone.blocks]
+        if args.cross_attention_scope == "full":
+            modules = [
+                module
+                for block in backbone.blocks
+                for module in (block.cross_attn["shape"], block.norm2["shape"])
+            ]
         for module in modules:
             module.requires_grad_(True)
         groups.append({
@@ -289,6 +299,12 @@ def component_gradient_norms(model):
             for block in model.generator.reverse_fn.backbone.blocks
             for parameter in block.cross_attn["shape"].to_kv.parameters()
         ),
+        "shape_cross_attention": (
+            parameter
+            for block in model.generator.reverse_fn.backbone.blocks
+            for module in (block.cross_attn["shape"], block.norm2["shape"])
+            for parameter in module.parameters()
+        ),
     }
     if model.touch_encoder is not None:
         groups.update({
@@ -316,7 +332,9 @@ def load_trainable_state_dict(model, state_dict):
             parameter.copy_(state_dict[name].to(parameter))
 
 
-def save_checkpoint(path, model, optimizer, epoch, step, best_loss, mode):
+def save_checkpoint(
+    path, model, optimizer, epoch, step, best_loss, mode, cross_attention_scope="kv"
+):
     torch.save({
         "model": trainable_state_dict(model),
         "optimizer": optimizer.state_dict(),
@@ -324,14 +342,17 @@ def save_checkpoint(path, model, optimizer, epoch, step, best_loss, mode):
         "step": step,
         "best_loss": best_loss,
         "mode": mode,
+        "cross_attention_scope": cross_attention_scope,
         "touch_config": (
             model.touch_encoder.get_config() if model.touch_encoder is not None else None
         ),
     }, path)
 
 
-def load_checkpoint(path, model, optimizer, mode):
+def load_checkpoint(path, model, optimizer, mode, cross_attention_scope="kv"):
     checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+    if checkpoint.get("cross_attention_scope", "kv") != cross_attention_scope:
+        raise ValueError("Checkpoint cross-attention scope does not match this run")
     touch_config = (
         model.touch_encoder.get_config() if model.touch_encoder is not None else None
     )
@@ -538,7 +559,7 @@ def main():
     start_epoch, step, best_loss = 0, 0, float("inf")
     if args.resume:
         start_epoch, step, best_loss = load_checkpoint(
-            args.resume, model, optimizer, mode
+            args.resume, model, optimizer, mode, args.cross_attention_scope
         )
 
     if distributed:
@@ -577,6 +598,7 @@ def main():
                 )
 
         print(f"mode: {mode}")
+        print(f"cross-attention scope: {args.cross_attention_scope}")
         print(f"precision: {args.precision}")
         print(f"GPUs: {world_size}")
         print(
@@ -643,11 +665,13 @@ def main():
             save_checkpoint(
                 args.output_dir / "last.pt", raw_model, optimizer,
                 epoch + 1, step, best_loss, mode,
+                args.cross_attention_scope,
             )
             if improved:
                 save_checkpoint(
                     args.output_dir / "best.pt", raw_model, optimizer,
                     epoch + 1, step, best_loss, mode,
+                    args.cross_attention_scope,
                 )
 
         if distributed:

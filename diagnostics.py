@@ -29,8 +29,11 @@ PARAMETER_PATTERNS = {
     "touch_position_projection": "touch_encoder.position_projection.",
     "touch_embedding": "touch_encoder.touch_embedding",
     "shape_cross_attention_kv": ".cross_attn.shape.to_kv.",
+    "shape_cross_attention_other": ".cross_attn.shape.",
+    "shape_cross_attention_input_norm": ".norm2.shape.",
 }
 VECSETX_GROUPS = tuple(PARAMETER_PATTERNS)[:4]
+SHAPE_GROUPS = tuple(group for group in PARAMETER_PATTERNS if group.startswith("shape_"))
 
 
 def representation_stats(tensor):
@@ -164,7 +167,7 @@ def report_parameter_changes(model, checkpoint_state, reference_state):
         "touch_projection",
         "touch_position_projection",
         "touch_embedding",
-        "shape_cross_attention_kv",
+        *SHAPE_GROUPS,
     ):
         names = [name for name in reference_state if parameter_group(name) == group]
         if not names:
@@ -628,15 +631,19 @@ def main():
         touch_encoder = TouchEncoder(**touch_config).to(device)
 
     model = TouchTrainingModel(pipeline.ss_generator, touch_encoder)
+    cross_attention_scope = checkpoint.get("cross_attention_scope", "kv")
     build_optimizer(
         touch_encoder,
         pipeline.backbone,
-        argparse.Namespace(learning_rate=0.0, cross_attention_learning_rate=1.0),
+        argparse.Namespace(
+            learning_rate=0.0, cross_attention_learning_rate=1.0,
+            cross_attention_scope=cross_attention_scope,
+        ),
     )
     reference_state = {
         name: parameter.detach().cpu().clone()
         for name, parameter in model.named_parameters()
-        if parameter_group(name) in {*VECSETX_GROUPS, "shape_cross_attention_kv"}
+        if parameter_group(name) in {*VECSETX_GROUPS, *SHAPE_GROUPS}
     }
     initial_adapter_path = args.checkpoint.parent / "initial_touch_adapter.pt"
     if initial_adapter_path.exists():
@@ -648,6 +655,7 @@ def main():
     heading("Run")
     print(f"checkpoint: {args.checkpoint}")
     print(f"mode: {checkpoint['mode']}")
+    print(f"cross-attention scope: {cross_attention_scope}")
     print(f"touch_config: {checkpoint['touch_config']}")
     print(f"device: {device} (one process, one GPU)")
     print(f"split: {args.split}")
