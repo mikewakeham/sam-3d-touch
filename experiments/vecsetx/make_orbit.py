@@ -1,7 +1,6 @@
 import argparse
 import json
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -62,6 +61,7 @@ def parse_args():
     parser.add_argument("--orbit-radius", type=float)
     parser.add_argument("--orbit-height", type=float, default=0.0)
     parser.add_argument("--point-size", type=float, default=5.0)
+    parser.add_argument("--surface-point-radius", type=float, default=0.008)
     parser.add_argument("--light-strength", type=float, default=1.0)
     parser.add_argument("--mp4", action="store_true")
     return parser.parse_args()
@@ -234,6 +234,23 @@ def particles(points, colors):
     return geometry
 
 
+def shaded_particles(points, colors, radius):
+    sphere = trimesh.creation.icosphere(subdivisions=0, radius=radius)
+    vertices_per_point = len(sphere.vertices)
+    vertices = (points[:, None] + sphere.vertices[None]).reshape(-1, 3)
+    faces = sphere.faces[None] + vertices_per_point * np.arange(len(points))[:, None, None]
+    colors = np.broadcast_to(colors, points.shape).reshape(-1, 3)
+    colors = np.repeat(colors, vertices_per_point, axis=0) / 255.0
+
+    geometry = o3d.geometry.TriangleMesh(
+        o3d.utility.Vector3dVector(vertices),
+        o3d.utility.Vector3iVector(faces.reshape(-1, 3)),
+    )
+    geometry.vertex_colors = o3d.utility.Vector3dVector(colors)
+    geometry.compute_vertex_normals()
+    return geometry
+
+
 def material(color, unlit=False, point_size=None):
     result = o3d.visualization.rendering.MaterialRecord()
     result.shader = "defaultUnlit" if unlit else "defaultLit"
@@ -312,7 +329,6 @@ def camera_fit(args, reference, variants):
 def render(args, items, center, radius, name):
     output_dir = sample_dir(args)
     output_dir.mkdir(parents=True, exist_ok=True)
-    png_path = output_dir / f"{name}.png"
     gif_path = output_dir / f"{name}.gif"
     mp4_path = output_dir / f"{name}.mp4"
 
@@ -328,7 +344,9 @@ def render(args, items, center, radius, name):
             renderer.scene.add_geometry(
                 geometry_name, geometry, material_record
             )
-            if material_record.shader == "defaultUnlit":
+            if material_record.shader == "defaultUnlit" or name.endswith(
+                ("_zero_surface", "_sdf_error", "_predicted_surface_to_input")
+            ):
                 renderer.scene.scene.geometry_shadows(
                     geometry_name, False, False
                 )
@@ -349,7 +367,6 @@ def render(args, items, center, radius, name):
         print(f"{name}: frame {frame + 1}/{args.frames}", end="\r", flush=True)
     print()
 
-    Image.fromarray(frames[0]).save(png_path)
     gif_fps = min(args.gif_fps, args.fps)
     count = max(1, round(len(frames) * gif_fps / args.fps))
     indices = np.linspace(0, len(frames), count, endpoint=False, dtype=int)
@@ -409,8 +426,8 @@ def main():
         raise ValueError("Error scale fractions must be positive")
     if args.resolution < 1 or args.zero_points < 1:
         raise ValueError("Resolution and zero-point count must be positive")
-    if args.point_size <= 0:
-        raise ValueError("--point-size must be positive")
+    if args.point_size <= 0 or args.surface_point_radius <= 0:
+        raise ValueError("Point sizes must be positive")
     if args.orbit_radius is not None and args.orbit_radius <= 0:
         raise ValueError("--orbit-radius must be positive")
     if min(
@@ -432,7 +449,7 @@ def main():
     root, record = load_record(args)
     image_path = Path(record["image_path"])
     image_path = image_path if image_path.is_absolute() else root / image_path
-    shutil.copy2(image_path, output_dir / "input_view.png")
+    Image.open(image_path).convert("RGB").save(output_dir / "input_view.gif")
 
     render(
         args,
@@ -500,14 +517,12 @@ def main():
             args,
             [
                 (
-                    particles(
+                    shaded_particles(
                         points,
                         error_colors(errors, sdf_maximum),
+                        args.surface_point_radius,
                     ),
-                    material(
-                        (1.0, 1.0, 1.0), unlit=True,
-                        point_size=args.point_size,
-                    ),
+                    material((1.0, 1.0, 1.0)),
                 ),
             ],
             camera_center,
@@ -518,11 +533,10 @@ def main():
             args,
             [
                 (
-                    particles(zero_points, INPUT_COLOR),
-                    material(
-                        (1.0, 1.0, 1.0), unlit=True,
-                        point_size=args.point_size,
+                    shaded_particles(
+                        zero_points, INPUT_COLOR, args.surface_point_radius
                     ),
+                    material((1.0, 1.0, 1.0)),
                 ),
             ],
             camera_center,
@@ -533,14 +547,12 @@ def main():
             args,
             [
                 (
-                    particles(
+                    shaded_particles(
                         zero_points,
                         error_colors(zero_to_input, zero_distance_maximum),
+                        args.surface_point_radius,
                     ),
-                    material(
-                        (1.0, 1.0, 1.0), unlit=True,
-                        point_size=args.point_size,
-                    ),
+                    material((1.0, 1.0, 1.0)),
                 ),
             ],
             camera_center,
@@ -548,9 +560,9 @@ def main():
             f"{source}_predicted_surface_to_input",
         )
 
-    save_color_scale(output_dir / "sdf_error_color_scale.png", args.max_error_fraction)
+    save_color_scale(output_dir / "sdf_error_color_scale.gif", args.max_error_fraction)
     save_color_scale(
-        output_dir / "zero_surface_distance_color_scale.png",
+        output_dir / "zero_surface_distance_color_scale.gif",
         args.max_zero_distance_fraction,
     )
     error_report["visualization"] = {
