@@ -52,7 +52,7 @@ def parse_args():
     parser.add_argument("--max-error-fraction", type=float, default=0.02)
     parser.add_argument("--max-zero-distance-fraction", type=float, default=0.05)
     parser.add_argument("--frames", type=int, default=120)
-    parser.add_argument("--fps", type=int, default=30)
+    parser.add_argument("--fps", type=int, default=20)
     parser.add_argument("--gif-fps", type=int, default=10)
     parser.add_argument("--gif-size", type=int, default=512)
     parser.add_argument("--width", type=int, default=768)
@@ -449,7 +449,7 @@ def main():
     root, record = load_record(args)
     image_path = Path(record["image_path"])
     image_path = image_path if image_path.is_absolute() else root / image_path
-    Image.open(image_path).convert("RGB").save(output_dir / "input_view.gif")
+    Image.open(image_path).convert("RGB").save(output_dir / "input_view.png")
 
     render(
         args,
@@ -560,9 +560,9 @@ def main():
             f"{source}_predicted_surface_to_input",
         )
 
-    save_color_scale(output_dir / "sdf_error_color_scale.gif", args.max_error_fraction)
+    save_color_scale(output_dir / "sdf_error_color_scale.png", args.max_error_fraction)
     save_color_scale(
-        output_dir / "zero_surface_distance_color_scale.gif",
+        output_dir / "zero_surface_distance_color_scale.png",
         args.max_zero_distance_fraction,
     )
     error_report["visualization"] = {
