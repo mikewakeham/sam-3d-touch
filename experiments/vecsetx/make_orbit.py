@@ -51,7 +51,7 @@ def parse_args():
     parser.add_argument("--zero-points", type=int, default=32768)
     parser.add_argument("--seed", type=int, default=29)
     parser.add_argument("--max-error-fraction", type=float, default=0.02)
-    parser.add_argument("--max-zero-distance-fraction", type=float, default=0.02)
+    parser.add_argument("--max-zero-distance-fraction", type=float, default=0.05)
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--fps", type=int, default=30)
     parser.add_argument("--gif-fps", type=int, default=10)
