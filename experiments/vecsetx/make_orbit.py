@@ -46,7 +46,7 @@ def parse_args():
         "--sources", nargs="+", choices=SOURCES,
         default=["full_surface", "touch", "joint"],
     )
-    parser.add_argument("--max-error-fraction", type=float, default=0.05)
+    parser.add_argument("--max-error-fraction", type=float, default=0.02)
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--fps", type=int, default=30)
     parser.add_argument("--gif-fps", type=int, default=10)
@@ -308,9 +308,14 @@ def render(args, items, center, radius, name):
         if material_record is None:
             renderer.scene.add_model(f"geometry_{index}", geometry)
         else:
+            geometry_name = f"geometry_{index}"
             renderer.scene.add_geometry(
-                f"geometry_{index}", geometry, material_record
+                geometry_name, geometry, material_record
             )
+            if material_record.shader == "defaultUnlit":
+                renderer.scene.scene.geometry_shadows(
+                    geometry_name, False, False
+                )
 
     frames = []
     for frame in range(args.frames):
@@ -455,7 +460,6 @@ def main():
         render(
             args,
             [
-                (mesh_geometry(reference), material(MESH_COLOR)),
                 (
                     particles(
                         points, error_colors(errors, maximum), args.point_size
