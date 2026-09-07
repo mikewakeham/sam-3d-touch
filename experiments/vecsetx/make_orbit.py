@@ -17,6 +17,8 @@ from scipy.spatial import cKDTree
 
 
 SOURCES = ("full_surface", "full_surface_unmasked", "touch", "joint")
+VIEWS = ("input", "reconstruction", "adherence", "extrapolation")
+INPUT_COLOR = np.array([45, 125, 210], dtype=np.uint8)
 
 
 def parse_args():
@@ -44,6 +46,7 @@ def parse_args():
         "--sources", nargs="+", choices=SOURCES,
         default=["full_surface", "touch", "joint"],
     )
+    parser.add_argument("--views", nargs="+", choices=VIEWS, default=list(VIEWS))
     parser.add_argument(
         "--color-scale", choices=["shared", "per-variant"], default="shared"
     )
@@ -53,8 +56,8 @@ def parse_args():
     parser.add_argument("--seed", type=int)
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--fps", type=int, default=30)
-    parser.add_argument("--webp-fps", type=int, default=10)
-    parser.add_argument("--webp-size", type=int, default=512)
+    parser.add_argument("--gif-fps", type=int, default=10)
+    parser.add_argument("--gif-size", type=int, default=512)
     parser.add_argument("--width", type=int, default=768)
     parser.add_argument("--height", type=int, default=768)
     parser.add_argument("--fov", type=float, default=40.0)
@@ -64,6 +67,7 @@ def parse_args():
     parser.add_argument("--display-points", type=int, default=2048)
     parser.add_argument("--error-anchor-fraction", type=float, default=0.1)
     parser.add_argument("--mesh-opacity", type=float, default=0.15)
+    parser.add_argument("--wireframe-faces", type=int, default=3000)
     parser.add_argument("--light-strength", type=float, default=1.0)
     parser.add_argument("--mp4", action="store_true")
     return parser.parse_args()
@@ -137,7 +141,9 @@ def load_variants(args, metric_points, seed):
         variants[source] = {
             "mesh": mesh,
             "points": points,
-            "errors": cKDTree(reconstructed).query(points)[0],
+            "reconstructed": reconstructed,
+            "adherence_errors": cKDTree(reconstructed).query(points)[0],
+            "extrapolation_errors": cKDTree(points).query(reconstructed)[0],
         }
     return variants
 
@@ -157,7 +163,7 @@ def sample_display_points(points, errors, count, error_fraction):
     if count == 0 or len(points) <= count:
         return points, errors
 
-    error_count = min(count, max(1, round(count * error_fraction)))
+    error_count = min(count, round(count * error_fraction))
     error_order = np.argsort(errors)
     ranks = np.linspace(0, len(points) - 1, error_count).round().astype(int)
     selected = list(error_order[ranks])
@@ -165,6 +171,9 @@ def sample_display_points(points, errors, count, error_fraction):
     selected_mask[selected] = True
 
     distances = np.full(len(points), np.inf)
+    if not selected:
+        selected.append(0)
+        selected_mask[0] = True
     for index in selected:
         distances = np.minimum(
             distances, np.square(points - points[index]).sum(axis=1)
@@ -206,6 +215,13 @@ def mesh_geometry(mesh):
     )
     geometry.compute_vertex_normals()
     return geometry
+
+
+def wireframe_geometry(mesh, target_faces):
+    geometry = mesh_geometry(mesh)
+    if len(mesh.faces) > target_faces:
+        geometry = geometry.simplify_quadric_decimation(target_faces)
+    return o3d.geometry.LineSet.create_from_triangle_mesh(geometry)
 
 
 def mesh_material(opacity):
@@ -252,7 +268,7 @@ def initialize_lighting(renderer, strength):
     )
 
 
-def reconstruct_alpha(black, white):
+def reconstruct_alpha(black, white, background):
     black = black.astype(np.float32)
     white = white.astype(np.float32)
     black_border = np.concatenate((black[0], black[-1], black[:, 0], black[:, -1]))
@@ -263,7 +279,7 @@ def reconstruct_alpha(black, white):
 
     alpha = 1.0 - np.median((white - black) / background_range, axis=-1)
     alpha = np.clip(alpha, 0.0, 1.0)
-    alpha[alpha < 1 / 255] = 0.0
+    alpha[background] = 0.0
 
     safe_alpha = np.maximum(alpha[..., None], 1 / 255)
     rgb = (black - (1.0 - alpha[..., None]) * black_background) / safe_alpha
@@ -272,35 +288,97 @@ def reconstruct_alpha(black, white):
     return np.dstack((rgb.astype(np.uint8), (alpha * 255).astype(np.uint8)))
 
 
-def render(args, source, variant, maximum):
+def high_quality_gif_frame(frame, size):
+    # Copied from data_generation/objaverse-dexonomy/make_orbit.py.
+    image = Image.fromarray(frame, "RGBA").convert("RGBa")
+    image = image.resize((size, size), Image.Resampling.LANCZOS).convert("RGBA")
+    rgba = np.asarray(image)
+    foreground = rgba[..., 3] >= 128
+
+    image = Image.fromarray(rgba[..., :3]).quantize(
+        colors=255, dither=Image.Dither.NONE
+    )
+    palette = image.getpalette()
+    palette.extend([0] * (768 - len(palette)))
+    palette[255 * 3:255 * 3 + 3] = [255, 255, 255]
+    image.putpalette(palette)
+    image.paste(255, mask=Image.fromarray((~foreground).astype(np.uint8) * 255))
+    return image
+
+
+def add_mesh(renderer, args, variant, opacity):
+    renderer.scene.add_geometry(
+        "mesh", mesh_geometry(variant["mesh"]), mesh_material(opacity)
+    )
+    renderer.scene.add_geometry(
+        "wireframe",
+        wireframe_geometry(variant["mesh"], args.wireframe_faces),
+        wireframe_material(),
+    )
+
+
+def add_points(renderer, name, points, colors, size):
+    if colors.ndim == 1:
+        colors = np.broadcast_to(colors, (len(points), 3))
+    renderer.scene.add_geometry(
+        name, particles(points, colors, size), particle_material()
+    )
+
+
+def add_view(renderer, args, view, variant, maximum):
+    if view == "input":
+        points, _ = sample_display_points(
+            variant["points"], variant["adherence_errors"],
+            args.display_points, 0,
+        )
+        add_points(renderer, "input", points, INPUT_COLOR, args.point_size)
+        return
+
+    add_mesh(
+        renderer,
+        args,
+        variant,
+        0.65 if view == "reconstruction" else args.mesh_opacity,
+    )
+    if view == "reconstruction":
+        return
+
+    if view == "adherence":
+        points, errors = sample_display_points(
+            variant["points"], variant["adherence_errors"],
+            args.display_points, args.error_anchor_fraction,
+        )
+        add_points(
+            renderer, "adherence", points,
+            error_colors(errors, maximum), args.point_size,
+        )
+        return
+
+    reconstructed, errors = sample_display_points(
+        variant["reconstructed"], variant["extrapolation_errors"],
+        args.display_points, args.error_anchor_fraction,
+    )
+    add_points(
+        renderer, "extrapolation", reconstructed,
+        error_colors(errors, maximum), args.point_size,
+    )
+    input_points, _ = sample_display_points(
+        variant["points"], variant["adherence_errors"],
+        args.display_points, 0,
+    )
+    add_points(
+        renderer, "input", input_points, INPUT_COLOR, args.point_size * 1.25
+    )
+
+
+def render(args, source, view, variant, maximum=None):
     output_dir = (args.output_dir or args.input_dir / "orbits") / args.sample_id
     output_dir.mkdir(parents=True, exist_ok=True)
 
     renderer = o3d.visualization.rendering.OffscreenRenderer(args.width, args.height)
     renderer.scene.show_skybox(False)
     initialize_lighting(renderer, args.light_strength)
-    mesh = mesh_geometry(variant["mesh"])
-    renderer.scene.add_geometry("mesh", mesh, mesh_material(args.mesh_opacity))
-    renderer.scene.add_geometry(
-        "wireframe",
-        o3d.geometry.LineSet.create_from_triangle_mesh(mesh),
-        wireframe_material(),
-    )
-    points, errors = sample_display_points(
-        variant["points"],
-        variant["errors"],
-        args.display_points,
-        args.error_anchor_fraction,
-    )
-    renderer.scene.add_geometry(
-        "points",
-        particles(
-            points,
-            error_colors(errors, maximum),
-            args.point_size,
-        ),
-        particle_material(),
-    )
+    add_view(renderer, args, view, variant, maximum)
 
     frames = []
     center = np.zeros(3)
@@ -316,29 +394,33 @@ def render(args, source, variant, maximum):
         black = np.asarray(renderer.render_to_image())[..., :3].copy()
         renderer.scene.set_background((1.0, 1.0, 1.0, 1.0))
         white = np.asarray(renderer.render_to_image())[..., :3].copy()
-        frames.append(reconstruct_alpha(black, white))
-        print(f"{source}: frame {frame + 1}/{args.frames}", end="\r", flush=True)
+        depth = np.asarray(renderer.render_to_depth_image())
+        frames.append(reconstruct_alpha(black, white, depth >= 1.0))
+        print(
+            f"{source}/{view}: frame {frame + 1}/{args.frames}",
+            end="\r", flush=True,
+        )
     print()
 
     images = [Image.fromarray(frame, "RGBA") for frame in frames]
-    images[0].save(output_dir / f"{source}.png")
-    webp_fps = min(args.webp_fps, args.fps)
-    frame_count = max(1, round(len(images) * webp_fps / args.fps))
+    name = f"{source}_{view}"
+    images[0].save(output_dir / f"{name}.png")
+    gif_fps = min(args.gif_fps, args.fps)
+    frame_count = max(1, round(len(images) * gif_fps / args.fps))
     indices = np.linspace(0, len(images), frame_count, endpoint=False, dtype=int)
-    webp_frames = [
-        images[index].convert("RGBa").resize(
-            (args.webp_size, args.webp_size), Image.Resampling.LANCZOS
-        ).convert("RGBA")
+    gif_frames = [
+        high_quality_gif_frame(frames[index], args.gif_size)
         for index in indices
     ]
-    webp_frames[0].save(
-        output_dir / f"{source}.webp",
+    gif_frames[0].save(
+        output_dir / f"{name}.gif",
         save_all=True,
-        append_images=webp_frames[1:],
-        duration=round(1000 / webp_fps),
+        append_images=gif_frames[1:],
+        duration=round(1000 / gif_fps),
         loop=0,
-        lossless=True,
-        method=6,
+        disposal=2,
+        optimize=False,
+        transparency=255,
     )
 
     if args.mp4:
@@ -354,7 +436,7 @@ def render(args, source, variant, maximum):
             )
         clip = ImageSequenceClip(rgb_frames, fps=args.fps)
         clip.write_videofile(
-            str(output_dir / f"{source}.mp4"), codec="libx264", audio=False,
+            str(output_dir / f"{name}.mp4"), codec="libx264", audio=False,
             logger=None,
             ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart"],
         )
@@ -385,41 +467,63 @@ def main():
         raise ValueError("--mesh-opacity must be in (0, 1)")
     if args.display_points < 0:
         raise ValueError("--display-points must be non-negative")
-    if not 0 < args.error_anchor_fraction <= 1:
-        raise ValueError("--error-anchor-fraction must be in (0, 1]")
+    if not 0 <= args.error_anchor_fraction <= 1:
+        raise ValueError("--error-anchor-fraction must be in [0, 1]")
     if min(
-        args.frames, args.fps, args.webp_fps, args.webp_size,
+        args.frames, args.fps, args.gif_fps, args.gif_size,
         args.width, args.height
     ) < 1:
         raise ValueError("frame, image, and FPS settings must be positive")
+    if args.wireframe_faces < 1:
+        raise ValueError("--wireframe-faces must be positive")
 
     ensure_variants(args)
     metric_points, seed, resolution = load_settings(args)
     variants = load_variants(args, metric_points, seed)
-    all_errors = np.concatenate([variant["errors"] for variant in variants.values()])
-    shared_maximum = args.max_error or float(
-        np.percentile(all_errors, args.error_percentile)
-    )
+    error_names = {
+        "adherence": "adherence_errors",
+        "extrapolation": "extrapolation_errors",
+    }
+    shared_maximums = {
+        view: args.max_error or float(np.percentile(
+            np.concatenate([variant[key] for variant in variants.values()]),
+            args.error_percentile,
+        ))
+        for view, key in error_names.items()
+        if view in args.views
+    }
 
     output_dir = (args.output_dir or args.input_dir / "orbits") / args.sample_id
     output_dir.mkdir(parents=True, exist_ok=True)
     scales = {}
     for source, variant in variants.items():
-        maximum = shared_maximum
-        if args.color_scale == "per-variant" and args.max_error is None:
-            maximum = float(np.percentile(variant["errors"], args.error_percentile))
-        scales[source] = {
-            "maximum": maximum,
-            "mean": float(variant["errors"].mean()),
-            "median": float(np.median(variant["errors"])),
-            "p95": float(np.percentile(variant["errors"], 95)),
-        }
-        render(args, source, variant, maximum)
-        if args.color_scale == "per-variant":
-            save_color_scale(output_dir / f"{source}_color_scale.png", maximum, resolution)
+        scales[source] = {}
+        for view in args.views:
+            maximum = None
+            if view in error_names:
+                errors = variant[error_names[view]]
+                maximum = shared_maximums[view]
+                if args.color_scale == "per-variant" and args.max_error is None:
+                    maximum = float(np.percentile(errors, args.error_percentile))
+                scales[source][view] = {
+                    "maximum": maximum,
+                    "mean": float(errors.mean()),
+                    "median": float(np.median(errors)),
+                    "p95": float(np.percentile(errors, 95)),
+                }
+                if args.color_scale == "per-variant":
+                    save_color_scale(
+                        output_dir / f"{source}_{view}_color_scale.png",
+                        maximum,
+                        resolution,
+                    )
+            render(args, source, view, variant, maximum)
 
     if args.color_scale == "shared":
-        save_color_scale(output_dir / "color_scale.png", shared_maximum, resolution)
+        for view, maximum in shared_maximums.items():
+            save_color_scale(
+                output_dir / f"{view}_color_scale.png", maximum, resolution
+            )
     with (output_dir / "error_scale.json").open("w") as file:
         json.dump({"color_scale": args.color_scale, "sources": scales}, file, indent=2)
     print(f"Saved transparent orbits to {output_dir}")
