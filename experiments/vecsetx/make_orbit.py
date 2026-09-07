@@ -60,10 +60,10 @@ def parse_args():
     parser.add_argument("--fov", type=float, default=40.0)
     parser.add_argument("--orbit-radius", type=float, default=3.2)
     parser.add_argument("--orbit-height", type=float, default=0.0)
-    parser.add_argument("--point-size", type=float, default=0.01)
+    parser.add_argument("--point-size", type=float, default=0.02)
     parser.add_argument("--display-points", type=int, default=2048)
     parser.add_argument("--error-anchor-fraction", type=float, default=0.1)
-    parser.add_argument("--mesh-opacity", type=float, default=0.18)
+    parser.add_argument("--mesh-opacity", type=float, default=0.15)
     parser.add_argument("--light-strength", type=float, default=1.0)
     parser.add_argument("--mp4", action="store_true")
     return parser.parse_args()
@@ -216,6 +216,14 @@ def mesh_material(opacity):
     return material
 
 
+def wireframe_material():
+    material = o3d.visualization.rendering.MaterialRecord()
+    material.shader = "unlitLine"
+    material.base_color = (0.35, 0.35, 0.35, 1.0)
+    material.line_width = 1.0
+    return material
+
+
 def particle_material():
     material = o3d.visualization.rendering.MaterialRecord()
     material.shader = "defaultUnlit"
@@ -271,8 +279,12 @@ def render(args, source, variant, maximum):
     renderer = o3d.visualization.rendering.OffscreenRenderer(args.width, args.height)
     renderer.scene.show_skybox(False)
     initialize_lighting(renderer, args.light_strength)
+    mesh = mesh_geometry(variant["mesh"])
+    renderer.scene.add_geometry("mesh", mesh, mesh_material(args.mesh_opacity))
     renderer.scene.add_geometry(
-        "mesh", mesh_geometry(variant["mesh"]), mesh_material(args.mesh_opacity)
+        "wireframe",
+        o3d.geometry.LineSet.create_from_triangle_mesh(mesh),
+        wireframe_material(),
     )
     points, errors = sample_display_points(
         variant["points"],
