@@ -136,6 +136,36 @@ def make_mesh(output, resolution):
     return trimesh.Trimesh(vertices, faces), float(volume.min()), float(volume.max())
 
 
+def make_reference_mesh(dataset, record, inputs, preprocessor, device):
+    with np.load(dataset.resolve_path(record["object_transform_path"])) as data:
+        object_transform = data["T_normalized_from_source"]
+    with np.load(dataset.resolve_path(record["camera_path"])) as data:
+        camera_transform = data["T_camera_from_object"]
+
+    # Same raw-object -> SAM-camera transform as data_generation/.../make_orbit.py.
+    transform = (
+        np.diag([-1.0, -1.0, 1.0, 1.0])
+        @ camera_transform
+        @ object_transform
+    )
+    mesh = trimesh.load(
+        dataset.root / "objects" / record["object_id"] / "model.obj",
+        force="mesh",
+        process=False,
+        skip_materials=True,
+    )
+    if not isinstance(mesh, trimesh.Trimesh) or mesh.is_empty:
+        raise ValueError(f"Could not load reference mesh for {record['sample_id']}")
+    mesh.apply_transform(transform)
+
+    vertices = torch.from_numpy(mesh.vertices.astype(np.float32))[None].to(device)
+    mask = torch.ones(vertices.shape[:2], dtype=torch.bool, device=device)
+    mesh.vertices = normalize_touch_to_pointmap_frame(
+        vertices, mask, inputs, preprocessor
+    )[0].cpu().numpy()
+    return mesh
+
+
 def point_errors(mesh, points, point_count, seed):
     reconstructed, _ = trimesh.sample.sample_surface(mesh, point_count, seed=seed)
     if isinstance(points, torch.Tensor):
@@ -270,6 +300,11 @@ def main():
                 "joint": (joint, joint_mask),
             }
 
+            reference_path = args.output_dir / f"{record['sample_id']}_reference.obj"
+            make_reference_mesh(
+                touch_dataset, record, inputs, preprocessor, device
+            ).export(reference_path)
+
             sample_result = {
                 "sample_id": record["sample_id"],
                 "object_id": record["object_id"],
@@ -278,7 +313,7 @@ def main():
             full_masked_code = None
             full_masked_metrics = None
             for source_name, (source, source_mask) in sources.items():
-                prepared, prepared_mask, _, _ = touch_encoder.prepare_points(
+                prepared, prepared_mask, shifts, scales = touch_encoder.prepare_points(
                     source, source_mask
                 )
                 input_points = prepared[0, prepared_mask[0]]
@@ -286,6 +321,12 @@ def main():
                     args.output_dir / f"{record['sample_id']}_{source_name}_points.npy"
                 )
                 np.save(points_path, input_points.float().cpu().numpy())
+                np.savez(
+                    args.output_dir
+                    / f"{record['sample_id']}_{source_name}_normalization.npz",
+                    shift=shifts[0].float().cpu().numpy(),
+                    scale=scales[0].float().cpu().numpy(),
+                )
 
                 with amp(device, args.precision):
                     code, output = encode_and_decode(
