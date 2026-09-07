@@ -41,7 +41,11 @@ def parse_args():
         type=Path,
         default=Path("experiments/vecsetx/outputs/reconstruction"),
     )
-    parser.add_argument("--output-dir", type=Path)
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=Path("experiments/vecsetx/outputs/orbits"),
+    )
     parser.add_argument(
         "--sources", nargs="+", choices=SOURCES,
         default=["full_surface", "touch", "joint"],
@@ -55,7 +59,7 @@ def parse_args():
     parser.add_argument("--metric-points", type=int)
     parser.add_argument("--seed", type=int)
     parser.add_argument("--frames", type=int, default=120)
-    parser.add_argument("--fps", type=int, default=30)
+    parser.add_argument("--fps", type=int, default=15)
     parser.add_argument("--gif-fps", type=int, default=10)
     parser.add_argument("--gif-size", type=int, default=512)
     parser.add_argument("--width", type=int, default=768)
@@ -66,8 +70,8 @@ def parse_args():
     parser.add_argument("--point-size", type=float, default=0.02)
     parser.add_argument("--display-points", type=int, default=2048)
     parser.add_argument("--error-anchor-fraction", type=float, default=0.1)
-    parser.add_argument("--mesh-opacity", type=float, default=0.15)
-    parser.add_argument("--wireframe-faces", type=int, default=3000)
+    parser.add_argument("--mesh-opacity", type=float, default=0.8)
+    parser.add_argument("--depth-tolerance", type=float)
     parser.add_argument("--light-strength", type=float, default=1.0)
     parser.add_argument("--mp4", action="store_true")
     return parser.parse_args()
@@ -144,6 +148,7 @@ def load_variants(args, metric_points, seed):
             "reconstructed": reconstructed,
             "adherence_errors": cKDTree(reconstructed).query(points)[0],
             "extrapolation_errors": cKDTree(points).query(reconstructed)[0],
+            "vertex_extrapolation_errors": cKDTree(points).query(mesh.vertices)[0],
         }
     return variants
 
@@ -192,58 +197,22 @@ def sample_display_points(points, errors, count, error_fraction):
     return points[selected], errors[selected]
 
 
-def particles(points, colors, size):
-    sphere = trimesh.creation.icosphere(subdivisions=0, radius=size / 2)
-    vertices_per_point = len(sphere.vertices)
-    vertices = (points[:, None] + sphere.vertices[None]).reshape(-1, 3)
-    faces = sphere.faces[None] + vertices_per_point * np.arange(len(points))[:, None, None]
-    colors = np.repeat(colors, vertices_per_point, axis=0) / 255.0
-
-    geometry = o3d.geometry.TriangleMesh(
-        o3d.utility.Vector3dVector(vertices),
-        o3d.utility.Vector3iVector(faces.reshape(-1, 3)),
-    )
-    geometry.vertex_colors = o3d.utility.Vector3dVector(colors)
-    geometry.compute_vertex_normals()
-    return geometry
-
-
-def mesh_geometry(mesh):
+def mesh_geometry(mesh, colors=None):
     geometry = o3d.geometry.TriangleMesh(
         o3d.utility.Vector3dVector(mesh.vertices),
         o3d.utility.Vector3iVector(mesh.faces),
     )
+    if colors is not None:
+        geometry.vertex_colors = o3d.utility.Vector3dVector(colors / 255.0)
     geometry.compute_vertex_normals()
     return geometry
 
 
-def wireframe_geometry(mesh, target_faces):
-    geometry = mesh_geometry(mesh)
-    if len(mesh.faces) > target_faces:
-        geometry = geometry.simplify_quadric_decimation(target_faces)
-    return o3d.geometry.LineSet.create_from_triangle_mesh(geometry)
-
-
 def mesh_material(opacity):
     material = o3d.visualization.rendering.MaterialRecord()
-    material.shader = "defaultLitTransparency"
-    material.base_color = (0.71, 0.71, 0.71, opacity)
-    material.has_alpha = True
-    return material
-
-
-def wireframe_material():
-    material = o3d.visualization.rendering.MaterialRecord()
-    material.shader = "unlitLine"
-    material.base_color = (0.35, 0.35, 0.35, 1.0)
-    material.line_width = 1.0
-    return material
-
-
-def particle_material():
-    material = o3d.visualization.rendering.MaterialRecord()
-    material.shader = "defaultUnlit"
-    material.base_color = (1.0, 1.0, 1.0, 1.0)
+    material.shader = "defaultLit" if opacity == 1 else "defaultLitTransparency"
+    material.base_color = (1.0, 1.0, 1.0, opacity)
+    material.has_alpha = opacity < 1
     material.sRGB_color = True
     return material
 
@@ -306,69 +275,88 @@ def high_quality_gif_frame(frame, size):
     return image
 
 
-def add_mesh(renderer, args, variant, opacity):
-    renderer.scene.add_geometry(
-        "mesh", mesh_geometry(variant["mesh"]), mesh_material(opacity)
-    )
-    renderer.scene.add_geometry(
-        "wireframe",
-        wireframe_geometry(variant["mesh"], args.wireframe_faces),
-        wireframe_material(),
-    )
-
-
-def add_points(renderer, name, points, colors, size):
-    if colors.ndim == 1:
-        colors = np.broadcast_to(colors, (len(points), 3))
-    renderer.scene.add_geometry(
-        name, particles(points, colors, size), particle_material()
-    )
-
-
 def add_view(renderer, args, view, variant, maximum):
-    if view == "input":
-        points, _ = sample_display_points(
-            variant["points"], variant["adherence_errors"],
-            args.display_points, 0,
-        )
-        add_points(renderer, "input", points, INPUT_COLOR, args.point_size)
-        return
-
-    add_mesh(
-        renderer,
-        args,
-        variant,
-        0.65 if view == "reconstruction" else args.mesh_opacity,
+    colors = None
+    if view == "extrapolation":
+        colors = error_colors(variant["vertex_extrapolation_errors"], maximum)
+    opacity = 1.0 if view == "reconstruction" else args.mesh_opacity
+    material = mesh_material(opacity)
+    if colors is None:
+        material.base_color = (0.71, 0.71, 0.71, opacity)
+    renderer.scene.add_geometry(
+        "mesh", mesh_geometry(variant["mesh"], colors), material
     )
-    if view == "reconstruction":
-        return
 
+    if view == "reconstruction":
+        return None, None
     if view == "adherence":
         points, errors = sample_display_points(
             variant["points"], variant["adherence_errors"],
             args.display_points, args.error_anchor_fraction,
         )
-        add_points(
-            renderer, "adherence", points,
-            error_colors(errors, maximum), args.point_size,
-        )
-        return
+        return points, error_colors(errors, maximum)
 
-    reconstructed, errors = sample_display_points(
-        variant["reconstructed"], variant["extrapolation_errors"],
-        args.display_points, args.error_anchor_fraction,
-    )
-    add_points(
-        renderer, "extrapolation", reconstructed,
-        error_colors(errors, maximum), args.point_size,
-    )
-    input_points, _ = sample_display_points(
+    points, _ = sample_display_points(
         variant["points"], variant["adherence_errors"],
         args.display_points, 0,
     )
-    add_points(
-        renderer, "input", input_points, INPUT_COLOR, args.point_size * 1.25
+    return points, np.broadcast_to(INPUT_COLOR, (len(points), 3))
+
+
+def project_points(points, eye, center, fov, width, height):
+    forward = center - eye
+    forward /= np.linalg.norm(forward)
+    right = np.cross(forward, np.array([0.0, 1.0, 0.0]))
+    right /= np.linalg.norm(right)
+    up = np.cross(right, forward)
+
+    relative = points - eye
+    depth = relative @ forward
+    focal = height / (2 * np.tan(np.radians(fov) / 2))
+    x = width / 2 + (relative @ right) * focal / depth
+    y = height / 2 - (relative @ up) * focal / depth
+    pixels = np.stack((x, y), axis=1)
+    inside = (
+        (depth > 0)
+        & (x >= 0) & (x < width)
+        & (y >= 0) & (y < height)
     )
+    return pixels, depth, inside, focal
+
+
+def draw_points(frame, mesh_depth, points, colors, eye, center, args):
+    pixels, point_depth, inside, focal = project_points(
+        points, eye, center, args.fov, args.width, args.height
+    )
+    indices = np.flatnonzero(inside)
+    if len(indices) == 0:
+        return frame
+
+    xy = np.rint(pixels[indices]).astype(int)
+    xy[:, 0] = np.clip(xy[:, 0], 0, args.width - 1)
+    xy[:, 1] = np.clip(xy[:, 1], 0, args.height - 1)
+    surface_depth = mesh_depth[xy[:, 1], xy[:, 0]]
+    hidden = (
+        np.isfinite(surface_depth)
+        & (point_depth[indices] > surface_depth + args.depth_tolerance)
+    )
+    radii = np.maximum(
+        2, np.rint(args.point_size * focal / (2 * point_depth[indices])).astype(int)
+    )
+
+    image = Image.fromarray(frame, "RGBA")
+    draw = ImageDraw.Draw(image)
+    order = np.argsort(point_depth[indices])[::-1]
+    for position in order:
+        x, y = xy[position]
+        radius = int(radii[position])
+        box = (x - radius, y - radius, x + radius, y + radius)
+        color = tuple(int(value) for value in colors[indices[position]]) + (255,)
+        if hidden[position]:
+            draw.ellipse(box, outline=color, width=max(1, radius // 2))
+        else:
+            draw.ellipse(box, fill=color)
+    return np.asarray(image)
 
 
 def render(args, source, view, variant, maximum=None):
@@ -378,7 +366,7 @@ def render(args, source, view, variant, maximum=None):
     renderer = o3d.visualization.rendering.OffscreenRenderer(args.width, args.height)
     renderer.scene.show_skybox(False)
     initialize_lighting(renderer, args.light_strength)
-    add_view(renderer, args, view, variant, maximum)
+    points, colors = add_view(renderer, args, view, variant, maximum)
 
     frames = []
     center = np.zeros(3)
@@ -395,7 +383,15 @@ def render(args, source, view, variant, maximum=None):
         renderer.scene.set_background((1.0, 1.0, 1.0, 1.0))
         white = np.asarray(renderer.render_to_image())[..., :3].copy()
         depth = np.asarray(renderer.render_to_depth_image())
-        frames.append(reconstruct_alpha(black, white, depth >= 1.0))
+        image = reconstruct_alpha(black, white, depth >= 1.0)
+        if points is not None:
+            mesh_depth = np.asarray(
+                renderer.render_to_depth_image(z_in_view_space=True)
+            )
+            image = draw_points(
+                image, mesh_depth, points, colors, eye, center, args
+            )
+        frames.append(image)
         print(
             f"{source}/{view}: frame {frame + 1}/{args.frames}",
             end="\r", flush=True,
@@ -457,6 +453,17 @@ def save_color_scale(path, maximum, resolution):
     image.save(path)
 
 
+def save_point_legend(path):
+    image = Image.new("RGBA", (500, 48), (255, 255, 255, 0))
+    draw = ImageDraw.Draw(image)
+    color = tuple(int(value) for value in INPUT_COLOR) + (255,)
+    draw.ellipse((10, 14, 22, 26), fill=color)
+    draw.text((30, 13), "in front of surface", fill=(0, 0, 0, 255))
+    draw.ellipse((250, 14, 262, 26), outline=color, width=2)
+    draw.text((270, 13), "behind surface", fill=(0, 0, 0, 255))
+    image.save(path)
+
+
 def main():
     args = parse_args()
     if not 0 < args.error_percentile <= 100:
@@ -465,6 +472,10 @@ def main():
         raise ValueError("--max-error must be positive")
     if not 0 < args.mesh_opacity < 1:
         raise ValueError("--mesh-opacity must be in (0, 1)")
+    if args.point_size <= 0:
+        raise ValueError("--point-size must be positive")
+    if args.depth_tolerance is not None and args.depth_tolerance < 0:
+        raise ValueError("--depth-tolerance must be non-negative")
     if args.display_points < 0:
         raise ValueError("--display-points must be non-negative")
     if not 0 <= args.error_anchor_fraction <= 1:
@@ -474,11 +485,10 @@ def main():
         args.width, args.height
     ) < 1:
         raise ValueError("frame, image, and FPS settings must be positive")
-    if args.wireframe_faces < 1:
-        raise ValueError("--wireframe-faces must be positive")
-
     ensure_variants(args)
     metric_points, seed, resolution = load_settings(args)
+    if args.depth_tolerance is None:
+        args.depth_tolerance = 2 / resolution
     variants = load_variants(args, metric_points, seed)
     error_names = {
         "adherence": "adherence_errors",
@@ -495,6 +505,7 @@ def main():
 
     output_dir = (args.output_dir or args.input_dir / "orbits") / args.sample_id
     output_dir.mkdir(parents=True, exist_ok=True)
+    save_point_legend(output_dir / "point_visibility_legend.png")
     scales = {}
     for source, variant in variants.items():
         scales[source] = {}
