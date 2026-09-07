@@ -48,10 +48,10 @@ def parse_args():
         default=["full_surface", "touch", "joint"],
     )
     parser.add_argument("--resolution", type=int, default=256)
-    parser.add_argument("--zero-points", type=int, default=8192)
+    parser.add_argument("--zero-points", type=int, default=32768)
     parser.add_argument("--seed", type=int, default=29)
     parser.add_argument("--max-error-fraction", type=float, default=0.02)
-    parser.add_argument("--max-zero-distance-fraction", type=float, default=0.25)
+    parser.add_argument("--max-zero-distance-fraction", type=float, default=0.02)
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--fps", type=int, default=30)
     parser.add_argument("--gif-fps", type=int, default=10)
@@ -61,7 +61,7 @@ def parse_args():
     parser.add_argument("--fov", type=float, default=40.0)
     parser.add_argument("--orbit-radius", type=float)
     parser.add_argument("--orbit-height", type=float, default=0.0)
-    parser.add_argument("--point-size", type=float, default=0.02)
+    parser.add_argument("--point-size", type=float, default=5.0)
     parser.add_argument("--light-strength", type=float, default=1.0)
     parser.add_argument("--mp4", action="store_true")
     return parser.parse_args()
@@ -169,12 +169,13 @@ def load_scene(args):
             reconstruction, args.zero_points, seed=args.seed
         )
         zero_points = (zero_points / scale + shift - center) * display_scale
+        input_tree = cKDTree(points)
         sdf_error = np.abs(input_sdf) / scale * display_scale
         variants[source] = {
             "points": points,
             "sdf_error": sdf_error,
             "zero_points": zero_points,
-            "zero_distance": cKDTree(points).query(zero_points)[0],
+            "zero_to_input": input_tree.query(zero_points)[0],
         }
     return reference, variants, center, display_scale
 
@@ -224,28 +225,22 @@ def mesh_geometry(mesh):
     return geometry
 
 
-def particles(points, colors, size):
-    # Copied from data_generation/objaverse-dexonomy/make_orbit.py.
-    sphere = trimesh.creation.icosphere(subdivisions=0, radius=size / 2)
-    vertices_per_point = len(sphere.vertices)
-    vertices = (points[:, None] + sphere.vertices[None]).reshape(-1, 3)
-    faces = sphere.faces[None] + vertices_per_point * np.arange(len(points))[:, None, None]
-    colors = np.broadcast_to(colors, points.shape).reshape(-1, 3)
-    colors = np.repeat(colors, vertices_per_point, axis=0) / 255.0
-
-    geometry = o3d.geometry.TriangleMesh(
-        o3d.utility.Vector3dVector(vertices),
-        o3d.utility.Vector3iVector(faces.reshape(-1, 3)),
+def particles(points, colors):
+    geometry = o3d.geometry.PointCloud()
+    geometry.points = o3d.utility.Vector3dVector(points)
+    geometry.colors = o3d.utility.Vector3dVector(
+        np.broadcast_to(colors, points.shape) / 255.0
     )
-    geometry.vertex_colors = o3d.utility.Vector3dVector(colors)
     return geometry
 
 
-def material(color, unlit=False):
+def material(color, unlit=False, point_size=None):
     result = o3d.visualization.rendering.MaterialRecord()
     result.shader = "defaultUnlit" if unlit else "defaultLit"
     result.base_color = (*color, 1.0)
     result.sRGB_color = True
+    if point_size is not None:
+        result.point_size = point_size
     return result
 
 
@@ -461,7 +456,7 @@ def main():
         points = variant["points"]
         errors = variant["sdf_error"]
         zero_points = variant["zero_points"]
-        zero_distances = variant["zero_distance"]
+        zero_to_input = variant["zero_to_input"]
         if len(errors) != len(points):
             raise ValueError(f"SDF output size does not match {source} points")
         error_report[source] = {
@@ -472,15 +467,15 @@ def main():
                     np.quantile(errors, 0.95) / 2.0
                 ),
             },
-            "zero_surface_to_input": {
+            "predicted_surface_to_input": {
                 "mean_fraction_of_object_width": float(
-                    zero_distances.mean() / 2.0
+                    zero_to_input.mean() / 2.0
                 ),
                 "median_fraction_of_object_width": float(
-                    np.median(zero_distances) / 2.0
+                    np.median(zero_to_input) / 2.0
                 ),
                 "p95_fraction_of_object_width": float(
-                    np.quantile(zero_distances, 0.95) / 2.0
+                    np.quantile(zero_to_input, 0.95) / 2.0
                 ),
             },
         }
@@ -490,8 +485,11 @@ def main():
             [
                 (mesh_geometry(reference), material(MESH_COLOR)),
                 (
-                    particles(points, INPUT_COLOR, args.point_size),
-                    material((1.0, 1.0, 1.0), unlit=True),
+                    particles(points, INPUT_COLOR),
+                    material(
+                        (1.0, 1.0, 1.0), unlit=True,
+                        point_size=args.point_size,
+                    ),
                 ),
             ],
             camera_center,
@@ -505,9 +503,11 @@ def main():
                     particles(
                         points,
                         error_colors(errors, sdf_maximum),
-                        args.point_size,
                     ),
-                    material((1.0, 1.0, 1.0), unlit=True),
+                    material(
+                        (1.0, 1.0, 1.0), unlit=True,
+                        point_size=args.point_size,
+                    ),
                 ),
             ],
             camera_center,
@@ -520,15 +520,17 @@ def main():
                 (
                     particles(
                         zero_points,
-                        error_colors(zero_distances, zero_distance_maximum),
-                        args.point_size,
+                        error_colors(zero_to_input, zero_distance_maximum),
                     ),
-                    material((1.0, 1.0, 1.0), unlit=True),
+                    material(
+                        (1.0, 1.0, 1.0), unlit=True,
+                        point_size=args.point_size,
+                    ),
                 ),
             ],
             camera_center,
             camera_radius,
-            f"{source}_zero_surface_distance",
+            f"{source}_predicted_surface_to_input",
         )
 
     save_color_scale(output_dir / "sdf_error_color_scale.png", args.max_error_fraction)
@@ -541,10 +543,9 @@ def main():
         "input_sdf_residual": (
             "absolute decoded SDF at each prepared input point; points only"
         ),
-        "zero_surface_to_input": (
-            f"{args.zero_points} area-sampled points from the decoded zero-level "
-            f"surface extracted at resolution {args.resolution}, colored by "
-            "nearest prepared-input-point distance; points only"
+        "predicted_surface_to_input": (
+            f"{args.zero_points} decoded zero-surface points colored by nearest "
+            "prepared-input-point distance"
         ),
         "camera_center": camera_center.tolist(),
         "camera_radius": camera_radius,
