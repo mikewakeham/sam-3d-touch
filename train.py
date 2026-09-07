@@ -111,6 +111,21 @@ def build_stage1_pipeline(config_path, device):
     return Stage1TrainingPipeline(config_path, device)
 
 
+def build_stage1_preprocessor(config_path):
+    from hydra.utils import instantiate
+    from omegaconf import OmegaConf
+
+    config_path = Path(config_path).resolve()
+    config = OmegaConf.load(config_path)
+    preprocessor = config.get("ss_preprocessor")
+    if preprocessor is None:
+        generator_config = OmegaConf.load(
+            config_path.parent / config.ss_generator_config_path
+        )
+        preprocessor = generator_config["tdfy"]["val_preprocessor"]
+    return instantiate(preprocessor)
+
+
 class TouchTrainingModel(torch.nn.Module):
     def __init__(self, generator, touch_encoder=None):
         super().__init__()
@@ -145,6 +160,25 @@ def preprocess_batch(pipeline, images, pointmaps):
         )
         for image, pointmap in zip(images, pointmaps)
     ]
+    return {key: torch.cat([item[key] for item in items]) for key in items[0]}
+
+
+def preprocess_pointmap_batch(preprocessor, images, pointmaps, device):
+    from sam3d_objects.data.dataset.tdfy.img_and_mask_transforms import get_mask
+
+    items = []
+    for image, pointmap in zip(images, pointmaps):
+        rgba = torch.from_numpy((image.numpy() / 255).astype(np.float32))
+        rgba = rgba.permute(2, 0, 1).contiguous()
+        item = preprocessor._process_image_mask_pointmap_mess(
+            rgba[:3],
+            get_mask(rgba, None, "ALPHA_CHANNEL"),
+            pointmap.permute(2, 0, 1),
+        )
+        items.append({
+            key: item[key][None].to(device)
+            for key in ("mask", "pointmap", "pointmap_scale", "pointmap_shift")
+        })
     return {key: torch.cat([item[key] for item in items]) for key in items[0]}
 
 

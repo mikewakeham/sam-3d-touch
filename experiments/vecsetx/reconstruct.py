@@ -14,10 +14,10 @@ from scipy.spatial import cKDTree
 from dataloader import TouchDataset, collate_touch_batch, load_data_config
 from train import (
     amp,
-    build_stage1_pipeline,
+    build_stage1_preprocessor,
     combine_pointmap_and_touch,
     normalize_touch_to_pointmap_frame,
-    preprocess_batch,
+    preprocess_pointmap_batch,
 )
 from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
 
@@ -227,10 +227,9 @@ def main():
         if not pairs:
             raise ValueError(f"Unknown sample {args.sample_id!r}")
 
-    pipeline = build_stage1_pipeline(args.pipeline_config, device)
+    preprocessor = build_stage1_preprocessor(args.pipeline_config)
     touch_encoder = TouchEncoder(
         encoder_name="vecsetx",
-        output_dim=pipeline.backbone.cond_channels,
         trainable=False,
         use_position=False,
     ).to(device).eval()
@@ -243,8 +242,11 @@ def main():
         for number, (touch_index, surface_index, record) in enumerate(pairs, 1):
             touch_batch = collate_touch_batch([touch_dataset[touch_index]])
             surface_batch = collate_touch_batch([surface_dataset[surface_index]])
-            inputs = preprocess_batch(
-                pipeline, touch_batch["image"], touch_batch["pointmap"]
+            inputs = preprocess_pointmap_batch(
+                preprocessor,
+                touch_batch["image"],
+                touch_batch["pointmap"],
+                device,
             )
 
             touch_mask = touch_batch["touch_mask"].to(device)
@@ -253,13 +255,13 @@ def main():
                 touch_batch["touch_xyz"].to(device),
                 touch_mask,
                 inputs,
-                pipeline.ss_preprocessor,
+                preprocessor,
             )
             surface = normalize_touch_to_pointmap_frame(
                 surface_batch["touch_xyz"].to(device),
                 surface_mask,
                 inputs,
-                pipeline.ss_preprocessor,
+                preprocessor,
             )
             joint, joint_mask = combine_pointmap_and_touch(inputs, touch, touch_mask)
             sources = {
