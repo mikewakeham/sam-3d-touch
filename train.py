@@ -114,7 +114,10 @@ def build_stage1_pipeline(config_path, device, no_pointmap=False):
 
     pipeline = Stage1TrainingPipeline(config_path, device)
     if no_pointmap:
-        disable_pointmap_conditioning(pipeline.backbone.condition_embedder)
+        condition_embedder = pipeline.ss_condition_embedder
+        if condition_embedder is None:
+            condition_embedder = pipeline.backbone.condition_embedder
+        disable_pointmap_conditioning(condition_embedder)
     return pipeline
 
 
