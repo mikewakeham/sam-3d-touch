@@ -40,18 +40,17 @@ def parse_args():
     parser.add_argument(
         "--input-dir",
         type=Path,
-        default=Path("experiments/vecsetx/outputs/reconstruction_256"),
+        default=Path("experiments/vecsetx/outputs/orbit_artifacts"),
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("experiments/vecsetx/outputs/orbits"),
+        default=Path("experiments/vecsetx/outputs/sdf_orbits"),
     )
     parser.add_argument(
         "--sources", nargs="+", choices=SOURCES,
         default=["full_surface", "touch", "joint"],
     )
-    parser.add_argument("--resolution", type=int, default=256)
     parser.add_argument("--max-error-fraction", type=float, default=0.05)
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--fps", type=int, default=30)
@@ -82,15 +81,12 @@ def ensure_artifacts(args):
     for source in args.sources:
         point_source = source_file(source)
         paths.extend([
-            args.input_dir / f"{args.sample_id}_{source}.obj",
             args.input_dir / f"{args.sample_id}_{point_source}_points.npy",
             args.input_dir / f"{args.sample_id}_{point_source}_normalization.npz",
             args.input_dir / f"{args.sample_id}_{source}_input_sdf.npy",
         ])
     if all(path.exists() for path in paths):
-        with settings_path.open() as file:
-            if json.load(file).get("resolution") == args.resolution:
-                return
+        return
 
     print(f"Preparing VecSetX artifacts for {args.sample_id}", flush=True)
     subprocess.run(
@@ -104,7 +100,7 @@ def ensure_artifacts(args):
             "--output-dir", str(args.input_dir),
             "--split", args.split,
             "--sample-id", args.sample_id,
-            "--resolution", str(args.resolution),
+            "--skip-mesh",
             "--skip-report",
         ],
         check=True,
@@ -153,16 +149,9 @@ def load_scene(args):
             scale = float(data["scale"].reshape(-1)[0])
 
         points = (points / scale + shift - center) * display_scale
-        reconstruction = load_mesh(
-            args.input_dir / f"{args.sample_id}_{source}.obj"
-        )
-        reconstruction.vertices = (
-            reconstruction.vertices / scale + shift - center
-        ) * display_scale
         sdf_error = np.abs(input_sdf) / scale * display_scale
         variants[source] = {
             "points": points,
-            "mesh": reconstruction,
             "sdf_error": sdf_error,
         }
     return reference, variants, center, display_scale
@@ -275,7 +264,7 @@ def error_colors(errors, maximum):
 def camera_fit(args, reference, variants):
     arrays = [reference.vertices]
     for variant in variants.values():
-        arrays.extend((variant["mesh"].vertices, variant["points"]))
+        arrays.append(variant["points"])
     bounds = np.array([
         np.min([points.min(axis=0) for points in arrays], axis=0),
         np.max([points.max(axis=0) for points in arrays], axis=0),
@@ -398,8 +387,6 @@ def main():
         raise ValueError("--max-error-fraction must be positive")
     if args.point_size <= 0:
         raise ValueError("--point-size must be positive")
-    if args.resolution < 1:
-        raise ValueError("--resolution must be positive")
     if args.orbit_radius is not None and args.orbit_radius <= 0:
         raise ValueError("--orbit-radius must be positive")
     if min(
@@ -442,7 +429,6 @@ def main():
     error_report = {}
     for source, variant in variants.items():
         points = variant["points"]
-        reconstruction = variant["mesh"]
         errors = variant["sdf_error"]
         if len(errors) != len(points):
             raise ValueError(f"SDF output size does not match {source} points")
@@ -455,7 +441,7 @@ def main():
         render(
             args,
             [
-                (mesh_geometry(reconstruction), material(MESH_COLOR)),
+                (mesh_geometry(reference), material(MESH_COLOR)),
                 (
                     particles(points, INPUT_COLOR, args.point_size),
                     material((1.0, 1.0, 1.0), unlit=True),
@@ -468,7 +454,7 @@ def main():
         render(
             args,
             [
-                (mesh_geometry(reconstruction), material(MESH_COLOR)),
+                (mesh_geometry(reference), material(MESH_COLOR)),
                 (
                     particles(
                         points, error_colors(errors, maximum), args.point_size
@@ -481,15 +467,14 @@ def main():
             f"{source}_sdf_error",
         )
 
-    save_color_scale(output_dir / "input_error_color_scale.png", args.max_error_fraction)
+    save_color_scale(output_dir / "sdf_error_color_scale.png", args.max_error_fraction)
     error_report["visualization"] = {
-        "decoder_grid_resolution": args.resolution,
-        "mesh_smoothing": False,
+        "mesh": "original reference mesh",
         "error": "absolute decoder SDF at each prepared input point",
         "camera_center": camera_center.tolist(),
         "camera_radius": camera_radius,
     }
-    with (output_dir / "input_error.json").open("w") as file:
+    with (output_dir / "sdf_error.json").open("w") as file:
         json.dump(error_report, file, indent=2)
 
 

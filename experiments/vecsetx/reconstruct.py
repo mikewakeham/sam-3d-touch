@@ -39,6 +39,7 @@ def parse_args():
     parser.add_argument("--split", default="val")
     parser.add_argument("--sample-id")
     parser.add_argument("--skip-report", action="store_true")
+    parser.add_argument("--skip-mesh", action="store_true")
     parser.add_argument("--objects", type=int, default=0, help="0 uses every object")
     parser.add_argument(
         "--views-per-object", type=int, default=0, help="0 uses every view"
@@ -108,6 +109,9 @@ def make_grid(resolution, device):
 def encode_and_decode(model, points, point_mask, grid, block_size):
     bottleneck = model.encode(points, point_mask)
     x = model.learn(bottleneck["x"])
+
+    if grid is None:
+        return bottleneck["x"], x, None
 
     # Copied from VecSetX VecSetAutoEncoder.forward so the mask can be passed to encode.
     if grid.shape[1] > block_size:
@@ -248,6 +252,8 @@ def main():
         or args.metric_points < 1
     ):
         raise ValueError("Counts must be non-negative and metric settings must be positive")
+    if args.skip_mesh and not args.skip_report:
+        raise ValueError("--skip-mesh requires --skip-report")
 
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -276,7 +282,7 @@ def main():
         use_position=False,
     ).to(device).eval()
     model = touch_encoder.encoder
-    grid = make_grid(args.resolution, device)
+    grid = None if args.skip_mesh else make_grid(args.resolution, device)
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     results = []
@@ -356,9 +362,16 @@ def main():
                     args.output_dir / f"{record['sample_id']}_{source_name}_input_sdf.npy"
                 )
                 np.save(input_sdf_path, input_sdf.float().cpu().numpy())
-                mesh, sdf_min, sdf_max = make_mesh(output[0], args.resolution)
+                mesh = None
+                sdf_min = sdf_max = None
+                if output is not None:
+                    mesh, sdf_min, sdf_max = make_mesh(output[0], args.resolution)
                 row = {
-                    "status": "ok" if mesh is not None else "no_zero_crossing",
+                    "status": (
+                        "sdf_only" if output is None
+                        else "ok" if mesh is not None
+                        else "no_zero_crossing"
+                    ),
                     "valid_input_points": int(prepared_mask.sum()),
                     "points": str(points_path),
                     "input_sdf": str(input_sdf_path),
@@ -398,11 +411,18 @@ def main():
                         unmasked_input_sdf_path,
                         unmasked_input_sdf.float().cpu().numpy(),
                     )
-                    unmasked_mesh, sdf_min, sdf_max = make_mesh(
-                        unmasked_output[0], args.resolution
-                    )
+                    unmasked_mesh = None
+                    sdf_min = sdf_max = None
+                    if unmasked_output is not None:
+                        unmasked_mesh, sdf_min, sdf_max = make_mesh(
+                            unmasked_output[0], args.resolution
+                        )
                     unmasked_row = {
-                        "status": "ok" if unmasked_mesh is not None else "no_zero_crossing",
+                        "status": (
+                            "sdf_only" if unmasked_output is None
+                            else "ok" if unmasked_mesh is not None
+                            else "no_zero_crossing"
+                        ),
                         "valid_input_points": int(prepared_mask.sum()),
                         "points": str(points_path),
                         "input_sdf": str(unmasked_input_sdf_path),
@@ -444,7 +464,10 @@ def main():
             with (
                 args.output_dir / f"{record['sample_id']}_settings.json"
             ).open("w") as file:
-                json.dump({"resolution": args.resolution}, file)
+                json.dump({
+                    "resolution": None if args.skip_mesh else args.resolution,
+                    "mesh": not args.skip_mesh,
+                }, file)
 
             results.append(sample_result)
             print(f"[{number}/{len(pairs)}] {record['sample_id']}", flush=True)
