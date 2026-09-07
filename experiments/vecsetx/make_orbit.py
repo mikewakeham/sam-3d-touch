@@ -72,6 +72,7 @@ def parse_args():
     parser.add_argument("--error-anchor-fraction", type=float, default=0.1)
     parser.add_argument("--mesh-opacity", type=float, default=0.8)
     parser.add_argument("--depth-tolerance", type=float)
+    parser.add_argument("--ring-depth", type=float)
     parser.add_argument("--light-strength", type=float, default=1.0)
     parser.add_argument("--mp4", action="store_true")
     return parser.parse_args()
@@ -336,9 +337,10 @@ def draw_points(frame, mesh_depth, points, colors, eye, center, args):
     xy[:, 0] = np.clip(xy[:, 0], 0, args.width - 1)
     xy[:, 1] = np.clip(xy[:, 1], 0, args.height - 1)
     surface_depth = mesh_depth[xy[:, 1], xy[:, 0]]
+    depth_difference = point_depth[indices] - surface_depth
     hidden = (
         np.isfinite(surface_depth)
-        & (point_depth[indices] > surface_depth + args.depth_tolerance)
+        & (depth_difference > args.depth_tolerance)
     )
     radii = np.maximum(
         2, np.rint(args.point_size * focal / (2 * point_depth[indices])).astype(int)
@@ -348,6 +350,8 @@ def draw_points(frame, mesh_depth, points, colors, eye, center, args):
     draw = ImageDraw.Draw(image)
     order = np.argsort(point_depth[indices])[::-1]
     for position in order:
+        if hidden[position] and depth_difference[position] > args.ring_depth:
+            continue
         x, y = xy[position]
         radius = int(radii[position])
         box = (x - radius, y - radius, x + radius, y + radius)
@@ -476,6 +480,8 @@ def main():
         raise ValueError("--point-size must be positive")
     if args.depth_tolerance is not None and args.depth_tolerance < 0:
         raise ValueError("--depth-tolerance must be non-negative")
+    if args.ring_depth is not None and args.ring_depth <= 0:
+        raise ValueError("--ring-depth must be positive")
     if args.display_points < 0:
         raise ValueError("--display-points must be non-negative")
     if not 0 <= args.error_anchor_fraction <= 1:
@@ -489,6 +495,10 @@ def main():
     metric_points, seed, resolution = load_settings(args)
     if args.depth_tolerance is None:
         args.depth_tolerance = 2 / resolution
+    if args.ring_depth is None:
+        args.ring_depth = 8 / resolution
+    if args.ring_depth <= args.depth_tolerance:
+        raise ValueError("--ring-depth must be greater than --depth-tolerance")
     variants = load_variants(args, metric_points, seed)
     error_names = {
         "adherence": "adherence_errors",
