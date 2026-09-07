@@ -518,6 +518,21 @@ def main():
             args,
             [
                 (
+                    particles(zero_points, INPUT_COLOR),
+                    material(
+                        (1.0, 1.0, 1.0), unlit=True,
+                        point_size=args.point_size,
+                    ),
+                ),
+            ],
+            camera_center,
+            camera_radius,
+            f"{source}_zero_surface",
+        )
+        render(
+            args,
+            [
+                (
                     particles(
                         zero_points,
                         error_colors(zero_to_input, zero_distance_maximum),
@@ -546,6 +561,10 @@ def main():
         "predicted_surface_to_input": (
             f"{args.zero_points} decoded zero-surface points colored by nearest "
             "prepared-input-point distance"
+        ),
+        "zero_surface": (
+            f"{args.zero_points} uniformly blue points sampled from the decoded "
+            "zero-level surface"
         ),
         "camera_center": camera_center.tolist(),
         "camera_radius": camera_radius,
