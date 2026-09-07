@@ -268,18 +268,18 @@ def initialize_lighting(renderer, strength):
     white = np.ones(3, dtype=np.float32)
     scene.enable_sun_light(False)
     scene.enable_indirect_light(True)
-    scene.set_indirect_light_intensity(50000.0 * strength)
+    scene.set_indirect_light_intensity(20000.0 * strength)
     scene.add_point_light(
         "KeyLight", white, np.array([4.0, 1.0, 6.0], dtype=np.float32),
-        5e5 * strength, 100.0, False,
+        4e5 * strength, 100.0, False,
     )
     scene.add_directional_light(
         "TopLight", white, np.array([0.0, -1.0, 0.0], dtype=np.float32),
-        5e4 * strength, False,
+        4e4 * strength, False,
     )
     scene.add_directional_light(
         "BottomLight", white, np.array([0.0, 1.0, 0.0], dtype=np.float32),
-        1e4 * strength, False,
+        1.5e4 * strength, False,
     )
 
 
