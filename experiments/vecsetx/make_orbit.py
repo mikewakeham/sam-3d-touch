@@ -15,6 +15,7 @@ import open3d as o3d
 import trimesh
 import yaml
 from PIL import Image, ImageDraw
+from scipy.spatial import cKDTree
 
 
 SOURCES = ("full_surface", "full_surface_unmasked", "touch", "joint")
@@ -46,7 +47,11 @@ def parse_args():
         "--sources", nargs="+", choices=SOURCES,
         default=["full_surface", "touch", "joint"],
     )
+    parser.add_argument("--resolution", type=int, default=256)
+    parser.add_argument("--zero-points", type=int, default=8192)
+    parser.add_argument("--seed", type=int, default=29)
     parser.add_argument("--max-error-fraction", type=float, default=0.02)
+    parser.add_argument("--max-zero-distance-fraction", type=float, default=0.25)
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--fps", type=int, default=30)
     parser.add_argument("--gif-fps", type=int, default=10)
@@ -70,8 +75,12 @@ def sample_dir(args):
     return args.output_dir / args.sample_id
 
 
+def artifact_dir(args):
+    return sample_dir(args) / "artifacts"
+
+
 def ensure_artifacts(args):
-    output_dir = sample_dir(args)
+    output_dir = artifact_dir(args)
     settings_path = output_dir / f"{args.sample_id}_settings.json"
     paths = [
         settings_path,
@@ -81,12 +90,15 @@ def ensure_artifacts(args):
     for source in args.sources:
         point_source = source_file(source)
         paths.extend([
+            output_dir / f"{args.sample_id}_{source}.obj",
             output_dir / f"{args.sample_id}_{point_source}_points.npy",
             output_dir / f"{args.sample_id}_{point_source}_normalization.npz",
             output_dir / f"{args.sample_id}_{source}_input_sdf.npy",
         ])
     if all(path.exists() for path in paths):
-        return
+        with settings_path.open() as file:
+            if json.load(file).get("resolution") == args.resolution:
+                return
 
     print(f"Preparing VecSetX artifacts for {args.sample_id}", flush=True)
     subprocess.run(
@@ -100,7 +112,7 @@ def ensure_artifacts(args):
             "--output-dir", str(output_dir),
             "--split", args.split,
             "--sample-id", args.sample_id,
-            "--skip-mesh",
+            "--resolution", str(args.resolution),
             "--skip-report",
         ],
         check=True,
@@ -121,7 +133,7 @@ def transform_mesh(mesh, center, scale):
 
 
 def load_scene(args):
-    output_dir = sample_dir(args)
+    output_dir = artifact_dir(args)
     reference = load_mesh(output_dir / f"{args.sample_id}_reference.obj")
     bounds = reference.bounds
     center = bounds.mean(axis=0)
@@ -150,10 +162,19 @@ def load_scene(args):
             scale = float(data["scale"].reshape(-1)[0])
 
         points = (points / scale + shift - center) * display_scale
+        reconstruction = load_mesh(
+            output_dir / f"{args.sample_id}_{source}.obj"
+        )
+        zero_points, _ = trimesh.sample.sample_surface(
+            reconstruction, args.zero_points, seed=args.seed
+        )
+        zero_points = (zero_points / scale + shift - center) * display_scale
         sdf_error = np.abs(input_sdf) / scale * display_scale
         variants[source] = {
             "points": points,
             "sdf_error": sdf_error,
+            "zero_points": zero_points,
+            "zero_distance": cKDTree(points).query(zero_points)[0],
         }
     return reference, variants, center, display_scale
 
@@ -265,7 +286,7 @@ def error_colors(errors, maximum):
 def camera_fit(args, reference, variants):
     arrays = [reference.vertices]
     for variant in variants.values():
-        arrays.append(variant["points"])
+        arrays.extend((variant["points"], variant["zero_points"]))
     bounds = np.array([
         np.min([points.min(axis=0) for points in arrays], axis=0),
         np.max([points.max(axis=0) for points in arrays], axis=0),
@@ -389,8 +410,10 @@ def save_color_scale(path, maximum_fraction):
 
 def main():
     args = parse_args()
-    if args.max_error_fraction <= 0:
-        raise ValueError("--max-error-fraction must be positive")
+    if args.max_error_fraction <= 0 or args.max_zero_distance_fraction <= 0:
+        raise ValueError("Error scale fractions must be positive")
+    if args.resolution < 1 or args.zero_points < 1:
+        raise ValueError("Resolution and zero-point count must be positive")
     if args.point_size <= 0:
         raise ValueError("--point-size must be positive")
     if args.orbit_radius is not None and args.orbit_radius <= 0:
@@ -404,7 +427,7 @@ def main():
     ensure_artifacts(args)
     reference, variants, display_center, display_scale = load_scene(args)
     textured_reference = load_textured_reference(
-        sample_dir(args) / f"{args.sample_id}_reference.glb",
+        artifact_dir(args) / f"{args.sample_id}_reference.glb",
         display_center,
         display_scale,
     )
@@ -431,17 +454,35 @@ def main():
         "original_object_textured",
     )
 
-    maximum = 2.0 * args.max_error_fraction
+    sdf_maximum = 2.0 * args.max_error_fraction
+    zero_distance_maximum = 2.0 * args.max_zero_distance_fraction
     error_report = {}
     for source, variant in variants.items():
         points = variant["points"]
         errors = variant["sdf_error"]
+        zero_points = variant["zero_points"]
+        zero_distances = variant["zero_distance"]
         if len(errors) != len(points):
             raise ValueError(f"SDF output size does not match {source} points")
         error_report[source] = {
-            "mean_fraction_of_object_width": float(errors.mean() / 2.0),
-            "median_fraction_of_object_width": float(np.median(errors) / 2.0),
-            "p95_fraction_of_object_width": float(np.quantile(errors, 0.95) / 2.0),
+            "input_sdf_residual": {
+                "mean_fraction_of_object_width": float(errors.mean() / 2.0),
+                "median_fraction_of_object_width": float(np.median(errors) / 2.0),
+                "p95_fraction_of_object_width": float(
+                    np.quantile(errors, 0.95) / 2.0
+                ),
+            },
+            "zero_surface_to_input": {
+                "mean_fraction_of_object_width": float(
+                    zero_distances.mean() / 2.0
+                ),
+                "median_fraction_of_object_width": float(
+                    np.median(zero_distances) / 2.0
+                ),
+                "p95_fraction_of_object_width": float(
+                    np.quantile(zero_distances, 0.95) / 2.0
+                ),
+            },
         }
 
         render(
@@ -462,7 +503,9 @@ def main():
             [
                 (
                     particles(
-                        points, error_colors(errors, maximum), args.point_size
+                        points,
+                        error_colors(errors, sdf_maximum),
+                        args.point_size,
                     ),
                     material((1.0, 1.0, 1.0), unlit=True),
                 ),
@@ -471,11 +514,38 @@ def main():
             camera_radius,
             f"{source}_sdf_error",
         )
+        render(
+            args,
+            [
+                (
+                    particles(
+                        zero_points,
+                        error_colors(zero_distances, zero_distance_maximum),
+                        args.point_size,
+                    ),
+                    material((1.0, 1.0, 1.0), unlit=True),
+                ),
+            ],
+            camera_center,
+            camera_radius,
+            f"{source}_zero_surface_distance",
+        )
 
     save_color_scale(output_dir / "sdf_error_color_scale.png", args.max_error_fraction)
+    save_color_scale(
+        output_dir / "zero_surface_distance_color_scale.png",
+        args.max_zero_distance_fraction,
+    )
     error_report["visualization"] = {
-        "mesh": "original reference mesh",
-        "error": "absolute decoder SDF at each prepared input point",
+        "input_view": "prepared input points over the original reference mesh",
+        "input_sdf_residual": (
+            "absolute decoded SDF at each prepared input point; points only"
+        ),
+        "zero_surface_to_input": (
+            f"{args.zero_points} area-sampled points from the decoded zero-level "
+            f"surface extracted at resolution {args.resolution}, colored by "
+            "nearest prepared-input-point distance; points only"
+        ),
         "camera_center": camera_center.tolist(),
         "camera_radius": camera_radius,
     }
