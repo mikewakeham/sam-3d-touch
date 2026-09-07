@@ -39,6 +39,8 @@ def parse_args():
     parser.add_argument("--log-every", type=int, default=10)
     parser.add_argument("--precision", choices=["bf16", "fp32"], default="bf16")
     parser.add_argument("--no-touch", action="store_true")
+    parser.add_argument("--no-pointmap", action="store_true")
+    parser.add_argument("--oracle-point-frame", action="store_true")
     parser.add_argument("--train-vecsetx", action="store_true")
     parser.add_argument("--vecsetx-learn", action="store_true",
                         help="Use frozen VecSetX decoder features before touch projection")
@@ -65,7 +67,7 @@ def setup_distributed(args):
     )
 
 
-def build_stage1_pipeline(config_path, device):
+def build_stage1_pipeline(config_path, device, no_pointmap=False):
     from hydra.utils import instantiate
     from omegaconf import OmegaConf
     from sam3d_objects.pipeline.inference_pipeline_pointmap import InferencePipelinePointMap
@@ -110,7 +112,18 @@ def build_stage1_pipeline(config_path, device):
                 name: float(name == "shape") for name in self.backbone.latent_mapping
             }
 
-    return Stage1TrainingPipeline(config_path, device)
+    pipeline = Stage1TrainingPipeline(config_path, device)
+    if no_pointmap:
+        disable_pointmap_conditioning(pipeline.backbone.condition_embedder)
+    return pipeline
+
+
+def disable_pointmap_conditioning(fuser):
+    names = {name for _, inputs in fuser.embedder_list for name, _ in inputs}
+    pointmaps = {"pointmap", "rgb_pointmap"}
+    if not pointmaps.issubset(names):
+        raise ValueError(f"Expected pointmap and rgb_pointmap conditioning, found {sorted(names)}")
+    fuser.force_drop_modalities = sorted(set(fuser.force_drop_modalities or []) | pointmaps)
 
 
 def build_stage1_preprocessor(config_path):
@@ -129,10 +142,14 @@ def build_stage1_preprocessor(config_path):
 
 
 class TouchTrainingModel(torch.nn.Module):
-    def __init__(self, generator, touch_encoder=None):
+    def __init__(self, generator, touch_encoder=None, no_pointmap=False, oracle_point_frame=False):
         super().__init__()
         self.generator = generator
         self.touch_encoder = touch_encoder
+        self.conditioning_config = {
+            "no_pointmap": no_pointmap,
+            "oracle_point_frame": oracle_point_frame,
+        }
 
     def forward(self, targets, condition_args, condition_kwargs, touch_xyz, touch_mask):
         if self.touch_encoder is None:
@@ -236,7 +253,8 @@ def make_targets(shape, backbone):
 
 
 def prepare_batch(
-    pipeline, batch, device, precision, use_touch, joint_pointmap=False
+    pipeline, batch, device, precision, use_touch, joint_pointmap=False,
+    oracle_point_frame=False,
 ):
     inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
     with torch.no_grad(), amp(device, precision):
@@ -251,12 +269,17 @@ def prepare_batch(
     if use_touch:
         touch_mask = batch["touch_mask"].to(device, non_blocking=True)
         with torch.no_grad():
-            touch_xyz = normalize_touch_to_pointmap_frame(
-                batch["touch_xyz"].to(device, non_blocking=True),
-                touch_mask,
-                inputs,
-                pipeline.ss_preprocessor,
-            )
+            touch_xyz = batch["touch_xyz"].to(device, non_blocking=True)
+            if oracle_point_frame:
+                if joint_pointmap:
+                    raise ValueError("Oracle point frame cannot use joint pointmap")
+                transform = batch["object_from_camera"].to(device)
+                touch_xyz = touch_xyz @ transform[:, :3, :3].transpose(1, 2) + transform[:, None, :3, 3]
+                touch_xyz = touch_xyz.masked_fill(~touch_mask[..., None], 0)
+            else:
+                touch_xyz = normalize_touch_to_pointmap_frame(
+                    touch_xyz, touch_mask, inputs, pipeline.ss_preprocessor,
+                )
             if joint_pointmap:
                 touch_xyz, touch_mask = combine_pointmap_and_touch(
                     inputs, touch_xyz, touch_mask
@@ -378,6 +401,7 @@ def save_checkpoint(
         "step": step,
         "best_loss": best_loss,
         "mode": mode,
+        "conditioning_config": model.conditioning_config,
         "cross_attention_scope": cross_attention_scope,
         "touch_config": (
             model.touch_encoder.get_config() if model.touch_encoder is not None else None
@@ -387,6 +411,8 @@ def save_checkpoint(
 
 def load_checkpoint(path, model, optimizer, mode, cross_attention_scope="kv"):
     checkpoint = torch.load(path, map_location="cpu", weights_only=False)
+    if checkpoint.get("conditioning_config", {"no_pointmap": False, "oracle_point_frame": False}) != model.conditioning_config:
+        raise ValueError("Checkpoint conditioning configuration does not match this run")
     if checkpoint.get("cross_attention_scope", "kv") != cross_attention_scope:
         raise ValueError("Checkpoint cross-attention scope does not match this run")
     touch_config = (
@@ -424,6 +450,7 @@ def train_epoch(
             pipeline, batch, device, args.precision,
             raw_model.touch_encoder is not None,
             args.joint_pointmap,
+            args.oracle_point_frame,
         )
         optimizer.zero_grad(set_to_none=True)
         with amp(device, args.precision):
@@ -521,6 +548,7 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
                     pipeline, batch, device, args.precision,
                     model.touch_encoder is not None,
                     args.joint_pointmap,
+                    args.oracle_point_frame,
                 )
                 with amp(device, args.precision):
                     loss = model(*prepared)
@@ -540,6 +568,8 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
 
 def main():
     args = parse_args()
+    if args.oracle_point_frame and (args.no_touch or args.joint_pointmap or not args.no_touch_position):
+        raise ValueError("Oracle point frame requires touch, --no-touch-position, and no joint pointmap")
     if args.no_touch and args.train_vecsetx:
         raise ValueError("--train-vecsetx cannot be used with --no-touch")
     if args.no_touch and args.vecsetx_learn:
@@ -566,15 +596,17 @@ def main():
     train_loader = build_dataloader(
         data_config, args.batch_size, args.workers,
         distributed=distributed, include_touch=not args.no_touch,
+        oracle_point_frame=args.oracle_point_frame,
     )
     val_config = load_data_config(args.data_config)
     val_config["dataset"]["split"] = "val"
     val_loader = build_dataloader(
         val_config, args.batch_size, args.val_workers,
         shuffle=False, distributed=distributed, include_touch=not args.no_touch,
+        oracle_point_frame=args.oracle_point_frame,
     )
 
-    pipeline = build_stage1_pipeline(args.pipeline_config, device)
+    pipeline = build_stage1_pipeline(args.pipeline_config, device, no_pointmap=args.no_pointmap)
     touch_encoder = None
     if not args.no_touch:
         from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
@@ -587,7 +619,7 @@ def main():
             position_scale="log",
         ).to(device)
 
-    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder)
+    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, args.no_pointmap, args.oracle_point_frame)
     optimizer, parameters = build_optimizer(touch_encoder, pipeline.backbone, args)
     if args.no_touch:
         mode = "image"

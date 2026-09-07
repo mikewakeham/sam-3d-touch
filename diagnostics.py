@@ -605,6 +605,9 @@ def main():
     torch.set_float32_matmul_precision("high")
 
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
+    conditioning_config = checkpoint.get(
+        "conditioning_config", {"no_pointmap": False, "oracle_point_frame": False}
+    )
     loader = build_dataloader(
         data_config,
         batch_size=args.batch_size,
@@ -612,12 +615,13 @@ def main():
         shuffle=False,
         distributed=False,
         include_touch=True,
+        oracle_point_frame=conditioning_config["oracle_point_frame"],
     )
     records = {record["sample_id"]: record for record in loader.dataset.records}
     batches_to_run = min(args.batches, len(loader))
     examples_to_run = min(args.batch_size * batches_to_run, len(loader.dataset))
 
-    pipeline = build_stage1_pipeline(args.pipeline_config, device)
+    pipeline = build_stage1_pipeline(args.pipeline_config, device, no_pointmap=conditioning_config["no_pointmap"])
     touch_encoder = None
     if checkpoint["touch_config"] is not None:
         from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
@@ -630,7 +634,7 @@ def main():
             )
         touch_encoder = TouchEncoder(**touch_config).to(device)
 
-    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder)
+    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, **conditioning_config)
     cross_attention_scope = checkpoint.get("cross_attention_scope", "kv")
     build_optimizer(
         touch_encoder,
@@ -654,6 +658,7 @@ def main():
 
     heading("Run")
     print(f"checkpoint: {args.checkpoint}")
+    print(f"conditioning_config: {conditioning_config}")
     print(f"mode: {checkpoint['mode']}")
     print(f"cross-attention scope: {cross_attention_scope}")
     print(f"touch_config: {checkpoint['touch_config']}")
@@ -710,6 +715,7 @@ def main():
                 args.precision,
                 touch_encoder is not None,
                 checkpoint["mode"] == "image_touch_joint",
+                conditioning_config["oracle_point_frame"],
             )
             if touch_encoder is not None:
                 vecsetx_passes += report_vecsetx_coordinates(

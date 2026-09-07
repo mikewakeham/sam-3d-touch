@@ -22,14 +22,17 @@ def load_data_config(path):
 
 
 class TouchDataset(Dataset):
-    def __init__(self, config, include_touch=True):
+    def __init__(self, config, include_touch=True, oracle_point_frame=False):
         if isinstance(config, (str, Path)):
             config = load_data_config(config)
 
         dataset_config = config["dataset"]
         self.root = Path(dataset_config["root"])
         self.include_touch = include_touch
+        self.oracle_point_frame = oracle_point_frame
         self.point_source = config.get("touch", {}).get("source", "touch")
+        if oracle_point_frame and (not include_touch or self.point_source != "full_surface"):
+            raise ValueError("Oracle point frame requires full-surface conditioning")
         if self.point_source not in ("touch", "full_surface"):
             raise ValueError(f"Unknown point source: {self.point_source}")
         if include_touch and self.point_source == "touch":
@@ -160,6 +163,14 @@ class TouchDataset(Dataset):
             else:
                 touch_xyz = self.load_touch(self.resolve_path(record["touch_path"]))
             sample["touch_xyz"] = torch.from_numpy(touch_xyz)
+            if self.oracle_point_frame:
+                with np.load(self.resolve_path(record["camera_path"]), allow_pickle=False) as camera:
+                    transform = np.diag([-1., -1., 1., 1.]) @ camera["T_camera_from_object"]
+                if transform.shape != (4, 4) or not np.isfinite(transform).all():
+                    raise ValueError("Invalid camera transform")
+                sample["object_from_camera"] = torch.from_numpy(
+                    np.linalg.inv(transform).astype(np.float32)
+                )
         return sample
 
 
@@ -212,11 +223,12 @@ def build_dataloader(
     shuffle=True,
     distributed=False,
     include_touch=True,
+    oracle_point_frame=False,
 ):
     if isinstance(config, (str, Path)):
         config = load_data_config(config)
 
-    dataset = TouchDataset(config, include_touch=include_touch)
+    dataset = TouchDataset(config, include_touch=include_touch, oracle_point_frame=oracle_point_frame)
     sampler = None
     rank = 0
 
