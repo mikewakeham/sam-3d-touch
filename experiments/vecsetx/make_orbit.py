@@ -38,14 +38,9 @@ def parse_args():
     )
     parser.add_argument("--split", default="val")
     parser.add_argument(
-        "--input-dir",
-        type=Path,
-        default=Path("experiments/vecsetx/outputs/orbit_artifacts"),
-    )
-    parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("experiments/vecsetx/outputs/sdf_orbits"),
+        default=Path("experiments/vecsetx/outputs/orbits"),
     )
     parser.add_argument(
         "--sources", nargs="+", choices=SOURCES,
@@ -71,19 +66,24 @@ def source_file(source):
     return "full_surface" if source == "full_surface_unmasked" else source
 
 
+def sample_dir(args):
+    return args.output_dir / args.sample_id
+
+
 def ensure_artifacts(args):
-    settings_path = args.input_dir / f"{args.sample_id}_settings.json"
+    output_dir = sample_dir(args)
+    settings_path = output_dir / f"{args.sample_id}_settings.json"
     paths = [
         settings_path,
-        args.input_dir / f"{args.sample_id}_reference.obj",
-        args.input_dir / f"{args.sample_id}_reference.glb",
+        output_dir / f"{args.sample_id}_reference.obj",
+        output_dir / f"{args.sample_id}_reference.glb",
     ]
     for source in args.sources:
         point_source = source_file(source)
         paths.extend([
-            args.input_dir / f"{args.sample_id}_{point_source}_points.npy",
-            args.input_dir / f"{args.sample_id}_{point_source}_normalization.npz",
-            args.input_dir / f"{args.sample_id}_{source}_input_sdf.npy",
+            output_dir / f"{args.sample_id}_{point_source}_points.npy",
+            output_dir / f"{args.sample_id}_{point_source}_normalization.npz",
+            output_dir / f"{args.sample_id}_{source}_input_sdf.npy",
         ])
     if all(path.exists() for path in paths):
         return
@@ -97,7 +97,7 @@ def ensure_artifacts(args):
             "--pipeline-config", str(args.pipeline_config),
             "--touch-config", str(args.touch_config),
             "--full-surface-config", str(args.full_surface_config),
-            "--output-dir", str(args.input_dir),
+            "--output-dir", str(output_dir),
             "--split", args.split,
             "--sample-id", args.sample_id,
             "--skip-mesh",
@@ -121,7 +121,8 @@ def transform_mesh(mesh, center, scale):
 
 
 def load_scene(args):
-    reference = load_mesh(args.input_dir / f"{args.sample_id}_reference.obj")
+    output_dir = sample_dir(args)
+    reference = load_mesh(output_dir / f"{args.sample_id}_reference.obj")
     bounds = reference.bounds
     center = bounds.mean(axis=0)
     extent = (bounds[1] - bounds[0]).max()
@@ -134,15 +135,15 @@ def load_scene(args):
     for source in args.sources:
         point_source = source_file(source)
         points = np.load(
-            args.input_dir / f"{args.sample_id}_{point_source}_points.npy",
+            output_dir / f"{args.sample_id}_{point_source}_points.npy",
             allow_pickle=False,
         )
         input_sdf = np.load(
-            args.input_dir / f"{args.sample_id}_{source}_input_sdf.npy",
+            output_dir / f"{args.sample_id}_{source}_input_sdf.npy",
             allow_pickle=False,
         )
         with np.load(
-            args.input_dir / f"{args.sample_id}_{point_source}_normalization.npz",
+            output_dir / f"{args.sample_id}_{point_source}_normalization.npz",
             allow_pickle=False,
         ) as data:
             shift = data["shift"]
@@ -293,7 +294,7 @@ def camera_fit(args, reference, variants):
 
 
 def render(args, items, center, radius, name):
-    output_dir = args.output_dir / args.sample_id
+    output_dir = sample_dir(args)
     output_dir.mkdir(parents=True, exist_ok=True)
     png_path = output_dir / f"{name}.png"
     gif_path = output_dir / f"{name}.gif"
@@ -398,12 +399,12 @@ def main():
     ensure_artifacts(args)
     reference, variants, display_center, display_scale = load_scene(args)
     textured_reference = load_textured_reference(
-        args.input_dir / f"{args.sample_id}_reference.glb",
+        sample_dir(args) / f"{args.sample_id}_reference.glb",
         display_center,
         display_scale,
     )
     camera_center, camera_radius = camera_fit(args, reference, variants)
-    output_dir = args.output_dir / args.sample_id
+    output_dir = sample_dir(args)
     output_dir.mkdir(parents=True, exist_ok=True)
     root, record = load_record(args)
     image_path = Path(record["image_path"])
