@@ -37,6 +37,7 @@ def parse_args():
         default=Path("experiments/vecsetx/outputs/reconstruction"),
     )
     parser.add_argument("--split", default="val")
+    parser.add_argument("--sample-id")
     parser.add_argument("--objects", type=int, default=0, help="0 uses every object")
     parser.add_argument(
         "--views-per-object", type=int, default=0, help="0 uses every view"
@@ -134,31 +135,42 @@ def make_mesh(output, resolution):
     return trimesh.Trimesh(vertices, faces), float(volume.min()), float(volume.max())
 
 
-def reconstruction_metrics(mesh, reference, supplied, point_count, seed):
+def point_errors(mesh, points, point_count, seed):
     reconstructed, _ = trimesh.sample.sample_surface(mesh, point_count, seed=seed)
-    reference = reference.detach().float().cpu().numpy()
-    supplied = supplied.detach().float().cpu().numpy()
+    if isinstance(points, torch.Tensor):
+        points = points.detach().float().cpu().numpy()
+    return cKDTree(reconstructed).query(points)[0]
 
-    reconstructed_tree = cKDTree(reconstructed)
-    reference_tree = cKDTree(reference)
-    reference_to_reconstruction = reconstructed_tree.query(reference)[0]
-    reconstruction_to_reference = reference_tree.query(reconstructed)[0]
-    supplied_to_reconstruction = reconstructed_tree.query(supplied)[0]
 
-    return {
-        "reference_to_reconstruction_mean": float(reference_to_reconstruction.mean()),
-        "reference_to_reconstruction_p95": float(np.quantile(reference_to_reconstruction, 0.95)),
-        "reconstruction_to_reference_mean": float(reconstruction_to_reference.mean()),
-        "reconstruction_to_reference_p95": float(np.quantile(reconstruction_to_reference, 0.95)),
-        "chamfer_l2": float(
-            np.square(reference_to_reconstruction).mean()
-            + np.square(reconstruction_to_reference).mean()
+def reconstruction_metrics(mesh, points, point_count, seed, symmetric=False):
+    if isinstance(points, torch.Tensor):
+        points = points.detach().float().cpu().numpy()
+    input_to_reconstruction = point_errors(mesh, points, point_count, seed)
+    metrics = {
+        "input_to_reconstruction_mean": float(input_to_reconstruction.mean()),
+        "input_to_reconstruction_p95": float(
+            np.quantile(input_to_reconstruction, 0.95)
         ),
-        "supplied_to_reconstruction_mean": float(supplied_to_reconstruction.mean()),
-        "supplied_to_reconstruction_p95": float(np.quantile(supplied_to_reconstruction, 0.95)),
         "vertices": int(len(mesh.vertices)),
         "faces": int(len(mesh.faces)),
     }
+    if symmetric:
+        reconstructed, _ = trimesh.sample.sample_surface(
+            mesh, point_count, seed=seed
+        )
+        input_tree = cKDTree(points)
+        reconstruction_to_input = input_tree.query(reconstructed)[0]
+        metrics.update({
+            "reconstruction_to_input_mean": float(reconstruction_to_input.mean()),
+            "reconstruction_to_input_p95": float(
+                np.quantile(reconstruction_to_input, 0.95)
+            ),
+            "chamfer_l2": float(
+                np.square(input_to_reconstruction).mean()
+                + np.square(reconstruction_to_input).mean()
+            ),
+        })
+    return metrics
 
 
 def relative_error(first, second):
@@ -209,6 +221,10 @@ def main():
         args.views_per_object,
         args.seed,
     )
+    if args.sample_id:
+        pairs = [pair for pair in pairs if pair[2]["sample_id"] == args.sample_id]
+        if not pairs:
+            raise ValueError(f"Unknown sample {args.sample_id!r}")
 
     pipeline = build_stage1_pipeline(args.pipeline_config, device)
     touch_encoder = TouchEncoder(
@@ -259,12 +275,14 @@ def main():
             full_masked_code = None
             full_masked_metrics = None
             for source_name, (source, source_mask) in sources.items():
-                prepared, prepared_mask, shifts, scales = touch_encoder.prepare_points(
+                prepared, prepared_mask, _, _ = touch_encoder.prepare_points(
                     source, source_mask
                 )
-                reference = (surface[0, surface_mask[0]] - shifts[0]) * scales[0]
-                supplied = prepared[0, prepared_mask[0]]
-                outside = (reference.abs() > 1).any(dim=1).float().mean().item()
+                input_points = prepared[0, prepared_mask[0]]
+                points_path = (
+                    args.output_dir / f"{record['sample_id']}_{source_name}_points.npy"
+                )
+                np.save(points_path, input_points.float().cpu().numpy())
 
                 with amp(device, args.precision):
                     code, output = encode_and_decode(
@@ -274,7 +292,7 @@ def main():
                 row = {
                     "status": "ok" if mesh is not None else "no_zero_crossing",
                     "valid_input_points": int(prepared_mask.sum()),
-                    "reference_outside_decoder_cube": outside,
+                    "points": str(points_path),
                     "sdf_min": sdf_min,
                     "sdf_max": sdf_max,
                 }
@@ -283,7 +301,11 @@ def main():
                     mesh.export(mesh_path)
                     row["mesh"] = str(mesh_path)
                     row["metrics"] = reconstruction_metrics(
-                        mesh, reference, supplied, args.metric_points, args.seed
+                        mesh,
+                        input_points,
+                        args.metric_points,
+                        args.seed,
+                        symmetric=source_name == "full_surface",
                     )
                 sample_result[source_name] = row
 
@@ -302,7 +324,7 @@ def main():
                     unmasked_row = {
                         "status": "ok" if unmasked_mesh is not None else "no_zero_crossing",
                         "valid_input_points": int(prepared_mask.sum()),
-                        "reference_outside_decoder_cube": outside,
+                        "points": str(points_path),
                         "sdf_min": sdf_min,
                         "sdf_max": sdf_max,
                     }
@@ -315,10 +337,10 @@ def main():
                         unmasked_row["mesh"] = str(mesh_path)
                         unmasked_row["metrics"] = reconstruction_metrics(
                             unmasked_mesh,
-                            reference,
-                            supplied,
+                            input_points,
                             args.metric_points,
                             args.seed,
+                            symmetric=True,
                         )
                     sample_result["full_surface_unmasked"] = unmasked_row
                     sample_result["mask_parity"] = {
