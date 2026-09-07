@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -449,7 +450,7 @@ def main():
     root, record = load_record(args)
     image_path = Path(record["image_path"])
     image_path = image_path if image_path.is_absolute() else root / image_path
-    Image.open(image_path).convert("RGB").save(output_dir / "input_view.png")
+    shutil.copy2(image_path, output_dir / "input_view.png")
 
     render(
         args,
