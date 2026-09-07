@@ -121,7 +121,7 @@ def encode_and_decode(model, points, point_mask, grid, block_size):
         output = torch.cat(outputs, dim=1)
     else:
         output = model.decode(x, grid).squeeze(-1)
-    return bottleneck["x"], output
+    return bottleneck["x"], x, output
 
 
 def make_mesh(output, resolution):
@@ -136,7 +136,18 @@ def make_mesh(output, resolution):
     return trimesh.Trimesh(vertices, faces), float(volume.min()), float(volume.max())
 
 
-def make_reference_mesh(dataset, record, inputs, preprocessor, device):
+def normalize_reference_mesh(
+    mesh, transform, inputs, preprocessor, device
+):
+    mesh.apply_transform(transform)
+    vertices = torch.from_numpy(mesh.vertices.astype(np.float32))[None].to(device)
+    mask = torch.ones(vertices.shape[:2], dtype=torch.bool, device=device)
+    mesh.vertices = normalize_touch_to_pointmap_frame(
+        vertices, mask, inputs, preprocessor
+    )[0].cpu().numpy()
+
+
+def make_reference_meshes(dataset, record, inputs, preprocessor, device):
     with np.load(dataset.resolve_path(record["object_transform_path"])) as data:
         object_transform = data["T_normalized_from_source"]
     with np.load(dataset.resolve_path(record["camera_path"])) as data:
@@ -148,22 +159,23 @@ def make_reference_mesh(dataset, record, inputs, preprocessor, device):
         @ camera_transform
         @ object_transform
     )
+    model_path = dataset.root / "objects" / record["object_id"] / "model.obj"
     mesh = trimesh.load(
-        dataset.root / "objects" / record["object_id"] / "model.obj",
+        model_path,
         force="mesh",
         process=False,
         skip_materials=True,
     )
     if not isinstance(mesh, trimesh.Trimesh) or mesh.is_empty:
         raise ValueError(f"Could not load reference mesh for {record['sample_id']}")
-    mesh.apply_transform(transform)
+    normalize_reference_mesh(mesh, transform, inputs, preprocessor, device)
 
-    vertices = torch.from_numpy(mesh.vertices.astype(np.float32))[None].to(device)
-    mask = torch.ones(vertices.shape[:2], dtype=torch.bool, device=device)
-    mesh.vertices = normalize_touch_to_pointmap_frame(
-        vertices, mask, inputs, preprocessor
-    )[0].cpu().numpy()
-    return mesh
+    textured = trimesh.load(model_path, force="scene", process=False)
+    for geometry in textured.geometry.values():
+        normalize_reference_mesh(
+            geometry, transform, inputs, preprocessor, device
+        )
+    return mesh, textured
 
 
 def point_errors(mesh, points, point_count, seed):
@@ -300,10 +312,15 @@ def main():
                 "joint": (joint, joint_mask),
             }
 
-            reference_path = args.output_dir / f"{record['sample_id']}_reference.obj"
-            make_reference_mesh(
+            reference, textured_reference = make_reference_meshes(
                 touch_dataset, record, inputs, preprocessor, device
-            ).export(reference_path)
+            )
+            reference.export(
+                args.output_dir / f"{record['sample_id']}_reference.obj"
+            )
+            textured_reference.export(
+                args.output_dir / f"{record['sample_id']}_reference.glb"
+            )
 
             sample_result = {
                 "sample_id": record["sample_id"],
@@ -329,14 +346,22 @@ def main():
                 )
 
                 with amp(device, args.precision):
-                    code, output = encode_and_decode(
+                    code, learned, output = encode_and_decode(
                         model, prepared, prepared_mask, grid, args.block_size
                     )
+                    input_sdf = model.decode(
+                        learned, input_points[None]
+                    ).reshape(-1)
+                input_sdf_path = (
+                    args.output_dir / f"{record['sample_id']}_{source_name}_input_sdf.npy"
+                )
+                np.save(input_sdf_path, input_sdf.float().cpu().numpy())
                 mesh, sdf_min, sdf_max = make_mesh(output[0], args.resolution)
                 row = {
                     "status": "ok" if mesh is not None else "no_zero_crossing",
                     "valid_input_points": int(prepared_mask.sum()),
                     "points": str(points_path),
+                    "input_sdf": str(input_sdf_path),
                     "sdf_min": sdf_min,
                     "sdf_max": sdf_max,
                 }
@@ -359,9 +384,20 @@ def main():
                     full_masked_code = code
                     full_masked_metrics = row.get("metrics")
                     with amp(device, args.precision):
-                        unmasked_code, unmasked_output = encode_and_decode(
+                        unmasked_code, unmasked_learned, unmasked_output = encode_and_decode(
                             model, prepared, None, grid, args.block_size
                         )
+                        unmasked_input_sdf = model.decode(
+                            unmasked_learned, input_points[None]
+                        ).reshape(-1)
+                    unmasked_input_sdf_path = (
+                        args.output_dir
+                        / f"{record['sample_id']}_full_surface_unmasked_input_sdf.npy"
+                    )
+                    np.save(
+                        unmasked_input_sdf_path,
+                        unmasked_input_sdf.float().cpu().numpy(),
+                    )
                     unmasked_mesh, sdf_min, sdf_max = make_mesh(
                         unmasked_output[0], args.resolution
                     )
@@ -369,6 +405,7 @@ def main():
                         "status": "ok" if unmasked_mesh is not None else "no_zero_crossing",
                         "valid_input_points": int(prepared_mask.sum()),
                         "points": str(points_path),
+                        "input_sdf": str(unmasked_input_sdf_path),
                         "sdf_min": sdf_min,
                         "sdf_max": sdf_max,
                     }

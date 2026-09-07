@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -12,6 +13,7 @@ if sys.platform.startswith("linux"):
 
 import open3d as o3d
 import trimesh
+import yaml
 from PIL import Image, ImageDraw
 
 
@@ -50,7 +52,7 @@ def parse_args():
         default=["full_surface", "touch", "joint"],
     )
     parser.add_argument("--resolution", type=int, default=256)
-    parser.add_argument("--max-error-fraction", type=float, default=0.01)
+    parser.add_argument("--max-error-fraction", type=float, default=0.05)
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--fps", type=int, default=30)
     parser.add_argument("--gif-fps", type=int, default=10)
@@ -58,7 +60,7 @@ def parse_args():
     parser.add_argument("--width", type=int, default=768)
     parser.add_argument("--height", type=int, default=768)
     parser.add_argument("--fov", type=float, default=40.0)
-    parser.add_argument("--orbit-radius", type=float, default=3.2)
+    parser.add_argument("--orbit-radius", type=float)
     parser.add_argument("--orbit-height", type=float, default=0.0)
     parser.add_argument("--point-size", type=float, default=0.02)
     parser.add_argument("--light-strength", type=float, default=1.0)
@@ -75,6 +77,7 @@ def ensure_artifacts(args):
     paths = [
         settings_path,
         args.input_dir / f"{args.sample_id}_reference.obj",
+        args.input_dir / f"{args.sample_id}_reference.glb",
     ]
     for source in args.sources:
         point_source = source_file(source)
@@ -82,6 +85,7 @@ def ensure_artifacts(args):
             args.input_dir / f"{args.sample_id}_{source}.obj",
             args.input_dir / f"{args.sample_id}_{point_source}_points.npy",
             args.input_dir / f"{args.sample_id}_{point_source}_normalization.npz",
+            args.input_dir / f"{args.sample_id}_{source}_input_sdf.npy",
         ])
     if all(path.exists() for path in paths):
         with settings_path.open() as file:
@@ -137,6 +141,10 @@ def load_scene(args):
             args.input_dir / f"{args.sample_id}_{point_source}_points.npy",
             allow_pickle=False,
         )
+        input_sdf = np.load(
+            args.input_dir / f"{args.sample_id}_{source}_input_sdf.npy",
+            allow_pickle=False,
+        )
         with np.load(
             args.input_dir / f"{args.sample_id}_{point_source}_normalization.npz",
             allow_pickle=False,
@@ -151,8 +159,49 @@ def load_scene(args):
         reconstruction.vertices = (
             reconstruction.vertices / scale + shift - center
         ) * display_scale
-        variants[source] = {"points": points, "mesh": reconstruction}
-    return reference, variants
+        sdf_error = np.abs(input_sdf) / scale * display_scale
+        variants[source] = {
+            "points": points,
+            "mesh": reconstruction,
+            "sdf_error": sdf_error,
+        }
+    return reference, variants, center, display_scale
+
+
+def load_record(args):
+    with args.touch_config.open() as file:
+        config = yaml.safe_load(file)
+    root = Path(config["dataset"]["root"])
+    manifest = Path(config["dataset"]["manifest"])
+    manifest = manifest if manifest.is_absolute() else root / manifest
+    with manifest.open() as file:
+        for line in file:
+            record = json.loads(line)
+            if record["sample_id"] == args.sample_id:
+                return root, record
+    raise ValueError(f"Unknown sample {args.sample_id!r}")
+
+
+def load_textured_reference(path, center, scale):
+    model = o3d.io.read_triangle_model(str(path))
+    if not model.meshes:
+        raise ValueError(f"Could not load textured mesh from {path}")
+    for part in model.meshes:
+        vertices = np.asarray(part.mesh.vertices)
+        part.mesh.vertices = o3d.utility.Vector3dVector(
+            (vertices - center) * scale
+        )
+        part.mesh.compute_vertex_normals()
+
+    materials = []
+    for imported in model.materials:
+        result = o3d.visualization.rendering.MaterialRecord()
+        result.shader = "defaultLit"
+        result.base_color = (1.0, 1.0, 1.0, 1.0)
+        result.albedo_img = imported.albedo_img
+        materials.append(result)
+    model.materials = materials
+    return model
 
 
 def mesh_geometry(mesh):
@@ -210,13 +259,6 @@ def initialize_lighting(renderer, strength):
     )
 
 
-def point_to_mesh_distance(points, mesh):
-    scene = o3d.t.geometry.RaycastingScene()
-    scene.add_triangles(o3d.t.geometry.TriangleMesh.from_legacy(mesh_geometry(mesh)))
-    query = o3d.core.Tensor(points.astype(np.float32))
-    return scene.compute_distance(query).numpy()
-
-
 def error_colors(errors, maximum):
     values = np.clip(errors / maximum, 0.0, 1.0)
     green = np.array([44, 162, 95], dtype=np.float64)
@@ -230,7 +272,38 @@ def error_colors(errors, maximum):
     return colors.astype(np.uint8)
 
 
-def render(args, geometry, material_record, name):
+def camera_fit(args, reference, variants):
+    arrays = [reference.vertices]
+    for variant in variants.values():
+        arrays.extend((variant["mesh"].vertices, variant["points"]))
+    bounds = np.array([
+        np.min([points.min(axis=0) for points in arrays], axis=0),
+        np.max([points.max(axis=0) for points in arrays], axis=0),
+    ])
+    center = bounds.mean(axis=0)
+    corners = trimesh.bounds.corners(bounds) - center
+
+    vertical = np.radians(args.fov)
+    horizontal = 2 * np.arctan(
+        np.tan(vertical / 2) * args.width / args.height
+    )
+    required = 0.0
+    for frame in range(args.frames):
+        angle = 2 * np.pi * frame / args.frames
+        outward = np.array([np.sin(angle), 0.0, -np.cos(angle)])
+        forward = -outward
+        right = np.cross(forward, np.array([0.0, 1.0, 0.0]))
+        depth_offset = corners @ forward
+        required = max(
+            required,
+            np.max(np.abs(corners @ right) / np.tan(horizontal / 2) - depth_offset),
+            np.max(np.abs(corners[:, 1]) / np.tan(vertical / 2) - depth_offset),
+        )
+    radius = args.orbit_radius or max(3.2, 1.08 * required)
+    return center, radius
+
+
+def render(args, items, center, radius, name):
     output_dir = args.output_dir / args.sample_id
     output_dir.mkdir(parents=True, exist_ok=True)
     png_path = output_dir / f"{name}.png"
@@ -241,16 +314,21 @@ def render(args, geometry, material_record, name):
     renderer.scene.set_background((1.0, 1.0, 1.0, 1.0))
     renderer.scene.show_skybox(False)
     initialize_lighting(renderer, args.light_strength)
-    renderer.scene.add_geometry("geometry", geometry, material_record)
+    for index, (geometry, material_record) in enumerate(items):
+        if material_record is None:
+            renderer.scene.add_model(f"geometry_{index}", geometry)
+        else:
+            renderer.scene.add_geometry(
+                f"geometry_{index}", geometry, material_record
+            )
 
     frames = []
-    center = np.zeros(3)
     for frame in range(args.frames):
         angle = 2 * np.pi * frame / args.frames
         eye = center + np.array([
-            args.orbit_radius * np.sin(angle),
+            radius * np.sin(angle),
             args.orbit_height,
-            -args.orbit_radius * np.cos(angle),
+            -radius * np.cos(angle),
         ])
         renderer.setup_camera(args.fov, center, eye, (0.0, 1.0, 0.0))
         image = np.asarray(renderer.render_to_image())[..., :3].copy()
@@ -322,6 +400,8 @@ def main():
         raise ValueError("--point-size must be positive")
     if args.resolution < 1:
         raise ValueError("--resolution must be positive")
+    if args.orbit_radius is not None and args.orbit_radius <= 0:
+        raise ValueError("--orbit-radius must be positive")
     if min(
         args.frames, args.fps, args.gif_fps, args.gif_size,
         args.width, args.height,
@@ -329,12 +409,33 @@ def main():
         raise ValueError("Frame, image, and FPS settings must be positive")
 
     ensure_artifacts(args)
-    reference, variants = load_scene(args)
+    reference, variants, display_center, display_scale = load_scene(args)
+    textured_reference = load_textured_reference(
+        args.input_dir / f"{args.sample_id}_reference.glb",
+        display_center,
+        display_scale,
+    )
+    camera_center, camera_radius = camera_fit(args, reference, variants)
     output_dir = args.output_dir / args.sample_id
     output_dir.mkdir(parents=True, exist_ok=True)
+    root, record = load_record(args)
+    image_path = Path(record["image_path"])
+    image_path = image_path if image_path.is_absolute() else root / image_path
+    shutil.copy2(image_path, output_dir / "input_view.png")
 
     render(
-        args, mesh_geometry(reference), material(MESH_COLOR), "original_object"
+        args,
+        [(mesh_geometry(reference), material(MESH_COLOR))],
+        camera_center,
+        camera_radius,
+        "original_object",
+    )
+    render(
+        args,
+        [(textured_reference, None)],
+        camera_center,
+        camera_radius,
+        "original_object_textured",
     )
 
     maximum = 2.0 * args.max_error_fraction
@@ -342,7 +443,9 @@ def main():
     for source, variant in variants.items():
         points = variant["points"]
         reconstruction = variant["mesh"]
-        errors = point_to_mesh_distance(points, reconstruction)
+        errors = variant["sdf_error"]
+        if len(errors) != len(points):
+            raise ValueError(f"SDF output size does not match {source} points")
         error_report[source] = {
             "mean_fraction_of_object_width": float(errors.mean() / 2.0),
             "median_fraction_of_object_width": float(np.median(errors) / 2.0),
@@ -351,27 +454,40 @@ def main():
 
         render(
             args,
-            particles(points, INPUT_COLOR, args.point_size),
-            material((1.0, 1.0, 1.0), unlit=True),
-            f"{source}_input",
+            [
+                (mesh_geometry(reconstruction), material(MESH_COLOR)),
+                (
+                    particles(points, INPUT_COLOR, args.point_size),
+                    material((1.0, 1.0, 1.0), unlit=True),
+                ),
+            ],
+            camera_center,
+            camera_radius,
+            source,
         )
         render(
             args,
-            mesh_geometry(reconstruction),
-            material(MESH_COLOR),
-            f"{source}_reconstruction",
-        )
-        render(
-            args,
-            particles(points, error_colors(errors, maximum), args.point_size),
-            material((1.0, 1.0, 1.0), unlit=True),
-            f"{source}_input_error",
+            [
+                (mesh_geometry(reconstruction), material(MESH_COLOR)),
+                (
+                    particles(
+                        points, error_colors(errors, maximum), args.point_size
+                    ),
+                    material((1.0, 1.0, 1.0), unlit=True),
+                ),
+            ],
+            camera_center,
+            camera_radius,
+            f"{source}_sdf_error",
         )
 
     save_color_scale(output_dir / "input_error_color_scale.png", args.max_error_fraction)
     error_report["visualization"] = {
         "decoder_grid_resolution": args.resolution,
         "mesh_smoothing": False,
+        "error": "absolute decoder SDF at each prepared input point",
+        "camera_center": camera_center.tolist(),
+        "camera_radius": camera_radius,
     }
     with (output_dir / "input_error.json").open("w") as file:
         json.dump(error_report, file, indent=2)
