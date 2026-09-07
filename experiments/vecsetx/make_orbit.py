@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -21,6 +22,18 @@ SOURCES = ("full_surface", "full_surface_unmasked", "touch", "joint")
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--sample-id", required=True)
+    parser.add_argument(
+        "--pipeline-config",
+        type=Path,
+        default=Path("checkpoints/hf/pipeline.yaml"),
+    )
+    parser.add_argument("--touch-config", type=Path, default=Path("configs/data1.yaml"))
+    parser.add_argument(
+        "--full-surface-config",
+        type=Path,
+        default=Path("configs/data_full_surface.yaml"),
+    )
+    parser.add_argument("--split", default="val")
     parser.add_argument(
         "--input-dir",
         type=Path,
@@ -47,7 +60,9 @@ def parse_args():
     parser.add_argument("--fov", type=float, default=40.0)
     parser.add_argument("--orbit-radius", type=float, default=3.2)
     parser.add_argument("--orbit-height", type=float, default=0.0)
-    parser.add_argument("--point-size", type=float, default=0.012)
+    parser.add_argument("--point-size", type=float, default=0.01)
+    parser.add_argument("--display-points", type=int, default=2048)
+    parser.add_argument("--error-anchor-fraction", type=float, default=0.1)
     parser.add_argument("--mesh-opacity", type=float, default=0.18)
     parser.add_argument("--light-strength", type=float, default=1.0)
     parser.add_argument("--mp4", action="store_true")
@@ -67,6 +82,45 @@ def load_settings(args):
     )
 
 
+def ensure_variants(args):
+    missing = []
+    for source in args.sources:
+        point_source = "full_surface" if source == "full_surface_unmasked" else source
+        mesh_path = args.input_dir / f"{args.sample_id}_{source}.obj"
+        points_path = args.input_dir / f"{args.sample_id}_{point_source}_points.npy"
+        if not mesh_path.exists() or not points_path.exists():
+            missing.append(source)
+    if not missing:
+        return
+
+    print(
+        f"Preparing missing VecSetX artifacts for {args.sample_id}: "
+        f"{', '.join(missing)}",
+        flush=True,
+    )
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "experiments.vecsetx.reconstruct",
+            "--pipeline-config",
+            str(args.pipeline_config),
+            "--touch-config",
+            str(args.touch_config),
+            "--full-surface-config",
+            str(args.full_surface_config),
+            "--output-dir",
+            str(args.input_dir),
+            "--split",
+            args.split,
+            "--sample-id",
+            args.sample_id,
+            "--skip-report",
+        ],
+        check=True,
+    )
+
+
 def load_variants(args, metric_points, seed):
     variants = {}
     for source in args.sources:
@@ -74,10 +128,7 @@ def load_variants(args, metric_points, seed):
         mesh_path = args.input_dir / f"{args.sample_id}_{source}.obj"
         points_path = args.input_dir / f"{args.sample_id}_{point_source}_points.npy"
         if not mesh_path.exists() or not points_path.exists():
-            raise FileNotFoundError(
-                f"Missing {mesh_path} or {points_path}. Re-run reconstruct.py for "
-                f"sample {args.sample_id!r} to save its prepared input points."
-            )
+            raise FileNotFoundError(f"Missing {mesh_path} or {points_path}")
         mesh = trimesh.load(mesh_path, force="mesh", process=False)
         points = np.load(points_path, allow_pickle=False)
         reconstructed, _ = trimesh.sample.sample_surface(
@@ -100,6 +151,36 @@ def error_colors(errors, maximum):
     first = green + (yellow - green) * (2 * values[:, None])
     second = yellow + (red - yellow) * (2 * values[:, None] - 1)
     return np.where(values[:, None] <= 0.5, first, second).astype(np.uint8)
+
+
+def sample_display_points(points, errors, count, error_fraction):
+    if count == 0 or len(points) <= count:
+        return points, errors
+
+    error_count = min(count, max(1, round(count * error_fraction)))
+    error_order = np.argsort(errors)
+    ranks = np.linspace(0, len(points) - 1, error_count).round().astype(int)
+    selected = list(error_order[ranks])
+    selected_mask = np.zeros(len(points), dtype=bool)
+    selected_mask[selected] = True
+
+    distances = np.full(len(points), np.inf)
+    for index in selected:
+        distances = np.minimum(
+            distances, np.square(points - points[index]).sum(axis=1)
+        )
+    distances[selected_mask] = -1
+
+    while len(selected) < count:
+        index = int(np.argmax(distances))
+        selected.append(index)
+        selected_mask[index] = True
+        distances = np.minimum(
+            distances, np.square(points - points[index]).sum(axis=1)
+        )
+        distances[selected_mask] = -1
+
+    return points[selected], errors[selected]
 
 
 def particles(points, colors, size):
@@ -193,11 +274,17 @@ def render(args, source, variant, maximum):
     renderer.scene.add_geometry(
         "mesh", mesh_geometry(variant["mesh"]), mesh_material(args.mesh_opacity)
     )
+    points, errors = sample_display_points(
+        variant["points"],
+        variant["errors"],
+        args.display_points,
+        args.error_anchor_fraction,
+    )
     renderer.scene.add_geometry(
         "points",
         particles(
-            variant["points"],
-            error_colors(variant["errors"], maximum),
+            points,
+            error_colors(errors, maximum),
             args.point_size,
         ),
         particle_material(),
@@ -284,12 +371,17 @@ def main():
         raise ValueError("--max-error must be positive")
     if not 0 < args.mesh_opacity < 1:
         raise ValueError("--mesh-opacity must be in (0, 1)")
+    if args.display_points < 0:
+        raise ValueError("--display-points must be non-negative")
+    if not 0 < args.error_anchor_fraction <= 1:
+        raise ValueError("--error-anchor-fraction must be in (0, 1]")
     if min(
         args.frames, args.fps, args.webp_fps, args.webp_size,
         args.width, args.height
     ) < 1:
         raise ValueError("frame, image, and FPS settings must be positive")
 
+    ensure_variants(args)
     metric_points, seed, resolution = load_settings(args)
     variants = load_variants(args, metric_points, seed)
     all_errors = np.concatenate([variant["errors"] for variant in variants.values()])

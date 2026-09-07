@@ -38,6 +38,7 @@ def parse_args():
     )
     parser.add_argument("--split", default="val")
     parser.add_argument("--sample-id")
+    parser.add_argument("--skip-report", action="store_true")
     parser.add_argument("--objects", type=int, default=0, help="0 uses every object")
     parser.add_argument(
         "--views-per-object", type=int, default=0, help="0 uses every view"
@@ -362,6 +363,9 @@ def main():
 
             results.append(sample_result)
             print(f"[{number}/{len(pairs)}] {record['sample_id']}", flush=True)
+
+    if args.skip_report:
+        return
 
     report = {
         "settings": {
