@@ -40,6 +40,8 @@ def parse_args():
     parser.add_argument("--precision", choices=["bf16", "fp32"], default="bf16")
     parser.add_argument("--no-touch", action="store_true")
     parser.add_argument("--train-vecsetx", action="store_true")
+    parser.add_argument("--vecsetx-learn", action="store_true",
+                        help="Use frozen VecSetX decoder features before touch projection")
     parser.add_argument("--joint-pointmap", action="store_true")
     parser.add_argument("--no-touch-position", action="store_true")
     parser.add_argument(
@@ -540,6 +542,8 @@ def main():
     args = parse_args()
     if args.no_touch and args.train_vecsetx:
         raise ValueError("--train-vecsetx cannot be used with --no-touch")
+    if args.no_touch and args.vecsetx_learn:
+        raise ValueError("--vecsetx-learn cannot be used with --no-touch")
     if args.no_touch and args.joint_pointmap:
         raise ValueError("--joint-pointmap cannot be used with --no-touch")
 
@@ -578,6 +582,7 @@ def main():
             encoder_name="vecsetx",
             output_dim=pipeline.backbone.cond_channels,
             trainable=args.train_vecsetx,
+            use_learn=args.vecsetx_learn,
             use_position=not args.no_touch_position,
             position_scale="log",
         ).to(device)

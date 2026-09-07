@@ -33,6 +33,7 @@ class TouchEncoder(nn.Module):
         trainable=False,
         use_position=True,
         position_scale="raw",
+        use_learn=False,
     ):
         super().__init__()
 
@@ -43,6 +44,7 @@ class TouchEncoder(nn.Module):
 
         self.encoder_name = encoder_name
         self.output_dim = output_dim
+        self.use_learn = bool(use_learn)
         self.use_position = bool(use_position)
         self.position_scale = position_scale
         if self.position_scale not in ("raw", "log"):
@@ -56,6 +58,8 @@ class TouchEncoder(nn.Module):
         self.encoder.load_state_dict(state_dict, strict=True)
 
         latent_dim = self.encoder.bottleneck.pre_bottleneck_proj.out_features
+        if self.use_learn:
+            latent_dim = self.encoder.bottleneck.post_bottleneck_proj.out_features
         self.output_projection = nn.Sequential(
             nn.LayerNorm(latent_dim),
             FeedForward(
@@ -85,6 +89,9 @@ class TouchEncoder(nn.Module):
 
         if self.encoder_trainable:
             for name, parameter in self.encoder.named_parameters():
+                # These embeddings are shared by encode() and learn().
+                if self.use_learn and name.startswith("latents."):
+                    continue
                 if name.startswith(VECSETX_ENCODE_PARAMETER_PREFIXES):
                     parameter.requires_grad_(True)
 
@@ -105,6 +112,8 @@ class TouchEncoder(nn.Module):
             config["use_position"] = False
         elif self.position_scale == "log":
             config["position_scale"] = "log"
+        if self.use_learn:
+            config["use_learn"] = True
         return config
 
     def forward(self, points, point_mask=None):
@@ -113,6 +122,8 @@ class TouchEncoder(nn.Module):
 
         points, point_mask, shifts, scales = self.prepare_points(points, point_mask)
         tokens = self.encoder.encode(points, point_mask)["x"]
+        if self.use_learn:
+            tokens = self.encoder.learn(tokens)
         tokens = self.output_projection(tokens)
         if self.use_position:
             position_scale = scales.log() if self.position_scale == "log" else scales
