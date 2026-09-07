@@ -38,7 +38,7 @@ def parse_args():
     parser.add_argument(
         "--input-dir",
         type=Path,
-        default=Path("experiments/vecsetx/outputs/reconstruction"),
+        default=Path("experiments/vecsetx/outputs/reconstruction_256"),
     )
     parser.add_argument(
         "--output-dir",
@@ -49,6 +49,7 @@ def parse_args():
         "--sources", nargs="+", choices=SOURCES,
         default=["full_surface", "touch", "joint"],
     )
+    parser.add_argument("--resolution", type=int, default=256)
     parser.add_argument("--max-error-fraction", type=float, default=0.01)
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--fps", type=int, default=30)
@@ -70,7 +71,11 @@ def source_file(source):
 
 
 def ensure_artifacts(args):
-    paths = [args.input_dir / f"{args.sample_id}_reference.obj"]
+    settings_path = args.input_dir / f"{args.sample_id}_settings.json"
+    paths = [
+        settings_path,
+        args.input_dir / f"{args.sample_id}_reference.obj",
+    ]
     for source in args.sources:
         point_source = source_file(source)
         paths.extend([
@@ -79,7 +84,9 @@ def ensure_artifacts(args):
             args.input_dir / f"{args.sample_id}_{point_source}_normalization.npz",
         ])
     if all(path.exists() for path in paths):
-        return
+        with settings_path.open() as file:
+            if json.load(file).get("resolution") == args.resolution:
+                return
 
     print(f"Preparing VecSetX artifacts for {args.sample_id}", flush=True)
     subprocess.run(
@@ -93,6 +100,7 @@ def ensure_artifacts(args):
             "--output-dir", str(args.input_dir),
             "--split", args.split,
             "--sample-id", args.sample_id,
+            "--resolution", str(args.resolution),
             "--skip-report",
         ],
         check=True,
@@ -312,6 +320,8 @@ def main():
         raise ValueError("--max-error-fraction must be positive")
     if args.point_size <= 0:
         raise ValueError("--point-size must be positive")
+    if args.resolution < 1:
+        raise ValueError("--resolution must be positive")
     if min(
         args.frames, args.fps, args.gif_fps, args.gif_size,
         args.width, args.height,
@@ -359,6 +369,10 @@ def main():
         )
 
     save_color_scale(output_dir / "input_error_color_scale.png", args.max_error_fraction)
+    error_report["visualization"] = {
+        "decoder_grid_resolution": args.resolution,
+        "mesh_smoothing": False,
+    }
     with (output_dir / "input_error.json").open("w") as file:
         json.dump(error_report, file, indent=2)
 

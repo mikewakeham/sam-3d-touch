@@ -404,6 +404,11 @@ def main():
                             - unmasked_row["metrics"]["chamfer_l2"]
                         )
 
+            with (
+                args.output_dir / f"{record['sample_id']}_settings.json"
+            ).open("w") as file:
+                json.dump({"resolution": args.resolution}, file)
+
             results.append(sample_result)
             print(f"[{number}/{len(pairs)}] {record['sample_id']}", flush=True)
 
