@@ -33,7 +33,7 @@ def parse_args():
     parser.add_argument("--gif-size", type=int, default=512)
     parser.add_argument("--width", type=int, default=768)
     parser.add_argument("--height", type=int, default=768)
-    parser.add_argument("--fov", type=float, default=40.0)
+    parser.add_argument("--fov", type=float)
     parser.add_argument("--orbit-radius", type=float)
     parser.add_argument("--orbit-height", type=float, default=0.0)
     parser.add_argument("--light-strength", type=float, default=1.0)
@@ -142,33 +142,7 @@ def initialize_lighting(renderer, strength):
     )
 
 
-def camera_fit(args, arrays):
-    bounds = np.array([
-        np.min([points.min(axis=0) for points in arrays], axis=0),
-        np.max([points.max(axis=0) for points in arrays], axis=0),
-    ])
-    center = bounds.mean(axis=0)
-    corners = trimesh.bounds.corners(bounds) - center
-    vertical = np.radians(args.fov)
-    horizontal = 2 * np.arctan(
-        np.tan(vertical / 2) * args.width / args.height
-    )
-    required = 0.0
-    for frame in range(args.frames):
-        angle = 2 * np.pi * frame / args.frames
-        outward = np.array([np.sin(angle), 0.0, -np.cos(angle)])
-        forward = -outward
-        right = np.cross(forward, np.array([0.0, 1.0, 0.0]))
-        depth_offset = corners @ forward
-        required = max(
-            required,
-            np.max(np.abs(corners @ right) / np.tan(horizontal / 2) - depth_offset),
-            np.max(np.abs(corners[:, 1]) / np.tan(vertical / 2) - depth_offset),
-        )
-    return center, args.orbit_radius or max(3.2, 1.08 * required)
-
-
-def render(args, geometry, center, radius, name, color):
+def render(args, geometry, center, radius, fov, name, color):
     output_dir = sample_output_dir(args)
     output_dir.mkdir(parents=True, exist_ok=True)
     mp4_path = output_dir / f"{safe_name(name)}.mp4"
@@ -193,7 +167,7 @@ def render(args, geometry, center, radius, name, color):
             args.orbit_height,
             -radius * np.cos(angle),
         ])
-        renderer.setup_camera(args.fov, center, eye, (0.0, 1.0, 0.0))
+        renderer.setup_camera(fov, center, eye, (0.0, 1.0, 0.0))
         image = np.asarray(renderer.render_to_image())[..., :3].copy()
         depth = np.asarray(renderer.render_to_depth_image())
         image[depth >= 1.0] = 255
@@ -277,7 +251,30 @@ def save_inputs(args, row):
     subprocess.run(command, check=True)
 
 
-def aligned_stage1_voxels(args, row):
+def camera_frame(args, row):
+    image_path = Path(row["image_path"])
+    with np.load(image_path.parent / "camera.npz", allow_pickle=False) as data:
+        K = data["K"]
+        T_camera_from_object = data["T_camera_from_object"]
+    with np.load(
+        resolve(args.evaluation_dir, row["target_points_path"]), allow_pickle=False
+    ) as data:
+        evaluation_normalization = data["evaluation_normalization"]
+
+    T_sam_from_object = np.diag([-1.0, -1.0, 1.0, 1.0]) @ T_camera_from_object
+    T_sam_from_target = T_sam_from_object @ np.linalg.inv(evaluation_normalization)
+    center = T_sam_from_object[:3, 3]
+    radius = args.orbit_radius or np.linalg.norm(center)
+    with Image.open(image_path) as image:
+        image_height = image.height
+    fov = (
+        args.fov if args.fov is not None
+        else np.degrees(2.0 * np.arctan(image_height / (2.0 * K[1, 1])))
+    )
+    return T_sam_from_target, center, radius, fov
+
+
+def aligned_stage1_voxels(args, row, T_sam_from_target):
     with np.load(resolve(args.evaluation_dir, row["stage1_path"]), allow_pickle=False) as data:
         factor = int(data["downsample_factor"])
         if factor == 1:
@@ -290,7 +287,11 @@ def aligned_stage1_voxels(args, row):
                 "rendering the exact support passed to Stage 2"
             )
     with np.load(resolve(args.evaluation_dir, row["alignment_path"]), allow_pickle=False) as data:
-        transform = data["icp_transform"] @ data["prediction_normalization"]
+        transform = (
+            T_sam_from_target
+            @ data["icp_transform"]
+            @ data["prediction_normalization"]
+        )
     points = trimesh.transform_points(points, transform)
     scale = abs(np.linalg.det(transform[:3, :3])) ** (1 / 3)
     return points, 0.9 * scale / 64
@@ -302,24 +303,26 @@ def main():
         raise ValueError("--orbit-radius must be positive")
     rows, conditions = load_sample(args)
     first = rows[conditions[0]]
+    T_sam_from_target, center, radius, fov = camera_frame(args, first)
     target_mesh = load_mesh(resolve(args.evaluation_dir, first["target_mesh_path"]))
+    target_mesh.apply_transform(T_sam_from_target)
     meshes = {
         condition: load_mesh(
             resolve(args.evaluation_dir, rows[condition]["mesh_aligned_path"])
         )
         for condition in conditions
     }
+    for mesh in meshes.values():
+        mesh.apply_transform(T_sam_from_target)
     voxels = {}
     if "voxel" in args.modes:
         if "decoded_gt" not in rows:
             raise ValueError("Voxel rendering requires the decoded_gt evaluation result")
         for condition in ["decoded_gt", *conditions]:
             if condition not in voxels:
-                voxels[condition] = aligned_stage1_voxels(args, rows[condition])
-    arrays = [target_mesh.vertices]
-    arrays.extend(mesh.vertices for mesh in meshes.values())
-    arrays.extend(points for points, _ in voxels.values())
-    center, radius = camera_fit(args, arrays)
+                voxels[condition] = aligned_stage1_voxels(
+                    args, rows[condition], T_sam_from_target
+                )
 
     print(f"sample: {args.sample_id}")
     print(f"conditions: {', '.join(conditions)}")
@@ -327,19 +330,19 @@ def main():
 
     if "mesh" in args.modes:
         render(
-            args, mesh_geometry(target_mesh), center, radius,
+            args, mesh_geometry(target_mesh), center, radius, fov,
             "mesh_ground_truth", (0.71, 0.71, 0.71),
         )
         for condition in conditions:
             render(
-                args, mesh_geometry(meshes[condition]), center, radius,
+                args, mesh_geometry(meshes[condition]), center, radius, fov,
                 f"mesh_{condition}", (0.71, 0.71, 0.71),
             )
 
     if "voxel" in args.modes:
         points, size = voxels["decoded_gt"]
         render(
-            args, voxel_geometry(points, size), center, radius,
+            args, voxel_geometry(points, size), center, radius, fov,
             "voxel_ground_truth", (0.45, 0.65, 0.85),
         )
         for condition in conditions:
@@ -347,7 +350,7 @@ def main():
                 continue
             points, size = voxels[condition]
             render(
-                args, voxel_geometry(points, size), center, radius,
+                args, voxel_geometry(points, size), center, radius, fov,
                 f"voxel_{condition}", (0.45, 0.65, 0.85),
             )
 
