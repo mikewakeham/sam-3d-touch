@@ -10,13 +10,10 @@ import numpy as np
 if sys.platform.startswith("linux"):
     os.environ.setdefault("EGL_PLATFORM", "surfaceless")
 
+import cv2
 import open3d as o3d
 import trimesh
 import yaml
-try:
-    from moviepy import ImageSequenceClip
-except ImportError:
-    from moviepy.editor import ImageSequenceClip
 from PIL import Image
 
 
@@ -26,7 +23,6 @@ def parse_args():
     parser.add_argument("--sample-id", required=True)
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--conditions", nargs="+")
-    parser.add_argument("--modes", nargs="+", choices=["mesh", "voxel"], default=["mesh"])
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--fps", type=int, default=30)
     parser.add_argument("--gif-fps", type=int, default=10)
@@ -95,20 +91,6 @@ def mesh_geometry(mesh):
     return geometry
 
 
-def voxel_geometry(points, size):
-    cube = trimesh.creation.box(extents=(size, size, size))
-    count = len(points)
-    vertices_per_cube = len(cube.vertices)
-    vertices = (points[:, None] + cube.vertices[None]).reshape(-1, 3)
-    faces = cube.faces[None] + vertices_per_cube * np.arange(count)[:, None, None]
-    geometry = o3d.geometry.TriangleMesh(
-        o3d.utility.Vector3dVector(vertices),
-        o3d.utility.Vector3iVector(faces.reshape(-1, 3)),
-    )
-    geometry.compute_vertex_normals()
-    return geometry
-
-
 def material(color):
     result = o3d.visualization.rendering.MaterialRecord()
     result.shader = "defaultLit"
@@ -170,12 +152,15 @@ def render(args, geometry, center, name, color):
     print()
 
     if write_mp4:
-        clip = ImageSequenceClip(frames, fps=args.fps)
-        clip.write_videofile(
-            str(mp4_path), codec="libx264", audio=False, logger=None,
-            ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart"],
+        writer = cv2.VideoWriter(
+            str(mp4_path), cv2.VideoWriter_fourcc(*"mp4v"),
+            args.fps, (args.width, args.height),
         )
-        clip.close()
+        if not writer.isOpened():
+            raise RuntimeError(f"Could not create {mp4_path}")
+        for frame in frames:
+            writer.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+        writer.release()
         print(f"saved {mp4_path}")
 
     if write_gif:
@@ -195,39 +180,6 @@ def render(args, geometry, center, name, color):
         print(f"saved {gif_path}")
 
 
-def voxel_points(grid):
-    resolution = np.asarray(grid.shape, dtype=np.float64)
-    return np.argwhere(grid).astype(np.float64) / resolution - 0.5
-
-
-def normalize_points(points):
-    bounds = np.array([points.min(axis=0), points.max(axis=0)])
-    center = bounds.mean(axis=0)
-    scale = 2.0 / (bounds[1] - bounds[0]).max()
-    return (points - center) * scale, scale
-
-
-def transform_points(points, transform):
-    return trimesh.transform_points(points, transform)
-
-
-def load_target_voxels(args, row):
-    with np.load(resolve(args.evaluation_dir, row["voxel_path"]), allow_pickle=False) as data:
-        points = voxel_points(data["target"])
-    points, scale = normalize_points(points)
-    return points, 0.9 * scale / 64
-
-
-def load_prediction_voxels(args, row):
-    with np.load(resolve(args.evaluation_dir, row["voxel_path"]), allow_pickle=False) as data:
-        points = voxel_points(data["prediction"])
-    with np.load(resolve(args.evaluation_dir, row["alignment_path"]), allow_pickle=False) as data:
-        transform = data["icp_transform"] @ data["prediction_normalization"]
-    points = transform_points(points, transform)
-    scale = abs(np.linalg.det(transform[:3, :3])) ** (1 / 3)
-    return points, 0.9 * scale / 64
-
-
 def main():
     args = parse_args()
     rows, conditions = load_sample(args)
@@ -238,27 +190,13 @@ def main():
     print(f"sample: {args.sample_id}")
     print(f"conditions: {', '.join(conditions)}")
 
-    if "mesh" in args.modes:
-        render(args, mesh_geometry(target_mesh), center, "mesh_ground_truth", (0.71, 0.71, 0.71))
-        for condition in conditions:
-            mesh = load_mesh(resolve(args.evaluation_dir, rows[condition]["mesh_aligned_path"]))
-            render(
-                args, mesh_geometry(mesh), center,
-                f"mesh_{condition}", (0.71, 0.71, 0.71),
-            )
-
-    if "voxel" in args.modes:
-        points, size = load_target_voxels(args, first)
+    render(args, mesh_geometry(target_mesh), center, "mesh_ground_truth", (0.71, 0.71, 0.71))
+    for condition in conditions:
+        mesh = load_mesh(resolve(args.evaluation_dir, rows[condition]["mesh_aligned_path"]))
         render(
-            args, voxel_geometry(points, size), center,
-            "voxel_ground_truth", (0.45, 0.65, 0.85),
+            args, mesh_geometry(mesh), center,
+            f"mesh_{condition}", (0.71, 0.71, 0.71),
         )
-        for condition in conditions:
-            points, size = load_prediction_voxels(args, rows[condition])
-            render(
-                args, voxel_geometry(points, size), center,
-                f"voxel_{condition}", (0.45, 0.65, 0.85),
-            )
 
 
 if __name__ == "__main__":
