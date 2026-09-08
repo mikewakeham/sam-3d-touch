@@ -10,7 +10,6 @@ import numpy as np
 if sys.platform.startswith("linux"):
     os.environ.setdefault("EGL_PLATFORM", "surfaceless")
 
-import cv2
 import open3d as o3d
 import trimesh
 import yaml
@@ -31,9 +30,10 @@ def parse_args():
     parser.add_argument("--width", type=int, default=768)
     parser.add_argument("--height", type=int, default=768)
     parser.add_argument("--fov", type=float, default=40.0)
-    parser.add_argument("--orbit-radius", type=float, default=3.2)
+    parser.add_argument("--orbit-radius", type=float)
     parser.add_argument("--orbit-height", type=float, default=0.0)
     parser.add_argument("--light-strength", type=float, default=1.0)
+    parser.add_argument("--mp4", action="store_true")
     return parser.parse_args()
 
 
@@ -110,6 +110,7 @@ def material(color):
     result = o3d.visualization.rendering.MaterialRecord()
     result.shader = "defaultLit"
     result.base_color = (*color, 1.0)
+    result.sRGB_color = True
     return result
 
 
@@ -133,15 +134,41 @@ def initialize_lighting(renderer, strength):
     )
 
 
-def render(args, geometry, center, name, color):
+def camera_fit(args, arrays):
+    bounds = np.array([
+        np.min([points.min(axis=0) for points in arrays], axis=0),
+        np.max([points.max(axis=0) for points in arrays], axis=0),
+    ])
+    center = bounds.mean(axis=0)
+    corners = trimesh.bounds.corners(bounds) - center
+    vertical = np.radians(args.fov)
+    horizontal = 2 * np.arctan(
+        np.tan(vertical / 2) * args.width / args.height
+    )
+    required = 0.0
+    for frame in range(args.frames):
+        angle = 2 * np.pi * frame / args.frames
+        outward = np.array([np.sin(angle), 0.0, -np.cos(angle)])
+        forward = -outward
+        right = np.cross(forward, np.array([0.0, 1.0, 0.0]))
+        depth_offset = corners @ forward
+        required = max(
+            required,
+            np.max(np.abs(corners @ right) / np.tan(horizontal / 2) - depth_offset),
+            np.max(np.abs(corners[:, 1]) / np.tan(vertical / 2) - depth_offset),
+        )
+    return center, args.orbit_radius or max(3.2, 1.08 * required)
+
+
+def render(args, geometry, center, radius, name, color):
     output_dir = (args.output_dir or args.evaluation_dir / "orbits") / args.sample_id
     output_dir.mkdir(parents=True, exist_ok=True)
     mp4_path = output_dir / f"{safe_name(name)}.mp4"
     gif_path = output_dir / f"{safe_name(name)}.gif"
-    write_mp4 = not mp4_path.exists()
     write_gif = not gif_path.exists()
+    write_mp4 = args.mp4 and not mp4_path.exists()
     if not write_mp4 and not write_gif:
-        print(f"skipping existing {mp4_path} and {gif_path}")
+        print(f"skipping existing {gif_path}")
         return
 
     renderer = o3d.visualization.rendering.OffscreenRenderer(args.width, args.height)
@@ -154,9 +181,9 @@ def render(args, geometry, center, name, color):
     for frame in range(args.frames):
         angle = 2 * np.pi * frame / args.frames
         eye = center + np.array([
-            args.orbit_radius * np.sin(angle),
+            radius * np.sin(angle),
             args.orbit_height,
-            -args.orbit_radius * np.cos(angle),
+            -radius * np.cos(angle),
         ])
         renderer.setup_camera(args.fov, center, eye, (0.0, 1.0, 0.0))
         image = np.asarray(renderer.render_to_image())[..., :3].copy()
@@ -167,15 +194,16 @@ def render(args, geometry, center, name, color):
     print()
 
     if write_mp4:
-        writer = cv2.VideoWriter(
-            str(mp4_path), cv2.VideoWriter_fourcc(*"mp4v"),
-            args.fps, (args.width, args.height),
+        try:
+            from moviepy import ImageSequenceClip
+        except ImportError:
+            from moviepy.editor import ImageSequenceClip
+        clip = ImageSequenceClip(frames, fps=args.fps)
+        clip.write_videofile(
+            str(mp4_path), codec="libx264", audio=False, logger=None,
+            ffmpeg_params=["-pix_fmt", "yuv420p", "-movflags", "+faststart"],
         )
-        if not writer.isOpened():
-            raise RuntimeError(f"Could not create {mp4_path}")
-        for frame in frames:
-            writer.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
-        writer.release()
+        clip.close()
         print(f"saved {mp4_path}")
 
     if write_gif:
@@ -193,6 +221,7 @@ def render(args, geometry, center, name, color):
             duration=round(1000 / gif_fps), loop=0, disposal=2, optimize=True,
         )
         print(f"saved {gif_path}")
+    del renderer
 
 
 def aligned_stage1_voxels(args, row):
@@ -216,37 +245,55 @@ def aligned_stage1_voxels(args, row):
 
 def main():
     args = parse_args()
+    if args.orbit_radius is not None and args.orbit_radius <= 0:
+        raise ValueError("--orbit-radius must be positive")
     rows, conditions = load_sample(args)
     first = rows[conditions[0]]
     target_mesh = load_mesh(resolve(args.evaluation_dir, first["target_mesh_path"]))
-    center = target_mesh.bounds.mean(axis=0)
+    meshes = {
+        condition: load_mesh(
+            resolve(args.evaluation_dir, rows[condition]["mesh_aligned_path"])
+        )
+        for condition in conditions
+    }
+    voxels = {}
+    if "voxel" in args.modes:
+        if "decoded_gt" not in rows:
+            raise ValueError("Voxel rendering requires the decoded_gt evaluation result")
+        for condition in ["decoded_gt", *conditions]:
+            if condition not in voxels:
+                voxels[condition] = aligned_stage1_voxels(args, rows[condition])
+    arrays = [target_mesh.vertices]
+    arrays.extend(mesh.vertices for mesh in meshes.values())
+    arrays.extend(points for points, _ in voxels.values())
+    center, radius = camera_fit(args, arrays)
 
     print(f"sample: {args.sample_id}")
     print(f"conditions: {', '.join(conditions)}")
 
     if "mesh" in args.modes:
-        render(args, mesh_geometry(target_mesh), center, "mesh_ground_truth", (0.71, 0.71, 0.71))
+        render(
+            args, mesh_geometry(target_mesh), center, radius,
+            "mesh_ground_truth", (0.71, 0.71, 0.71),
+        )
         for condition in conditions:
-            mesh = load_mesh(resolve(args.evaluation_dir, rows[condition]["mesh_aligned_path"]))
             render(
-                args, mesh_geometry(mesh), center,
+                args, mesh_geometry(meshes[condition]), center, radius,
                 f"mesh_{condition}", (0.71, 0.71, 0.71),
             )
 
     if "voxel" in args.modes:
-        if "decoded_gt" not in rows:
-            raise ValueError("Voxel rendering requires the decoded_gt evaluation result")
-        points, size = aligned_stage1_voxels(args, rows["decoded_gt"])
+        points, size = voxels["decoded_gt"]
         render(
-            args, voxel_geometry(points, size), center,
+            args, voxel_geometry(points, size), center, radius,
             "voxel_ground_truth", (0.45, 0.65, 0.85),
         )
         for condition in conditions:
             if condition == "decoded_gt":
                 continue
-            points, size = aligned_stage1_voxels(args, rows[condition])
+            points, size = voxels[condition]
             render(
-                args, voxel_geometry(points, size), center,
+                args, voxel_geometry(points, size), center, radius,
                 f"voxel_{condition}", (0.45, 0.65, 0.85),
             )
 
