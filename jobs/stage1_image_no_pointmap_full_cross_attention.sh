@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=s1_full_surface_no_pointmap_full_ca
+#SBATCH --job-name=s1_image_no_pointmap_full_ca
 #SBATCH --partition=kempner_h200
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
@@ -19,13 +19,11 @@ export PYTHONUNBUFFERED=1
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 train.py \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data_full_surface.yaml \
-  --output-dir outputs/stage1_full_surface_no_pointmap_full_cross_attention \
+  --output-dir outputs/stage1_image_no_pointmap_full_cross_attention \
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
   --epochs 20 \
-  --no-touch-position \
+  --no-touch \
   --cross-attention-scope full \
-  --no-pointmap \
-  --resume outputs/stage1_full_surface_no_pointmap_full_cross_attention/last.pt \
-  --wandb-id nouqb3mh
+  --no-pointmap

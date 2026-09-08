@@ -328,12 +328,14 @@ def align_mesh(prediction_mesh, target_mesh, prediction_points, target_points, w
         refined.append((
             symmetric_distance(transformed, target_points, workers),
             registration.transformation,
+            float(registration.fitness),
+            float(registration.inlier_rmse),
         ))
 
-    error, transform = min(refined, key=lambda item: item[0])
+    error, transform, fitness, inlier_rmse = min(refined, key=lambda item: item[0])
     aligned = prediction_mesh.copy()
     aligned.apply_transform(transform)
-    return aligned, transform, error
+    return aligned, transform, error, fitness, inlier_rmse
 
 
 def voxelize_points(points, resolution=64):
@@ -438,7 +440,8 @@ def load_target_mesh(record, dataset, output_dir, surface_points, icp_points, sa
 def save_generated_artifacts(output_dir, condition, sample_id, prediction, predicted_voxels,
                              target_voxels, coords_original, coords, downsample_factor, slat,
                              raw_mesh, normalized_mesh, aligned_mesh, normalization, alignment,
-                             icp_error, points, normals, touch_centers, seed, save_points):
+                             icp_error, icp_fitness, icp_inlier_rmse, points, normals,
+                             touch_centers, seed, save_points):
     artifact_dir = output_dir / "artifacts" / safe_name(condition) / safe_name(sample_id)
     artifact_dir.mkdir(parents=True, exist_ok=True)
     stage1_path = artifact_dir / "stage1.npz"
@@ -472,6 +475,8 @@ def save_generated_artifacts(output_dir, condition, sample_id, prediction, predi
         prediction_normalization=normalization,
         icp_transform=alignment,
         icp_error=np.float64(icp_error),
+        icp_fitness=np.float64(icp_fitness),
+        icp_inlier_rmse=np.float64(icp_inlier_rmse),
         points=points[:save_points],
         normals=normals[:save_points],
         stage1_seed=np.int64(seed),
@@ -480,6 +485,51 @@ def save_generated_artifacts(output_dir, condition, sample_id, prediction, predi
         surface_seed=np.int64(seed + 2),
     )
     return stage1_path, slat_path, raw_path, normalized_path, aligned_path, alignment_path
+
+
+def aligned_stage1_points(row, output_dir):
+    with np.load(output_dir / row["stage1_path"], allow_pickle=False) as data:
+        factor = int(data["downsample_factor"])
+        if factor == 1:
+            grid = data["prediction"]
+            points = np.argwhere(grid).astype(np.float64) / np.asarray(grid.shape) - 0.5
+        else:
+            points = data["coords"][:, 1:].astype(np.float64) / 64 - 0.5
+    with np.load(output_dir / row["alignment_path"], allow_pickle=False) as data:
+        transform = data["icp_transform"] @ data["prediction_normalization"]
+    import trimesh
+
+    return trimesh.transform_points(points, transform), factor
+
+
+def add_stage1_metrics(rows, output_dir, workers):
+    by_sample = {}
+    for row in rows:
+        by_sample.setdefault(row["sample_id"], {})[row["condition"]] = row
+
+    for conditions in by_sample.values():
+        ground_truth = conditions.get("decoded_gt")
+        if ground_truth is None or ground_truth["error"]:
+            for row in conditions.values():
+                row["stage1_aligned_chamfer"] = np.nan
+                row["stage1_aligned_voxel_iou_64"] = np.nan
+                row["stage1_downsample_factor"] = np.nan
+            continue
+        target_points, _ = aligned_stage1_points(ground_truth, output_dir)
+        target_voxels = voxelize_points(target_points)
+        for row in conditions.values():
+            if row["error"]:
+                row["stage1_aligned_chamfer"] = np.nan
+                row["stage1_aligned_voxel_iou_64"] = np.nan
+                row["stage1_downsample_factor"] = np.nan
+                continue
+            points, factor = aligned_stage1_points(row, output_dir)
+            prediction_voxels = voxelize_points(points)
+            intersection = np.logical_and(prediction_voxels, target_voxels).sum()
+            union = np.logical_or(prediction_voxels, target_voxels).sum()
+            row["stage1_aligned_chamfer"] = symmetric_distance(points, target_points, workers)
+            row["stage1_aligned_voxel_iou_64"] = float(intersection / max(union, 1))
+            row["stage1_downsample_factor"] = factor
 
 
 def relative(path, root):
@@ -587,7 +637,7 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                 normalized_mesh, normalization = normalize_mesh(raw_mesh)
                 prediction_icp_points, _ = sample_surface(normalized_mesh, args.icp_points, seed + 1)
                 target = target_cache[record["object_id"]]
-                aligned_mesh, alignment, icp_error = align_mesh(
+                aligned_mesh, alignment, icp_error, icp_fitness, icp_inlier_rmse = align_mesh(
                     normalized_mesh, target["mesh"], prediction_icp_points,
                     target["icp_points"], args.metric_workers,
                 )
@@ -601,7 +651,8 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     args.output_dir, name, sample_id, prediction, predicted_voxels[0],
                     target_voxels[0], coords_original, coords, downsample_factor, slat,
                     raw_mesh, normalized_mesh, aligned_mesh, normalization, alignment,
-                    icp_error, points, normals, touch_centers, seed, args.save_points,
+                    icp_error, icp_fitness, icp_inlier_rmse, points, normals,
+                    touch_centers, seed, args.save_points,
                 )
                 stage1_path, slat_path, raw_path, normalized_path, aligned_path, alignment_path = paths
                 row = {
@@ -620,6 +671,8 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     "target_points_path": relative(target["points_path"], args.output_dir),
                     **metrics,
                     "icp_error": icp_error,
+                    "icp_fitness": icp_fitness,
+                    "icp_inlier_rmse": icp_inlier_rmse,
                     "error": "",
                 }
             except Exception as error:
@@ -645,6 +698,8 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     "normal_consistency": np.nan,
                     "emd": np.nan,
                     "icp_error": np.nan,
+                    "icp_fitness": np.nan,
+                    "icp_inlier_rmse": np.nan,
                     "error": f"{type(error).__name__}: {error}",
                 }
                 print(f"{name}: {sample_id} failed: {row['error']}", flush=True)
@@ -660,11 +715,12 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
 def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_touch):
     metrics = [
         "fscore_0.01", "f_precision_0.01", "f_recall_0.01", "voxel_iou_64",
-        "chamfer", "normal_consistency", "emd", "icp_error",
+        "chamfer", "normal_consistency", "emd", "icp_error", "icp_fitness",
+        "icp_inlier_rmse", "stage1_aligned_chamfer", "stage1_aligned_voxel_iou_64",
     ]
     higher_is_better = {
         "fscore_0.01", "f_precision_0.01", "f_recall_0.01", "voxel_iou_64",
-        "normal_consistency",
+        "normal_consistency", "icp_fitness", "stage1_aligned_voxel_iou_64",
     }
     summary = {
         "primary_metric": "fscore_0.01",
@@ -884,6 +940,7 @@ def main():
         row for row in rows_by_key.values()
         if row["condition"] in active_conditions and row["sample_id"] in local_sample_ids
     ]
+    add_stage1_metrics(local_rows, args.output_dir, args.metric_workers)
     write_metrics(rank_metrics_path, local_rows)
 
     if distributed:
@@ -940,6 +997,8 @@ def main():
                 "alignment": "PCA 24-orientation similarity initialization; best four refined by point-to-point ICP",
                 "icp_threshold": 0.2,
                 "icp_iterations": 50,
+                "stage1_alignment": "each Stage-1 support uses its own Stage-2 mesh registration into the source-mesh frame",
+                "stage1_downsampling": "full decoded occupancy when factor is 1; exact Stage-2 support coordinates otherwise",
                 "fscore_threshold": 0.01,
                 "voxel_resolution": 64,
                 "chamfer": "symmetric mean Euclidean nearest-neighbor distance",

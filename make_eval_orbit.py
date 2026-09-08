@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument("--sample-id", required=True)
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument("--conditions", nargs="+")
+    parser.add_argument("--modes", nargs="+", choices=["mesh", "voxel"], default=["mesh", "voxel"])
     parser.add_argument("--frames", type=int, default=120)
     parser.add_argument("--fps", type=int, default=30)
     parser.add_argument("--gif-fps", type=int, default=10)
@@ -86,6 +87,20 @@ def mesh_geometry(mesh):
     geometry = o3d.geometry.TriangleMesh(
         o3d.utility.Vector3dVector(mesh.vertices),
         o3d.utility.Vector3iVector(mesh.faces),
+    )
+    geometry.compute_vertex_normals()
+    return geometry
+
+
+def voxel_geometry(points, size):
+    cube = trimesh.creation.box(extents=(size, size, size))
+    count = len(points)
+    vertices_per_cube = len(cube.vertices)
+    vertices = (points[:, None] + cube.vertices[None]).reshape(-1, 3)
+    faces = cube.faces[None] + vertices_per_cube * np.arange(count)[:, None, None]
+    geometry = o3d.geometry.TriangleMesh(
+        o3d.utility.Vector3dVector(vertices),
+        o3d.utility.Vector3iVector(faces.reshape(-1, 3)),
     )
     geometry.compute_vertex_normals()
     return geometry
@@ -180,6 +195,25 @@ def render(args, geometry, center, name, color):
         print(f"saved {gif_path}")
 
 
+def aligned_stage1_voxels(args, row):
+    with np.load(resolve(args.evaluation_dir, row["stage1_path"]), allow_pickle=False) as data:
+        factor = int(data["downsample_factor"])
+        if factor == 1:
+            grid = data["prediction"]
+            points = np.argwhere(grid).astype(np.float64) / np.asarray(grid.shape) - 0.5
+        else:
+            points = data["coords"][:, 1:].astype(np.float64) / 64 - 0.5
+            print(
+                f"{row['condition']}: Stage-1 support was downsampled by {factor}; "
+                "rendering the exact support passed to Stage 2"
+            )
+    with np.load(resolve(args.evaluation_dir, row["alignment_path"]), allow_pickle=False) as data:
+        transform = data["icp_transform"] @ data["prediction_normalization"]
+    points = trimesh.transform_points(points, transform)
+    scale = abs(np.linalg.det(transform[:3, :3])) ** (1 / 3)
+    return points, 0.9 * scale / 64
+
+
 def main():
     args = parse_args()
     rows, conditions = load_sample(args)
@@ -190,13 +224,31 @@ def main():
     print(f"sample: {args.sample_id}")
     print(f"conditions: {', '.join(conditions)}")
 
-    render(args, mesh_geometry(target_mesh), center, "mesh_ground_truth", (0.71, 0.71, 0.71))
-    for condition in conditions:
-        mesh = load_mesh(resolve(args.evaluation_dir, rows[condition]["mesh_aligned_path"]))
+    if "mesh" in args.modes:
+        render(args, mesh_geometry(target_mesh), center, "mesh_ground_truth", (0.71, 0.71, 0.71))
+        for condition in conditions:
+            mesh = load_mesh(resolve(args.evaluation_dir, rows[condition]["mesh_aligned_path"]))
+            render(
+                args, mesh_geometry(mesh), center,
+                f"mesh_{condition}", (0.71, 0.71, 0.71),
+            )
+
+    if "voxel" in args.modes:
+        if "decoded_gt" not in rows:
+            raise ValueError("Voxel rendering requires the decoded_gt evaluation result")
+        points, size = aligned_stage1_voxels(args, rows["decoded_gt"])
         render(
-            args, mesh_geometry(mesh), center,
-            f"mesh_{condition}", (0.71, 0.71, 0.71),
+            args, voxel_geometry(points, size), center,
+            "voxel_ground_truth", (0.45, 0.65, 0.85),
         )
+        for condition in conditions:
+            if condition == "decoded_gt":
+                continue
+            points, size = aligned_stage1_voxels(args, rows[condition])
+            render(
+                args, voxel_geometry(points, size), center,
+                f"voxel_{condition}", (0.45, 0.65, 0.85),
+            )
 
 
 if __name__ == "__main__":
