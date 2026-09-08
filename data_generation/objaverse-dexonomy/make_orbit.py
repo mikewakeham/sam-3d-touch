@@ -12,10 +12,6 @@ if sys.platform.startswith("linux"):
 
 import open3d as o3d
 import trimesh
-try:
-    from moviepy import ImageSequenceClip
-except ImportError:
-    from moviepy.editor import ImageSequenceClip
 from PIL import Image
 
 
@@ -28,7 +24,7 @@ def parse_args():
     parser.add_argument("--name")
     parser.add_argument(
         "--show", nargs="+",
-        choices=["mesh", "mesh_textured", "pointmap", "touch", "camera"],
+        choices=["mesh", "mesh_textured", "pointmap", "touch", "full_surface", "camera"],
     )
     parser.add_argument("--variants", type=json.loads)
     parser.add_argument("--touch-levels", type=json.loads)
@@ -56,6 +52,8 @@ def parse_args():
     parser.add_argument("--touch-point-size", type=float, default=0.01)
     parser.add_argument("--center-size", type=float, default=0.01)
     parser.add_argument("--light-strength", type=float, default=1.0)
+    parser.add_argument("--gif-only", action="store_true")
+    parser.add_argument("--flat-output", action="store_true")
     return parser.parse_args()
 
 
@@ -95,11 +93,15 @@ def load_view(args):
 
     rgba = np.array(Image.open(view_dir / "image.png").convert("RGBA"))
     pointmap = np.load(view_dir / "pointmap.npy")
+    full_surface = None
+    if "full_surface" in args.show:
+        with np.load(view_dir / "full_surface.npz", allow_pickle=False) as data:
+            full_surface = data["points_camera"]
 
     with np.load(view_dir / "touches.npz", allow_pickle=False) as data:
         touch = dict(data)
 
-    return mesh, textured_mesh, rgba, pointmap, touch, K, T_sam_from_object
+    return mesh, textured_mesh, rgba, pointmap, touch, full_surface, K, T_sam_from_object
 
 
 def select_touches(touch, args):
@@ -213,7 +215,10 @@ def initialize_lighting(renderer, T_sam_from_object, strength):
     )
 
 
-def add_geometry(renderer, args, mesh, textured_mesh, rgba, pointmap, contacts, K):
+def add_geometry(
+    renderer, args, mesh, textured_mesh, rgba, pointmap, contacts,
+    full_surface, K,
+):
     if "mesh" in args.show:
         geometry = o3d.geometry.TriangleMesh(
             o3d.utility.Vector3dVector(mesh.vertices),
@@ -243,6 +248,12 @@ def add_geometry(renderer, args, mesh, textured_mesh, rgba, pointmap, contacts, 
 
             marker = particles(center[None], color, args.center_size)
             renderer.scene.add_geometry(f"center_{i}", marker, particle_material())
+
+    if "full_surface" in args.show:
+        geometry = particles(
+            full_surface, np.array([45, 125, 210]), args.point_size
+        )
+        renderer.scene.add_geometry("full_surface", geometry, particle_material())
 
     if "camera" in args.show:
         height, width = rgba.shape[:2]
@@ -308,13 +319,18 @@ def high_quality_gif_frame(frame, size):
     return image
 
 
-def render(args, mesh, textured_mesh, rgba, pointmap, contacts, K, T_sam_from_object):
-    object_output_dir = args.output_dir / args.object_id
+def render(
+    args, mesh, textured_mesh, rgba, pointmap, contacts, full_surface,
+    K, T_sam_from_object,
+):
+    object_output_dir = (
+        args.output_dir if args.flat_output else args.output_dir / args.object_id
+    )
     object_output_dir.mkdir(parents=True, exist_ok=True)
     name = output_name(args)
     mp4_path = object_output_dir / f"{name}.mp4"
     gif_path = object_output_dir / f"{name}.gif"
-    write_mp4 = not mp4_path.exists()
+    write_mp4 = not args.gif_only and not mp4_path.exists()
     write_gif = not gif_path.exists()
     if not write_mp4 and not write_gif:
         print(f"skipping existing {mp4_path} and {gif_path}")
@@ -324,7 +340,10 @@ def render(args, mesh, textured_mesh, rgba, pointmap, contacts, K, T_sam_from_ob
     renderer.scene.set_background((1.0, 1.0, 1.0, 1.0))
     renderer.scene.show_skybox(False)
     initialize_lighting(renderer, T_sam_from_object, args.light_strength)
-    add_geometry(renderer, args, mesh, textured_mesh, rgba, pointmap, contacts, K)
+    add_geometry(
+        renderer, args, mesh, textured_mesh, rgba, pointmap, contacts,
+        full_surface, K,
+    )
 
     center = T_sam_from_object[:3, 3]
     radius = args.orbit_radius if args.orbit_radius is not None else np.linalg.norm(center)
@@ -365,6 +384,10 @@ def render(args, mesh, textured_mesh, rgba, pointmap, contacts, K, T_sam_from_ob
         print(f"frame {frame + 1}/{args.frames}", end="\r", flush=True)
 
     if write_mp4:
+        try:
+            from moviepy import ImageSequenceClip
+        except ImportError:
+            from moviepy.editor import ImageSequenceClip
         clip = ImageSequenceClip(frames, fps=args.fps)
         clip.write_videofile(
             str(mp4_path), codec="libx264", audio=False, logger=None,
@@ -419,7 +442,9 @@ def main():
     if args.show is not None and args.variants is not None:
         raise ValueError("Use either --show or --variants, not both")
     variants = args.variants or [args.show or ["mesh", "pointmap", "touch"]]
-    choices = {"mesh", "mesh_textured", "pointmap", "touch", "camera"}
+    choices = {
+        "mesh", "mesh_textured", "pointmap", "touch", "full_surface", "camera"
+    }
     for variant in variants:
         if not isinstance(variant, list) or not variant or any(item not in choices for item in variant):
             raise ValueError("Each variant must be a nonempty list of show options")
@@ -458,7 +483,10 @@ def main():
             args.points_per_contact = points_per_contact
             touch_sets.append((name, contacts, radius, points_per_contact))
 
-    mesh, textured_mesh, rgba, pointmap, touch, K, T_sam_from_object = load_view(args)
+    (
+        mesh, textured_mesh, rgba, pointmap, touch, full_surface,
+        K, T_sam_from_object,
+    ) = load_view(args)
     contacts = []
     if args.touch_levels:
         selected_touch_sets = []
@@ -481,11 +509,15 @@ def main():
                 args.contacts = contact_count
                 args.radius = radius
                 args.points_per_contact = points_per_contact
-                render(args, mesh, textured_mesh, rgba, pointmap, selected, K, T_sam_from_object)
+                render(
+                    args, mesh, textured_mesh, rgba, pointmap, selected,
+                    full_surface, K, T_sam_from_object,
+                )
         else:
             args.touch_level = None
             render(
-                args, mesh, textured_mesh, rgba, pointmap, contacts, K, T_sam_from_object
+                args, mesh, textured_mesh, rgba, pointmap, contacts,
+                full_surface, K, T_sam_from_object,
             )
 
 

@@ -1,7 +1,10 @@
 import argparse
 import csv
+import json
 import os
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -21,10 +24,11 @@ def parse_args():
     parser.add_argument("--evaluation-dir", type=Path, required=True)
     parser.add_argument("--sample-id", required=True)
     parser.add_argument("--output-dir", type=Path)
+    parser.add_argument("--touch-config", type=Path, default=Path("configs/data1.yaml"))
     parser.add_argument("--conditions", nargs="+")
     parser.add_argument("--modes", nargs="+", choices=["mesh", "voxel"], default=["mesh", "voxel"])
     parser.add_argument("--frames", type=int, default=120)
-    parser.add_argument("--fps", type=int, default=30)
+    parser.add_argument("--fps", type=int, default=20)
     parser.add_argument("--gif-fps", type=int, default=10)
     parser.add_argument("--gif-size", type=int, default=512)
     parser.add_argument("--width", type=int, default=768)
@@ -44,6 +48,10 @@ def safe_name(value):
 def resolve(root, path):
     path = Path(path)
     return path if path.is_absolute() else root / path
+
+
+def sample_output_dir(args):
+    return (args.output_dir or args.evaluation_dir / "orbits") / args.sample_id
 
 
 def load_sample(args):
@@ -161,7 +169,7 @@ def camera_fit(args, arrays):
 
 
 def render(args, geometry, center, radius, name, color):
-    output_dir = (args.output_dir or args.evaluation_dir / "orbits") / args.sample_id
+    output_dir = sample_output_dir(args)
     output_dir.mkdir(parents=True, exist_ok=True)
     mp4_path = output_dir / f"{safe_name(name)}.mp4"
     gif_path = output_dir / f"{safe_name(name)}.gif"
@@ -224,6 +232,51 @@ def render(args, geometry, center, radius, name, color):
     del renderer
 
 
+def save_inputs(args, row):
+    output_dir = sample_output_dir(args)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    image_path = Path(row["image_path"])
+    shutil.copy2(image_path, output_dir / "input_view.png")
+
+    generated_dir = next(
+        (parent for parent in image_path.parents if parent.name == "generated_data"),
+        None,
+    )
+    if generated_dir is None:
+        raise ValueError(f"Could not infer data root from {image_path}")
+
+    with open(args.touch_config) as file:
+        touch = yaml.safe_load(file)["touch"]
+    command = [
+        sys.executable,
+        str(Path(__file__).parent / "data_generation/objaverse-dexonomy/make_orbit.py"),
+        "--data-root", str(generated_dir.parent),
+        "--object-id", row["object_id"],
+        "--view-id", row["view_id"],
+        "--output-dir", str(output_dir),
+        "--variants", json.dumps([
+            ["mesh", "pointmap"],
+            ["mesh", "touch"],
+            ["mesh", "full_surface"],
+        ]),
+        "--contacts", str(touch["contacts"]["count"]),
+        "--radius", str(touch["neighborhood"]["max_geodesic_distance"]),
+        "--visibility", touch["neighborhood"]["visibility"],
+        "--points-per-contact", str(touch["point_sampling"]["points_per_contact"]),
+        "--frames", str(args.frames),
+        "--fps", str(args.fps),
+        "--gif-fps", str(args.gif_fps),
+        "--gif-size", str(args.gif_size),
+        "--width", str(args.width),
+        "--height", str(args.height),
+        "--light-strength", str(args.light_strength),
+        "--white-background",
+        "--gif-only",
+        "--flat-output",
+    ]
+    subprocess.run(command, check=True)
+
+
 def aligned_stage1_voxels(args, row):
     with np.load(resolve(args.evaluation_dir, row["stage1_path"]), allow_pickle=False) as data:
         factor = int(data["downsample_factor"])
@@ -270,6 +323,7 @@ def main():
 
     print(f"sample: {args.sample_id}")
     print(f"conditions: {', '.join(conditions)}")
+    save_inputs(args, first)
 
     if "mesh" in args.modes:
         render(

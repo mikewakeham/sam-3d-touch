@@ -1,10 +1,12 @@
 # Weekly progress: SAM3D point conditioning
 
-**Period:** September 1–7, 2026, America/New_York.  
+**Period:** September 1–7, 2026, America/New_York, with a September 8 update below.
 **Prepared for:** weekly research meeting.  
 **Scope:** factual record of implementation, experiments, recorded outcomes, and pending work. No recommendations are included.
 
 ## Summary
+
+The September 8 addendum supersedes the earlier pending-work statuses where indicated. Earlier numerical results remain unchanged.
 
 - Replaced the custom, randomly initialized contact-cluster encoder with a pretrained VecSetX encoder operating on a global point cloud.
 - Reworked the dataloader and Stage-1 trainer around that representation, retaining native image/mask/pointmap conditioning and distributed training.
@@ -154,3 +156,72 @@ Reviewed Git history from September 1 through `daba25d`, the pre-VecSetX encoder
 Additional conversations inspected: `Review sam-3d-touch repos`, `Assess PointWorld PTV3 usage`, the separate reconstruction-focused `Integrate VecSetX touch encoder (2)`, and `Point Encoder Alternatives`. Literature alternatives were discussed, but prior assistant interpretations were not treated as measured results. Conversation retrieval was selective, not an exhaustive export of every chat or every historical turn. Unrelated personal conversations were not reviewed.
 
 Only three downstream run folders are locally archived. Cluster-only artifacts, live scheduler status, and the running learn experiment were not independently accessed. Some historical diagnostic outputs are existing audits rather than freshly recomputed measurements. The report labels user-reported outcomes and proposals separately from saved numerical results. No slides were created and no production code was changed for this report.
+
+## September 8 update
+
+Source: recent completed turns in `Integrate VecSetX touch encoder` (`01a06381-2bd5-7003-9d37-ffaba52c9865`), checked against Git through `e401a8b` and the current scripts. No new downstream metrics folder is available locally. Implementation and configuration are verified below; completed cluster results are not inferred from commands or job files.
+
+### Conditioning experiments and jobs
+
+- The oracle/no-pointmap integration is now committed (`8828d93`).
+- A subsequent correction applies forced dropping to the actual external condition embedder when present, falling back to the backbone condition embedder (`76bf2e4`). This corrects the initial integration's assumption about where the fuser lives.
+- Added a matched image/mask-only baseline with `--no-touch --no-pointmap --cross-attention-scope full`.
+- Added/configured full-surface conditioning without native pointmap. The chat records a disk-quota-related failure, followed by a resume job using `last.pt` and the existing W&B run. Current completion status and final loss have not been independently recovered.
+- The recent chat describes the learn-feature trajectory as matching the ordinary full-cross-attention trajectory. This is a conversation-recorded observation, not a newly recovered final metric. No local learn-run results are available.
+
+The resulting four ordinary-generation conditions are image/mask with or without pointmap, each with or without full-surface conditioning. These are distinct from the separate oracle-orientation comparisons. Removing pointmap retains native zeroed modality slots and existing preprocessing.
+
+### Current ordinary-generation evaluation
+
+`evaluate.py` replaces the older `eval_quantitative.py`; the obsolete `eval_qualitative.py` was removed. It restores each run's saved configuration and adapted weights through shared restoration code, preserving its encoder, point source, position, pointmap, and oracle settings. The selection configuration chooses examples without overriding each model's saved training data configuration.
+
+The evaluator supports:
+
+- Official pretrained SAM3D, the supplied trained runs, and `decoded_gt`.
+- `decoded_gt` takes the saved target Stage-1 latent through occupancy decoding and Stage 2. It is distinct from the actual source mesh and remains subject to decoding/Stage-2 error.
+- One view per validation object selected by the largest hidden full-surface fraction. The chat records 95 available validation objects for this selection.
+- Deterministic paired per-sample seeds, 25 Stage-1 sampling steps, and 25 Stage-2 sampling steps.
+- Stage-2 mesh normalization and source-mesh ICP alignment, followed by geometric metrics and saved artifacts.
+- Resume behavior that skips successful condition/sample rows and retries missing or failed results.
+
+The current `jobs/evaluate.sh` requests one H200, 16 CPUs, and 64 GB RAM and invokes Python directly. It lists the image+pointmap and image+pointmap+full-surface runs. Official and decoded-GT conditions are automatic. The chat provides a command adding the two no-pointmap runs, but the checked-in job has not yet added those run directories.
+
+Saved outputs include `metrics.csv`, `summary.yaml`, selected samples/views, source target meshes, and per-condition Stage-1 latents/occupancy, Stage-2 latents, meshes, and alignment transforms. No local `outputs/evaluation` results were present during this update, so this report gives no new F-score, Chamfer, IoU, or qualitative outcome.
+
+Sources: [evaluate.py](../evaluate.py), [evaluation job](../jobs/evaluate.sh), commits `35cb16b`, `1c6a55c`, `3d8bc4d`.
+
+### Stage-1 voxel visualization and alignment
+
+The current evaluator and orbit renderer retain actual Stage-1 decoded occupancy. These voxels are different from the surface-voxel IoU computed from Stage-2 meshes.
+
+The evaluator applies the associated Stage-2 mesh normalization and ICP alignment to Stage-1 coordinates and records `stage1_aligned_chamfer`, `stage1_aligned_voxel_iou_64`, and ICP fitness/RMSE. Prediction and decoded-target support each use their corresponding alignment.
+
+This provides evaluation-only, post-aligned shape comparisons. It removes pose differences and depends on the quality of the Stage-2-derived alignment. It does not establish native prediction/target frame agreement or measure layout accuracy.
+
+`make_eval_orbit.py` now renders mesh and Stage-1 voxel orbits, including the actual source mesh and decoded-GT reference. Recent changes make GIF the default and MP4 optional, fit shared camera framing, enable sRGB material handling, and clean up renderers. Lighting remained unchanged at the user's request. Source: [orbit renderer](../make_eval_orbit.py), `e401a8b`.
+
+### Paired noisy-target experiment: now implemented
+
+Added [experiments/noisy_target/evaluate.py](../experiments/noisy_target/evaluate.py) and [visualize.py](../experiments/noisy_target/visualize.py) in `35cb16b`. This supersedes the earlier report's proposed-only status.
+
+The script reuses the current loader, checkpoint restoration, batch preparation, native noise generation, interpolation, target velocity, and conditional model forward. Each model retains its normal conditioning and receives matching targets/noise. Input hashes check pairing across runs. It evaluates the training-style conditional flow path without inference CFG.
+
+Current defaults:
+
+- 32 objects, up to two randomly selected views per object.
+- Two noise draws per batch and fixed times 0.2, 0.5, 0.8, where 0 denotes noise and 1 denotes data.
+- Batch size four, bf16, one GPU.
+- Per-sample error arrays with axes `[time, noise_draw, latent_x, latent_y, latent_z]`; the spatial grid is 16³ and velocity MSE averages the eight latent channels.
+
+The visualizer subtracts comparison-model error from baseline error, averages paired draws, and plots central slices. Positive/blue values mean lower target-velocity error for the comparison model. They do not mean closer to a learned data distribution. A latent-grid location is not an individual 64³ occupancy voxel.
+
+The current implementation does not perform partial denoising or decode clean-latent estimates. It independently selects samples and does not yet consume ordinary evaluation's `selected_samples.yaml`. Noise is deterministic for a fixed batch arrangement, but changing batch size changes its assignment. No resulting noisy-target measurements or heatmaps were recovered in this update.
+
+### Slide-ready factual outline
+
+1. **Point conditioning changes:** custom clustered encoder replaced by pretrained VecSetX; touch, joint, and full-surface variants; K/V versus full cross-attention.
+2. **Training results:** show matched validation curves and the three archived best-loss values. State that full-surface conditioning has not improved this validation objective over the matched image/mask/pointmap baseline.
+3. **Encoder reconstruction check:** show input and reconstructed geometry for the same object under full, touch, and joint input; report the 95-object/378-view scope. Distinguish autoencoder reconstruction from downstream conditioning utility.
+4. **Evaluation and current experiments:** ordinary generation with official/decoded-GT/source-mesh references; matched no-pointmap baselines; paired noisy-target error maps now implemented. Mark results pending where none are available.
+
+For a single update slide, use the title **Point conditioning: current results and diagnostic experiments** with the archived validation-loss comparison as the main figure and a short implementation/status list. Keep code-cleanup details, job settings, and speculative causes in backup material.
