@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=eval_orbits_geometry
-#SBATCH --partition=kempner_h200
+#SBATCH --partition=kempner_h100
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1

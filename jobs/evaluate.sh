@@ -20,6 +20,8 @@ export PYTHONUNBUFFERED=1
   --run-dirs \
   outputs/stage1_image_full_cross_attention \
   outputs/stage1_full_surface_full_cross_attention \
+  outputs/stage1_image_no_pointmap_full_cross_attention \
+  outputs/stage1_full_surface_no_pointmap_full_cross_attention \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --selection-data-config configs/data_full_surface.yaml \
   --output-dir outputs/evaluation \
