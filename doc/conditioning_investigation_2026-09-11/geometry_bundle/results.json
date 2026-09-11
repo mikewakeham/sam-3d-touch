@@ -1,0 +1,1162 @@
+{
+  "settings": {
+    "probe_json": "doc/conditioning_investigation_2026-09-11/gpu_probe_train_46083371.json",
+    "pipeline_config": "checkpoints/hf/pipeline.yaml",
+    "output_dir": "outputs/conditioning_rollout/train-46083371",
+    "strengths": [
+      0.0,
+      1.0,
+      7.0
+    ],
+    "seeds": [
+      29,
+      30
+    ],
+    "steps": 25,
+    "precision": "pipeline"
+  },
+  "sample_ids": [
+    "146b6c1f10bd445da977424c64dbb051_002",
+    "fe200ce00a5d4c298eee89de0fc15f01_011",
+    "a72de5f2b9024234b9321750c12c6a4e_008",
+    "479bbf9062de4b3196f08e52d1c12821_000",
+    "ec184a627685495e9d0f3a370dfc1422_000",
+    "e846574df9334973955c80286af47ba7_007",
+    "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+    "c5867189a04446d7b20b79fcc24c6afa_004"
+  ],
+  "effective_dtype": "torch.float16",
+  "runs": [
+    {
+      "checkpoint": "outputs/stage1_image_full_cross_attention/best.pt",
+      "checkpoint_step": 8796,
+      "rescale_t": 3.0,
+      "cfg_interval": [
+        0,
+        500
+      ],
+      "no_shortcut": true,
+      "rows": [
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.349170054200542,
+          "predicted_occupied": 8081,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.00890072369785102,
+          "latent_mse": 0.22910156846046448,
+          "artifact": "stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.3183079640063914,
+          "predicted_occupied": 7826,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.009414524267475292,
+          "latent_mse": 0.2237967848777771,
+          "artifact": "stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.3402493169398907,
+          "predicted_occupied": 7847,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.009296418901993078,
+          "latent_mse": 0.22050827741622925,
+          "artifact": "stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.21361861096960436,
+          "predicted_occupied": 6444,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.020410392711009147,
+          "latent_mse": 0.24487030506134033,
+          "artifact": "stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.2808553628556996,
+          "predicted_occupied": 7364,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.011465069568470928,
+          "latent_mse": 0.2196919322013855,
+          "artifact": "stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.343581726593712,
+          "predicted_occupied": 7620,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.00867792022663117,
+          "latent_mse": 0.21586453914642334,
+          "artifact": "stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.0,
+          "predicted_occupied": 920,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.2747162061888474,
+          "latent_mse": 0.08967525511980057,
+          "artifact": "stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.19462505418292153,
+          "predicted_occupied": 1455,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.025036540301410087,
+          "latent_mse": 0.07761040329933167,
+          "artifact": "stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.23725834797891038,
+          "predicted_occupied": 1515,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.02315103559556472,
+          "latent_mse": 0.07566264271736145,
+          "artifact": "stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.023296447291788,
+          "predicted_occupied": 456,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.20633699368917585,
+          "latent_mse": 0.07367271184921265,
+          "artifact": "stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.009935710111046173,
+          "predicted_occupied": 2155,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.2983906442538923,
+          "latent_mse": 0.11636477708816528,
+          "artifact": "stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.24401511969760606,
+          "predicted_occupied": 1661,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.023603263415650222,
+          "latent_mse": 0.07177980989217758,
+          "artifact": "stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.16877182394275123,
+          "predicted_occupied": 7438,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.020197206971189006,
+          "latent_mse": 0.5002678632736206,
+          "artifact": "stage1_image_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.2234470550370132,
+          "predicted_occupied": 10736,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.021152995307368964,
+          "latent_mse": 0.534371018409729,
+          "artifact": "stage1_image_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.26331747006447653,
+          "predicted_occupied": 13243,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.019404833495616287,
+          "latent_mse": 0.5436384677886963,
+          "artifact": "stage1_image_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.12386392062036188,
+          "predicted_occupied": 7283,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.028973211588147953,
+          "latent_mse": 0.5177571773529053,
+          "artifact": "stage1_image_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.1748268939238743,
+          "predicted_occupied": 9000,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.018484058026268083,
+          "latent_mse": 0.5255681276321411,
+          "artifact": "stage1_image_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.2546531302876481,
+          "predicted_occupied": 14435,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.02059003895861041,
+          "latent_mse": 0.5930049419403076,
+          "artifact": "stage1_image_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.043517335982214654,
+          "predicted_occupied": 10195,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.13380097163989108,
+          "latent_mse": 0.3399626612663269,
+          "artifact": "stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.046214311528731476,
+          "predicted_occupied": 11293,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.13191405142576793,
+          "latent_mse": 0.328807532787323,
+          "artifact": "stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.048768267223382046,
+          "predicted_occupied": 13252,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.13232448765036892,
+          "latent_mse": 0.36710238456726074,
+          "artifact": "stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.04389945444348137,
+          "predicted_occupied": 8608,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.13124537259688257,
+          "latent_mse": 0.2755694091320038,
+          "artifact": "stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.056042987280130976,
+          "predicted_occupied": 13290,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.12789028234473565,
+          "latent_mse": 0.3454277515411377,
+          "artifact": "stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.05703807740324594,
+          "predicted_occupied": 15228,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.12871721353981358,
+          "latent_mse": 0.38688594102859497,
+          "artifact": "stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.06181633172220809,
+          "predicted_occupied": 3536,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.05718174331851299,
+          "latent_mse": 0.22326987981796265,
+          "artifact": "stage1_image_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.05948295584534431,
+          "predicted_occupied": 4450,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.05467671186360344,
+          "latent_mse": 0.23328983783721924,
+          "artifact": "stage1_image_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.16780694116183606,
+          "predicted_occupied": 4576,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.022319552513757102,
+          "latent_mse": 0.23428043723106384,
+          "artifact": "stage1_image_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.13581359423274975,
+          "predicted_occupied": 4011,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.02670898109492615,
+          "latent_mse": 0.21765941381454468,
+          "artifact": "stage1_image_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.12875808702270708,
+          "predicted_occupied": 4086,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.026857236410615486,
+          "latent_mse": 0.22690626978874207,
+          "artifact": "stage1_image_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.18751579479403588,
+          "predicted_occupied": 4586,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.02049111395413799,
+          "latent_mse": 0.22084929049015045,
+          "artifact": "stage1_image_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.087574945783901,
+          "predicted_occupied": 8240,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.10791694532174229,
+          "latent_mse": 0.1923614889383316,
+          "artifact": "stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.0857743250127356,
+          "predicted_occupied": 8240,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.1080186472648438,
+          "latent_mse": 0.19212237000465393,
+          "artifact": "stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.07797931066474927,
+          "predicted_occupied": 14427,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.1003835031072791,
+          "latent_mse": 0.2829824686050415,
+          "artifact": "stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.09875910746812386,
+          "predicted_occupied": 10492,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.10528971041586596,
+          "latent_mse": 0.21205076575279236,
+          "artifact": "stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.11035292801610828,
+          "predicted_occupied": 11041,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.1046717691055419,
+          "latent_mse": 0.22409535944461823,
+          "artifact": "stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.10463340122199592,
+          "predicted_occupied": 12884,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.0972760830076509,
+          "latent_mse": 0.2809300422668457,
+          "artifact": "stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.13944461033144223,
+          "predicted_occupied": 2029,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.03055242749008512,
+          "latent_mse": 0.08269492536783218,
+          "artifact": "stage1_image_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.019787783194723258,
+          "predicted_occupied": 1769,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.22790262807025274,
+          "latent_mse": 0.07859303057193756,
+          "artifact": "stage1_image_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.3568862275449102,
+          "predicted_occupied": 1612,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.00912753245817686,
+          "latent_mse": 0.0519687682390213,
+          "artifact": "stage1_image_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.367972082202404,
+          "predicted_occupied": 1741,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.008997157625614179,
+          "latent_mse": 0.05333300679922104,
+          "artifact": "stage1_image_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.43378433784337844,
+          "predicted_occupied": 1710,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.0077427093248967314,
+          "latent_mse": 0.05366458743810654,
+          "artifact": "stage1_image_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.3796637966379664,
+          "predicted_occupied": 1578,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.008644011942844332,
+          "latent_mse": 0.05231209844350815,
+          "artifact": "stage1_image_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.08462369463449766,
+          "predicted_occupied": 1486,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.030134449805324457,
+          "latent_mse": 0.061209991574287415,
+          "artifact": "stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.043538355217691775,
+          "predicted_occupied": 1494,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.02586554712234429,
+          "latent_mse": 0.06955058872699738,
+          "artifact": "stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.024160282852091926,
+          "predicted_occupied": 1950,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.20161317055573724,
+          "latent_mse": 0.07065987586975098,
+          "artifact": "stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.05924339757316203,
+          "predicted_occupied": 1442,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.0223995670039654,
+          "latent_mse": 0.07060980051755905,
+          "artifact": "stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.0637065637065637,
+          "predicted_occupied": 1780,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.021630591998825166,
+          "latent_mse": 0.07873135805130005,
+          "artifact": "stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.04988262910798122,
+          "predicted_occupied": 2052,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.02239122861608127,
+          "latent_mse": 0.08463793247938156,
+          "artifact": "stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed30_cfg7.npz"
+        }
+      ],
+      "native_cfg_checks": [
+        {
+          "strength": 0.0,
+          "velocity_mse": 0.10981550812721252,
+          "formula_max_error": 0.0
+        },
+        {
+          "strength": 1.0,
+          "velocity_mse": 0.9505075216293335,
+          "formula_max_error": 0.0
+        },
+        {
+          "strength": 7.0,
+          "velocity_mse": 41.78037643432617,
+          "formula_max_error": 0.0
+        }
+      ]
+    },
+    {
+      "checkpoint": "outputs/stage1_full_surface_full_cross_attention/best.pt",
+      "checkpoint_step": 6597,
+      "rescale_t": 3.0,
+      "cfg_interval": [
+        0,
+        500
+      ],
+      "no_shortcut": true,
+      "rows": [
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.36628359111725567,
+          "predicted_occupied": 7962,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.008600704573257569,
+          "latent_mse": 0.22359402477741241,
+          "artifact": "stage1_full_surface_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.3395061728395062,
+          "predicted_occupied": 7774,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.00901874621682595,
+          "latent_mse": 0.21696943044662476,
+          "artifact": "stage1_full_surface_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.33524156474976147,
+          "predicted_occupied": 7544,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.009345721174513374,
+          "latent_mse": 0.21087178587913513,
+          "artifact": "stage1_full_surface_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.055021116846550915,
+          "predicted_occupied": 10136,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.045150510909764616,
+          "latent_mse": 0.3500826060771942,
+          "artifact": "stage1_full_surface_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.2720713073005093,
+          "predicted_occupied": 7135,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.012364802063931295,
+          "latent_mse": 0.2172628492116928,
+          "artifact": "stage1_full_surface_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.2654695666835272,
+          "predicted_occupied": 7161,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.011211672606470501,
+          "latent_mse": 0.20963430404663086,
+          "artifact": "stage1_full_surface_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.0,
+          "predicted_occupied": 1032,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.26087367861714095,
+          "latent_mse": 0.09283550828695297,
+          "artifact": "stage1_full_surface_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.17972350230414746,
+          "predicted_occupied": 1515,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.02460237581705929,
+          "latent_mse": 0.07999274134635925,
+          "artifact": "stage1_full_surface_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.14303534303534304,
+          "predicted_occupied": 1448,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.02569164797348835,
+          "latent_mse": 0.08765874803066254,
+          "artifact": "stage1_full_surface_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.01710863986313088,
+          "predicted_occupied": 1077,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.18329669802297194,
+          "latent_mse": 0.087740458548069,
+          "artifact": "stage1_full_surface_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.010318142734307825,
+          "predicted_occupied": 1049,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.11519220677132075,
+          "latent_mse": 0.08727477490901947,
+          "artifact": "stage1_full_surface_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.0036075036075036075,
+          "predicted_occupied": 1481,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.29160280010923934,
+          "latent_mse": 0.10117548704147339,
+          "artifact": "stage1_full_surface_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.16755777854432563,
+          "predicted_occupied": 7404,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.020442273339039717,
+          "latent_mse": 0.5033707022666931,
+          "artifact": "stage1_full_surface_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.23721637619204208,
+          "predicted_occupied": 10425,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.0175889424305333,
+          "latent_mse": 0.5119154453277588,
+          "artifact": "stage1_full_surface_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.2592494414359829,
+          "predicted_occupied": 13579,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.019555687951299534,
+          "latent_mse": 0.5490484833717346,
+          "artifact": "stage1_full_surface_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.11946502057613169,
+          "predicted_occupied": 7529,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.030158459600349997,
+          "latent_mse": 0.5310803651809692,
+          "artifact": "stage1_full_surface_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.19926659332599927,
+          "predicted_occupied": 13030,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.01764583139102303,
+          "latent_mse": 0.602965235710144,
+          "artifact": "stage1_full_surface_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "a72de5f2b9024234b9321750c12c6a4e_008",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.2336559994220906,
+          "predicted_occupied": 14481,
+          "target_occupied": 19674,
+          "unaligned_voxel_center_chamfer": 0.02031737710754483,
+          "latent_mse": 0.6080471277236938,
+          "artifact": "stage1_full_surface_full_cross_attention/a72de5f2b9024234b9321750c12c6a4e_008_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.034719653331924116,
+          "predicted_occupied": 7714,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.1500036636706391,
+          "latent_mse": 0.36286988854408264,
+          "artifact": "stage1_full_surface_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.04643389493653733,
+          "predicted_occupied": 11301,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.13199967008479546,
+          "latent_mse": 0.3303254544734955,
+          "artifact": "stage1_full_surface_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.04427801325048352,
+          "predicted_occupied": 13511,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.13983125822936393,
+          "latent_mse": 0.3801133334636688,
+          "artifact": "stage1_full_surface_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.043810105327430925,
+          "predicted_occupied": 8648,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.131322430260507,
+          "latent_mse": 0.27827566862106323,
+          "artifact": "stage1_full_surface_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.053949180122668666,
+          "predicted_occupied": 13394,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.12891123640356522,
+          "latent_mse": 0.35678645968437195,
+          "artifact": "stage1_full_surface_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.05195458163992123,
+          "predicted_occupied": 13241,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.1300578931697469,
+          "latent_mse": 0.3776264786720276,
+          "artifact": "stage1_full_surface_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.05441985055688707,
+          "predicted_occupied": 2667,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.057567871978711785,
+          "latent_mse": 0.20030614733695984,
+          "artifact": "stage1_full_surface_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.0655993752440453,
+          "predicted_occupied": 3375,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.050638049801431,
+          "latent_mse": 0.21425676345825195,
+          "artifact": "stage1_full_surface_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.19806823883592575,
+          "predicted_occupied": 4739,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.01745950559933713,
+          "latent_mse": 0.21853360533714294,
+          "artifact": "stage1_full_surface_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.13336120401337792,
+          "predicted_occupied": 3321,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.028244779971415473,
+          "latent_mse": 0.19934430718421936,
+          "artifact": "stage1_full_surface_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.16946976505328026,
+          "predicted_occupied": 4297,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.02205870570955222,
+          "latent_mse": 0.21406817436218262,
+          "artifact": "stage1_full_surface_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "ec184a627685495e9d0f3a370dfc1422_000",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.18753287743293004,
+          "predicted_occupied": 4218,
+          "target_occupied": 4812,
+          "unaligned_voxel_center_chamfer": 0.019444838005118134,
+          "latent_mse": 0.20904091000556946,
+          "artifact": "stage1_full_surface_full_cross_attention/ec184a627685495e9d0f3a370dfc1422_000_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.08789524113701692,
+          "predicted_occupied": 8220,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.10717840165944939,
+          "latent_mse": 0.19219505786895752,
+          "artifact": "stage1_full_surface_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.08118950585838003,
+          "predicted_occupied": 8168,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.10805771731023656,
+          "latent_mse": 0.17891298234462738,
+          "artifact": "stage1_full_surface_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.07762493631605762,
+          "predicted_occupied": 14456,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.10036920580729669,
+          "latent_mse": 0.2781544029712677,
+          "artifact": "stage1_full_surface_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.07703255648461128,
+          "predicted_occupied": 9351,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.11320074948189997,
+          "latent_mse": 0.20140883326530457,
+          "artifact": "stage1_full_surface_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.07762175082163131,
+          "predicted_occupied": 9223,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.11247027140124022,
+          "latent_mse": 0.2001330554485321,
+          "artifact": "stage1_full_surface_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.0780086476098967,
+          "predicted_occupied": 9140,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.11236407114832231,
+          "latent_mse": 0.19927167892456055,
+          "artifact": "stage1_full_surface_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.009156050955414012,
+          "predicted_occupied": 748,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.2678851669994856,
+          "latent_mse": 0.07466080784797668,
+          "artifact": "stage1_full_surface_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.0181294964028777,
+          "predicted_occupied": 1751,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.22634071393011718,
+          "latent_mse": 0.07863494753837585,
+          "artifact": "stage1_full_surface_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.34590429845904297,
+          "predicted_occupied": 1532,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.009744876367886821,
+          "latent_mse": 0.05225738137960434,
+          "artifact": "stage1_full_surface_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.36486486486486486,
+          "predicted_occupied": 1647,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.008664337952903677,
+          "latent_mse": 0.05092941224575043,
+          "artifact": "stage1_full_surface_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.35032362459546923,
+          "predicted_occupied": 1551,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.009202677685410561,
+          "latent_mse": 0.049806464463472366,
+          "artifact": "stage1_full_surface_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_014",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.34716069271043093,
+          "predicted_occupied": 1558,
+          "target_occupied": 1787,
+          "unaligned_voxel_center_chamfer": 0.009470362018555474,
+          "latent_mse": 0.050850316882133484,
+          "artifact": "stage1_full_surface_full_cross_attention/ec69f16ebfac4a4c8e46b1c2369069b3_014_seed30_cfg7.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 29,
+          "strength": 0.0,
+          "voxel_iou": 0.03892113349265961,
+          "predicted_occupied": 1517,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.02436831685301781,
+          "latent_mse": 0.06866119801998138,
+          "artifact": "stage1_full_surface_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg0.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 29,
+          "strength": 1.0,
+          "voxel_iou": 0.05092911218169305,
+          "predicted_occupied": 1528,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.024759163639605383,
+          "latent_mse": 0.07230955362319946,
+          "artifact": "stage1_full_surface_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg1.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 29,
+          "strength": 7.0,
+          "voxel_iou": 0.0497275204359673,
+          "predicted_occupied": 1556,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.024635604673737856,
+          "latent_mse": 0.07596877217292786,
+          "artifact": "stage1_full_surface_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg7.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 30,
+          "strength": 0.0,
+          "voxel_iou": 0.06375358166189111,
+          "predicted_occupied": 1444,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.02231024009094107,
+          "latent_mse": 0.0691630095243454,
+          "artifact": "stage1_full_surface_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed30_cfg0.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 30,
+          "strength": 1.0,
+          "voxel_iou": 0.05154639175257732,
+          "predicted_occupied": 1738,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.022643885397396302,
+          "latent_mse": 0.07849635183811188,
+          "artifact": "stage1_full_surface_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed30_cfg1.npz"
+        },
+        {
+          "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+          "seed": 30,
+          "strength": 7.0,
+          "voxel_iou": 0.04809976247030879,
+          "predicted_occupied": 2004,
+          "target_occupied": 1526,
+          "unaligned_voxel_center_chamfer": 0.02291899174930923,
+          "latent_mse": 0.08393509685993195,
+          "artifact": "stage1_full_surface_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed30_cfg7.npz"
+        }
+      ],
+      "native_cfg_checks": [
+        {
+          "strength": 0.0,
+          "velocity_mse": 0.1116536557674408,
+          "formula_max_error": 0.0
+        },
+        {
+          "strength": 1.0,
+          "velocity_mse": 0.9616184830665588,
+          "formula_max_error": 0.0
+        },
+        {
+          "strength": 7.0,
+          "velocity_mse": 42.04267883300781,
+          "formula_max_error": 0.0
+        }
+      ]
+    }
+  ],
+  "pipeline_yaml": "_target_: sam3d_objects.pipeline.inference_pipeline_pointmap.InferencePipelinePointMap\nss_generator_config_path: ss_generator.yaml\nss_generator_ckpt_path: ss_generator.ckpt\nslat_generator_config_path: slat_generator.yaml\nslat_generator_ckpt_path: slat_generator.ckpt\nss_decoder_config_path: ss_decoder.yaml\nss_decoder_ckpt_path: ss_decoder.ckpt\nslat_decoder_gs_config_path: slat_decoder_gs.yaml\nslat_decoder_gs_ckpt_path: slat_decoder_gs.ckpt\nslat_decoder_gs_4_config_path: slat_decoder_gs_4.yaml\nslat_decoder_gs_4_ckpt_path: slat_decoder_gs_4.ckpt\nslat_decoder_mesh_config_path: slat_decoder_mesh.yaml\nslat_decoder_mesh_ckpt_path: slat_decoder_mesh.ckpt\npad_size: 1.0\ndtype: float16\nversion: 3dfy_v9\nslat_cfg_strength: 1\nslat_rescale_t: 1\ndownsample_ss_dist: 1\ncompile_model: true\nss_condition_input_mapping: []\nss_preprocessor:\n  _target_: sam3d_objects.data.dataset.tdfy.preprocessor.PreProcessor\n  img_mask_joint_transform: []\n  img_mask_pointmap_joint_transform:\n  - _partial_: true\n    _target_: sam3d_objects.data.dataset.tdfy.img_and_mask_transforms.resize_all_to_same_size\n  - _partial_: true\n    _target_: sam3d_objects.data.dataset.tdfy.img_and_mask_transforms.crop_around_mask_with_padding\n    box_size_factor: 1.2\n    padding_factor: 0.0\n  img_transform:\n    _target_: torchvision.transforms.Compose\n    transforms:\n    - _partial_: true\n      _target_: sam3d_objects.data.dataset.tdfy.img_processing.pad_to_square_centered\n    - _target_: torchvision.transforms.Resize\n      size: 518\n  mask_transform:\n    _target_: torchvision.transforms.Compose\n    transforms:\n    - _partial_: true\n      _target_: sam3d_objects.data.dataset.tdfy.img_processing.pad_to_square_centered\n    - _target_: torchvision.transforms.Resize\n      interpolation: 0\n      size: 518\n  normalize_pointmap: true\n  pointmap_normalizer:\n    _target_: sam3d_objects.data.dataset.tdfy.img_and_mask_transforms.ObjectCentricSSI\n    allow_scale_and_shift_override: true\n    use_scene_scale: true\n  pointmap_transform:\n    _target_: torchvision.transforms.Compose\n    transforms:\n    - _partial_: true\n      _target_: sam3d_objects.data.dataset.tdfy.img_processing.pad_to_square_centered\n    - _target_: torchvision.transforms.Resize\n      interpolation: 0\n      size: 518\npose_decoder_name: ScaleShiftInvariant\ndepth_model:\n  _target_: sam3d_objects.pipeline.depth_models.moge.MoGe\n  model:\n    _target_: moge.model.v1.MoGeModel.from_pretrained\n    pretrained_model_name_or_path: Ruicheng/moge-vitl\nslat_condition_input_mapping: []\nslat_preprocessor:\n  _target_: sam3d_objects.data.dataset.tdfy.preprocessor.PreProcessor\n  img_transform:\n    _target_: torchvision.transforms.Compose\n    transforms:\n    - _target_: sam3d_objects.data.dataset.tdfy.img_processing.pad_to_square_centered\n      _partial_: true\n    - _target_: torchvision.transforms.Resize\n      size: 518\n  mask_transform:\n    _target_: torchvision.transforms.Compose\n    transforms:\n    - _target_: sam3d_objects.data.dataset.tdfy.img_processing.pad_to_square_centered\n      _partial_: true\n    - _target_: torchvision.transforms.Resize\n      size: 518\n      interpolation: 0\n  img_mask_joint_transform:\n  - _target_: sam3d_objects.data.dataset.tdfy.img_and_mask_transforms.crop_around_mask_with_padding\n    _partial_: true\n    box_size_factor: 1.2\n    padding_factor: 0.0\nslat_mean:\n- 0.12211431\n- 0.37204156\n- -1.26521907\n- -2.05276058\n- -3.10432536\n- -0.11294304\n- -0.85146744\n- 0.45506954\nslat_std:\n- 2.37326008\n- 2.13174402\n- 2.2413953\n- 2.30589401\n- 2.1191894\n- 1.8969511\n- 2.41684989\n- 2.08374642\n",
+  "generator_yaml": "module:\n  condition_embedder:\n    backbone:\n      _target_: sam3d_objects.model.backbone.dit.embedder.embedder_fuser.EmbedderFuser\n      drop_modalities_weight:\n      - - - pointmap\n          - rgb_pointmap\n        - 1.0\n      dropout_prob: 0.1\n      embedder_list:\n      - - _target_: sam3d_objects.model.backbone.dit.embedder.dino.Dino\n          dino_model: dinov2_vitl14_reg\n          input_size: 518\n          normalize_images: true\n        - - - image\n            - cropped\n          - - rgb_image\n            - full\n      - - _target_: sam3d_objects.model.backbone.dit.embedder.dino.Dino\n          dino_model: dinov2_vitl14_reg\n          input_size: 518\n          normalize_images: true\n        - - - mask\n            - cropped\n          - - rgb_image_mask\n            - full\n      - - _target_: sam3d_objects.model.backbone.dit.embedder.pointmap.PointPatchEmbed\n          embed_dim: 512\n          input_size: 256\n          patch_size: 8\n          remap_output: linear\n        - - - pointmap\n            - cropped\n          - - rgb_pointmap\n            - full\n      force_drop_modalities: null\n      freeze: true\n      projection_net_hidden_dim_multiplier: 4.0\n      use_pos_embedding: learned\n  generator:\n    backbone:\n      _target_: sam3d_objects.model.backbone.generator.shortcut.model.ShortCut\n      batch_mode: true\n      cfg_modalities:\n      - shape\n      inference_steps: 2\n      loss_weights:\n        6drotation_normalized: 0.1\n        _target_: sam3d_objects.config.utils.make_dict\n        scale: 0.1\n        shape: 0\n        translation: 1.0\n        translation_scale: 0.0\n      ratio_cfg_samples_in_self_consistency_target: 0.25\n      rescale_t: 1\n      reverse_fn:\n        _target_: sam3d_objects.model.backbone.generator.classifier_free_guidance.ClassifierFreeGuidanceWithExternalUnconditionalProbability\n        backbone:\n          _target_: sam3d_objects.model.backbone.tdfy_dit.models.mot_sparse_structure_flow.SparseStructureFlowTdfyWrapper\n          cond_channels: 1024\n          condition_embedder: null\n          force_zeros_cond: true\n          freeze_d_time_embedder: true\n          freeze_shared_parameters: true\n          in_channels: 8\n          is_shortcut_model: true\n          latent_mapping:\n            6drotation_normalized:\n              _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.Latent\n              in_channels: 6\n              model_channels: 1024\n              pos_embedder:\n                _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.LearntPositionEmbedder\n                model_channels: 1024\n                token_len: 1\n            scale:\n              _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.Latent\n              in_channels: 3\n              model_channels: 1024\n              pos_embedder:\n                _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.LearntPositionEmbedder\n                model_channels: 1024\n                token_len: 1\n            shape:\n              _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.Latent\n              in_channels: 8\n              model_channels: 1024\n              pos_embedder:\n                _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.ShapePositionEmbedder\n                model_channels: 1024\n                patch_size: 1\n                resolution: 16\n            translation:\n              _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.Latent\n              in_channels: 3\n              model_channels: 1024\n              pos_embedder:\n                _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.LearntPositionEmbedder\n                model_channels: 1024\n                token_len: 1\n            translation_scale:\n              _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.Latent\n              in_channels: 1\n              model_channels: 1024\n              pos_embedder:\n                _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.LearntPositionEmbedder\n                model_channels: 1024\n                token_len: 1\n          latent_share_transformer:\n            6drotation_normalized:\n            - 6drotation_normalized\n            - translation\n            - scale\n            - translation_scale\n          mlp_ratio: 4\n          model_channels: 1024\n          num_blocks: 24\n          num_heads: 16\n          out_channels: 8\n          patch_size: 1\n          pe_mode: ape\n          qk_rms_norm: true\n          resolution: 16\n          use_checkpoint: false\n          use_fp16: false\n        interval:\n        - 0\n        - 500\n        p_unconditional: 0.1\n        strength: 2.0\n        unconditional_handling: add_flag\n      self_consistency_cfg_strength: 2.0\n      self_consistency_prob: 0.25\n      shortcut_loss_weight: 1.0\n      sigma_min: 0.0\n      time_scale: 1000.0\n      training_time_sampler_fn:\n        _partial_: true\n        _target_: sam3d_objects.model.backbone.generator.flow_matching.model.lognorm_sampler\n        mean: -1.0\n        std: 1.0\n",
+  "runtime": {
+    "torch": "2.5.1+cu121",
+    "cuda": "12.1",
+    "gpu": "NVIDIA H100 80GB HBM3"
+  },
+  "metric_definition": "Raw target-frame Stage-1 support; no pruning, Stage 2, scale normalization, rotation search, or ICP. CD is mean Euclidean NN distance between occupied voxel centers.",
+  "source_sha256": {
+    "train.py": "116d7f5268ed30062e9641f69f5920a0598be493bf95a083f48670e29c52b07f",
+    "evaluate.py": "3ddd0bc2b48e217d180a9f376c1346356faad64c15675a049a88cfb72c21b1f8",
+    "dataloader.py": "d50137bf75a146ccb3ef71ff92d6a6f15523c5011e036f1b7bdbcd0541d4a0da",
+    "sam3d_objects/model/backbone/dit/embedder/touch.py": "a2db76b3e7cc2666890c600278915ed3e6d081fbbe3a980567ba591fa4d6418c",
+    "sam3d_objects/model/backbone/generator/classifier_free_guidance.py": "cb7cbabb009a4c4ed5799fee07022e9ce7cf2f1be53fbf1703127aca9ccc696d",
+    "sam3d_objects/model/backbone/generator/shortcut/model.py": "6b4c8fc6ac4f0e7456d89104a1b4b2f1479abbf13b50fa530cd9b57b6bc706ef"
+  },
+  "paired_inputs_sha256": "d2b2f9b3e04e872974f08b7f6be83567962b2e3cbedba9f371c03793cfd91adb"
+}

@@ -1,6 +1,8 @@
 # Full-surface conditioning investigation — 11 September 2026
 
-**Latest result — actual rollouts:** [ROLLOUT_FINDINGS.md](ROLLOUT_FINDINGS.md) shows guidance 7 improves sampled geometry relative to guidance 0. The large velocity-error increase did not predict reconstruction degradation. The next action is a CPU-only bundle of selected saved NPZ/input geometry using `bundle_geometry.py`; no new GPU job is requested yet.
+**Latest result — returned geometry bundle:** [GEOMETRY_FINDINGS.md](GEOMETRY_FINDINGS.md) documents verified inputs and sample-dependent output orientation errors. These do not by themselves explain aligned Stage-2 CD. The next experiment directly tests tiny-set training fit with camera-frame versus oracle target-frame surfaces; run `run_tiny_fit.sh` after transferring the new scripts.
+
+**Previous result — actual rollouts:** [ROLLOUT_FINDINGS.md](ROLLOUT_FINDINGS.md) shows guidance 7 improves sampled geometry relative to guidance 0. The large velocity-error increase did not predict reconstruction degradation. The requested CPU geometry bundle has now been received and analyzed; see the latest update above.
 
 **Update after GPU job 46083371:** the pilot has completed. See [GPU_FINDINGS.md](GPU_FINDINGS.md) for validated results and the next runnable job. Strong CFG substantially worsens measured velocity error in both checkpoints; correct surfaces confer little consistent incremental benefit. Actual reconstruction rollouts are now the next dependency. The sections below preserve the initial source/local audit and its original hypotheses.
 

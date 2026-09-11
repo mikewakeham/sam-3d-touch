@@ -1,0 +1,398 @@
+{
+  "cases": {
+    "479bbf9062de4b3196f08e52d1c12821_000": "Persistent high error in both checkpoints and seeds",
+    "e846574df9334973955c80286af47ba7_007": "Second persistent high-error example",
+    "fe200ce00a5d4c298eee89de0fc15f01_011": "Full-surface checkpoint seed-sensitive failure",
+    "c5867189a04446d7b20b79fcc24c6afa_004": "Image checkpoint seed-sensitive failure",
+    "146b6c1f10bd445da977424c64dbb051_002": "Low-CD control in both checkpoints with substantial target support"
+  },
+  "records": {
+    "479bbf9062de4b3196f08e52d1c12821_000": {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "object_id": "479bbf9062de4b3196f08e52d1c12821",
+      "view_id": "000",
+      "split": "train",
+      "image_path": "generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/image.png",
+      "depth_path": "generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/depth.npy",
+      "pointmap_path": "generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/pointmap.npy",
+      "camera_path": "generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/camera.npz",
+      "object_transform_path": "generated_data/479bbf9062de4b3196f08e52d1c12821/object_transform.npz",
+      "touch_path": "generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/touches.npz",
+      "target_path": "generated_data/479bbf9062de4b3196f08e52d1c12821/target_latent.npz",
+      "full_surface_path": "generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/full_surface.npz"
+    },
+    "e846574df9334973955c80286af47ba7_007": {
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "object_id": "e846574df9334973955c80286af47ba7",
+      "view_id": "007",
+      "split": "train",
+      "image_path": "generated_data/e846574df9334973955c80286af47ba7/views/007/image.png",
+      "depth_path": "generated_data/e846574df9334973955c80286af47ba7/views/007/depth.npy",
+      "pointmap_path": "generated_data/e846574df9334973955c80286af47ba7/views/007/pointmap.npy",
+      "camera_path": "generated_data/e846574df9334973955c80286af47ba7/views/007/camera.npz",
+      "object_transform_path": "generated_data/e846574df9334973955c80286af47ba7/object_transform.npz",
+      "touch_path": "generated_data/e846574df9334973955c80286af47ba7/views/007/touches.npz",
+      "target_path": "generated_data/e846574df9334973955c80286af47ba7/target_latent.npz",
+      "full_surface_path": "generated_data/e846574df9334973955c80286af47ba7/views/007/full_surface.npz"
+    },
+    "fe200ce00a5d4c298eee89de0fc15f01_011": {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "object_id": "fe200ce00a5d4c298eee89de0fc15f01",
+      "view_id": "011",
+      "split": "train",
+      "image_path": "generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/image.png",
+      "depth_path": "generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/depth.npy",
+      "pointmap_path": "generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/pointmap.npy",
+      "camera_path": "generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/camera.npz",
+      "object_transform_path": "generated_data/fe200ce00a5d4c298eee89de0fc15f01/object_transform.npz",
+      "touch_path": "generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/touches.npz",
+      "target_path": "generated_data/fe200ce00a5d4c298eee89de0fc15f01/target_latent.npz",
+      "full_surface_path": "generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/full_surface.npz"
+    },
+    "c5867189a04446d7b20b79fcc24c6afa_004": {
+      "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+      "object_id": "c5867189a04446d7b20b79fcc24c6afa",
+      "view_id": "004",
+      "split": "train",
+      "image_path": "generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/image.png",
+      "depth_path": "generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/depth.npy",
+      "pointmap_path": "generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/pointmap.npy",
+      "camera_path": "generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/camera.npz",
+      "object_transform_path": "generated_data/c5867189a04446d7b20b79fcc24c6afa/object_transform.npz",
+      "touch_path": "generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/touches.npz",
+      "target_path": "generated_data/c5867189a04446d7b20b79fcc24c6afa/target_latent.npz",
+      "full_surface_path": "generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/full_surface.npz"
+    },
+    "146b6c1f10bd445da977424c64dbb051_002": {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "object_id": "146b6c1f10bd445da977424c64dbb051",
+      "view_id": "002",
+      "split": "train",
+      "image_path": "generated_data/146b6c1f10bd445da977424c64dbb051/views/002/image.png",
+      "depth_path": "generated_data/146b6c1f10bd445da977424c64dbb051/views/002/depth.npy",
+      "pointmap_path": "generated_data/146b6c1f10bd445da977424c64dbb051/views/002/pointmap.npy",
+      "camera_path": "generated_data/146b6c1f10bd445da977424c64dbb051/views/002/camera.npz",
+      "object_transform_path": "generated_data/146b6c1f10bd445da977424c64dbb051/object_transform.npz",
+      "touch_path": "generated_data/146b6c1f10bd445da977424c64dbb051/views/002/touches.npz",
+      "target_path": "generated_data/146b6c1f10bd445da977424c64dbb051/target_latent.npz",
+      "full_surface_path": "generated_data/146b6c1f10bd445da977424c64dbb051/views/002/full_surface.npz"
+    }
+  },
+  "artifact_prefix": "rollouts",
+  "data_prefix": "data",
+  "selection": "Diagnostic examples selected after observing outcomes; not an unbiased evaluation subset.",
+  "files": [
+    {
+      "archive_path": "results.json",
+      "source_path": "outputs/conditioning_rollout/train-46083371/results.json",
+      "bytes": 57689,
+      "sha256": "5dd33313d4142523cf24b9530f96779948a8fa3d64bba408fe97954f80d5d9e1"
+    },
+    {
+      "archive_path": "probe.json",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/doc/conditioning_investigation_2026-09-11/gpu_probe_train_46083371.json",
+      "bytes": 315461,
+      "sha256": "2a25a0ec2d4c34bca2858ab56fffcc3c21e31feb191694da644cdd097a411451"
+    },
+    {
+      "archive_path": "data/generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/image.png",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/image.png",
+      "bytes": 387960,
+      "sha256": "a99c09d0e4ded45520e7577c2edf881eb2016dda5a1559a03ede92e79227738d"
+    },
+    {
+      "archive_path": "data/generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/pointmap.npy",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/pointmap.npy",
+      "bytes": 7078016,
+      "sha256": "4c198b699bef6b4d3c4fb4090c8ad34e4735bbccfedf4ecf3d384b300b1f99d4"
+    },
+    {
+      "archive_path": "data/generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/camera.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/camera.npz",
+      "bytes": 628,
+      "sha256": "d8f40b01aacae7595fd816d46a49afbd98d1fbf8d1fdfd9a06d3bb05f08136d6"
+    },
+    {
+      "archive_path": "data/generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/full_surface.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/full_surface.npz",
+      "bytes": 108179,
+      "sha256": "3341797e8b4a01751de8d54e6282ba0222f931cc8e94f62e0a6c3d756c4493af"
+    },
+    {
+      "archive_path": "data/generated_data/479bbf9062de4b3196f08e52d1c12821/object_transform.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/479bbf9062de4b3196f08e52d1c12821/object_transform.npz",
+      "bytes": 366,
+      "sha256": "99274d0b62c0ee830d2c3b1c038bdacbaf427a29b72adf49d31133fd06f8f660"
+    },
+    {
+      "archive_path": "data/generated_data/479bbf9062de4b3196f08e52d1c12821/target_latent.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/479bbf9062de4b3196f08e52d1c12821/target_latent.npz",
+      "bytes": 123810,
+      "sha256": "4f1974228bc2d31125c0bd30bd6926f441ebc05ecfd41ff4b56e5fb0cac6eae4"
+    },
+    {
+      "archive_path": "data/generated_data/e846574df9334973955c80286af47ba7/views/007/image.png",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/e846574df9334973955c80286af47ba7/views/007/image.png",
+      "bytes": 340528,
+      "sha256": "2926e66804f7fffe13aa6ae0d666196c6d82952786cc8588d6c3cd7b5c76c453"
+    },
+    {
+      "archive_path": "data/generated_data/e846574df9334973955c80286af47ba7/views/007/pointmap.npy",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/e846574df9334973955c80286af47ba7/views/007/pointmap.npy",
+      "bytes": 7078016,
+      "sha256": "8f8d18e251e2f2ce59fd6879041c524822c0bc3f0ba56b8321a0cb65e121e3b2"
+    },
+    {
+      "archive_path": "data/generated_data/e846574df9334973955c80286af47ba7/views/007/camera.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/e846574df9334973955c80286af47ba7/views/007/camera.npz",
+      "bytes": 628,
+      "sha256": "3d2e94961d14ce05f4301c702fa03133624ada2be72fda87604435bf82656a8a"
+    },
+    {
+      "archive_path": "data/generated_data/e846574df9334973955c80286af47ba7/views/007/full_surface.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/e846574df9334973955c80286af47ba7/views/007/full_surface.npz",
+      "bytes": 108107,
+      "sha256": "1f2e31dba7558cdd7400104ccec3c5ee796a2a8ec58a609342cec8f0c7be5757"
+    },
+    {
+      "archive_path": "data/generated_data/e846574df9334973955c80286af47ba7/object_transform.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/e846574df9334973955c80286af47ba7/object_transform.npz",
+      "bytes": 366,
+      "sha256": "e46341dec3aede57f20c9926122b559529a41424ac803bd1c145c0e80bf4cb18"
+    },
+    {
+      "archive_path": "data/generated_data/e846574df9334973955c80286af47ba7/target_latent.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/e846574df9334973955c80286af47ba7/target_latent.npz",
+      "bytes": 123291,
+      "sha256": "9bc92bf1d7cf728d968d878d81e3b886984ae9e677b4b5fa913c9e89efc0ccf7"
+    },
+    {
+      "archive_path": "data/generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/image.png",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/image.png",
+      "bytes": 316897,
+      "sha256": "bbb5e2b67161f77016977f464d58c0501651e2055b08e8d3a2ee37e85c70a7cd"
+    },
+    {
+      "archive_path": "data/generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/pointmap.npy",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/pointmap.npy",
+      "bytes": 7078016,
+      "sha256": "42fb4a6340afb18a76c8f57f73fac4d95cfe6a8fd05af654fec9c2e2dc42679d"
+    },
+    {
+      "archive_path": "data/generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/camera.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/camera.npz",
+      "bytes": 628,
+      "sha256": "887396e2c19db83102fbfa5fc94d847da62e04faf660d7d498a6d9bd6a1d6c96"
+    },
+    {
+      "archive_path": "data/generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/full_surface.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/full_surface.npz",
+      "bytes": 106740,
+      "sha256": "3ff1037c4bd271c35a577ed5b2d6b10840722c3d308fb308d98f41be46db5f7c"
+    },
+    {
+      "archive_path": "data/generated_data/fe200ce00a5d4c298eee89de0fc15f01/object_transform.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/fe200ce00a5d4c298eee89de0fc15f01/object_transform.npz",
+      "bytes": 366,
+      "sha256": "da3cf5db2eb01e6d92e82218eec092d78551573731b9d10e9d2df1c1283db6f0"
+    },
+    {
+      "archive_path": "data/generated_data/fe200ce00a5d4c298eee89de0fc15f01/target_latent.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/fe200ce00a5d4c298eee89de0fc15f01/target_latent.npz",
+      "bytes": 122406,
+      "sha256": "cc5b70087f84f9ca5295138954e89e70d7ed6b4052700f433ed7e39f07677cbf"
+    },
+    {
+      "archive_path": "data/generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/image.png",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/image.png",
+      "bytes": 279199,
+      "sha256": "0fb4e163e836a30d0a1c2c7dd1fa94067f6241441b8ffd4a0deddb3399c21ecf"
+    },
+    {
+      "archive_path": "data/generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/pointmap.npy",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/pointmap.npy",
+      "bytes": 7078016,
+      "sha256": "7234168473ee9b06b7d69bef1ca6da90a5b472df751208eef44d2a481815933c"
+    },
+    {
+      "archive_path": "data/generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/camera.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/camera.npz",
+      "bytes": 628,
+      "sha256": "c5652e58a51aca0ad01431eb75eb46d26148b251befb2db448f3869b388f0431"
+    },
+    {
+      "archive_path": "data/generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/full_surface.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/full_surface.npz",
+      "bytes": 108640,
+      "sha256": "c4f30eb443c7e66b4cd4678db33b6c273d28cff123623cde65025777c5448ed7"
+    },
+    {
+      "archive_path": "data/generated_data/c5867189a04446d7b20b79fcc24c6afa/object_transform.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/c5867189a04446d7b20b79fcc24c6afa/object_transform.npz",
+      "bytes": 366,
+      "sha256": "882d6eecfb8dd887850c942e83b2c33ccd0e1139bead8469a7e6000d6acf248e"
+    },
+    {
+      "archive_path": "data/generated_data/c5867189a04446d7b20b79fcc24c6afa/target_latent.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/c5867189a04446d7b20b79fcc24c6afa/target_latent.npz",
+      "bytes": 121722,
+      "sha256": "d216a9a8fada3f11182adf65963033ad27697f2f9d5a55eff38d8bebcaff7614"
+    },
+    {
+      "archive_path": "data/generated_data/146b6c1f10bd445da977424c64dbb051/views/002/image.png",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/146b6c1f10bd445da977424c64dbb051/views/002/image.png",
+      "bytes": 503367,
+      "sha256": "5d90e8e7934b9d4a0db954b78db5cc847bcf046c2e56063d41c2013b906edc9d"
+    },
+    {
+      "archive_path": "data/generated_data/146b6c1f10bd445da977424c64dbb051/views/002/pointmap.npy",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/146b6c1f10bd445da977424c64dbb051/views/002/pointmap.npy",
+      "bytes": 7078016,
+      "sha256": "38be27350de13de4093b80294bdc2498002ae6611540fac690f4aa9532ea1bd1"
+    },
+    {
+      "archive_path": "data/generated_data/146b6c1f10bd445da977424c64dbb051/views/002/camera.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/146b6c1f10bd445da977424c64dbb051/views/002/camera.npz",
+      "bytes": 628,
+      "sha256": "a28de960fc3851334a539caf655f6e94ae689af25b523d1c45ddc9d3576dab73"
+    },
+    {
+      "archive_path": "data/generated_data/146b6c1f10bd445da977424c64dbb051/views/002/full_surface.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/146b6c1f10bd445da977424c64dbb051/views/002/full_surface.npz",
+      "bytes": 108487,
+      "sha256": "0540639cdb9f61fcb8771c41c4d1986e453f05cdb54ae79b2c5e0ae8a8b03d25"
+    },
+    {
+      "archive_path": "data/generated_data/146b6c1f10bd445da977424c64dbb051/object_transform.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/146b6c1f10bd445da977424c64dbb051/object_transform.npz",
+      "bytes": 366,
+      "sha256": "b235192eae1c6c88965e4187cefd69c4049bd28ec5940386e47c9479f639f867"
+    },
+    {
+      "archive_path": "data/generated_data/146b6c1f10bd445da977424c64dbb051/target_latent.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy/generated_data/146b6c1f10bd445da977424c64dbb051/target_latent.npz",
+      "bytes": 123751,
+      "sha256": "0d4de7e292038e440ee91c2aeba7c2b270651b04bbad91ba7f72a4a2a2bd0fa5"
+    },
+    {
+      "archive_path": "rollouts/stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg7.npz",
+      "bytes": 248345,
+      "sha256": "6c03a290d8ac227aac44a52ec866cee6b7d46ad10335afc9bfcf2e3272263eb9"
+    },
+    {
+      "archive_path": "rollouts/stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed30_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed30_cfg7.npz",
+      "bytes": 248378,
+      "sha256": "e2ef0beca14f04a5f0073be9690378aa512c7aa7591d4c2fad0346995b1a5d54"
+    },
+    {
+      "archive_path": "rollouts/stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg7.npz",
+      "bytes": 242157,
+      "sha256": "a71eb0807bcd7d2571942a2a17a10640ac2a5e7846532d35349fd510ffb6061b"
+    },
+    {
+      "archive_path": "rollouts/stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed30_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed30_cfg7.npz",
+      "bytes": 241959,
+      "sha256": "11df281f4f7151e42e6e4e96929e2fd24a69d84b1fb56fa46cd350badfda02fe"
+    },
+    {
+      "archive_path": "rollouts/stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg7.npz",
+      "bytes": 245157,
+      "sha256": "60077a8bc8a409a4da1b1fdbcf30e4412d91c018c0e662319afb412e10114eae"
+    },
+    {
+      "archive_path": "rollouts/stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed30_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed30_cfg7.npz",
+      "bytes": 245596,
+      "sha256": "8a81b444b4e3605801c7dca9b543310c719323c3eb40b05e24bed96adbb2cc7a"
+    },
+    {
+      "archive_path": "rollouts/stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg7.npz",
+      "bytes": 246135,
+      "sha256": "43612a9f6256977d837b234d9f11d4643de4ecb88a90d2b5e277500cc01ed3b3"
+    },
+    {
+      "archive_path": "rollouts/stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed30_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed30_cfg7.npz",
+      "bytes": 246517,
+      "sha256": "b26ad195991b42e98bd017fc6e725c58cbfa97944274bf0f2aa19de44f2428fa"
+    },
+    {
+      "archive_path": "rollouts/stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg7.npz",
+      "bytes": 240331,
+      "sha256": "e87f77b84f1544d33ac23ba418dca0b9f9ff7ba3dada17ed0d67e7b2b6e8de5c"
+    },
+    {
+      "archive_path": "rollouts/stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed30_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed30_cfg7.npz",
+      "bytes": 240863,
+      "sha256": "38e827544d79cab4d7bb3a038e907b1a7564fc79ae5fc8d86a4b1a50989795ef"
+    },
+    {
+      "archive_path": "rollouts/stage1_full_surface_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_full_surface_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg7.npz",
+      "bytes": 248113,
+      "sha256": "63e85bfb194d330579c416ba92656cc752c4d4c06d73d240df91cc6c057ce664"
+    },
+    {
+      "archive_path": "rollouts/stage1_full_surface_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed30_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_full_surface_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed30_cfg7.npz",
+      "bytes": 247880,
+      "sha256": "49b0c9d255e52a7d9f1b1f3b5e89a478091d643eea22c4366c60edca2a63be0c"
+    },
+    {
+      "archive_path": "rollouts/stage1_full_surface_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_full_surface_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg7.npz",
+      "bytes": 242201,
+      "sha256": "ce3b05449c7c1c1f49bac0bc40e58113b7281f9020d8874dcc8f4870452292bc"
+    },
+    {
+      "archive_path": "rollouts/stage1_full_surface_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed30_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_full_surface_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed30_cfg7.npz",
+      "bytes": 241801,
+      "sha256": "fe713b6a08f148061e3037be4ac46263628d2adcc0c8028e661a8891f96e6011"
+    },
+    {
+      "archive_path": "rollouts/stage1_full_surface_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_full_surface_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg7.npz",
+      "bytes": 245530,
+      "sha256": "8b9a856b047ffd61a6d6d2866f381eb63a5402aa23e82132faf0899a1573c7dc"
+    },
+    {
+      "archive_path": "rollouts/stage1_full_surface_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed30_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_full_surface_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed30_cfg7.npz",
+      "bytes": 245504,
+      "sha256": "770604c3ab71dd02b1b384ccfb2acf3d5f759b20df2ec30d4313a4b74a0e97f8"
+    },
+    {
+      "archive_path": "rollouts/stage1_full_surface_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_full_surface_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg7.npz",
+      "bytes": 246029,
+      "sha256": "a8cd500a76da2b97b3a8ecdbffac952e771cc3305bb58b75ffbb8990914dd383"
+    },
+    {
+      "archive_path": "rollouts/stage1_full_surface_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed30_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_full_surface_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed30_cfg7.npz",
+      "bytes": 244957,
+      "sha256": "352f9eb8ef07c347375e1d55f2a6cc34161a6d0eb724440d670263d0ac41fa80"
+    },
+    {
+      "archive_path": "rollouts/stage1_full_surface_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_full_surface_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg7.npz",
+      "bytes": 240654,
+      "sha256": "1fd2ded7a4512142b8ffe8b3d643425d5947a2f95e90de18b5eeb887a082af4f"
+    },
+    {
+      "archive_path": "rollouts/stage1_full_surface_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed30_cfg7.npz",
+      "source_path": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_rollout/train-46083371/stage1_full_surface_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed30_cfg7.npz",
+      "bytes": 240497,
+      "sha256": "f5ce0b8b0027f548d35e779b744fe4cfd165c18a20979545c3ee61deba1d9581"
+    }
+  ]
+}
