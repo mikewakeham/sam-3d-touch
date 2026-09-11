@@ -51,6 +51,7 @@ def parse_args():
     parser.add_argument("--point-size", type=float, default=0.01)
     parser.add_argument("--touch-point-size", type=float, default=0.01)
     parser.add_argument("--center-size", type=float, default=0.01)
+    parser.add_argument("--uniform-touch-color", action="store_true")
     parser.add_argument("--light-strength", type=float, default=1.0)
     parser.add_argument("--gif-only", action="store_true")
     parser.add_argument("--flat-output", action="store_true")
@@ -141,7 +142,11 @@ def select_touches(touch, args):
         R = touch["R_camera_from_local"][i]
         center = touch["centers_camera"][i]
         points = touch["points_local"][indices] @ R.T + center
-        color = tuple(int(255 * c) for c in colorsys.hsv_to_rgb(i * 0.618 % 1, 0.75, 1))
+        color = (
+            (45, 125, 210)
+            if args.uniform_touch_color
+            else tuple(int(255 * c) for c in colorsys.hsv_to_rgb(i * 0.618 % 1, 0.75, 1))
+        )
         contacts.append((points, center, color))
 
     return contacts

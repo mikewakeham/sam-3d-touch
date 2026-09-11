@@ -230,6 +230,7 @@ def save_inputs(args, row):
         "--output-dir", str(output_dir),
         "--variants", json.dumps([
             ["mesh", "pointmap"],
+            ["mesh", "pointmap", "touch"],
             ["mesh", "touch"],
             ["mesh", "full_surface"],
         ]),
@@ -245,6 +246,7 @@ def save_inputs(args, row):
         "--height", str(args.height),
         "--light-strength", str(args.light_strength),
         "--white-background",
+        "--uniform-touch-color",
         "--gif-only",
         "--flat-output",
     ]
