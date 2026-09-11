@@ -1,0 +1,1 @@
+Camera and oracle JSON files are exact bytes from the two supplied attachments. Image JSON is a transcription of the inline user message, with its matching shared input metadata retained. Image whitespace is reconstructed, not the original file formatting.

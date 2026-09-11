@@ -1,0 +1,101 @@
+{
+  "arms": {
+    "image": {
+      "anchor_loss": 0.038466440280899405,
+      "mean_by_condition": {
+        "natural_other_view": 0.10100855616231759
+      },
+      "per_view_group": [
+        {
+          "view_group": 1,
+          "natural_other_view": 0.10311391670256853
+        },
+        {
+          "view_group": 2,
+          "natural_other_view": 0.110362627543509
+        },
+        {
+          "view_group": 3,
+          "natural_other_view": 0.08954912424087524
+        }
+      ],
+      "natural_other_view_to_anchor_ratio": 2.6258877979014246
+    },
+    "camera": {
+      "anchor_loss": 0.019949061912484467,
+      "mean_by_condition": {
+        "natural_other_view": 0.13282827629397312,
+        "anchor_visual_other_surface": 0.04620183468796313,
+        "other_visual_anchor_surface": 0.12596613572289547,
+        "natural_other_view_swapped_object_surface": 0.13436247346301874
+      },
+      "per_view_group": [
+        {
+          "view_group": 1,
+          "natural_other_view": 0.13921806029975414,
+          "anchor_visual_other_surface": 0.03978633531369269,
+          "other_visual_anchor_surface": 0.13860089518129826,
+          "natural_other_view_swapped_object_surface": 0.14446012675762177
+        },
+        {
+          "view_group": 2,
+          "natural_other_view": 0.15279035549610853,
+          "anchor_visual_other_surface": 0.06452338257804513,
+          "other_visual_anchor_surface": 0.13977207243442535,
+          "natural_other_view_swapped_object_surface": 0.1431008018553257
+        },
+        {
+          "view_group": 3,
+          "natural_other_view": 0.10647641308605671,
+          "anchor_visual_other_surface": 0.034295786172151566,
+          "other_visual_anchor_surface": 0.09952543955296278,
+          "natural_other_view_swapped_object_surface": 0.11552649177610874
+        }
+      ],
+      "natural_other_view_to_anchor_ratio": 6.6583720516124565,
+      "mean_features_mse_vs_anchor": 0.6903028885523478,
+      "swapped_worse_paired_draws_of_24": 15
+    },
+    "oracle": {
+      "anchor_loss": 0.01887058443389833,
+      "mean_by_condition": {
+        "natural_other_view": 0.1277256179600954,
+        "anchor_visual_other_surface": 0.018865899338076513,
+        "other_visual_anchor_surface": 0.12770518908898035,
+        "natural_other_view_swapped_object_surface": 0.15464195112387338
+      },
+      "per_view_group": [
+        {
+          "view_group": 1,
+          "natural_other_view": 0.1476355278864503,
+          "anchor_visual_other_surface": 0.01886605948675424,
+          "other_visual_anchor_surface": 0.14764918945729733,
+          "natural_other_view_swapped_object_surface": 0.16213281638920307
+        },
+        {
+          "view_group": 2,
+          "natural_other_view": 0.1381101766601205,
+          "anchor_visual_other_surface": 0.018866549362428486,
+          "other_visual_anchor_surface": 0.13807705603539944,
+          "natural_other_view_swapped_object_surface": 0.1647526454180479
+        },
+        {
+          "view_group": 3,
+          "natural_other_view": 0.09743114933371544,
+          "anchor_visual_other_surface": 0.01886508916504681,
+          "other_visual_anchor_surface": 0.09738932177424431,
+          "natural_other_view_swapped_object_surface": 0.1370403915643692
+        }
+      ],
+      "natural_other_view_to_anchor_ratio": 6.7685035621183225,
+      "mean_features_mse_vs_anchor": 3.945597389550433e-07,
+      "swapped_worse_paired_draws_of_24": 21
+    }
+  },
+  "provenance": {
+    "image": "49581ec6f9f27c065bccb172416966b7d90c99725f7d106b3a43c5a56a2993e1",
+    "camera": "f5ea9b26b3b05ec9e3727f59c2b407df91950f03bfd527181875cef9a518cc79",
+    "oracle": "f2773b7bda7ef34e839a04752e9a0e733fcecdfded720177737d56cfdd41722e"
+  },
+  "limits": "Four objects, three new views each, one training seed. Loss draws are paired batch averages, not independent object-level replicas. No decoded new-view geometry. Image/pointmap are changed together."
+}

@@ -1,0 +1,118 @@
+{
+  "settings": {
+    "fit_dir": "outputs/frame_tiny_fit/46083371/image",
+    "output": "outputs/tiny_fit_view_probe/46083371/image.json",
+    "arm": "image"
+  },
+  "input_batches": [
+    {
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ],
+      "image_sha256": "2a501446481f05e8ca0edc04de414932cc3b8554488f80e1884970eacfdd47b4",
+      "pointmap_sha256": "cf30c7b30f0570bde0e54e801816a242ab3703ac279545fd646119930bfbb689",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375"
+    },
+    {
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ],
+      "image_sha256": "a9eb89864d6bbab10a7408a59afd4d00a0b6eacd1e51c2068272b2c47d83f70d",
+      "pointmap_sha256": "820fff86df593c86320cc2fa7be8f03c29486578fd146c032366a1d6ea77577c",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375"
+    },
+    {
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ],
+      "image_sha256": "1f7ee5a8748f2a668e0f1c5b602153cba70457ed95584e2b797320296109e42b",
+      "pointmap_sha256": "832af816f78beb811fe8e3e059af383bb0ff62cd4b7480d63cc814ae88626a33",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375"
+    },
+    {
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ],
+      "image_sha256": "7880572bd75d87536f03c4c1406429af44398db4399003c3684a1df175352dd2",
+      "pointmap_sha256": "3696143b5479920d4261799d8b2e2efd2736f3080f6cd6ac6a7a9bd6ab04f88f",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375"
+    }
+  ],
+  "source_fit_results_sha256": "3f684221215b9b59490329c69724436a7c2f40b19bf1915d39caaa98a472b91a",
+  "probe_sha256": "4b9cea7a01bf9b2d6572377640d77c99238164d7269c17d5d854697a010ec6eb",
+  "runtime": {
+    "torch": "2.5.1+cu121",
+    "gpu": "NVIDIA H100 80GB HBM3"
+  },
+  "rows": [
+    {
+      "view_group": 0,
+      "condition": "anchor",
+      "losses": [
+        0.04672098159790039,
+        0.04235296696424484,
+        0.06854386627674103,
+        0.025519030168652534,
+        0.028862662613391876,
+        0.02480216696858406,
+        0.043170299381017685,
+        0.027759548276662827
+      ]
+    },
+    {
+      "view_group": 1,
+      "condition": "natural_other_view",
+      "losses": [
+        0.09396038204431534,
+        0.10547414422035217,
+        0.1347942054271698,
+        0.10855896025896072,
+        0.11156236380338669,
+        0.10221812129020691,
+        0.08123312890529633,
+        0.08711002767086029
+      ]
+    },
+    {
+      "view_group": 2,
+      "condition": "natural_other_view",
+      "losses": [
+        0.09116846323013306,
+        0.11880028247833252,
+        0.1470761001110077,
+        0.10508754849433899,
+        0.11350258439779282,
+        0.11672189831733704,
+        0.09086024761199951,
+        0.09968389570713043
+      ]
+    },
+    {
+      "view_group": 3,
+      "condition": "natural_other_view",
+      "losses": [
+        0.07841575145721436,
+        0.10144609957933426,
+        0.12002655118703842,
+        0.08492399752140045,
+        0.09002263844013214,
+        0.08557659387588501,
+        0.07607045769691467,
+        0.07991090416908264
+      ]
+    }
+  ],
+  "scope": "Previously unseen views of four fitted objects. No training. Crossed camera-frame modalities may contradict each other; not natural benchmark inputs."
+}
