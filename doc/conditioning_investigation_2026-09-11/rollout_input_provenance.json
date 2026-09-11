@@ -1,0 +1,14 @@
+{
+  "inputs": [
+    {
+      "path": "/Users/michaelwakeham/.codex/attachments/b497601f-a5c1-436b-9217-fa8a37e305e0/pasted-text.txt",
+      "sha256": "9502a8d50d9cd8fb73834c47da8dd5ac4e12f988bffac11df46cf8381819e85f"
+    },
+    {
+      "path": "/Users/michaelwakeham/.codex/attachments/9923806c-43ce-4a8d-8d96-651f2f5c9c00/pasted-text.txt",
+      "sha256": "5dd33313d4142523cf24b9530f96779948a8fa3d64bba408fe97954f80d5d9e1"
+    }
+  ],
+  "same_experiment": true,
+  "difference": "Completed second attachment adds paired_inputs_sha256 only."
+}

@@ -1,5 +1,7 @@
 # First GPU evidence and next test
 
+**Superseded interpretation after actual rollouts:** see [ROLLOUT_FINDINGS.md](ROLLOUT_FINDINGS.md). CFG 7 improves sampled geometric metrics over CFG 0 in this pilot despite increasing fixed-state velocity error. Disabling guidance is not supported as the fix. This document preserves the earlier measurements and hypotheses; the requested rollout has now completed.
+
 ## Material Passport
 
 - Evidence: user-returned job `46083371`, NVIDIA H100 80 GB, torch 2.5.1+cu121, bf16, eight training objects × one view × four noise draws × four timesteps.

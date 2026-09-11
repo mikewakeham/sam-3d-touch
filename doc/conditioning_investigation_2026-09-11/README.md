@@ -1,5 +1,7 @@
 # Full-surface conditioning investigation — 11 September 2026
 
+**Latest result — actual rollouts:** [ROLLOUT_FINDINGS.md](ROLLOUT_FINDINGS.md) shows guidance 7 improves sampled geometry relative to guidance 0. The large velocity-error increase did not predict reconstruction degradation. The next action is a CPU-only bundle of selected saved NPZ/input geometry using `bundle_geometry.py`; no new GPU job is requested yet.
+
 **Update after GPU job 46083371:** the pilot has completed. See [GPU_FINDINGS.md](GPU_FINDINGS.md) for validated results and the next runnable job. Strong CFG substantially worsens measured velocity error in both checkpoints; correct surfaces confer little consistent incremental benefit. Actual reconstruction rollouts are now the next dependency. The sections below preserve the initial source/local audit and its original hypotheses.
 
 ## Material Passport
