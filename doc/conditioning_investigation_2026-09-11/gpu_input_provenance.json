@@ -1,0 +1,14 @@
+{
+  "inputs": [
+    {
+      "path": "/Users/michaelwakeham/.codex/attachments/aa498ffa-bfb5-4e02-a333-60a75446853c/pasted-text.txt",
+      "sha256": "2a25a0ec2d4c34bca2858ab56fffcc3c21e31feb191694da644cdd097a411451"
+    },
+    {
+      "path": "/Users/michaelwakeham/.codex/attachments/cc43676f-5113-400f-8369-b7de68c78056/pasted-text.txt",
+      "sha256": "b0e09946f3b08636004656c2a1ce0837c264b796f6de299bb921a80da9eef088"
+    }
+  ],
+  "same_experiment": true,
+  "difference": "Completed copy adds paired_input_sha256 only; not an independent replication."
+}
