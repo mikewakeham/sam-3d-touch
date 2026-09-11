@@ -1,0 +1,452 @@
+{
+  "arms": {
+    "image": {
+      "assessments": [
+        {
+          "step": 0,
+          "fresh_noise_loss": 0.4713069647550583,
+          "swapped_loss": null,
+          "swap_worse_draws": null,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.9756924286484718,
+              "voxel_iou": 0.08517370208008072,
+              "unaligned_voxel_center_chamfer": 0.12930284567001998,
+              "minimum_iou": 0.0
+            },
+            "7": {
+              "latent_mse": 1.008841022849083,
+              "voxel_iou": 0.09056546442579082,
+              "unaligned_voxel_center_chamfer": 0.13664403338045916,
+              "minimum_iou": 0.0
+            }
+          }
+        },
+        {
+          "step": 100,
+          "fresh_noise_loss": 0.34185438603162766,
+          "swapped_loss": null,
+          "swap_worse_draws": null,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.6618789434432983,
+              "voxel_iou": 0.14016360279454645,
+              "unaligned_voxel_center_chamfer": 0.07422202679836423,
+              "minimum_iou": 0.0360889634913974
+            },
+            "7": {
+              "latent_mse": 0.21396861039102077,
+              "voxel_iou": 0.27139317269061286,
+              "unaligned_voxel_center_chamfer": 0.10738371190431209,
+              "minimum_iou": 0.0
+            }
+          }
+        },
+        {
+          "step": 300,
+          "fresh_noise_loss": 0.09438908565789461,
+          "swapped_loss": null,
+          "swap_worse_draws": null,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.13683382514864206,
+              "voxel_iou": 0.39263269578104976,
+              "unaligned_voxel_center_chamfer": 0.03437502699299007,
+              "minimum_iou": 0.04415584415584416
+            },
+            "7": {
+              "latent_mse": 0.09650394693017006,
+              "voxel_iou": 0.5790539716254587,
+              "unaligned_voxel_center_chamfer": 0.006855493129657895,
+              "minimum_iou": 0.2599805258033106
+            }
+          }
+        },
+        {
+          "step": 1000,
+          "fresh_noise_loss": 0.038466440280899405,
+          "swapped_loss": null,
+          "swap_worse_draws": null,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.034981579752638936,
+              "voxel_iou": 0.900703476546047,
+              "unaligned_voxel_center_chamfer": 0.0008904561342869801,
+              "minimum_iou": 0.6389236545682102
+            },
+            "7": {
+              "latent_mse": 0.021611285104881972,
+              "voxel_iou": 0.9615519538489384,
+              "unaligned_voxel_center_chamfer": 0.00031089632182891493,
+              "minimum_iou": 0.8953068592057761
+            }
+          }
+        }
+      ],
+      "per_object_final": [
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "cfg": 0,
+          "latent_mse": 0.04805613495409489,
+          "voxel_iou": 0.9622195368156845,
+          "unaligned_voxel_center_chamfer": 0.0003008400907479005
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "cfg": 0,
+          "latent_mse": 0.014838291332125664,
+          "voxel_iou": 0.9924246704814146,
+          "unaligned_voxel_center_chamfer": 5.940682559294939e-05
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "cfg": 0,
+          "latent_mse": 0.026010767556726933,
+          "voxel_iou": 0.7167364604077948,
+          "unaligned_voxel_center_chamfer": 0.002647071098704131
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "cfg": 0,
+          "latent_mse": 0.05102112516760826,
+          "voxel_iou": 0.9314332384792942,
+          "unaligned_voxel_center_chamfer": 0.0005545065221029388
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "cfg": 7,
+          "latent_mse": 0.03437345288693905,
+          "voxel_iou": 0.9758636925773649,
+          "unaligned_voxel_center_chamfer": 0.0001906481637458673
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "cfg": 7,
+          "latent_mse": 0.007227268302813172,
+          "voxel_iou": 0.9970545104772239,
+          "unaligned_voxel_center_chamfer": 2.304919336433456e-05
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "cfg": 7,
+          "latent_mse": 0.012425244320183992,
+          "voxel_iou": 0.9107802732607051,
+          "unaligned_voxel_center_chamfer": 0.0007311931820158647
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "cfg": 7,
+          "latent_mse": 0.032419174909591675,
+          "voxel_iou": 0.9625093390804598,
+          "unaligned_voxel_center_chamfer": 0.00029869474818959324
+        }
+      ],
+      "train_loss_last100": 0.035841051246970894,
+      "train_loss_previous100": 0.04331445537507534
+    },
+    "camera": {
+      "assessments": [
+        {
+          "step": 0,
+          "fresh_noise_loss": 0.4717677980661392,
+          "swapped_loss": 0.47178347036242485,
+          "swap_worse_draws": 5,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.9775870069861412,
+              "voxel_iou": 0.08505492454537157,
+              "unaligned_voxel_center_chamfer": 0.12923398369144387,
+              "minimum_iou": 0.0
+            },
+            "7": {
+              "latent_mse": 1.0128303840756416,
+              "voxel_iou": 0.09124592672384416,
+              "unaligned_voxel_center_chamfer": 0.13916190790435853,
+              "minimum_iou": 0.0
+            }
+          },
+          "swap_loss_ratio": 1.0000332203604185
+        },
+        {
+          "step": 100,
+          "fresh_noise_loss": 0.11081667523831129,
+          "swapped_loss": 0.11631736066192389,
+          "swap_worse_draws": 8,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.15952864475548267,
+              "voxel_iou": 0.2880323577756205,
+              "unaligned_voxel_center_chamfer": 0.07360040541406765,
+              "minimum_iou": 0.011527377521613832
+            },
+            "7": {
+              "latent_mse": 0.14208118338137865,
+              "voxel_iou": 0.32316809528189316,
+              "unaligned_voxel_center_chamfer": 0.1085762519832746,
+              "minimum_iou": 0.0
+            }
+          },
+          "swap_loss_ratio": 1.0496377049012107
+        },
+        {
+          "step": 300,
+          "fresh_noise_loss": 0.07540573179721832,
+          "swapped_loss": 0.0832984670996666,
+          "swap_worse_draws": 8,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.09267601789906621,
+              "voxel_iou": 0.6749430337458415,
+              "unaligned_voxel_center_chamfer": 0.0034197822241305987,
+              "minimum_iou": 0.43209876543209874
+            },
+            "7": {
+              "latent_mse": 0.07662148354575038,
+              "voxel_iou": 0.7715152591664605,
+              "unaligned_voxel_center_chamfer": 0.0022478783883829317,
+              "minimum_iou": 0.5686630369026013
+            }
+          },
+          "swap_loss_ratio": 1.1046702301580134
+        },
+        {
+          "step": 1000,
+          "fresh_noise_loss": 0.019949061912484467,
+          "swapped_loss": 0.06196824414655566,
+          "swap_worse_draws": 8,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.009775054058991373,
+              "voxel_iou": 0.9919694785246507,
+              "unaligned_voxel_center_chamfer": 6.32531725027165e-05,
+              "minimum_iou": 0.973384030418251
+            },
+            "7": {
+              "latent_mse": 0.006876797153381631,
+              "voxel_iou": 0.9947612571488266,
+              "unaligned_voxel_center_chamfer": 4.1142257932519087e-05,
+              "minimum_iou": 0.984744469870328
+            }
+          },
+          "swap_loss_ratio": 3.106323716794666
+        }
+      ],
+      "per_object_final": [
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "cfg": 0,
+          "latent_mse": 0.014739788137376308,
+          "voxel_iou": 0.994914684374212,
+          "unaligned_voxel_center_chamfer": 3.983024093974785e-05
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "cfg": 0,
+          "latent_mse": 0.006491825683042407,
+          "voxel_iou": 0.999375999166909,
+          "unaligned_voxel_center_chamfer": 4.876414808567177e-06
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "cfg": 0,
+          "latent_mse": 0.0062975885812193155,
+          "voxel_iou": 0.9782886538645876,
+          "unaligned_voxel_center_chamfer": 0.00017148107163574992
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "cfg": 0,
+          "latent_mse": 0.01157101383432746,
+          "voxel_iou": 0.9952985766928939,
+          "unaligned_voxel_center_chamfer": 3.6824962626801017e-05
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "cfg": 7,
+          "latent_mse": 0.011664524674415588,
+          "voxel_iou": 0.9956326866351031,
+          "unaligned_voxel_center_chamfer": 3.417050327135127e-05
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "cfg": 7,
+          "latent_mse": 0.0036454141372814775,
+          "voxel_iou": 0.9998865183840218,
+          "unaligned_voxel_center_chamfer": 8.865751248297776e-07
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "cfg": 7,
+          "latent_mse": 0.004373619565740228,
+          "voxel_iou": 0.9858787284416575,
+          "unaligned_voxel_center_chamfer": 0.0001111109058120972
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "cfg": 7,
+          "latent_mse": 0.00782363023608923,
+          "voxel_iou": 0.997647095134524,
+          "unaligned_voxel_center_chamfer": 1.840104752179809e-05
+        }
+      ],
+      "train_loss_last100": 0.015183262741193176,
+      "train_loss_previous100": 0.01868870511651039,
+      "final_loss_reduction_vs_image": 0.48139048565951614
+    },
+    "oracle": {
+      "assessments": [
+        {
+          "step": 0,
+          "fresh_noise_loss": 0.4716932289302349,
+          "swapped_loss": 0.4716915749013424,
+          "swap_worse_draws": 3,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.977462150156498,
+              "voxel_iou": 0.08497627162445967,
+              "unaligned_voxel_center_chamfer": 0.1297563579988056,
+              "minimum_iou": 0.0
+            },
+            "7": {
+              "latent_mse": 1.012193650007248,
+              "voxel_iou": 0.09110003895119553,
+              "unaligned_voxel_center_chamfer": 0.1388479372627982,
+              "minimum_iou": 0.0
+            }
+          },
+          "swap_loss_ratio": 0.9999964934224385
+        },
+        {
+          "step": 100,
+          "fresh_noise_loss": 0.11099248193204403,
+          "swapped_loss": 0.11620865482836962,
+          "swap_worse_draws": 8,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.1625477746129036,
+              "voxel_iou": 0.29057565500702587,
+              "unaligned_voxel_center_chamfer": 0.07386955124020439,
+              "minimum_iou": 0.010567514677103719
+            },
+            "7": {
+              "latent_mse": 0.14648438710719347,
+              "voxel_iou": 0.3282262781382296,
+              "unaligned_voxel_center_chamfer": 0.10461068484063371,
+              "minimum_iou": 0.0
+            }
+          },
+          "swap_loss_ratio": 1.0469957316525207
+        },
+        {
+          "step": 300,
+          "fresh_noise_loss": 0.07436740305274725,
+          "swapped_loss": 0.08316574618220329,
+          "swap_worse_draws": 8,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.09209506493061781,
+              "voxel_iou": 0.6947146544882061,
+              "unaligned_voxel_center_chamfer": 0.0031079541934549986,
+              "minimum_iou": 0.47194329592439455
+            },
+            "7": {
+              "latent_mse": 0.07295167865231633,
+              "voxel_iou": 0.8222057886341708,
+              "unaligned_voxel_center_chamfer": 0.0015604241578018904,
+              "minimum_iou": 0.7408136482939632
+            }
+          },
+          "swap_loss_ratio": 1.1183091350280925
+        },
+        {
+          "step": 1000,
+          "fresh_noise_loss": 0.01887058443389833,
+          "swapped_loss": 0.07529487833380699,
+          "swap_worse_draws": 8,
+          "geometry": {
+            "0": {
+              "latent_mse": 0.009304601408075541,
+              "voxel_iou": 0.9918828842770235,
+              "unaligned_voxel_center_chamfer": 6.395573155933868e-05,
+              "minimum_iou": 0.9710586443259711
+            },
+            "7": {
+              "latent_mse": 0.0063889132579788566,
+              "voxel_iou": 0.9964502470164934,
+              "unaligned_voxel_center_chamfer": 2.7796073454154745e-05,
+              "minimum_iou": 0.9923312883435583
+            }
+          },
+          "swap_loss_ratio": 3.99006605214359
+        }
+      ],
+      "per_object_final": [
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "cfg": 0,
+          "latent_mse": 0.014019133057445288,
+          "voxel_iou": 0.995712038449614,
+          "unaligned_voxel_center_chamfer": 3.356789200229069e-05
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "cfg": 0,
+          "latent_mse": 0.006168793421238661,
+          "voxel_iou": 0.9997163152749783,
+          "unaligned_voxel_center_chamfer": 2.2165887441692396e-06
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "cfg": 0,
+          "latent_mse": 0.005895214853808284,
+          "voxel_iou": 0.9763620188780352,
+          "unaligned_voxel_center_chamfer": 0.0001866954308694421
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "cfg": 0,
+          "latent_mse": 0.011135264299809933,
+          "voxel_iou": 0.9957411645054666,
+          "unaligned_voxel_center_chamfer": 3.33430146214527e-05
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "cfg": 7,
+          "latent_mse": 0.010502181015908718,
+          "voxel_iou": 0.9965509987959322,
+          "unaligned_voxel_center_chamfer": 2.6991066618876857e-05
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "cfg": 7,
+          "latent_mse": 0.0035532801412045956,
+          "voxel_iou": 0.9997730560829674,
+          "unaligned_voxel_center_chamfer": 1.7732005603578205e-06
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "cfg": 7,
+          "latent_mse": 0.0033898018300533295,
+          "voxel_iou": 0.9930981595092025,
+          "unaligned_voxel_center_chamfer": 5.408661323597805e-05
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "cfg": 7,
+          "latent_mse": 0.008110390044748783,
+          "voxel_iou": 0.9963787736778715,
+          "unaligned_voxel_center_chamfer": 2.8333413401406248e-05
+        }
+      ],
+      "train_loss_last100": 0.01445174097083509,
+      "train_loss_previous100": 0.01760646895505488,
+      "final_loss_reduction_vs_image": 0.5094273268829463
+    }
+  },
+  "source_results_sha256": {
+    "image": "3f684221215b9b59490329c69724436a7c2f40b19bf1915d39caaa98a472b91a",
+    "camera": "9d4973e046cefd524a6ab00ac80968da912e2f95e97ec0a6b665aa22589f6c9b",
+    "oracle": "77debe3710c291cd232fbfd37d1085cf41a092845e8dbd4c1e69d6d615d8363a"
+  },
+  "scope": "Four training objects, one fixed view each, one training seed; fresh noise is not unseen-object validation. Raw Stage-1 support metrics are not aligned Stage-2 mesh CD."
+}

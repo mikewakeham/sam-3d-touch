@@ -1,0 +1,6221 @@
+{
+  "settings": {
+    "arm": "oracle",
+    "pipeline_config": "checkpoints/hf/pipeline.yaml",
+    "data_config": "configs/data_full_surface.yaml",
+    "output_dir": "outputs/frame_tiny_fit/46083371/oracle",
+    "steps": 1000,
+    "objects": 4,
+    "seed": 29,
+    "precision": "bf16"
+  },
+  "sample_ids": [
+    "479bbf9062de4b3196f08e52d1c12821_000",
+    "e846574df9334973955c80286af47ba7_007",
+    "fe200ce00a5d4c298eee89de0fc15f01_011",
+    "146b6c1f10bd445da977424c64dbb051_002"
+  ],
+  "initial_all_parameters_sha256": "689042cb78bacfa24aa7021aa114690850a2bd48a5813d327c6ef83dd08472b3",
+  "initial_trainable_ca_sha256": "1a78d2d48f43fcb677860d41f7ca4c2f1b259c3b188736adfad4945136d14931",
+  "image_sha256": "2a501446481f05e8ca0edc04de414932cc3b8554488f80e1884970eacfdd47b4",
+  "pointmap_sha256": "cf30c7b30f0570bde0e54e801816a242ab3703ac279545fd646119930bfbb689",
+  "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375",
+  "point_features_sha256": "073948fbf2d3375bc9390a2ac69255b2ff8c9f910ce281c8909baef9caf0422b",
+  "pipeline_yaml": "_target_: sam3d_objects.pipeline.inference_pipeline_pointmap.InferencePipelinePointMap\nss_generator_config_path: ss_generator.yaml\nss_generator_ckpt_path: ss_generator.ckpt\nslat_generator_config_path: slat_generator.yaml\nslat_generator_ckpt_path: slat_generator.ckpt\nss_decoder_config_path: ss_decoder.yaml\nss_decoder_ckpt_path: ss_decoder.ckpt\nslat_decoder_gs_config_path: slat_decoder_gs.yaml\nslat_decoder_gs_ckpt_path: slat_decoder_gs.ckpt\nslat_decoder_gs_4_config_path: slat_decoder_gs_4.yaml\nslat_decoder_gs_4_ckpt_path: slat_decoder_gs_4.ckpt\nslat_decoder_mesh_config_path: slat_decoder_mesh.yaml\nslat_decoder_mesh_ckpt_path: slat_decoder_mesh.ckpt\npad_size: 1.0\ndtype: float16\nversion: 3dfy_v9\nslat_cfg_strength: 1\nslat_rescale_t: 1\ndownsample_ss_dist: 1\ncompile_model: true\nss_condition_input_mapping: []\nss_preprocessor:\n  _target_: sam3d_objects.data.dataset.tdfy.preprocessor.PreProcessor\n  img_mask_joint_transform: []\n  img_mask_pointmap_joint_transform:\n  - _partial_: true\n    _target_: sam3d_objects.data.dataset.tdfy.img_and_mask_transforms.resize_all_to_same_size\n  - _partial_: true\n    _target_: sam3d_objects.data.dataset.tdfy.img_and_mask_transforms.crop_around_mask_with_padding\n    box_size_factor: 1.2\n    padding_factor: 0.0\n  img_transform:\n    _target_: torchvision.transforms.Compose\n    transforms:\n    - _partial_: true\n      _target_: sam3d_objects.data.dataset.tdfy.img_processing.pad_to_square_centered\n    - _target_: torchvision.transforms.Resize\n      size: 518\n  mask_transform:\n    _target_: torchvision.transforms.Compose\n    transforms:\n    - _partial_: true\n      _target_: sam3d_objects.data.dataset.tdfy.img_processing.pad_to_square_centered\n    - _target_: torchvision.transforms.Resize\n      interpolation: 0\n      size: 518\n  normalize_pointmap: true\n  pointmap_normalizer:\n    _target_: sam3d_objects.data.dataset.tdfy.img_and_mask_transforms.ObjectCentricSSI\n    allow_scale_and_shift_override: true\n    use_scene_scale: true\n  pointmap_transform:\n    _target_: torchvision.transforms.Compose\n    transforms:\n    - _partial_: true\n      _target_: sam3d_objects.data.dataset.tdfy.img_processing.pad_to_square_centered\n    - _target_: torchvision.transforms.Resize\n      interpolation: 0\n      size: 518\npose_decoder_name: ScaleShiftInvariant\ndepth_model:\n  _target_: sam3d_objects.pipeline.depth_models.moge.MoGe\n  model:\n    _target_: moge.model.v1.MoGeModel.from_pretrained\n    pretrained_model_name_or_path: Ruicheng/moge-vitl\nslat_condition_input_mapping: []\nslat_preprocessor:\n  _target_: sam3d_objects.data.dataset.tdfy.preprocessor.PreProcessor\n  img_transform:\n    _target_: torchvision.transforms.Compose\n    transforms:\n    - _target_: sam3d_objects.data.dataset.tdfy.img_processing.pad_to_square_centered\n      _partial_: true\n    - _target_: torchvision.transforms.Resize\n      size: 518\n  mask_transform:\n    _target_: torchvision.transforms.Compose\n    transforms:\n    - _target_: sam3d_objects.data.dataset.tdfy.img_processing.pad_to_square_centered\n      _partial_: true\n    - _target_: torchvision.transforms.Resize\n      size: 518\n      interpolation: 0\n  img_mask_joint_transform:\n  - _target_: sam3d_objects.data.dataset.tdfy.img_and_mask_transforms.crop_around_mask_with_padding\n    _partial_: true\n    box_size_factor: 1.2\n    padding_factor: 0.0\nslat_mean:\n- 0.12211431\n- 0.37204156\n- -1.26521907\n- -2.05276058\n- -3.10432536\n- -0.11294304\n- -0.85146744\n- 0.45506954\nslat_std:\n- 2.37326008\n- 2.13174402\n- 2.2413953\n- 2.30589401\n- 2.1191894\n- 1.8969511\n- 2.41684989\n- 2.08374642\n",
+  "generator_yaml": "module:\n  condition_embedder:\n    backbone:\n      _target_: sam3d_objects.model.backbone.dit.embedder.embedder_fuser.EmbedderFuser\n      drop_modalities_weight:\n      - - - pointmap\n          - rgb_pointmap\n        - 1.0\n      dropout_prob: 0.1\n      embedder_list:\n      - - _target_: sam3d_objects.model.backbone.dit.embedder.dino.Dino\n          dino_model: dinov2_vitl14_reg\n          input_size: 518\n          normalize_images: true\n        - - - image\n            - cropped\n          - - rgb_image\n            - full\n      - - _target_: sam3d_objects.model.backbone.dit.embedder.dino.Dino\n          dino_model: dinov2_vitl14_reg\n          input_size: 518\n          normalize_images: true\n        - - - mask\n            - cropped\n          - - rgb_image_mask\n            - full\n      - - _target_: sam3d_objects.model.backbone.dit.embedder.pointmap.PointPatchEmbed\n          embed_dim: 512\n          input_size: 256\n          patch_size: 8\n          remap_output: linear\n        - - - pointmap\n            - cropped\n          - - rgb_pointmap\n            - full\n      force_drop_modalities: null\n      freeze: true\n      projection_net_hidden_dim_multiplier: 4.0\n      use_pos_embedding: learned\n  generator:\n    backbone:\n      _target_: sam3d_objects.model.backbone.generator.shortcut.model.ShortCut\n      batch_mode: true\n      cfg_modalities:\n      - shape\n      inference_steps: 2\n      loss_weights:\n        6drotation_normalized: 0.1\n        _target_: sam3d_objects.config.utils.make_dict\n        scale: 0.1\n        shape: 0\n        translation: 1.0\n        translation_scale: 0.0\n      ratio_cfg_samples_in_self_consistency_target: 0.25\n      rescale_t: 1\n      reverse_fn:\n        _target_: sam3d_objects.model.backbone.generator.classifier_free_guidance.ClassifierFreeGuidanceWithExternalUnconditionalProbability\n        backbone:\n          _target_: sam3d_objects.model.backbone.tdfy_dit.models.mot_sparse_structure_flow.SparseStructureFlowTdfyWrapper\n          cond_channels: 1024\n          condition_embedder: null\n          force_zeros_cond: true\n          freeze_d_time_embedder: true\n          freeze_shared_parameters: true\n          in_channels: 8\n          is_shortcut_model: true\n          latent_mapping:\n            6drotation_normalized:\n              _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.Latent\n              in_channels: 6\n              model_channels: 1024\n              pos_embedder:\n                _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.LearntPositionEmbedder\n                model_channels: 1024\n                token_len: 1\n            scale:\n              _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.Latent\n              in_channels: 3\n              model_channels: 1024\n              pos_embedder:\n                _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.LearntPositionEmbedder\n                model_channels: 1024\n                token_len: 1\n            shape:\n              _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.Latent\n              in_channels: 8\n              model_channels: 1024\n              pos_embedder:\n                _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.ShapePositionEmbedder\n                model_channels: 1024\n                patch_size: 1\n                resolution: 16\n            translation:\n              _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.Latent\n              in_channels: 3\n              model_channels: 1024\n              pos_embedder:\n                _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.LearntPositionEmbedder\n                model_channels: 1024\n                token_len: 1\n            translation_scale:\n              _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.Latent\n              in_channels: 1\n              model_channels: 1024\n              pos_embedder:\n                _target_: sam3d_objects.model.backbone.tdfy_dit.models.mm_latent.LearntPositionEmbedder\n                model_channels: 1024\n                token_len: 1\n          latent_share_transformer:\n            6drotation_normalized:\n            - 6drotation_normalized\n            - translation\n            - scale\n            - translation_scale\n          mlp_ratio: 4\n          model_channels: 1024\n          num_blocks: 24\n          num_heads: 16\n          out_channels: 8\n          patch_size: 1\n          pe_mode: ape\n          qk_rms_norm: true\n          resolution: 16\n          use_checkpoint: false\n          use_fp16: false\n        interval:\n        - 0\n        - 500\n        p_unconditional: 0.1\n        strength: 2.0\n        unconditional_handling: add_flag\n      self_consistency_cfg_strength: 2.0\n      self_consistency_prob: 0.25\n      shortcut_loss_weight: 1.0\n      sigma_min: 0.0\n      time_scale: 1000.0\n      training_time_sampler_fn:\n        _partial_: true\n        _target_: sam3d_objects.model.backbone.generator.flow_matching.model.lognorm_sampler\n        mean: -1.0\n        std: 1.0\n",
+  "runtime": {
+    "torch": "2.5.1+cu121",
+    "gpu": "NVIDIA H100 80GB HBM3"
+  },
+  "training": [
+    {
+      "step": 1,
+      "loss": 0.6497361660003662,
+      "preclip_gradient_norm": 0.105951689183712,
+      "gradients/shape_cross_attention_kv": 0.06540951877832413,
+      "gradients/shape_cross_attention": 0.10419034957885742,
+      "gradients/touch_output_projection": 0.01855613850057125,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.005079610738903284,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 2,
+      "loss": 0.22807657718658447,
+      "preclip_gradient_norm": 0.09488795697689056
+    },
+    {
+      "step": 3,
+      "loss": 0.43610164523124695,
+      "preclip_gradient_norm": 0.10642173886299133
+    },
+    {
+      "step": 4,
+      "loss": 0.37586307525634766,
+      "preclip_gradient_norm": 0.2616422176361084
+    },
+    {
+      "step": 5,
+      "loss": 0.47356265783309937,
+      "preclip_gradient_norm": 0.09541168808937073
+    },
+    {
+      "step": 6,
+      "loss": 0.5840818881988525,
+      "preclip_gradient_norm": 0.1518038809299469
+    },
+    {
+      "step": 7,
+      "loss": 0.40503039956092834,
+      "preclip_gradient_norm": 0.15109185874462128
+    },
+    {
+      "step": 8,
+      "loss": 0.49619150161743164,
+      "preclip_gradient_norm": 0.1770060658454895
+    },
+    {
+      "step": 9,
+      "loss": 0.41286998987197876,
+      "preclip_gradient_norm": 0.1306518018245697
+    },
+    {
+      "step": 10,
+      "loss": 0.6912263631820679,
+      "preclip_gradient_norm": 0.19977083802223206
+    },
+    {
+      "step": 11,
+      "loss": 0.4260348379611969,
+      "preclip_gradient_norm": 0.19455775618553162
+    },
+    {
+      "step": 12,
+      "loss": 0.30107754468917847,
+      "preclip_gradient_norm": 0.1896781325340271
+    },
+    {
+      "step": 13,
+      "loss": 0.2699713408946991,
+      "preclip_gradient_norm": 0.21793247759342194
+    },
+    {
+      "step": 14,
+      "loss": 0.4506676197052002,
+      "preclip_gradient_norm": 0.23398460447788239
+    },
+    {
+      "step": 15,
+      "loss": 0.29775455594062805,
+      "preclip_gradient_norm": 0.26041463017463684
+    },
+    {
+      "step": 16,
+      "loss": 0.20200252532958984,
+      "preclip_gradient_norm": 0.34944307804107666
+    },
+    {
+      "step": 17,
+      "loss": 0.3897087574005127,
+      "preclip_gradient_norm": 0.596722424030304
+    },
+    {
+      "step": 18,
+      "loss": 0.24320274591445923,
+      "preclip_gradient_norm": 0.32705193758010864
+    },
+    {
+      "step": 19,
+      "loss": 0.2528521418571472,
+      "preclip_gradient_norm": 0.4822749197483063
+    },
+    {
+      "step": 20,
+      "loss": 0.3364538848400116,
+      "preclip_gradient_norm": 1.1901745796203613,
+      "gradients/shape_cross_attention_kv": 0.3849457800388336,
+      "gradients/shape_cross_attention": 0.8704975843429565,
+      "gradients/touch_output_projection": 0.805146336555481,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.10241501033306122,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 21,
+      "loss": 0.293748140335083,
+      "preclip_gradient_norm": 1.1167620420455933
+    },
+    {
+      "step": 22,
+      "loss": 0.3965073525905609,
+      "preclip_gradient_norm": 1.0065202713012695
+    },
+    {
+      "step": 23,
+      "loss": 0.14446167647838593,
+      "preclip_gradient_norm": 0.21002908051013947
+    },
+    {
+      "step": 24,
+      "loss": 0.16328077018260956,
+      "preclip_gradient_norm": 0.2436959594488144
+    },
+    {
+      "step": 25,
+      "loss": 0.13189944624900818,
+      "preclip_gradient_norm": 0.14274261891841888
+    },
+    {
+      "step": 26,
+      "loss": 0.1928894966840744,
+      "preclip_gradient_norm": 0.3807961344718933
+    },
+    {
+      "step": 27,
+      "loss": 0.14232465624809265,
+      "preclip_gradient_norm": 0.22444280982017517
+    },
+    {
+      "step": 28,
+      "loss": 0.1410263031721115,
+      "preclip_gradient_norm": 0.2181120216846466
+    },
+    {
+      "step": 29,
+      "loss": 0.19456979632377625,
+      "preclip_gradient_norm": 0.4993690550327301
+    },
+    {
+      "step": 30,
+      "loss": 0.14623123407363892,
+      "preclip_gradient_norm": 0.16105999052524567
+    },
+    {
+      "step": 31,
+      "loss": 0.23025895655155182,
+      "preclip_gradient_norm": 0.6762605905532837
+    },
+    {
+      "step": 32,
+      "loss": 0.12239767611026764,
+      "preclip_gradient_norm": 0.12687399983406067
+    },
+    {
+      "step": 33,
+      "loss": 0.1580885648727417,
+      "preclip_gradient_norm": 0.40903493762016296
+    },
+    {
+      "step": 34,
+      "loss": 0.1294880509376526,
+      "preclip_gradient_norm": 0.2684282064437866
+    },
+    {
+      "step": 35,
+      "loss": 0.12773938477039337,
+      "preclip_gradient_norm": 0.1459806114435196
+    },
+    {
+      "step": 36,
+      "loss": 0.15598347783088684,
+      "preclip_gradient_norm": 0.48312869668006897
+    },
+    {
+      "step": 37,
+      "loss": 0.18794092535972595,
+      "preclip_gradient_norm": 0.5589699745178223
+    },
+    {
+      "step": 38,
+      "loss": 0.1991230994462967,
+      "preclip_gradient_norm": 0.5040297508239746
+    },
+    {
+      "step": 39,
+      "loss": 0.16497062146663666,
+      "preclip_gradient_norm": 0.3028144836425781
+    },
+    {
+      "step": 40,
+      "loss": 0.15403035283088684,
+      "preclip_gradient_norm": 0.16753031313419342,
+      "gradients/shape_cross_attention_kv": 0.05771787092089653,
+      "gradients/shape_cross_attention": 0.14523658156394958,
+      "gradients/touch_output_projection": 0.08271889388561249,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.011415871791541576,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 41,
+      "loss": 0.15839096903800964,
+      "preclip_gradient_norm": 0.190561443567276
+    },
+    {
+      "step": 42,
+      "loss": 0.1492909938097,
+      "preclip_gradient_norm": 0.3403228521347046
+    },
+    {
+      "step": 43,
+      "loss": 0.11862459033727646,
+      "preclip_gradient_norm": 0.14217452704906464
+    },
+    {
+      "step": 44,
+      "loss": 0.14974597096443176,
+      "preclip_gradient_norm": 0.41002485156059265
+    },
+    {
+      "step": 45,
+      "loss": 0.16579020023345947,
+      "preclip_gradient_norm": 0.6108423471450806
+    },
+    {
+      "step": 46,
+      "loss": 0.12261639535427094,
+      "preclip_gradient_norm": 0.20656362175941467
+    },
+    {
+      "step": 47,
+      "loss": 0.10931530594825745,
+      "preclip_gradient_norm": 0.17317511141300201
+    },
+    {
+      "step": 48,
+      "loss": 0.11158852279186249,
+      "preclip_gradient_norm": 0.18452954292297363
+    },
+    {
+      "step": 49,
+      "loss": 0.1091035008430481,
+      "preclip_gradient_norm": 0.1960141360759735
+    },
+    {
+      "step": 50,
+      "loss": 0.11459643393754959,
+      "preclip_gradient_norm": 0.26624247431755066
+    },
+    {
+      "step": 51,
+      "loss": 0.11286719143390656,
+      "preclip_gradient_norm": 0.29377737641334534
+    },
+    {
+      "step": 52,
+      "loss": 0.1155121773481369,
+      "preclip_gradient_norm": 0.2137468457221985
+    },
+    {
+      "step": 53,
+      "loss": 0.10564801096916199,
+      "preclip_gradient_norm": 0.16558252274990082
+    },
+    {
+      "step": 54,
+      "loss": 0.12498238682746887,
+      "preclip_gradient_norm": 0.2512218952178955
+    },
+    {
+      "step": 55,
+      "loss": 0.10890804976224899,
+      "preclip_gradient_norm": 0.12403526902198792
+    },
+    {
+      "step": 56,
+      "loss": 0.1056230291724205,
+      "preclip_gradient_norm": 0.08435343950986862
+    },
+    {
+      "step": 57,
+      "loss": 0.10018707811832428,
+      "preclip_gradient_norm": 0.288977712392807
+    },
+    {
+      "step": 58,
+      "loss": 0.12772709131240845,
+      "preclip_gradient_norm": 0.3311053514480591
+    },
+    {
+      "step": 59,
+      "loss": 0.13069775700569153,
+      "preclip_gradient_norm": 0.40338602662086487
+    },
+    {
+      "step": 60,
+      "loss": 0.09966050088405609,
+      "preclip_gradient_norm": 0.08729802072048187,
+      "gradients/shape_cross_attention_kv": 0.03246740251779556,
+      "gradients/shape_cross_attention": 0.07120910286903381,
+      "gradients/touch_output_projection": 0.05008271709084511,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.006475050002336502,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 61,
+      "loss": 0.12045340985059738,
+      "preclip_gradient_norm": 0.13037465512752533
+    },
+    {
+      "step": 62,
+      "loss": 0.10915549099445343,
+      "preclip_gradient_norm": 0.08620196580886841
+    },
+    {
+      "step": 63,
+      "loss": 0.09624286741018295,
+      "preclip_gradient_norm": 0.11490032076835632
+    },
+    {
+      "step": 64,
+      "loss": 0.1042914167046547,
+      "preclip_gradient_norm": 0.15148992836475372
+    },
+    {
+      "step": 65,
+      "loss": 0.1056048721075058,
+      "preclip_gradient_norm": 0.19148856401443481
+    },
+    {
+      "step": 66,
+      "loss": 0.10466458648443222,
+      "preclip_gradient_norm": 0.15531502664089203
+    },
+    {
+      "step": 67,
+      "loss": 0.0946987122297287,
+      "preclip_gradient_norm": 0.11265811324119568
+    },
+    {
+      "step": 68,
+      "loss": 0.08865196257829666,
+      "preclip_gradient_norm": 0.06733997166156769
+    },
+    {
+      "step": 69,
+      "loss": 0.10010702162981033,
+      "preclip_gradient_norm": 0.1099892109632492
+    },
+    {
+      "step": 70,
+      "loss": 0.09011563658714294,
+      "preclip_gradient_norm": 0.06527198851108551
+    },
+    {
+      "step": 71,
+      "loss": 0.09653721749782562,
+      "preclip_gradient_norm": 0.16172932088375092
+    },
+    {
+      "step": 72,
+      "loss": 0.10490100085735321,
+      "preclip_gradient_norm": 0.10853338986635208
+    },
+    {
+      "step": 73,
+      "loss": 0.09951178729534149,
+      "preclip_gradient_norm": 0.12323062121868134
+    },
+    {
+      "step": 74,
+      "loss": 0.2284499704837799,
+      "preclip_gradient_norm": 0.6414310932159424
+    },
+    {
+      "step": 75,
+      "loss": 0.09389591217041016,
+      "preclip_gradient_norm": 0.053960930556058884
+    },
+    {
+      "step": 76,
+      "loss": 0.0957956537604332,
+      "preclip_gradient_norm": 0.1292726844549179
+    },
+    {
+      "step": 77,
+      "loss": 0.09613126516342163,
+      "preclip_gradient_norm": 0.17445996403694153
+    },
+    {
+      "step": 78,
+      "loss": 0.10605967044830322,
+      "preclip_gradient_norm": 0.15411558747291565
+    },
+    {
+      "step": 79,
+      "loss": 0.09879760444164276,
+      "preclip_gradient_norm": 0.14065231382846832
+    },
+    {
+      "step": 80,
+      "loss": 0.10504873096942902,
+      "preclip_gradient_norm": 0.12135665118694305,
+      "gradients/shape_cross_attention_kv": 0.039398808032274246,
+      "gradients/shape_cross_attention": 0.1105414479970932,
+      "gradients/touch_output_projection": 0.04957927018404007,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.007065256591886282,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 81,
+      "loss": 0.21078577637672424,
+      "preclip_gradient_norm": 0.42888784408569336
+    },
+    {
+      "step": 82,
+      "loss": 0.10192547738552094,
+      "preclip_gradient_norm": 0.1344044804573059
+    },
+    {
+      "step": 83,
+      "loss": 0.09264509379863739,
+      "preclip_gradient_norm": 0.12468577921390533
+    },
+    {
+      "step": 84,
+      "loss": 0.08817564696073532,
+      "preclip_gradient_norm": 0.1563907116651535
+    },
+    {
+      "step": 85,
+      "loss": 0.09663373231887817,
+      "preclip_gradient_norm": 0.14444497227668762
+    },
+    {
+      "step": 86,
+      "loss": 0.09582893550395966,
+      "preclip_gradient_norm": 0.11259739845991135
+    },
+    {
+      "step": 87,
+      "loss": 0.08869850635528564,
+      "preclip_gradient_norm": 0.08781737089157104
+    },
+    {
+      "step": 88,
+      "loss": 0.08961786329746246,
+      "preclip_gradient_norm": 0.0958576500415802
+    },
+    {
+      "step": 89,
+      "loss": 0.0971643254160881,
+      "preclip_gradient_norm": 0.08261698484420776
+    },
+    {
+      "step": 90,
+      "loss": 0.09446412324905396,
+      "preclip_gradient_norm": 0.24465501308441162
+    },
+    {
+      "step": 91,
+      "loss": 0.1053713709115982,
+      "preclip_gradient_norm": 0.12889163196086884
+    },
+    {
+      "step": 92,
+      "loss": 0.10178713500499725,
+      "preclip_gradient_norm": 0.1396009474992752
+    },
+    {
+      "step": 93,
+      "loss": 0.0881296843290329,
+      "preclip_gradient_norm": 0.08369167149066925
+    },
+    {
+      "step": 94,
+      "loss": 0.08710995316505432,
+      "preclip_gradient_norm": 0.11777868866920471
+    },
+    {
+      "step": 95,
+      "loss": 0.11014319956302643,
+      "preclip_gradient_norm": 0.38253292441368103
+    },
+    {
+      "step": 96,
+      "loss": 0.0970875546336174,
+      "preclip_gradient_norm": 0.11910621076822281
+    },
+    {
+      "step": 97,
+      "loss": 0.0913286805152893,
+      "preclip_gradient_norm": 0.09190351516008377
+    },
+    {
+      "step": 98,
+      "loss": 0.09153971076011658,
+      "preclip_gradient_norm": 0.15872585773468018
+    },
+    {
+      "step": 99,
+      "loss": 0.10929341614246368,
+      "preclip_gradient_norm": 0.22585555911064148
+    },
+    {
+      "step": 100,
+      "loss": 0.0929422676563263,
+      "preclip_gradient_norm": 0.14190343022346497,
+      "gradients/shape_cross_attention_kv": 0.060985516756772995,
+      "gradients/shape_cross_attention": 0.12179557234048843,
+      "gradients/touch_output_projection": 0.07206234335899353,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.010461217723786831,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 101,
+      "loss": 0.09327587485313416,
+      "preclip_gradient_norm": 0.11361080408096313
+    },
+    {
+      "step": 102,
+      "loss": 0.09922017902135849,
+      "preclip_gradient_norm": 0.1952880620956421
+    },
+    {
+      "step": 103,
+      "loss": 0.12118522822856903,
+      "preclip_gradient_norm": 0.3867715299129486
+    },
+    {
+      "step": 104,
+      "loss": 0.09484146535396576,
+      "preclip_gradient_norm": 0.20626915991306305
+    },
+    {
+      "step": 105,
+      "loss": 0.09403762221336365,
+      "preclip_gradient_norm": 0.12881514430046082
+    },
+    {
+      "step": 106,
+      "loss": 0.0932571068406105,
+      "preclip_gradient_norm": 0.2128676176071167
+    },
+    {
+      "step": 107,
+      "loss": 0.0901341587305069,
+      "preclip_gradient_norm": 0.2577688992023468
+    },
+    {
+      "step": 108,
+      "loss": 0.09620875120162964,
+      "preclip_gradient_norm": 0.32770228385925293
+    },
+    {
+      "step": 109,
+      "loss": 0.08724623918533325,
+      "preclip_gradient_norm": 0.09961754828691483
+    },
+    {
+      "step": 110,
+      "loss": 0.1444532722234726,
+      "preclip_gradient_norm": 0.21782587468624115
+    },
+    {
+      "step": 111,
+      "loss": 0.09403718262910843,
+      "preclip_gradient_norm": 0.24337583780288696
+    },
+    {
+      "step": 112,
+      "loss": 0.23139140009880066,
+      "preclip_gradient_norm": 0.7386382818222046
+    },
+    {
+      "step": 113,
+      "loss": 0.09480100870132446,
+      "preclip_gradient_norm": 0.13825304806232452
+    },
+    {
+      "step": 114,
+      "loss": 0.08321748673915863,
+      "preclip_gradient_norm": 0.06063888221979141
+    },
+    {
+      "step": 115,
+      "loss": 0.0994463562965393,
+      "preclip_gradient_norm": 0.3798811435699463
+    },
+    {
+      "step": 116,
+      "loss": 0.08431663364171982,
+      "preclip_gradient_norm": 0.13962751626968384
+    },
+    {
+      "step": 117,
+      "loss": 0.1270679533481598,
+      "preclip_gradient_norm": 0.5901703834533691
+    },
+    {
+      "step": 118,
+      "loss": 0.09471862018108368,
+      "preclip_gradient_norm": 0.3414049744606018
+    },
+    {
+      "step": 119,
+      "loss": 0.0997336208820343,
+      "preclip_gradient_norm": 0.1790846884250641
+    },
+    {
+      "step": 120,
+      "loss": 0.0906096026301384,
+      "preclip_gradient_norm": 0.3390094041824341,
+      "gradients/shape_cross_attention_kv": 0.11950447410345078,
+      "gradients/shape_cross_attention": 0.22095634043216705,
+      "gradients/touch_output_projection": 0.25532066822052,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.030282367020845413,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 121,
+      "loss": 0.09983876347541809,
+      "preclip_gradient_norm": 0.27351322770118713
+    },
+    {
+      "step": 122,
+      "loss": 0.10020401328802109,
+      "preclip_gradient_norm": 0.284740686416626
+    },
+    {
+      "step": 123,
+      "loss": 0.1969771385192871,
+      "preclip_gradient_norm": 0.3710937798023224
+    },
+    {
+      "step": 124,
+      "loss": 0.09568260610103607,
+      "preclip_gradient_norm": 0.30272385478019714
+    },
+    {
+      "step": 125,
+      "loss": 0.08951656520366669,
+      "preclip_gradient_norm": 0.1471147984266281
+    },
+    {
+      "step": 126,
+      "loss": 0.08638429641723633,
+      "preclip_gradient_norm": 0.13266952335834503
+    },
+    {
+      "step": 127,
+      "loss": 0.10795165598392487,
+      "preclip_gradient_norm": 0.23356184363365173
+    },
+    {
+      "step": 128,
+      "loss": 0.0931166410446167,
+      "preclip_gradient_norm": 0.27493926882743835
+    },
+    {
+      "step": 129,
+      "loss": 0.10845772176980972,
+      "preclip_gradient_norm": 0.4289725720882416
+    },
+    {
+      "step": 130,
+      "loss": 0.08805198967456818,
+      "preclip_gradient_norm": 0.14438627660274506
+    },
+    {
+      "step": 131,
+      "loss": 0.08951707184314728,
+      "preclip_gradient_norm": 0.10708315670490265
+    },
+    {
+      "step": 132,
+      "loss": 0.11166094243526459,
+      "preclip_gradient_norm": 0.15423239767551422
+    },
+    {
+      "step": 133,
+      "loss": 0.09675565361976624,
+      "preclip_gradient_norm": 0.23932141065597534
+    },
+    {
+      "step": 134,
+      "loss": 0.1362500786781311,
+      "preclip_gradient_norm": 0.285288542509079
+    },
+    {
+      "step": 135,
+      "loss": 0.07949025928974152,
+      "preclip_gradient_norm": 0.19934260845184326
+    },
+    {
+      "step": 136,
+      "loss": 0.0856529176235199,
+      "preclip_gradient_norm": 0.22115878760814667
+    },
+    {
+      "step": 137,
+      "loss": 0.08509054034948349,
+      "preclip_gradient_norm": 0.07763773202896118
+    },
+    {
+      "step": 138,
+      "loss": 0.09021258354187012,
+      "preclip_gradient_norm": 0.10248946398496628
+    },
+    {
+      "step": 139,
+      "loss": 0.08883898705244064,
+      "preclip_gradient_norm": 0.07677680253982544
+    },
+    {
+      "step": 140,
+      "loss": 0.08880282938480377,
+      "preclip_gradient_norm": 0.14450053870677948,
+      "gradients/shape_cross_attention_kv": 0.05101260915398598,
+      "gradients/shape_cross_attention": 0.1201978549361229,
+      "gradients/touch_output_projection": 0.07957251369953156,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.01005467213690281,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 141,
+      "loss": 0.08493176102638245,
+      "preclip_gradient_norm": 0.13181765377521515
+    },
+    {
+      "step": 142,
+      "loss": 0.09442493319511414,
+      "preclip_gradient_norm": 0.2487892508506775
+    },
+    {
+      "step": 143,
+      "loss": 0.07590433955192566,
+      "preclip_gradient_norm": 0.09205345064401627
+    },
+    {
+      "step": 144,
+      "loss": 0.07703366875648499,
+      "preclip_gradient_norm": 0.07689741253852844
+    },
+    {
+      "step": 145,
+      "loss": 0.08359941840171814,
+      "preclip_gradient_norm": 0.07629789412021637
+    },
+    {
+      "step": 146,
+      "loss": 0.08904533088207245,
+      "preclip_gradient_norm": 0.08875769376754761
+    },
+    {
+      "step": 147,
+      "loss": 0.08219708502292633,
+      "preclip_gradient_norm": 0.12569428980350494
+    },
+    {
+      "step": 148,
+      "loss": 0.08126229792833328,
+      "preclip_gradient_norm": 0.09513790160417557
+    },
+    {
+      "step": 149,
+      "loss": 0.08836153149604797,
+      "preclip_gradient_norm": 0.13695375621318817
+    },
+    {
+      "step": 150,
+      "loss": 0.08230820298194885,
+      "preclip_gradient_norm": 0.12870383262634277
+    },
+    {
+      "step": 151,
+      "loss": 0.0769510343670845,
+      "preclip_gradient_norm": 0.08312133699655533
+    },
+    {
+      "step": 152,
+      "loss": 0.08415292203426361,
+      "preclip_gradient_norm": 0.07590624690055847
+    },
+    {
+      "step": 153,
+      "loss": 0.08564885705709457,
+      "preclip_gradient_norm": 0.16664838790893555
+    },
+    {
+      "step": 154,
+      "loss": 0.07767084240913391,
+      "preclip_gradient_norm": 0.13058067858219147
+    },
+    {
+      "step": 155,
+      "loss": 0.09287537634372711,
+      "preclip_gradient_norm": 0.12570790946483612
+    },
+    {
+      "step": 156,
+      "loss": 0.08125033974647522,
+      "preclip_gradient_norm": 0.12185316532850266
+    },
+    {
+      "step": 157,
+      "loss": 0.08397161960601807,
+      "preclip_gradient_norm": 0.1246311292052269
+    },
+    {
+      "step": 158,
+      "loss": 0.08232223987579346,
+      "preclip_gradient_norm": 0.10952766984701157
+    },
+    {
+      "step": 159,
+      "loss": 0.08303208649158478,
+      "preclip_gradient_norm": 0.07781717926263809
+    },
+    {
+      "step": 160,
+      "loss": 0.09089244902133942,
+      "preclip_gradient_norm": 0.1117633730173111,
+      "gradients/shape_cross_attention_kv": 0.04266778379678726,
+      "gradients/shape_cross_attention": 0.09973751753568649,
+      "gradients/touch_output_projection": 0.04996572062373161,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0068489969708025455,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 161,
+      "loss": 0.08407779037952423,
+      "preclip_gradient_norm": 0.1918073296546936
+    },
+    {
+      "step": 162,
+      "loss": 0.08673715591430664,
+      "preclip_gradient_norm": 0.12832555174827576
+    },
+    {
+      "step": 163,
+      "loss": 0.07333266735076904,
+      "preclip_gradient_norm": 0.05685696005821228
+    },
+    {
+      "step": 164,
+      "loss": 0.08289613574743271,
+      "preclip_gradient_norm": 0.0836021825671196
+    },
+    {
+      "step": 165,
+      "loss": 0.07422903180122375,
+      "preclip_gradient_norm": 0.09270379692316055
+    },
+    {
+      "step": 166,
+      "loss": 0.07419446855783463,
+      "preclip_gradient_norm": 0.08170855790376663
+    },
+    {
+      "step": 167,
+      "loss": 0.07239033281803131,
+      "preclip_gradient_norm": 0.13500110805034637
+    },
+    {
+      "step": 168,
+      "loss": 0.082880899310112,
+      "preclip_gradient_norm": 0.0775919109582901
+    },
+    {
+      "step": 169,
+      "loss": 0.08585767447948456,
+      "preclip_gradient_norm": 0.158302441239357
+    },
+    {
+      "step": 170,
+      "loss": 0.08698473870754242,
+      "preclip_gradient_norm": 0.1117633655667305
+    },
+    {
+      "step": 171,
+      "loss": 0.08430153131484985,
+      "preclip_gradient_norm": 0.1539371758699417
+    },
+    {
+      "step": 172,
+      "loss": 0.08186451345682144,
+      "preclip_gradient_norm": 0.14133203029632568
+    },
+    {
+      "step": 173,
+      "loss": 0.07692211121320724,
+      "preclip_gradient_norm": 0.12332649528980255
+    },
+    {
+      "step": 174,
+      "loss": 0.098850317299366,
+      "preclip_gradient_norm": 0.274049311876297
+    },
+    {
+      "step": 175,
+      "loss": 0.07288166880607605,
+      "preclip_gradient_norm": 0.06478967517614365
+    },
+    {
+      "step": 176,
+      "loss": 0.08942992985248566,
+      "preclip_gradient_norm": 0.1463460475206375
+    },
+    {
+      "step": 177,
+      "loss": 0.0737360268831253,
+      "preclip_gradient_norm": 0.073233962059021
+    },
+    {
+      "step": 178,
+      "loss": 0.08078395575284958,
+      "preclip_gradient_norm": 0.13169553875923157
+    },
+    {
+      "step": 179,
+      "loss": 0.08421649038791656,
+      "preclip_gradient_norm": 0.2406824380159378
+    },
+    {
+      "step": 180,
+      "loss": 0.07296055555343628,
+      "preclip_gradient_norm": 0.0884149894118309,
+      "gradients/shape_cross_attention_kv": 0.043839629739522934,
+      "gradients/shape_cross_attention": 0.07599116861820221,
+      "gradients/touch_output_projection": 0.04481867700815201,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.005817017517983913,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 181,
+      "loss": 0.06909333169460297,
+      "preclip_gradient_norm": 0.08344496786594391
+    },
+    {
+      "step": 182,
+      "loss": 0.10183355212211609,
+      "preclip_gradient_norm": 0.1791185885667801
+    },
+    {
+      "step": 183,
+      "loss": 0.07708615064620972,
+      "preclip_gradient_norm": 0.1396750509738922
+    },
+    {
+      "step": 184,
+      "loss": 0.08023376762866974,
+      "preclip_gradient_norm": 0.19957315921783447
+    },
+    {
+      "step": 185,
+      "loss": 0.07547777891159058,
+      "preclip_gradient_norm": 0.09350144118070602
+    },
+    {
+      "step": 186,
+      "loss": 0.0781608447432518,
+      "preclip_gradient_norm": 0.07178986072540283
+    },
+    {
+      "step": 187,
+      "loss": 0.0781155452132225,
+      "preclip_gradient_norm": 0.18280960619449615
+    },
+    {
+      "step": 188,
+      "loss": 0.09874732792377472,
+      "preclip_gradient_norm": 0.18313907086849213
+    },
+    {
+      "step": 189,
+      "loss": 0.08329828083515167,
+      "preclip_gradient_norm": 0.20127929747104645
+    },
+    {
+      "step": 190,
+      "loss": 0.07270859181880951,
+      "preclip_gradient_norm": 0.14523546397686005
+    },
+    {
+      "step": 191,
+      "loss": 0.07418659329414368,
+      "preclip_gradient_norm": 0.07137677818536758
+    },
+    {
+      "step": 192,
+      "loss": 0.07887741923332214,
+      "preclip_gradient_norm": 0.16463413834571838
+    },
+    {
+      "step": 193,
+      "loss": 0.08078496903181076,
+      "preclip_gradient_norm": 0.1146104484796524
+    },
+    {
+      "step": 194,
+      "loss": 0.0773107036948204,
+      "preclip_gradient_norm": 0.15543900430202484
+    },
+    {
+      "step": 195,
+      "loss": 0.0721161887049675,
+      "preclip_gradient_norm": 0.1330682784318924
+    },
+    {
+      "step": 196,
+      "loss": 0.14713487029075623,
+      "preclip_gradient_norm": 0.2835291028022766
+    },
+    {
+      "step": 197,
+      "loss": 0.07415066659450531,
+      "preclip_gradient_norm": 0.07116727530956268
+    },
+    {
+      "step": 198,
+      "loss": 0.07338359206914902,
+      "preclip_gradient_norm": 0.13441790640354156
+    },
+    {
+      "step": 199,
+      "loss": 0.07963277399539948,
+      "preclip_gradient_norm": 0.2870006859302521
+    },
+    {
+      "step": 200,
+      "loss": 0.09670404344797134,
+      "preclip_gradient_norm": 0.2705293893814087,
+      "gradients/shape_cross_attention_kv": 0.07139706611633301,
+      "gradients/shape_cross_attention": 0.1930006593465805,
+      "gradients/touch_output_projection": 0.18842893838882446,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.020770767703652382,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 201,
+      "loss": 0.11421085894107819,
+      "preclip_gradient_norm": 0.2040277123451233
+    },
+    {
+      "step": 202,
+      "loss": 0.07500004023313522,
+      "preclip_gradient_norm": 0.13391542434692383
+    },
+    {
+      "step": 203,
+      "loss": 0.0777711421251297,
+      "preclip_gradient_norm": 0.12084657698869705
+    },
+    {
+      "step": 204,
+      "loss": 0.0789138674736023,
+      "preclip_gradient_norm": 0.4604417383670807
+    },
+    {
+      "step": 205,
+      "loss": 0.07144038379192352,
+      "preclip_gradient_norm": 0.12411019951105118
+    },
+    {
+      "step": 206,
+      "loss": 0.0854223370552063,
+      "preclip_gradient_norm": 0.13659542798995972
+    },
+    {
+      "step": 207,
+      "loss": 0.0777614638209343,
+      "preclip_gradient_norm": 0.09700585901737213
+    },
+    {
+      "step": 208,
+      "loss": 0.09073352068662643,
+      "preclip_gradient_norm": 0.28131407499313354
+    },
+    {
+      "step": 209,
+      "loss": 0.07114163041114807,
+      "preclip_gradient_norm": 0.09857428073883057
+    },
+    {
+      "step": 210,
+      "loss": 0.07562296092510223,
+      "preclip_gradient_norm": 0.14782929420471191
+    },
+    {
+      "step": 211,
+      "loss": 0.08069529384374619,
+      "preclip_gradient_norm": 0.16447263956069946
+    },
+    {
+      "step": 212,
+      "loss": 0.07724043726921082,
+      "preclip_gradient_norm": 0.0984637439250946
+    },
+    {
+      "step": 213,
+      "loss": 0.07838264107704163,
+      "preclip_gradient_norm": 0.11467921733856201
+    },
+    {
+      "step": 214,
+      "loss": 0.07389135658740997,
+      "preclip_gradient_norm": 0.07562045007944107
+    },
+    {
+      "step": 215,
+      "loss": 0.07550893723964691,
+      "preclip_gradient_norm": 0.09808545559644699
+    },
+    {
+      "step": 216,
+      "loss": 0.07793493568897247,
+      "preclip_gradient_norm": 0.10808128863573074
+    },
+    {
+      "step": 217,
+      "loss": 0.07897968590259552,
+      "preclip_gradient_norm": 0.09770037233829498
+    },
+    {
+      "step": 218,
+      "loss": 0.10333213210105896,
+      "preclip_gradient_norm": 0.22762681543827057
+    },
+    {
+      "step": 219,
+      "loss": 0.06710951030254364,
+      "preclip_gradient_norm": 0.07621974498033524
+    },
+    {
+      "step": 220,
+      "loss": 0.07202589511871338,
+      "preclip_gradient_norm": 0.08432797342538834,
+      "gradients/shape_cross_attention_kv": 0.03646088019013405,
+      "gradients/shape_cross_attention": 0.06911669671535492,
+      "gradients/touch_output_projection": 0.04794386401772499,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.005956202279776335,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 221,
+      "loss": 0.06778595596551895,
+      "preclip_gradient_norm": 0.11858610063791275
+    },
+    {
+      "step": 222,
+      "loss": 0.07117299735546112,
+      "preclip_gradient_norm": 0.13191980123519897
+    },
+    {
+      "step": 223,
+      "loss": 0.06735381484031677,
+      "preclip_gradient_norm": 0.06444381177425385
+    },
+    {
+      "step": 224,
+      "loss": 0.08640357851982117,
+      "preclip_gradient_norm": 0.22395287454128265
+    },
+    {
+      "step": 225,
+      "loss": 0.0698021948337555,
+      "preclip_gradient_norm": 0.1861851066350937
+    },
+    {
+      "step": 226,
+      "loss": 0.07313980162143707,
+      "preclip_gradient_norm": 0.1591658592224121
+    },
+    {
+      "step": 227,
+      "loss": 0.07132230699062347,
+      "preclip_gradient_norm": 0.11237571388483047
+    },
+    {
+      "step": 228,
+      "loss": 0.07964742928743362,
+      "preclip_gradient_norm": 0.15971538424491882
+    },
+    {
+      "step": 229,
+      "loss": 0.0720721185207367,
+      "preclip_gradient_norm": 0.09381011873483658
+    },
+    {
+      "step": 230,
+      "loss": 0.08579365909099579,
+      "preclip_gradient_norm": 0.13514360785484314
+    },
+    {
+      "step": 231,
+      "loss": 0.06893738359212875,
+      "preclip_gradient_norm": 0.05730031803250313
+    },
+    {
+      "step": 232,
+      "loss": 0.09897405654191971,
+      "preclip_gradient_norm": 0.17898571491241455
+    },
+    {
+      "step": 233,
+      "loss": 0.06514470279216766,
+      "preclip_gradient_norm": 0.12917287647724152
+    },
+    {
+      "step": 234,
+      "loss": 0.06421884894371033,
+      "preclip_gradient_norm": 0.04834422841668129
+    },
+    {
+      "step": 235,
+      "loss": 0.06952826678752899,
+      "preclip_gradient_norm": 0.09032687544822693
+    },
+    {
+      "step": 236,
+      "loss": 0.06149207800626755,
+      "preclip_gradient_norm": 0.06012667715549469
+    },
+    {
+      "step": 237,
+      "loss": 0.06816345453262329,
+      "preclip_gradient_norm": 0.08007490634918213
+    },
+    {
+      "step": 238,
+      "loss": 0.06968412548303604,
+      "preclip_gradient_norm": 0.133356511592865
+    },
+    {
+      "step": 239,
+      "loss": 0.07058414816856384,
+      "preclip_gradient_norm": 0.08405424654483795
+    },
+    {
+      "step": 240,
+      "loss": 0.06536595523357391,
+      "preclip_gradient_norm": 0.07849429547786713,
+      "gradients/shape_cross_attention_kv": 0.029778996482491493,
+      "gradients/shape_cross_attention": 0.06362786889076233,
+      "gradients/touch_output_projection": 0.04565854370594025,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.005305266007781029,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 241,
+      "loss": 0.06625165045261383,
+      "preclip_gradient_norm": 0.1278606355190277
+    },
+    {
+      "step": 242,
+      "loss": 0.06776661425828934,
+      "preclip_gradient_norm": 0.0963992103934288
+    },
+    {
+      "step": 243,
+      "loss": 0.0684712752699852,
+      "preclip_gradient_norm": 0.09949750453233719
+    },
+    {
+      "step": 244,
+      "loss": 0.0922602117061615,
+      "preclip_gradient_norm": 0.18538498878479004
+    },
+    {
+      "step": 245,
+      "loss": 0.07131438702344894,
+      "preclip_gradient_norm": 0.07703080773353577
+    },
+    {
+      "step": 246,
+      "loss": 0.07047154009342194,
+      "preclip_gradient_norm": 0.14455844461917877
+    },
+    {
+      "step": 247,
+      "loss": 0.07064379751682281,
+      "preclip_gradient_norm": 0.06836708635091782
+    },
+    {
+      "step": 248,
+      "loss": 0.07545795291662216,
+      "preclip_gradient_norm": 0.09486912935972214
+    },
+    {
+      "step": 249,
+      "loss": 0.06742264330387115,
+      "preclip_gradient_norm": 0.08203278481960297
+    },
+    {
+      "step": 250,
+      "loss": 0.07177004218101501,
+      "preclip_gradient_norm": 0.13289280235767365
+    },
+    {
+      "step": 251,
+      "loss": 0.0625845193862915,
+      "preclip_gradient_norm": 0.05468354746699333
+    },
+    {
+      "step": 252,
+      "loss": 0.06581395119428635,
+      "preclip_gradient_norm": 0.08866442739963531
+    },
+    {
+      "step": 253,
+      "loss": 0.07170365005731583,
+      "preclip_gradient_norm": 0.10134365409612656
+    },
+    {
+      "step": 254,
+      "loss": 0.07231682538986206,
+      "preclip_gradient_norm": 0.12416145950555801
+    },
+    {
+      "step": 255,
+      "loss": 0.07058365643024445,
+      "preclip_gradient_norm": 0.07355763018131256
+    },
+    {
+      "step": 256,
+      "loss": 0.08050541579723358,
+      "preclip_gradient_norm": 0.165206179022789
+    },
+    {
+      "step": 257,
+      "loss": 0.06731314957141876,
+      "preclip_gradient_norm": 0.050568025559186935
+    },
+    {
+      "step": 258,
+      "loss": 0.07141068577766418,
+      "preclip_gradient_norm": 0.07889588177204132
+    },
+    {
+      "step": 259,
+      "loss": 0.068011075258255,
+      "preclip_gradient_norm": 0.0972730964422226
+    },
+    {
+      "step": 260,
+      "loss": 0.06750693917274475,
+      "preclip_gradient_norm": 0.08201447129249573,
+      "gradients/shape_cross_attention_kv": 0.02945229969918728,
+      "gradients/shape_cross_attention": 0.06812380999326706,
+      "gradients/touch_output_projection": 0.045363180339336395,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.005263296887278557,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 261,
+      "loss": 0.06515462696552277,
+      "preclip_gradient_norm": 0.06112434342503548
+    },
+    {
+      "step": 262,
+      "loss": 0.06715372949838638,
+      "preclip_gradient_norm": 0.07937178760766983
+    },
+    {
+      "step": 263,
+      "loss": 0.06360611319541931,
+      "preclip_gradient_norm": 0.1012401357293129
+    },
+    {
+      "step": 264,
+      "loss": 0.06361943483352661,
+      "preclip_gradient_norm": 0.09244111180305481
+    },
+    {
+      "step": 265,
+      "loss": 0.06622150540351868,
+      "preclip_gradient_norm": 0.057513389736413956
+    },
+    {
+      "step": 266,
+      "loss": 0.06116117164492607,
+      "preclip_gradient_norm": 0.07475238293409348
+    },
+    {
+      "step": 267,
+      "loss": 0.08063933253288269,
+      "preclip_gradient_norm": 0.08878324180841446
+    },
+    {
+      "step": 268,
+      "loss": 0.06166457384824753,
+      "preclip_gradient_norm": 0.08279792964458466
+    },
+    {
+      "step": 269,
+      "loss": 0.06124056875705719,
+      "preclip_gradient_norm": 0.08665335178375244
+    },
+    {
+      "step": 270,
+      "loss": 0.060436151921749115,
+      "preclip_gradient_norm": 0.09700202941894531
+    },
+    {
+      "step": 271,
+      "loss": 0.06401517242193222,
+      "preclip_gradient_norm": 0.06374089419841766
+    },
+    {
+      "step": 272,
+      "loss": 0.06675265729427338,
+      "preclip_gradient_norm": 0.07711278647184372
+    },
+    {
+      "step": 273,
+      "loss": 0.057728059589862823,
+      "preclip_gradient_norm": 0.05862923339009285
+    },
+    {
+      "step": 274,
+      "loss": 0.0779840424656868,
+      "preclip_gradient_norm": 0.11432342231273651
+    },
+    {
+      "step": 275,
+      "loss": 0.0622013583779335,
+      "preclip_gradient_norm": 0.08408509194850922
+    },
+    {
+      "step": 276,
+      "loss": 0.06982827186584473,
+      "preclip_gradient_norm": 0.09053143113851547
+    },
+    {
+      "step": 277,
+      "loss": 0.06110192835330963,
+      "preclip_gradient_norm": 0.08680221438407898
+    },
+    {
+      "step": 278,
+      "loss": 0.05777914077043533,
+      "preclip_gradient_norm": 0.102645643055439
+    },
+    {
+      "step": 279,
+      "loss": 0.06906189024448395,
+      "preclip_gradient_norm": 0.0944463238120079
+    },
+    {
+      "step": 280,
+      "loss": 0.06862235069274902,
+      "preclip_gradient_norm": 0.11690983921289444,
+      "gradients/shape_cross_attention_kv": 0.06390135735273361,
+      "gradients/shape_cross_attention": 0.10314242541790009,
+      "gradients/touch_output_projection": 0.05444946140050888,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.008050336502492428,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 281,
+      "loss": 0.06801754236221313,
+      "preclip_gradient_norm": 0.08265034109354019
+    },
+    {
+      "step": 282,
+      "loss": 0.06531107425689697,
+      "preclip_gradient_norm": 0.0623881034553051
+    },
+    {
+      "step": 283,
+      "loss": 0.06791649013757706,
+      "preclip_gradient_norm": 0.07848519831895828
+    },
+    {
+      "step": 284,
+      "loss": 0.07393156737089157,
+      "preclip_gradient_norm": 0.1232953742146492
+    },
+    {
+      "step": 285,
+      "loss": 0.06537830084562302,
+      "preclip_gradient_norm": 0.07880590856075287
+    },
+    {
+      "step": 286,
+      "loss": 0.06831991672515869,
+      "preclip_gradient_norm": 0.06996307522058487
+    },
+    {
+      "step": 287,
+      "loss": 0.06648735702037811,
+      "preclip_gradient_norm": 0.13449640572071075
+    },
+    {
+      "step": 288,
+      "loss": 0.06707556545734406,
+      "preclip_gradient_norm": 0.11216095089912415
+    },
+    {
+      "step": 289,
+      "loss": 0.06356750428676605,
+      "preclip_gradient_norm": 0.18255522847175598
+    },
+    {
+      "step": 290,
+      "loss": 0.06515106558799744,
+      "preclip_gradient_norm": 0.12061302363872528
+    },
+    {
+      "step": 291,
+      "loss": 0.0640564039349556,
+      "preclip_gradient_norm": 0.12949872016906738
+    },
+    {
+      "step": 292,
+      "loss": 0.06207137554883957,
+      "preclip_gradient_norm": 0.08118805289268494
+    },
+    {
+      "step": 293,
+      "loss": 0.0640396997332573,
+      "preclip_gradient_norm": 0.060015447437763214
+    },
+    {
+      "step": 294,
+      "loss": 0.09836140275001526,
+      "preclip_gradient_norm": 0.24945729970932007
+    },
+    {
+      "step": 295,
+      "loss": 0.07439364492893219,
+      "preclip_gradient_norm": 0.16333599388599396
+    },
+    {
+      "step": 296,
+      "loss": 0.07165881991386414,
+      "preclip_gradient_norm": 0.2125575989484787
+    },
+    {
+      "step": 297,
+      "loss": 0.07033878564834595,
+      "preclip_gradient_norm": 0.12881384789943695
+    },
+    {
+      "step": 298,
+      "loss": 0.06382182985544205,
+      "preclip_gradient_norm": 0.10891987383365631
+    },
+    {
+      "step": 299,
+      "loss": 0.060884468257427216,
+      "preclip_gradient_norm": 0.08203717321157455
+    },
+    {
+      "step": 300,
+      "loss": 0.06133048236370087,
+      "preclip_gradient_norm": 0.08547356724739075,
+      "gradients/shape_cross_attention_kv": 0.03569576516747475,
+      "gradients/shape_cross_attention": 0.07504179328680038,
+      "gradients/touch_output_projection": 0.04064108431339264,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.004770909436047077,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 301,
+      "loss": 0.06228656321763992,
+      "preclip_gradient_norm": 0.11961621046066284
+    },
+    {
+      "step": 302,
+      "loss": 0.06598588824272156,
+      "preclip_gradient_norm": 0.12984977662563324
+    },
+    {
+      "step": 303,
+      "loss": 0.061282314360141754,
+      "preclip_gradient_norm": 0.10173055529594421
+    },
+    {
+      "step": 304,
+      "loss": 0.05890224501490593,
+      "preclip_gradient_norm": 0.11192567646503448
+    },
+    {
+      "step": 305,
+      "loss": 0.06195434182882309,
+      "preclip_gradient_norm": 0.09097161144018173
+    },
+    {
+      "step": 306,
+      "loss": 0.05939481407403946,
+      "preclip_gradient_norm": 0.11339778453111649
+    },
+    {
+      "step": 307,
+      "loss": 0.061731189489364624,
+      "preclip_gradient_norm": 0.09494876116514206
+    },
+    {
+      "step": 308,
+      "loss": 0.0587007962167263,
+      "preclip_gradient_norm": 0.08786214888095856
+    },
+    {
+      "step": 309,
+      "loss": 0.06597729027271271,
+      "preclip_gradient_norm": 0.09447994083166122
+    },
+    {
+      "step": 310,
+      "loss": 0.06224020570516586,
+      "preclip_gradient_norm": 0.0697895810008049
+    },
+    {
+      "step": 311,
+      "loss": 0.05922582000494003,
+      "preclip_gradient_norm": 0.11778797954320908
+    },
+    {
+      "step": 312,
+      "loss": 0.06426815688610077,
+      "preclip_gradient_norm": 0.0770348310470581
+    },
+    {
+      "step": 313,
+      "loss": 0.05918250232934952,
+      "preclip_gradient_norm": 0.08271713554859161
+    },
+    {
+      "step": 314,
+      "loss": 0.06784766912460327,
+      "preclip_gradient_norm": 0.09883201122283936
+    },
+    {
+      "step": 315,
+      "loss": 0.05794747173786163,
+      "preclip_gradient_norm": 0.11580945551395416
+    },
+    {
+      "step": 316,
+      "loss": 0.06415420770645142,
+      "preclip_gradient_norm": 0.14919911324977875
+    },
+    {
+      "step": 317,
+      "loss": 0.06303361803293228,
+      "preclip_gradient_norm": 0.08816702663898468
+    },
+    {
+      "step": 318,
+      "loss": 0.059668105095624924,
+      "preclip_gradient_norm": 0.07316145300865173
+    },
+    {
+      "step": 319,
+      "loss": 0.056001581251621246,
+      "preclip_gradient_norm": 0.07112202793359756
+    },
+    {
+      "step": 320,
+      "loss": 0.05239075422286987,
+      "preclip_gradient_norm": 0.0670955702662468,
+      "gradients/shape_cross_attention_kv": 0.03657526150345802,
+      "gradients/shape_cross_attention": 0.059274960309267044,
+      "gradients/touch_output_projection": 0.031127579510211945,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0044008721597492695,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 321,
+      "loss": 0.07912963628768921,
+      "preclip_gradient_norm": 0.11507215350866318
+    },
+    {
+      "step": 322,
+      "loss": 0.061904631555080414,
+      "preclip_gradient_norm": 0.08496381342411041
+    },
+    {
+      "step": 323,
+      "loss": 0.054818809032440186,
+      "preclip_gradient_norm": 0.06647124886512756
+    },
+    {
+      "step": 324,
+      "loss": 0.06420142948627472,
+      "preclip_gradient_norm": 0.08402322977781296
+    },
+    {
+      "step": 325,
+      "loss": 0.05949749797582626,
+      "preclip_gradient_norm": 0.09187638014554977
+    },
+    {
+      "step": 326,
+      "loss": 0.057095736265182495,
+      "preclip_gradient_norm": 0.20590445399284363
+    },
+    {
+      "step": 327,
+      "loss": 0.054095592349767685,
+      "preclip_gradient_norm": 0.08619148284196854
+    },
+    {
+      "step": 328,
+      "loss": 0.05039678514003754,
+      "preclip_gradient_norm": 0.06429196149110794
+    },
+    {
+      "step": 329,
+      "loss": 0.06154574081301689,
+      "preclip_gradient_norm": 0.12485936284065247
+    },
+    {
+      "step": 330,
+      "loss": 0.06254637986421585,
+      "preclip_gradient_norm": 0.08232037723064423
+    },
+    {
+      "step": 331,
+      "loss": 0.05300923064351082,
+      "preclip_gradient_norm": 0.1319485604763031
+    },
+    {
+      "step": 332,
+      "loss": 0.06046087294816971,
+      "preclip_gradient_norm": 0.16377396881580353
+    },
+    {
+      "step": 333,
+      "loss": 0.0567624606192112,
+      "preclip_gradient_norm": 0.13377739489078522
+    },
+    {
+      "step": 334,
+      "loss": 0.056060466915369034,
+      "preclip_gradient_norm": 0.07315345853567123
+    },
+    {
+      "step": 335,
+      "loss": 0.05795891582965851,
+      "preclip_gradient_norm": 0.09374735504388809
+    },
+    {
+      "step": 336,
+      "loss": 0.06037765368819237,
+      "preclip_gradient_norm": 0.08405302464962006
+    },
+    {
+      "step": 337,
+      "loss": 0.056774210184812546,
+      "preclip_gradient_norm": 0.10075905919075012
+    },
+    {
+      "step": 338,
+      "loss": 0.057614803314208984,
+      "preclip_gradient_norm": 0.06346568465232849
+    },
+    {
+      "step": 339,
+      "loss": 0.05949264392256737,
+      "preclip_gradient_norm": 0.06606516987085342
+    },
+    {
+      "step": 340,
+      "loss": 0.06167943403124809,
+      "preclip_gradient_norm": 0.10735998302698135,
+      "gradients/shape_cross_attention_kv": 0.043448060750961304,
+      "gradients/shape_cross_attention": 0.08775769174098969,
+      "gradients/touch_output_projection": 0.06141339987516403,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.007290386129170656,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 341,
+      "loss": 0.06067685782909393,
+      "preclip_gradient_norm": 0.09966812282800674
+    },
+    {
+      "step": 342,
+      "loss": 0.0647192969918251,
+      "preclip_gradient_norm": 0.13587945699691772
+    },
+    {
+      "step": 343,
+      "loss": 0.061075352132320404,
+      "preclip_gradient_norm": 0.11063744872808456
+    },
+    {
+      "step": 344,
+      "loss": 0.07927557826042175,
+      "preclip_gradient_norm": 0.1927947998046875
+    },
+    {
+      "step": 345,
+      "loss": 0.056096091866493225,
+      "preclip_gradient_norm": 0.09513098746538162
+    },
+    {
+      "step": 346,
+      "loss": 0.06119474768638611,
+      "preclip_gradient_norm": 0.08902951329946518
+    },
+    {
+      "step": 347,
+      "loss": 0.05910509079694748,
+      "preclip_gradient_norm": 0.0883965939283371
+    },
+    {
+      "step": 348,
+      "loss": 0.05244504660367966,
+      "preclip_gradient_norm": 0.1395060271024704
+    },
+    {
+      "step": 349,
+      "loss": 0.057162731885910034,
+      "preclip_gradient_norm": 0.08952466398477554
+    },
+    {
+      "step": 350,
+      "loss": 0.07179628312587738,
+      "preclip_gradient_norm": 0.1369951218366623
+    },
+    {
+      "step": 351,
+      "loss": 0.09971167147159576,
+      "preclip_gradient_norm": 0.2970409095287323
+    },
+    {
+      "step": 352,
+      "loss": 0.04858805984258652,
+      "preclip_gradient_norm": 0.11463499814271927
+    },
+    {
+      "step": 353,
+      "loss": 0.052896060049533844,
+      "preclip_gradient_norm": 0.14766286313533783
+    },
+    {
+      "step": 354,
+      "loss": 0.08291710168123245,
+      "preclip_gradient_norm": 0.3544304370880127
+    },
+    {
+      "step": 355,
+      "loss": 0.06121479347348213,
+      "preclip_gradient_norm": 0.08452308177947998
+    },
+    {
+      "step": 356,
+      "loss": 0.05510885268449783,
+      "preclip_gradient_norm": 0.17019261419773102
+    },
+    {
+      "step": 357,
+      "loss": 0.061506301164627075,
+      "preclip_gradient_norm": 0.2210383266210556
+    },
+    {
+      "step": 358,
+      "loss": 0.06635695695877075,
+      "preclip_gradient_norm": 0.23509952425956726
+    },
+    {
+      "step": 359,
+      "loss": 0.06092677637934685,
+      "preclip_gradient_norm": 0.1941290944814682
+    },
+    {
+      "step": 360,
+      "loss": 0.055498044937849045,
+      "preclip_gradient_norm": 0.12695668637752533,
+      "gradients/shape_cross_attention_kv": 0.05587749928236008,
+      "gradients/shape_cross_attention": 0.11112343519926071,
+      "gradients/touch_output_projection": 0.06093897670507431,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.007484813220798969,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 361,
+      "loss": 0.05477280169725418,
+      "preclip_gradient_norm": 0.08470529317855835
+    },
+    {
+      "step": 362,
+      "loss": 0.0657600536942482,
+      "preclip_gradient_norm": 0.25316330790519714
+    },
+    {
+      "step": 363,
+      "loss": 0.059781379997730255,
+      "preclip_gradient_norm": 0.18489135801792145
+    },
+    {
+      "step": 364,
+      "loss": 0.05647018551826477,
+      "preclip_gradient_norm": 0.11705875396728516
+    },
+    {
+      "step": 365,
+      "loss": 0.060980211943387985,
+      "preclip_gradient_norm": 0.15193192660808563
+    },
+    {
+      "step": 366,
+      "loss": 0.05756908655166626,
+      "preclip_gradient_norm": 0.10585258901119232
+    },
+    {
+      "step": 367,
+      "loss": 0.06052153557538986,
+      "preclip_gradient_norm": 0.12698790431022644
+    },
+    {
+      "step": 368,
+      "loss": 0.054591476917266846,
+      "preclip_gradient_norm": 0.12792858481407166
+    },
+    {
+      "step": 369,
+      "loss": 0.06836043298244476,
+      "preclip_gradient_norm": 0.16976961493492126
+    },
+    {
+      "step": 370,
+      "loss": 0.11714118719100952,
+      "preclip_gradient_norm": 0.2124820202589035
+    },
+    {
+      "step": 371,
+      "loss": 0.050749555230140686,
+      "preclip_gradient_norm": 0.1508784294128418
+    },
+    {
+      "step": 372,
+      "loss": 0.07182474434375763,
+      "preclip_gradient_norm": 0.1537880301475525
+    },
+    {
+      "step": 373,
+      "loss": 0.05922110751271248,
+      "preclip_gradient_norm": 0.1319570094347
+    },
+    {
+      "step": 374,
+      "loss": 0.07263978570699692,
+      "preclip_gradient_norm": 0.1361411213874817
+    },
+    {
+      "step": 375,
+      "loss": 0.058141615241765976,
+      "preclip_gradient_norm": 0.13416223227977753
+    },
+    {
+      "step": 376,
+      "loss": 0.05852105841040611,
+      "preclip_gradient_norm": 0.10791684687137604
+    },
+    {
+      "step": 377,
+      "loss": 0.053155966103076935,
+      "preclip_gradient_norm": 0.14497946202754974
+    },
+    {
+      "step": 378,
+      "loss": 0.05491640418767929,
+      "preclip_gradient_norm": 0.2429283857345581
+    },
+    {
+      "step": 379,
+      "loss": 0.055831681936979294,
+      "preclip_gradient_norm": 0.1397085338830948
+    },
+    {
+      "step": 380,
+      "loss": 0.04552485793828964,
+      "preclip_gradient_norm": 0.0920962318778038,
+      "gradients/shape_cross_attention_kv": 0.049948550760746,
+      "gradients/shape_cross_attention": 0.08006448298692703,
+      "gradients/touch_output_projection": 0.04511100426316261,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.006032501347362995,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 381,
+      "loss": 0.04834738373756409,
+      "preclip_gradient_norm": 0.0948026180267334
+    },
+    {
+      "step": 382,
+      "loss": 0.05920872092247009,
+      "preclip_gradient_norm": 0.26020172238349915
+    },
+    {
+      "step": 383,
+      "loss": 0.060802217572927475,
+      "preclip_gradient_norm": 0.176722452044487
+    },
+    {
+      "step": 384,
+      "loss": 0.050925206393003464,
+      "preclip_gradient_norm": 0.0934240072965622
+    },
+    {
+      "step": 385,
+      "loss": 0.05476035550236702,
+      "preclip_gradient_norm": 0.11854308843612671
+    },
+    {
+      "step": 386,
+      "loss": 0.05559499189257622,
+      "preclip_gradient_norm": 0.15715432167053223
+    },
+    {
+      "step": 387,
+      "loss": 0.19945120811462402,
+      "preclip_gradient_norm": 0.7875177264213562
+    },
+    {
+      "step": 388,
+      "loss": 0.05508696287870407,
+      "preclip_gradient_norm": 0.12052731961011887
+    },
+    {
+      "step": 389,
+      "loss": 0.05722072347998619,
+      "preclip_gradient_norm": 0.2535305619239807
+    },
+    {
+      "step": 390,
+      "loss": 0.05491071194410324,
+      "preclip_gradient_norm": 0.17250506579875946
+    },
+    {
+      "step": 391,
+      "loss": 0.05156116932630539,
+      "preclip_gradient_norm": 0.17021387815475464
+    },
+    {
+      "step": 392,
+      "loss": 0.061248600482940674,
+      "preclip_gradient_norm": 0.19823159277439117
+    },
+    {
+      "step": 393,
+      "loss": 0.058985061943531036,
+      "preclip_gradient_norm": 0.19100145995616913
+    },
+    {
+      "step": 394,
+      "loss": 0.04981451481580734,
+      "preclip_gradient_norm": 0.12970289587974548
+    },
+    {
+      "step": 395,
+      "loss": 0.05660359561443329,
+      "preclip_gradient_norm": 0.11190128326416016
+    },
+    {
+      "step": 396,
+      "loss": 0.05852791666984558,
+      "preclip_gradient_norm": 0.15509819984436035
+    },
+    {
+      "step": 397,
+      "loss": 0.06183914467692375,
+      "preclip_gradient_norm": 0.23684823513031006
+    },
+    {
+      "step": 398,
+      "loss": 0.06151025742292404,
+      "preclip_gradient_norm": 0.12985911965370178
+    },
+    {
+      "step": 399,
+      "loss": 0.07029470801353455,
+      "preclip_gradient_norm": 0.2316475659608841
+    },
+    {
+      "step": 400,
+      "loss": 0.05742626637220383,
+      "preclip_gradient_norm": 0.14682935178279877,
+      "gradients/shape_cross_attention_kv": 0.05397389456629753,
+      "gradients/shape_cross_attention": 0.13517960906028748,
+      "gradients/touch_output_projection": 0.056896090507507324,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.006940274499356747,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 401,
+      "loss": 0.05383376032114029,
+      "preclip_gradient_norm": 0.1721317023038864
+    },
+    {
+      "step": 402,
+      "loss": 0.04972919076681137,
+      "preclip_gradient_norm": 0.15519753098487854
+    },
+    {
+      "step": 403,
+      "loss": 0.08045049011707306,
+      "preclip_gradient_norm": 0.3045077621936798
+    },
+    {
+      "step": 404,
+      "loss": 0.05738438665866852,
+      "preclip_gradient_norm": 0.11514680832624435
+    },
+    {
+      "step": 405,
+      "loss": 0.089938685297966,
+      "preclip_gradient_norm": 0.2511005103588104
+    },
+    {
+      "step": 406,
+      "loss": 0.05475148558616638,
+      "preclip_gradient_norm": 0.19123372435569763
+    },
+    {
+      "step": 407,
+      "loss": 0.05276797339320183,
+      "preclip_gradient_norm": 0.15573750436306
+    },
+    {
+      "step": 408,
+      "loss": 0.04896579310297966,
+      "preclip_gradient_norm": 0.14377957582473755
+    },
+    {
+      "step": 409,
+      "loss": 0.05350591614842415,
+      "preclip_gradient_norm": 0.13970714807510376
+    },
+    {
+      "step": 410,
+      "loss": 0.11262631416320801,
+      "preclip_gradient_norm": 0.3292785882949829
+    },
+    {
+      "step": 411,
+      "loss": 0.05794684588909149,
+      "preclip_gradient_norm": 0.15408745408058167
+    },
+    {
+      "step": 412,
+      "loss": 0.05309579521417618,
+      "preclip_gradient_norm": 0.1779281049966812
+    },
+    {
+      "step": 413,
+      "loss": 0.07310222089290619,
+      "preclip_gradient_norm": 0.42693641781806946
+    },
+    {
+      "step": 414,
+      "loss": 0.05122320353984833,
+      "preclip_gradient_norm": 0.1303311586380005
+    },
+    {
+      "step": 415,
+      "loss": 0.05024176836013794,
+      "preclip_gradient_norm": 0.1142306849360466
+    },
+    {
+      "step": 416,
+      "loss": 0.047069448977708817,
+      "preclip_gradient_norm": 0.16491298377513885
+    },
+    {
+      "step": 417,
+      "loss": 0.05345159024000168,
+      "preclip_gradient_norm": 0.14752686023712158
+    },
+    {
+      "step": 418,
+      "loss": 0.06878191232681274,
+      "preclip_gradient_norm": 0.45965269207954407
+    },
+    {
+      "step": 419,
+      "loss": 0.053404614329338074,
+      "preclip_gradient_norm": 0.1128878965973854
+    },
+    {
+      "step": 420,
+      "loss": 0.04721784591674805,
+      "preclip_gradient_norm": 0.08380687236785889,
+      "gradients/shape_cross_attention_kv": 0.03782331943511963,
+      "gradients/shape_cross_attention": 0.07527592033147812,
+      "gradients/touch_output_projection": 0.03647217899560928,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.005187572445720434,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 421,
+      "loss": 0.08501678705215454,
+      "preclip_gradient_norm": 0.3100035488605499
+    },
+    {
+      "step": 422,
+      "loss": 0.04963719844818115,
+      "preclip_gradient_norm": 0.12294549494981766
+    },
+    {
+      "step": 423,
+      "loss": 0.04425964504480362,
+      "preclip_gradient_norm": 0.1046382486820221
+    },
+    {
+      "step": 424,
+      "loss": 0.04882150888442993,
+      "preclip_gradient_norm": 0.1116899773478508
+    },
+    {
+      "step": 425,
+      "loss": 0.046694714576005936,
+      "preclip_gradient_norm": 0.10254060477018356
+    },
+    {
+      "step": 426,
+      "loss": 0.04569718986749649,
+      "preclip_gradient_norm": 0.0937572494149208
+    },
+    {
+      "step": 427,
+      "loss": 0.046419285237789154,
+      "preclip_gradient_norm": 0.14438588917255402
+    },
+    {
+      "step": 428,
+      "loss": 0.04184664785861969,
+      "preclip_gradient_norm": 0.09452231228351593
+    },
+    {
+      "step": 429,
+      "loss": 0.04678553715348244,
+      "preclip_gradient_norm": 0.10564779490232468
+    },
+    {
+      "step": 430,
+      "loss": 0.044557295739650726,
+      "preclip_gradient_norm": 0.08101443946361542
+    },
+    {
+      "step": 431,
+      "loss": 0.06349000334739685,
+      "preclip_gradient_norm": 0.12768007814884186
+    },
+    {
+      "step": 432,
+      "loss": 0.04860934987664223,
+      "preclip_gradient_norm": 0.11270923912525177
+    },
+    {
+      "step": 433,
+      "loss": 0.04431368410587311,
+      "preclip_gradient_norm": 0.08942704647779465
+    },
+    {
+      "step": 434,
+      "loss": 0.0539744608104229,
+      "preclip_gradient_norm": 0.1179264485836029
+    },
+    {
+      "step": 435,
+      "loss": 0.049458637833595276,
+      "preclip_gradient_norm": 0.1021895706653595
+    },
+    {
+      "step": 436,
+      "loss": 0.04510834813117981,
+      "preclip_gradient_norm": 0.08024594932794571
+    },
+    {
+      "step": 437,
+      "loss": 0.04115958511829376,
+      "preclip_gradient_norm": 0.08980607986450195
+    },
+    {
+      "step": 438,
+      "loss": 0.049678098410367966,
+      "preclip_gradient_norm": 0.08589986711740494
+    },
+    {
+      "step": 439,
+      "loss": 0.042906731367111206,
+      "preclip_gradient_norm": 0.11976498365402222
+    },
+    {
+      "step": 440,
+      "loss": 0.0407513864338398,
+      "preclip_gradient_norm": 0.11893951892852783,
+      "gradients/shape_cross_attention_kv": 0.06706374883651733,
+      "gradients/shape_cross_attention": 0.10431496798992157,
+      "gradients/touch_output_projection": 0.056600525975227356,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.007833844982087612,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 441,
+      "loss": 0.048323020339012146,
+      "preclip_gradient_norm": 0.09847431629896164
+    },
+    {
+      "step": 442,
+      "loss": 0.04024279862642288,
+      "preclip_gradient_norm": 0.0721847340464592
+    },
+    {
+      "step": 443,
+      "loss": 0.04660915583372116,
+      "preclip_gradient_norm": 0.13346770405769348
+    },
+    {
+      "step": 444,
+      "loss": 0.05028500407934189,
+      "preclip_gradient_norm": 0.08155904710292816
+    },
+    {
+      "step": 445,
+      "loss": 0.04126346856355667,
+      "preclip_gradient_norm": 0.19425703585147858
+    },
+    {
+      "step": 446,
+      "loss": 0.05102458968758583,
+      "preclip_gradient_norm": 0.08779989928007126
+    },
+    {
+      "step": 447,
+      "loss": 0.048224836587905884,
+      "preclip_gradient_norm": 0.09365972131490707
+    },
+    {
+      "step": 448,
+      "loss": 0.047360390424728394,
+      "preclip_gradient_norm": 0.08335481584072113
+    },
+    {
+      "step": 449,
+      "loss": 0.04696504771709442,
+      "preclip_gradient_norm": 0.08744244277477264
+    },
+    {
+      "step": 450,
+      "loss": 0.05634761229157448,
+      "preclip_gradient_norm": 0.14959223568439484
+    },
+    {
+      "step": 451,
+      "loss": 0.04893864691257477,
+      "preclip_gradient_norm": 0.10342047363519669
+    },
+    {
+      "step": 452,
+      "loss": 0.045173242688179016,
+      "preclip_gradient_norm": 0.0757560133934021
+    },
+    {
+      "step": 453,
+      "loss": 0.041088007390499115,
+      "preclip_gradient_norm": 0.12211669236421585
+    },
+    {
+      "step": 454,
+      "loss": 0.05674365907907486,
+      "preclip_gradient_norm": 0.0943414717912674
+    },
+    {
+      "step": 455,
+      "loss": 0.06276023387908936,
+      "preclip_gradient_norm": 0.1812410056591034
+    },
+    {
+      "step": 456,
+      "loss": 0.053652651607990265,
+      "preclip_gradient_norm": 0.1161469966173172
+    },
+    {
+      "step": 457,
+      "loss": 0.06339575350284576,
+      "preclip_gradient_norm": 0.16773134469985962
+    },
+    {
+      "step": 458,
+      "loss": 0.0439784973859787,
+      "preclip_gradient_norm": 0.09851686656475067
+    },
+    {
+      "step": 459,
+      "loss": 0.05152786523103714,
+      "preclip_gradient_norm": 0.11173725128173828
+    },
+    {
+      "step": 460,
+      "loss": 0.05090538412332535,
+      "preclip_gradient_norm": 0.15811623632907867,
+      "gradients/shape_cross_attention_kv": 0.07635241001844406,
+      "gradients/shape_cross_attention": 0.14167891442775726,
+      "gradients/touch_output_projection": 0.06961929053068161,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.008998587727546692,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 461,
+      "loss": 0.04224461317062378,
+      "preclip_gradient_norm": 0.12513236701488495
+    },
+    {
+      "step": 462,
+      "loss": 0.04755965247750282,
+      "preclip_gradient_norm": 0.1156182587146759
+    },
+    {
+      "step": 463,
+      "loss": 0.08606664091348648,
+      "preclip_gradient_norm": 0.14905256032943726
+    },
+    {
+      "step": 464,
+      "loss": 0.05973339453339577,
+      "preclip_gradient_norm": 0.14179293811321259
+    },
+    {
+      "step": 465,
+      "loss": 0.0485493466258049,
+      "preclip_gradient_norm": 0.11438221484422684
+    },
+    {
+      "step": 466,
+      "loss": 0.041026629507541656,
+      "preclip_gradient_norm": 0.09159815311431885
+    },
+    {
+      "step": 467,
+      "loss": 0.044452980160713196,
+      "preclip_gradient_norm": 0.09260143339633942
+    },
+    {
+      "step": 468,
+      "loss": 0.04558010399341583,
+      "preclip_gradient_norm": 0.08757751435041428
+    },
+    {
+      "step": 469,
+      "loss": 0.04726570099592209,
+      "preclip_gradient_norm": 0.09226210415363312
+    },
+    {
+      "step": 470,
+      "loss": 0.04520319774746895,
+      "preclip_gradient_norm": 0.07905688136816025
+    },
+    {
+      "step": 471,
+      "loss": 0.0463564470410347,
+      "preclip_gradient_norm": 0.10368870943784714
+    },
+    {
+      "step": 472,
+      "loss": 0.04700107499957085,
+      "preclip_gradient_norm": 0.10194715112447739
+    },
+    {
+      "step": 473,
+      "loss": 0.04965925216674805,
+      "preclip_gradient_norm": 0.20259448885917664
+    },
+    {
+      "step": 474,
+      "loss": 0.03977525606751442,
+      "preclip_gradient_norm": 0.11938337236642838
+    },
+    {
+      "step": 475,
+      "loss": 0.040351320058107376,
+      "preclip_gradient_norm": 0.08260124921798706
+    },
+    {
+      "step": 476,
+      "loss": 0.043924279510974884,
+      "preclip_gradient_norm": 0.11403114348649979
+    },
+    {
+      "step": 477,
+      "loss": 0.039339207112789154,
+      "preclip_gradient_norm": 0.09681326895952225
+    },
+    {
+      "step": 478,
+      "loss": 0.04850909113883972,
+      "preclip_gradient_norm": 0.14921526610851288
+    },
+    {
+      "step": 479,
+      "loss": 0.03645152598619461,
+      "preclip_gradient_norm": 0.09844638407230377
+    },
+    {
+      "step": 480,
+      "loss": 0.04907781630754471,
+      "preclip_gradient_norm": 0.07852811366319656,
+      "gradients/shape_cross_attention_kv": 0.036808110773563385,
+      "gradients/shape_cross_attention": 0.06875079870223999,
+      "gradients/touch_output_projection": 0.03767294064164162,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.004554258193820715,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 481,
+      "loss": 0.038852714002132416,
+      "preclip_gradient_norm": 0.07704705744981766
+    },
+    {
+      "step": 482,
+      "loss": 0.04550531506538391,
+      "preclip_gradient_norm": 0.11557400971651077
+    },
+    {
+      "step": 483,
+      "loss": 0.044353269040584564,
+      "preclip_gradient_norm": 0.08164238929748535
+    },
+    {
+      "step": 484,
+      "loss": 0.0445871576666832,
+      "preclip_gradient_norm": 0.19477275013923645
+    },
+    {
+      "step": 485,
+      "loss": 0.047307394444942474,
+      "preclip_gradient_norm": 0.08984799683094025
+    },
+    {
+      "step": 486,
+      "loss": 0.04460407420992851,
+      "preclip_gradient_norm": 0.09079397469758987
+    },
+    {
+      "step": 487,
+      "loss": 0.053242288529872894,
+      "preclip_gradient_norm": 0.09032931923866272
+    },
+    {
+      "step": 488,
+      "loss": 0.03976868838071823,
+      "preclip_gradient_norm": 0.07810845971107483
+    },
+    {
+      "step": 489,
+      "loss": 0.041188210248947144,
+      "preclip_gradient_norm": 0.14265260100364685
+    },
+    {
+      "step": 490,
+      "loss": 0.04258456081151962,
+      "preclip_gradient_norm": 0.18404258787631989
+    },
+    {
+      "step": 491,
+      "loss": 0.040581345558166504,
+      "preclip_gradient_norm": 0.09765283763408661
+    },
+    {
+      "step": 492,
+      "loss": 0.04148228466510773,
+      "preclip_gradient_norm": 0.11079233139753342
+    },
+    {
+      "step": 493,
+      "loss": 0.03596874326467514,
+      "preclip_gradient_norm": 0.09562797844409943
+    },
+    {
+      "step": 494,
+      "loss": 0.05027833580970764,
+      "preclip_gradient_norm": 0.1257620006799698
+    },
+    {
+      "step": 495,
+      "loss": 0.04255570471286774,
+      "preclip_gradient_norm": 0.12239396572113037
+    },
+    {
+      "step": 496,
+      "loss": 0.035360440611839294,
+      "preclip_gradient_norm": 0.15786977112293243
+    },
+    {
+      "step": 497,
+      "loss": 0.046164438128471375,
+      "preclip_gradient_norm": 0.20817629992961884
+    },
+    {
+      "step": 498,
+      "loss": 0.03558563441038132,
+      "preclip_gradient_norm": 0.09030884504318237
+    },
+    {
+      "step": 499,
+      "loss": 0.03686876595020294,
+      "preclip_gradient_norm": 0.09254798293113708
+    },
+    {
+      "step": 500,
+      "loss": 0.04578917473554611,
+      "preclip_gradient_norm": 0.1603420227766037,
+      "gradients/shape_cross_attention_kv": 0.08594720810651779,
+      "gradients/shape_cross_attention": 0.1365174651145935,
+      "gradients/touch_output_projection": 0.08345203101634979,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.010406619869172573,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 501,
+      "loss": 0.03578672558069229,
+      "preclip_gradient_norm": 0.11276643723249435
+    },
+    {
+      "step": 502,
+      "loss": 0.03855477273464203,
+      "preclip_gradient_norm": 0.14096803963184357
+    },
+    {
+      "step": 503,
+      "loss": 0.04346282035112381,
+      "preclip_gradient_norm": 0.1894931048154831
+    },
+    {
+      "step": 504,
+      "loss": 0.046400267630815506,
+      "preclip_gradient_norm": 0.1314270943403244
+    },
+    {
+      "step": 505,
+      "loss": 0.03648628294467926,
+      "preclip_gradient_norm": 0.09698493778705597
+    },
+    {
+      "step": 506,
+      "loss": 0.03407137095928192,
+      "preclip_gradient_norm": 0.11538877338171005
+    },
+    {
+      "step": 507,
+      "loss": 0.04596608877182007,
+      "preclip_gradient_norm": 0.0929340049624443
+    },
+    {
+      "step": 508,
+      "loss": 0.03669939190149307,
+      "preclip_gradient_norm": 0.07740619778633118
+    },
+    {
+      "step": 509,
+      "loss": 0.03965858742594719,
+      "preclip_gradient_norm": 0.12599235773086548
+    },
+    {
+      "step": 510,
+      "loss": 0.03678564727306366,
+      "preclip_gradient_norm": 0.0768808126449585
+    },
+    {
+      "step": 511,
+      "loss": 0.036548636853694916,
+      "preclip_gradient_norm": 0.06883186101913452
+    },
+    {
+      "step": 512,
+      "loss": 0.0365433394908905,
+      "preclip_gradient_norm": 0.0796954408288002
+    },
+    {
+      "step": 513,
+      "loss": 0.038431067019701004,
+      "preclip_gradient_norm": 0.11123311519622803
+    },
+    {
+      "step": 514,
+      "loss": 0.03475402295589447,
+      "preclip_gradient_norm": 0.10773485898971558
+    },
+    {
+      "step": 515,
+      "loss": 0.036067213863134384,
+      "preclip_gradient_norm": 0.07557909190654755
+    },
+    {
+      "step": 516,
+      "loss": 0.037653207778930664,
+      "preclip_gradient_norm": 0.1131727546453476
+    },
+    {
+      "step": 517,
+      "loss": 0.05024504289031029,
+      "preclip_gradient_norm": 0.086927130818367
+    },
+    {
+      "step": 518,
+      "loss": 0.03970717638731003,
+      "preclip_gradient_norm": 0.07775259763002396
+    },
+    {
+      "step": 519,
+      "loss": 0.04251188039779663,
+      "preclip_gradient_norm": 0.07705212384462357
+    },
+    {
+      "step": 520,
+      "loss": 0.06180226057767868,
+      "preclip_gradient_norm": 0.10961896181106567,
+      "gradients/shape_cross_attention_kv": 0.042232051491737366,
+      "gradients/shape_cross_attention": 0.10010179877281189,
+      "gradients/touch_output_projection": 0.04440779611468315,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.004887677263468504,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 521,
+      "loss": 0.03940274566411972,
+      "preclip_gradient_norm": 0.08753883838653564
+    },
+    {
+      "step": 522,
+      "loss": 0.03692445531487465,
+      "preclip_gradient_norm": 0.08265896886587143
+    },
+    {
+      "step": 523,
+      "loss": 0.0333416610956192,
+      "preclip_gradient_norm": 0.10151699930429459
+    },
+    {
+      "step": 524,
+      "loss": 0.028499353677034378,
+      "preclip_gradient_norm": 0.08824863284826279
+    },
+    {
+      "step": 525,
+      "loss": 0.042610373347997665,
+      "preclip_gradient_norm": 0.09268249571323395
+    },
+    {
+      "step": 526,
+      "loss": 0.04114285111427307,
+      "preclip_gradient_norm": 0.10289687663316727
+    },
+    {
+      "step": 527,
+      "loss": 0.04586346447467804,
+      "preclip_gradient_norm": 0.08989131450653076
+    },
+    {
+      "step": 528,
+      "loss": 0.04321692883968353,
+      "preclip_gradient_norm": 0.10935138911008835
+    },
+    {
+      "step": 529,
+      "loss": 0.03312936797738075,
+      "preclip_gradient_norm": 0.10557759553194046
+    },
+    {
+      "step": 530,
+      "loss": 0.03399942070245743,
+      "preclip_gradient_norm": 0.12222567200660706
+    },
+    {
+      "step": 531,
+      "loss": 0.036600396037101746,
+      "preclip_gradient_norm": 0.08922687917947769
+    },
+    {
+      "step": 532,
+      "loss": 0.04384030029177666,
+      "preclip_gradient_norm": 0.12458640336990356
+    },
+    {
+      "step": 533,
+      "loss": 0.03415302932262421,
+      "preclip_gradient_norm": 0.14280453324317932
+    },
+    {
+      "step": 534,
+      "loss": 0.05501558259129524,
+      "preclip_gradient_norm": 0.11375178396701813
+    },
+    {
+      "step": 535,
+      "loss": 0.04340837150812149,
+      "preclip_gradient_norm": 0.09564932435750961
+    },
+    {
+      "step": 536,
+      "loss": 0.03054209053516388,
+      "preclip_gradient_norm": 0.11955274641513824
+    },
+    {
+      "step": 537,
+      "loss": 0.03825050964951515,
+      "preclip_gradient_norm": 0.08474024385213852
+    },
+    {
+      "step": 538,
+      "loss": 0.03962990641593933,
+      "preclip_gradient_norm": 0.09072539955377579
+    },
+    {
+      "step": 539,
+      "loss": 0.03372650593519211,
+      "preclip_gradient_norm": 0.06677011400461197
+    },
+    {
+      "step": 540,
+      "loss": 0.03606133535504341,
+      "preclip_gradient_norm": 0.08899319916963577,
+      "gradients/shape_cross_attention_kv": 0.044367432594299316,
+      "gradients/shape_cross_attention": 0.0801411122083664,
+      "gradients/touch_output_projection": 0.03838074207305908,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0049104150384664536,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 541,
+      "loss": 0.03637752681970596,
+      "preclip_gradient_norm": 0.09410998970270157
+    },
+    {
+      "step": 542,
+      "loss": 0.07423999160528183,
+      "preclip_gradient_norm": 0.21292167901992798
+    },
+    {
+      "step": 543,
+      "loss": 0.03086766228079796,
+      "preclip_gradient_norm": 0.09365102648735046
+    },
+    {
+      "step": 544,
+      "loss": 0.031359925866127014,
+      "preclip_gradient_norm": 0.08803872019052505
+    },
+    {
+      "step": 545,
+      "loss": 0.041166938841342926,
+      "preclip_gradient_norm": 0.13571612536907196
+    },
+    {
+      "step": 546,
+      "loss": 0.05362261086702347,
+      "preclip_gradient_norm": 0.23352549970149994
+    },
+    {
+      "step": 547,
+      "loss": 0.056468844413757324,
+      "preclip_gradient_norm": 0.11613138765096664
+    },
+    {
+      "step": 548,
+      "loss": 0.030312974005937576,
+      "preclip_gradient_norm": 0.11363168805837631
+    },
+    {
+      "step": 549,
+      "loss": 0.03202053904533386,
+      "preclip_gradient_norm": 0.11518365889787674
+    },
+    {
+      "step": 550,
+      "loss": 0.024903591722249985,
+      "preclip_gradient_norm": 0.12188493460416794
+    },
+    {
+      "step": 551,
+      "loss": 0.033373311161994934,
+      "preclip_gradient_norm": 0.13297834992408752
+    },
+    {
+      "step": 552,
+      "loss": 0.048104286193847656,
+      "preclip_gradient_norm": 0.21377955377101898
+    },
+    {
+      "step": 553,
+      "loss": 0.031598061323165894,
+      "preclip_gradient_norm": 0.08593150228261948
+    },
+    {
+      "step": 554,
+      "loss": 0.026345353573560715,
+      "preclip_gradient_norm": 0.09109155833721161
+    },
+    {
+      "step": 555,
+      "loss": 0.02826986089348793,
+      "preclip_gradient_norm": 0.13167428970336914
+    },
+    {
+      "step": 556,
+      "loss": 0.060560442507267,
+      "preclip_gradient_norm": 0.25847452878952026
+    },
+    {
+      "step": 557,
+      "loss": 0.03388117998838425,
+      "preclip_gradient_norm": 0.1452958881855011
+    },
+    {
+      "step": 558,
+      "loss": 0.029012050479650497,
+      "preclip_gradient_norm": 0.0842343121767044
+    },
+    {
+      "step": 559,
+      "loss": 0.2423296719789505,
+      "preclip_gradient_norm": 0.51217120885849
+    },
+    {
+      "step": 560,
+      "loss": 0.030162934213876724,
+      "preclip_gradient_norm": 0.16809678077697754,
+      "gradients/shape_cross_attention_kv": 0.07553443312644958,
+      "gradients/shape_cross_attention": 0.14933879673480988,
+      "gradients/touch_output_projection": 0.07657042890787125,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.009561522863805294,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 561,
+      "loss": 0.041703157126903534,
+      "preclip_gradient_norm": 0.32101961970329285
+    },
+    {
+      "step": 562,
+      "loss": 0.042512111365795135,
+      "preclip_gradient_norm": 0.3329046666622162
+    },
+    {
+      "step": 563,
+      "loss": 0.02662489376962185,
+      "preclip_gradient_norm": 0.1067618802189827
+    },
+    {
+      "step": 564,
+      "loss": 0.02523336187005043,
+      "preclip_gradient_norm": 0.10455761104822159
+    },
+    {
+      "step": 565,
+      "loss": 0.03103441745042801,
+      "preclip_gradient_norm": 0.11541696637868881
+    },
+    {
+      "step": 566,
+      "loss": 0.02760550007224083,
+      "preclip_gradient_norm": 0.10350412130355835
+    },
+    {
+      "step": 567,
+      "loss": 0.04265798628330231,
+      "preclip_gradient_norm": 0.14800888299942017
+    },
+    {
+      "step": 568,
+      "loss": 0.06286681443452835,
+      "preclip_gradient_norm": 0.2146473228931427
+    },
+    {
+      "step": 569,
+      "loss": 0.036066584289073944,
+      "preclip_gradient_norm": 0.1880323737859726
+    },
+    {
+      "step": 570,
+      "loss": 0.035382434725761414,
+      "preclip_gradient_norm": 0.20678649842739105
+    },
+    {
+      "step": 571,
+      "loss": 0.05134516954421997,
+      "preclip_gradient_norm": 0.23160777986049652
+    },
+    {
+      "step": 572,
+      "loss": 0.028574910014867783,
+      "preclip_gradient_norm": 0.12784749269485474
+    },
+    {
+      "step": 573,
+      "loss": 0.032068170607089996,
+      "preclip_gradient_norm": 0.14187496900558472
+    },
+    {
+      "step": 574,
+      "loss": 0.029072117060422897,
+      "preclip_gradient_norm": 0.14401882886886597
+    },
+    {
+      "step": 575,
+      "loss": 0.03691915422677994,
+      "preclip_gradient_norm": 0.09303389489650726
+    },
+    {
+      "step": 576,
+      "loss": 0.032024774700403214,
+      "preclip_gradient_norm": 0.11072048544883728
+    },
+    {
+      "step": 577,
+      "loss": 0.03944522142410278,
+      "preclip_gradient_norm": 0.2726134955883026
+    },
+    {
+      "step": 578,
+      "loss": 0.024873651564121246,
+      "preclip_gradient_norm": 0.15852776169776917
+    },
+    {
+      "step": 579,
+      "loss": 0.025916634127497673,
+      "preclip_gradient_norm": 0.12887591123580933
+    },
+    {
+      "step": 580,
+      "loss": 0.028118252754211426,
+      "preclip_gradient_norm": 0.1679471880197525,
+      "gradients/shape_cross_attention_kv": 0.09705562889575958,
+      "gradients/shape_cross_attention": 0.15028154850006104,
+      "gradients/touch_output_projection": 0.07428097724914551,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.010200276970863342,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 581,
+      "loss": 0.0258485134691,
+      "preclip_gradient_norm": 0.09719973057508469
+    },
+    {
+      "step": 582,
+      "loss": 0.02919718250632286,
+      "preclip_gradient_norm": 0.12064877897500992
+    },
+    {
+      "step": 583,
+      "loss": 0.029967214912176132,
+      "preclip_gradient_norm": 0.13139362633228302
+    },
+    {
+      "step": 584,
+      "loss": 0.026593875139951706,
+      "preclip_gradient_norm": 0.09975066781044006
+    },
+    {
+      "step": 585,
+      "loss": 0.034796953201293945,
+      "preclip_gradient_norm": 0.10844828188419342
+    },
+    {
+      "step": 586,
+      "loss": 0.023135904222726822,
+      "preclip_gradient_norm": 0.09940198808908463
+    },
+    {
+      "step": 587,
+      "loss": 0.026192545890808105,
+      "preclip_gradient_norm": 0.08885281533002853
+    },
+    {
+      "step": 588,
+      "loss": 0.022793905809521675,
+      "preclip_gradient_norm": 0.124497190117836
+    },
+    {
+      "step": 589,
+      "loss": 0.03931935131549835,
+      "preclip_gradient_norm": 0.127656951546669
+    },
+    {
+      "step": 590,
+      "loss": 0.025104966014623642,
+      "preclip_gradient_norm": 0.11726068705320358
+    },
+    {
+      "step": 591,
+      "loss": 0.021439319476485252,
+      "preclip_gradient_norm": 0.08608200401067734
+    },
+    {
+      "step": 592,
+      "loss": 0.0358702726662159,
+      "preclip_gradient_norm": 0.07971619814634323
+    },
+    {
+      "step": 593,
+      "loss": 0.034959472715854645,
+      "preclip_gradient_norm": 0.08315780758857727
+    },
+    {
+      "step": 594,
+      "loss": 0.03369966149330139,
+      "preclip_gradient_norm": 0.1498764306306839
+    },
+    {
+      "step": 595,
+      "loss": 0.027600854635238647,
+      "preclip_gradient_norm": 0.06994122266769409
+    },
+    {
+      "step": 596,
+      "loss": 0.020675932988524437,
+      "preclip_gradient_norm": 0.07578735053539276
+    },
+    {
+      "step": 597,
+      "loss": 0.0555524118244648,
+      "preclip_gradient_norm": 0.13997027277946472
+    },
+    {
+      "step": 598,
+      "loss": 0.024047404527664185,
+      "preclip_gradient_norm": 0.08405943959951401
+    },
+    {
+      "step": 599,
+      "loss": 0.02633320540189743,
+      "preclip_gradient_norm": 0.09283430874347687
+    },
+    {
+      "step": 600,
+      "loss": 0.02321406826376915,
+      "preclip_gradient_norm": 0.1062413826584816,
+      "gradients/shape_cross_attention_kv": 0.055153168737888336,
+      "gradients/shape_cross_attention": 0.09605228900909424,
+      "gradients/touch_output_projection": 0.04504486918449402,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.005669953767210245,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 601,
+      "loss": 0.024639975279569626,
+      "preclip_gradient_norm": 0.08383457362651825
+    },
+    {
+      "step": 602,
+      "loss": 0.026202987879514694,
+      "preclip_gradient_norm": 0.08880892395973206
+    },
+    {
+      "step": 603,
+      "loss": 0.027684753760695457,
+      "preclip_gradient_norm": 0.05826623737812042
+    },
+    {
+      "step": 604,
+      "loss": 0.021919623017311096,
+      "preclip_gradient_norm": 0.07324046641588211
+    },
+    {
+      "step": 605,
+      "loss": 0.029240727424621582,
+      "preclip_gradient_norm": 0.07667546719312668
+    },
+    {
+      "step": 606,
+      "loss": 0.030579086393117905,
+      "preclip_gradient_norm": 0.071265809237957
+    },
+    {
+      "step": 607,
+      "loss": 0.026317529380321503,
+      "preclip_gradient_norm": 0.10178452730178833
+    },
+    {
+      "step": 608,
+      "loss": 0.020904067903757095,
+      "preclip_gradient_norm": 0.11457660049200058
+    },
+    {
+      "step": 609,
+      "loss": 0.031159909442067146,
+      "preclip_gradient_norm": 0.1020740419626236
+    },
+    {
+      "step": 610,
+      "loss": 0.030213676393032074,
+      "preclip_gradient_norm": 0.08616156131029129
+    },
+    {
+      "step": 611,
+      "loss": 0.06293579936027527,
+      "preclip_gradient_norm": 0.31823354959487915
+    },
+    {
+      "step": 612,
+      "loss": 0.026231303811073303,
+      "preclip_gradient_norm": 0.06885312497615814
+    },
+    {
+      "step": 613,
+      "loss": 0.028517138212919235,
+      "preclip_gradient_norm": 0.10478673130273819
+    },
+    {
+      "step": 614,
+      "loss": 0.025668034330010414,
+      "preclip_gradient_norm": 0.13274261355400085
+    },
+    {
+      "step": 615,
+      "loss": 0.031451210379600525,
+      "preclip_gradient_norm": 0.17956335842609406
+    },
+    {
+      "step": 616,
+      "loss": 0.027823690325021744,
+      "preclip_gradient_norm": 0.12415025383234024
+    },
+    {
+      "step": 617,
+      "loss": 0.024921245872974396,
+      "preclip_gradient_norm": 0.08707388490438461
+    },
+    {
+      "step": 618,
+      "loss": 0.1032094955444336,
+      "preclip_gradient_norm": 0.25244140625
+    },
+    {
+      "step": 619,
+      "loss": 0.02577395737171173,
+      "preclip_gradient_norm": 0.0930914431810379
+    },
+    {
+      "step": 620,
+      "loss": 0.1051606759428978,
+      "preclip_gradient_norm": 0.2140258550643921,
+      "gradients/shape_cross_attention_kv": 0.06862997263669968,
+      "gradients/shape_cross_attention": 0.19770623743534088,
+      "gradients/touch_output_projection": 0.08158392459154129,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0079610301181674,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 621,
+      "loss": 0.033778343349695206,
+      "preclip_gradient_norm": 0.20119120180606842
+    },
+    {
+      "step": 622,
+      "loss": 0.023286616429686546,
+      "preclip_gradient_norm": 0.24211126565933228
+    },
+    {
+      "step": 623,
+      "loss": 0.02658020332455635,
+      "preclip_gradient_norm": 0.0869065523147583
+    },
+    {
+      "step": 624,
+      "loss": 0.03345249220728874,
+      "preclip_gradient_norm": 0.1310579478740692
+    },
+    {
+      "step": 625,
+      "loss": 0.03063305839896202,
+      "preclip_gradient_norm": 0.20980598032474518
+    },
+    {
+      "step": 626,
+      "loss": 0.025675002485513687,
+      "preclip_gradient_norm": 0.1723724901676178
+    },
+    {
+      "step": 627,
+      "loss": 0.021923858672380447,
+      "preclip_gradient_norm": 0.16361384093761444
+    },
+    {
+      "step": 628,
+      "loss": 0.02764911577105522,
+      "preclip_gradient_norm": 0.08623768389225006
+    },
+    {
+      "step": 629,
+      "loss": 0.01979215070605278,
+      "preclip_gradient_norm": 0.0735718235373497
+    },
+    {
+      "step": 630,
+      "loss": 0.0349387489259243,
+      "preclip_gradient_norm": 0.13896171748638153
+    },
+    {
+      "step": 631,
+      "loss": 0.0333867073059082,
+      "preclip_gradient_norm": 0.16264238953590393
+    },
+    {
+      "step": 632,
+      "loss": 0.032893627882003784,
+      "preclip_gradient_norm": 0.09034411609172821
+    },
+    {
+      "step": 633,
+      "loss": 0.019509050995111465,
+      "preclip_gradient_norm": 0.09442407637834549
+    },
+    {
+      "step": 634,
+      "loss": 0.040745288133621216,
+      "preclip_gradient_norm": 0.11605504155158997
+    },
+    {
+      "step": 635,
+      "loss": 0.02201937511563301,
+      "preclip_gradient_norm": 0.10188087075948715
+    },
+    {
+      "step": 636,
+      "loss": 0.0732545256614685,
+      "preclip_gradient_norm": 0.2990208566188812
+    },
+    {
+      "step": 637,
+      "loss": 0.02084466814994812,
+      "preclip_gradient_norm": 0.08002806454896927
+    },
+    {
+      "step": 638,
+      "loss": 0.020930491387844086,
+      "preclip_gradient_norm": 0.07291114330291748
+    },
+    {
+      "step": 639,
+      "loss": 0.023336222395300865,
+      "preclip_gradient_norm": 0.07217898964881897
+    },
+    {
+      "step": 640,
+      "loss": 0.02745707705616951,
+      "preclip_gradient_norm": 0.11990886181592941,
+      "gradients/shape_cross_attention_kv": 0.04326310008764267,
+      "gradients/shape_cross_attention": 0.11083081364631653,
+      "gradients/touch_output_projection": 0.04546235129237175,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0052762520499527454,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 641,
+      "loss": 0.022197555750608444,
+      "preclip_gradient_norm": 0.14357107877731323
+    },
+    {
+      "step": 642,
+      "loss": 0.03045516088604927,
+      "preclip_gradient_norm": 0.09443794935941696
+    },
+    {
+      "step": 643,
+      "loss": 0.0184758510440588,
+      "preclip_gradient_norm": 0.06580781936645508
+    },
+    {
+      "step": 644,
+      "loss": 0.05601157993078232,
+      "preclip_gradient_norm": 0.4338935613632202
+    },
+    {
+      "step": 645,
+      "loss": 0.028607916086912155,
+      "preclip_gradient_norm": 0.11050859838724136
+    },
+    {
+      "step": 646,
+      "loss": 0.034036584198474884,
+      "preclip_gradient_norm": 0.19872792065143585
+    },
+    {
+      "step": 647,
+      "loss": 0.02497129701077938,
+      "preclip_gradient_norm": 0.17425820231437683
+    },
+    {
+      "step": 648,
+      "loss": 0.023860063403844833,
+      "preclip_gradient_norm": 0.22173161804676056
+    },
+    {
+      "step": 649,
+      "loss": 0.02271471917629242,
+      "preclip_gradient_norm": 0.08937603235244751
+    },
+    {
+      "step": 650,
+      "loss": 0.07401016354560852,
+      "preclip_gradient_norm": 0.4554193615913391
+    },
+    {
+      "step": 651,
+      "loss": 0.0382641963660717,
+      "preclip_gradient_norm": 0.15534691512584686
+    },
+    {
+      "step": 652,
+      "loss": 0.025140125304460526,
+      "preclip_gradient_norm": 0.18006128072738647
+    },
+    {
+      "step": 653,
+      "loss": 0.031365543603897095,
+      "preclip_gradient_norm": 0.23327092826366425
+    },
+    {
+      "step": 654,
+      "loss": 0.01822500303387642,
+      "preclip_gradient_norm": 0.1253552883863449
+    },
+    {
+      "step": 655,
+      "loss": 0.0208180733025074,
+      "preclip_gradient_norm": 0.14188595116138458
+    },
+    {
+      "step": 656,
+      "loss": 0.019747592508792877,
+      "preclip_gradient_norm": 0.13213808834552765
+    },
+    {
+      "step": 657,
+      "loss": 0.02514122612774372,
+      "preclip_gradient_norm": 0.15916496515274048
+    },
+    {
+      "step": 658,
+      "loss": 0.017997510731220245,
+      "preclip_gradient_norm": 0.060804713517427444
+    },
+    {
+      "step": 659,
+      "loss": 0.02623015083372593,
+      "preclip_gradient_norm": 0.12425368279218674
+    },
+    {
+      "step": 660,
+      "loss": 0.025719057768583298,
+      "preclip_gradient_norm": 0.11817976832389832,
+      "gradients/shape_cross_attention_kv": 0.04667394608259201,
+      "gradients/shape_cross_attention": 0.10660558193922043,
+      "gradients/touch_output_projection": 0.05062520131468773,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.006228389218449593,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 661,
+      "loss": 0.034470319747924805,
+      "preclip_gradient_norm": 0.1691770851612091
+    },
+    {
+      "step": 662,
+      "loss": 0.02939576841890812,
+      "preclip_gradient_norm": 0.13342684507369995
+    },
+    {
+      "step": 663,
+      "loss": 0.017247367650270462,
+      "preclip_gradient_norm": 0.09543510526418686
+    },
+    {
+      "step": 664,
+      "loss": 0.027628492563962936,
+      "preclip_gradient_norm": 0.18783420324325562
+    },
+    {
+      "step": 665,
+      "loss": 0.03946157544851303,
+      "preclip_gradient_norm": 0.2617185115814209
+    },
+    {
+      "step": 666,
+      "loss": 0.029350370168685913,
+      "preclip_gradient_norm": 0.08639390021562576
+    },
+    {
+      "step": 667,
+      "loss": 0.022204428911209106,
+      "preclip_gradient_norm": 0.08027875423431396
+    },
+    {
+      "step": 668,
+      "loss": 0.019641447812318802,
+      "preclip_gradient_norm": 0.09239279478788376
+    },
+    {
+      "step": 669,
+      "loss": 0.02502160146832466,
+      "preclip_gradient_norm": 0.15459853410720825
+    },
+    {
+      "step": 670,
+      "loss": 0.02108023874461651,
+      "preclip_gradient_norm": 0.11616435647010803
+    },
+    {
+      "step": 671,
+      "loss": 0.01685917004942894,
+      "preclip_gradient_norm": 0.07911164313554764
+    },
+    {
+      "step": 672,
+      "loss": 0.025069721043109894,
+      "preclip_gradient_norm": 0.07343454658985138
+    },
+    {
+      "step": 673,
+      "loss": 0.02842205949127674,
+      "preclip_gradient_norm": 0.08238989114761353
+    },
+    {
+      "step": 674,
+      "loss": 0.02468499168753624,
+      "preclip_gradient_norm": 0.07552727311849594
+    },
+    {
+      "step": 675,
+      "loss": 0.016576262190937996,
+      "preclip_gradient_norm": 0.09177995473146439
+    },
+    {
+      "step": 676,
+      "loss": 0.01621587947010994,
+      "preclip_gradient_norm": 0.06765516847372055
+    },
+    {
+      "step": 677,
+      "loss": 0.0241691954433918,
+      "preclip_gradient_norm": 0.14814162254333496
+    },
+    {
+      "step": 678,
+      "loss": 0.021100953221321106,
+      "preclip_gradient_norm": 0.07369839400053024
+    },
+    {
+      "step": 679,
+      "loss": 0.02248680777847767,
+      "preclip_gradient_norm": 0.07455828785896301
+    },
+    {
+      "step": 680,
+      "loss": 0.030230464413762093,
+      "preclip_gradient_norm": 0.08652297407388687,
+      "gradients/shape_cross_attention_kv": 0.03497439995408058,
+      "gradients/shape_cross_attention": 0.07907385379076004,
+      "gradients/touch_output_projection": 0.03489433228969574,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0039918976835906506,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 681,
+      "loss": 0.0169546939432621,
+      "preclip_gradient_norm": 0.06991028040647507
+    },
+    {
+      "step": 682,
+      "loss": 0.01787578873336315,
+      "preclip_gradient_norm": 0.0765213891863823
+    },
+    {
+      "step": 683,
+      "loss": 0.016500547528266907,
+      "preclip_gradient_norm": 0.08523176610469818
+    },
+    {
+      "step": 684,
+      "loss": 0.01734982058405876,
+      "preclip_gradient_norm": 0.07869315147399902
+    },
+    {
+      "step": 685,
+      "loss": 0.018228154629468918,
+      "preclip_gradient_norm": 0.07193729281425476
+    },
+    {
+      "step": 686,
+      "loss": 0.06912152469158173,
+      "preclip_gradient_norm": 0.22664408385753632
+    },
+    {
+      "step": 687,
+      "loss": 0.021839898079633713,
+      "preclip_gradient_norm": 0.09595496207475662
+    },
+    {
+      "step": 688,
+      "loss": 0.020822085440158844,
+      "preclip_gradient_norm": 0.07404640316963196
+    },
+    {
+      "step": 689,
+      "loss": 0.018785404041409492,
+      "preclip_gradient_norm": 0.1152103990316391
+    },
+    {
+      "step": 690,
+      "loss": 0.022999446839094162,
+      "preclip_gradient_norm": 0.09123074263334274
+    },
+    {
+      "step": 691,
+      "loss": 0.02308513969182968,
+      "preclip_gradient_norm": 0.10113793611526489
+    },
+    {
+      "step": 692,
+      "loss": 0.03033352829515934,
+      "preclip_gradient_norm": 0.1438772827386856
+    },
+    {
+      "step": 693,
+      "loss": 0.023675741627812386,
+      "preclip_gradient_norm": 0.1044711098074913
+    },
+    {
+      "step": 694,
+      "loss": 0.01847694255411625,
+      "preclip_gradient_norm": 0.06981100887060165
+    },
+    {
+      "step": 695,
+      "loss": 0.02746003493666649,
+      "preclip_gradient_norm": 0.1055542603135109
+    },
+    {
+      "step": 696,
+      "loss": 0.018051791936159134,
+      "preclip_gradient_norm": 0.09486779570579529
+    },
+    {
+      "step": 697,
+      "loss": 0.01888459362089634,
+      "preclip_gradient_norm": 0.08642326295375824
+    },
+    {
+      "step": 698,
+      "loss": 0.01843668892979622,
+      "preclip_gradient_norm": 0.08237937837839127
+    },
+    {
+      "step": 699,
+      "loss": 0.019808106124401093,
+      "preclip_gradient_norm": 0.09610523283481598
+    },
+    {
+      "step": 700,
+      "loss": 0.01410280168056488,
+      "preclip_gradient_norm": 0.06398802250623703,
+      "gradients/shape_cross_attention_kv": 0.0278130155056715,
+      "gradients/shape_cross_attention": 0.057602282613515854,
+      "gradients/touch_output_projection": 0.02769324742257595,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.003086850279942155,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 701,
+      "loss": 0.014908496290445328,
+      "preclip_gradient_norm": 0.06764131784439087
+    },
+    {
+      "step": 702,
+      "loss": 0.01849566400051117,
+      "preclip_gradient_norm": 0.07228825241327286
+    },
+    {
+      "step": 703,
+      "loss": 0.018598422408103943,
+      "preclip_gradient_norm": 0.09387568384408951
+    },
+    {
+      "step": 704,
+      "loss": 0.023728417232632637,
+      "preclip_gradient_norm": 0.08052688837051392
+    },
+    {
+      "step": 705,
+      "loss": 0.037953801453113556,
+      "preclip_gradient_norm": 0.12060985714197159
+    },
+    {
+      "step": 706,
+      "loss": 0.024278024211525917,
+      "preclip_gradient_norm": 0.08340935409069061
+    },
+    {
+      "step": 707,
+      "loss": 0.01683763973414898,
+      "preclip_gradient_norm": 0.08051726222038269
+    },
+    {
+      "step": 708,
+      "loss": 0.018958887085318565,
+      "preclip_gradient_norm": 0.06071454659104347
+    },
+    {
+      "step": 709,
+      "loss": 0.021601390093564987,
+      "preclip_gradient_norm": 0.07349757850170135
+    },
+    {
+      "step": 710,
+      "loss": 0.0256737619638443,
+      "preclip_gradient_norm": 0.1344916820526123
+    },
+    {
+      "step": 711,
+      "loss": 0.01651092991232872,
+      "preclip_gradient_norm": 0.06300879269838333
+    },
+    {
+      "step": 712,
+      "loss": 0.016018934547901154,
+      "preclip_gradient_norm": 0.060716450214385986
+    },
+    {
+      "step": 713,
+      "loss": 0.019585762172937393,
+      "preclip_gradient_norm": 0.10075633972883224
+    },
+    {
+      "step": 714,
+      "loss": 0.015806738287210464,
+      "preclip_gradient_norm": 0.07008218765258789
+    },
+    {
+      "step": 715,
+      "loss": 0.017872769385576248,
+      "preclip_gradient_norm": 0.0769743099808693
+    },
+    {
+      "step": 716,
+      "loss": 0.02067546360194683,
+      "preclip_gradient_norm": 0.05530809611082077
+    },
+    {
+      "step": 717,
+      "loss": 0.02220188081264496,
+      "preclip_gradient_norm": 0.05606847628951073
+    },
+    {
+      "step": 718,
+      "loss": 0.018724747002124786,
+      "preclip_gradient_norm": 0.06786627322435379
+    },
+    {
+      "step": 719,
+      "loss": 0.02514023147523403,
+      "preclip_gradient_norm": 0.05822019279003143
+    },
+    {
+      "step": 720,
+      "loss": 0.0155353844165802,
+      "preclip_gradient_norm": 0.08270393311977386,
+      "gradients/shape_cross_attention_kv": 0.042501673102378845,
+      "gradients/shape_cross_attention": 0.07471480965614319,
+      "gradients/touch_output_projection": 0.03522223234176636,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.004127250052988529,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 721,
+      "loss": 0.02027813345193863,
+      "preclip_gradient_norm": 0.056246645748615265
+    },
+    {
+      "step": 722,
+      "loss": 0.016995184123516083,
+      "preclip_gradient_norm": 0.06028177589178085
+    },
+    {
+      "step": 723,
+      "loss": 0.01908939704298973,
+      "preclip_gradient_norm": 0.05624951049685478
+    },
+    {
+      "step": 724,
+      "loss": 0.022762201726436615,
+      "preclip_gradient_norm": 0.07215922325849533
+    },
+    {
+      "step": 725,
+      "loss": 0.03157208114862442,
+      "preclip_gradient_norm": 0.13402962684631348
+    },
+    {
+      "step": 726,
+      "loss": 0.021163955330848694,
+      "preclip_gradient_norm": 0.06261458992958069
+    },
+    {
+      "step": 727,
+      "loss": 0.01866125874221325,
+      "preclip_gradient_norm": 0.06252367794513702
+    },
+    {
+      "step": 728,
+      "loss": 0.020621584728360176,
+      "preclip_gradient_norm": 0.07268095016479492
+    },
+    {
+      "step": 729,
+      "loss": 0.015158209949731827,
+      "preclip_gradient_norm": 0.05388230085372925
+    },
+    {
+      "step": 730,
+      "loss": 0.017018459737300873,
+      "preclip_gradient_norm": 0.0726076290011406
+    },
+    {
+      "step": 731,
+      "loss": 0.033093445003032684,
+      "preclip_gradient_norm": 0.06925349682569504
+    },
+    {
+      "step": 732,
+      "loss": 0.03549187630414963,
+      "preclip_gradient_norm": 0.07475728541612625
+    },
+    {
+      "step": 733,
+      "loss": 0.015289965085685253,
+      "preclip_gradient_norm": 0.05738655477762222
+    },
+    {
+      "step": 734,
+      "loss": 0.0236873310059309,
+      "preclip_gradient_norm": 0.0699637308716774
+    },
+    {
+      "step": 735,
+      "loss": 0.014968885108828545,
+      "preclip_gradient_norm": 0.06890533119440079
+    },
+    {
+      "step": 736,
+      "loss": 0.020085502415895462,
+      "preclip_gradient_norm": 0.0790228322148323
+    },
+    {
+      "step": 737,
+      "loss": 0.014074052684009075,
+      "preclip_gradient_norm": 0.05423573777079582
+    },
+    {
+      "step": 738,
+      "loss": 0.01430406142026186,
+      "preclip_gradient_norm": 0.08216087520122528
+    },
+    {
+      "step": 739,
+      "loss": 0.02124866470694542,
+      "preclip_gradient_norm": 0.06267919391393661
+    },
+    {
+      "step": 740,
+      "loss": 0.01332548726350069,
+      "preclip_gradient_norm": 0.06083378195762634,
+      "gradients/shape_cross_attention_kv": 0.03303450718522072,
+      "gradients/shape_cross_attention": 0.05355578288435936,
+      "gradients/touch_output_projection": 0.02865501679480076,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.003378987777978182,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 741,
+      "loss": 0.021627575159072876,
+      "preclip_gradient_norm": 0.0700429156422615
+    },
+    {
+      "step": 742,
+      "loss": 0.01579221524298191,
+      "preclip_gradient_norm": 0.06283050030469894
+    },
+    {
+      "step": 743,
+      "loss": 0.018060989677906036,
+      "preclip_gradient_norm": 0.07145132124423981
+    },
+    {
+      "step": 744,
+      "loss": 0.016139980405569077,
+      "preclip_gradient_norm": 0.0498979315161705
+    },
+    {
+      "step": 745,
+      "loss": 0.015532788820564747,
+      "preclip_gradient_norm": 0.05065161734819412
+    },
+    {
+      "step": 746,
+      "loss": 0.014501925557851791,
+      "preclip_gradient_norm": 0.056276775896549225
+    },
+    {
+      "step": 747,
+      "loss": 0.021604249253869057,
+      "preclip_gradient_norm": 0.0730692446231842
+    },
+    {
+      "step": 748,
+      "loss": 0.021317727863788605,
+      "preclip_gradient_norm": 0.07106690853834152
+    },
+    {
+      "step": 749,
+      "loss": 0.012502454221248627,
+      "preclip_gradient_norm": 0.054221004247665405
+    },
+    {
+      "step": 750,
+      "loss": 0.014104321599006653,
+      "preclip_gradient_norm": 0.06065579503774643
+    },
+    {
+      "step": 751,
+      "loss": 0.0226480383425951,
+      "preclip_gradient_norm": 0.06585229933261871
+    },
+    {
+      "step": 752,
+      "loss": 0.014840464107692242,
+      "preclip_gradient_norm": 0.06346023082733154
+    },
+    {
+      "step": 753,
+      "loss": 0.016375558450818062,
+      "preclip_gradient_norm": 0.07297145575284958
+    },
+    {
+      "step": 754,
+      "loss": 0.01639576442539692,
+      "preclip_gradient_norm": 0.057334329932928085
+    },
+    {
+      "step": 755,
+      "loss": 0.014854801818728447,
+      "preclip_gradient_norm": 0.04087916761636734
+    },
+    {
+      "step": 756,
+      "loss": 0.024559281766414642,
+      "preclip_gradient_norm": 0.10556867718696594
+    },
+    {
+      "step": 757,
+      "loss": 0.013194084167480469,
+      "preclip_gradient_norm": 0.07152176648378372
+    },
+    {
+      "step": 758,
+      "loss": 0.030483445152640343,
+      "preclip_gradient_norm": 0.10780689120292664
+    },
+    {
+      "step": 759,
+      "loss": 0.016334176063537598,
+      "preclip_gradient_norm": 0.06618088483810425
+    },
+    {
+      "step": 760,
+      "loss": 0.016887344419956207,
+      "preclip_gradient_norm": 0.07324381917715073,
+      "gradients/shape_cross_attention_kv": 0.033577971160411835,
+      "gradients/shape_cross_attention": 0.06797253340482712,
+      "gradients/touch_output_projection": 0.027098964899778366,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0031685042195022106,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 761,
+      "loss": 0.014311863109469414,
+      "preclip_gradient_norm": 0.06903492659330368
+    },
+    {
+      "step": 762,
+      "loss": 0.016350187361240387,
+      "preclip_gradient_norm": 0.059407223016023636
+    },
+    {
+      "step": 763,
+      "loss": 0.0117711266502738,
+      "preclip_gradient_norm": 0.05257794260978699
+    },
+    {
+      "step": 764,
+      "loss": 0.02097664400935173,
+      "preclip_gradient_norm": 0.06538336724042892
+    },
+    {
+      "step": 765,
+      "loss": 0.03587942197918892,
+      "preclip_gradient_norm": 0.15755368769168854
+    },
+    {
+      "step": 766,
+      "loss": 0.019894449040293694,
+      "preclip_gradient_norm": 0.06274886429309845
+    },
+    {
+      "step": 767,
+      "loss": 0.011706449091434479,
+      "preclip_gradient_norm": 0.05394425988197327
+    },
+    {
+      "step": 768,
+      "loss": 0.012301093898713589,
+      "preclip_gradient_norm": 0.06396567076444626
+    },
+    {
+      "step": 769,
+      "loss": 0.019527405500411987,
+      "preclip_gradient_norm": 0.08786710351705551
+    },
+    {
+      "step": 770,
+      "loss": 0.02297506108880043,
+      "preclip_gradient_norm": 0.0733291283249855
+    },
+    {
+      "step": 771,
+      "loss": 0.012978209182620049,
+      "preclip_gradient_norm": 0.049532633274793625
+    },
+    {
+      "step": 772,
+      "loss": 0.01898815482854843,
+      "preclip_gradient_norm": 0.060016073286533356
+    },
+    {
+      "step": 773,
+      "loss": 0.0164337195456028,
+      "preclip_gradient_norm": 0.06559942662715912
+    },
+    {
+      "step": 774,
+      "loss": 0.017733074724674225,
+      "preclip_gradient_norm": 0.06462468206882477
+    },
+    {
+      "step": 775,
+      "loss": 0.011444944888353348,
+      "preclip_gradient_norm": 0.06352245062589645
+    },
+    {
+      "step": 776,
+      "loss": 0.013925442472100258,
+      "preclip_gradient_norm": 0.08614780753850937
+    },
+    {
+      "step": 777,
+      "loss": 0.01435090322047472,
+      "preclip_gradient_norm": 0.05544917657971382
+    },
+    {
+      "step": 778,
+      "loss": 0.01150653325021267,
+      "preclip_gradient_norm": 0.04991462081670761
+    },
+    {
+      "step": 779,
+      "loss": 0.013003692030906677,
+      "preclip_gradient_norm": 0.07282594591379166
+    },
+    {
+      "step": 780,
+      "loss": 0.014234247617423534,
+      "preclip_gradient_norm": 0.053326498717069626,
+      "gradients/shape_cross_attention_kv": 0.027232974767684937,
+      "gradients/shape_cross_attention": 0.04680139571428299,
+      "gradients/touch_output_projection": 0.025427019223570824,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0026097632944583893,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 781,
+      "loss": 0.025379806756973267,
+      "preclip_gradient_norm": 0.08420687168836594
+    },
+    {
+      "step": 782,
+      "loss": 0.01211637444794178,
+      "preclip_gradient_norm": 0.05561419576406479
+    },
+    {
+      "step": 783,
+      "loss": 0.03695846349000931,
+      "preclip_gradient_norm": 0.13893325626850128
+    },
+    {
+      "step": 784,
+      "loss": 0.022400228306651115,
+      "preclip_gradient_norm": 0.07162756472826004
+    },
+    {
+      "step": 785,
+      "loss": 0.043733056634664536,
+      "preclip_gradient_norm": 0.1086094006896019
+    },
+    {
+      "step": 786,
+      "loss": 0.01356326974928379,
+      "preclip_gradient_norm": 0.082461878657341
+    },
+    {
+      "step": 787,
+      "loss": 0.015106914564967155,
+      "preclip_gradient_norm": 0.0818672850728035
+    },
+    {
+      "step": 788,
+      "loss": 0.014580955728888512,
+      "preclip_gradient_norm": 0.08019302040338516
+    },
+    {
+      "step": 789,
+      "loss": 0.012585331685841084,
+      "preclip_gradient_norm": 0.045196495950222015
+    },
+    {
+      "step": 790,
+      "loss": 0.01359558291733265,
+      "preclip_gradient_norm": 0.04280392825603485
+    },
+    {
+      "step": 791,
+      "loss": 0.022013427689671516,
+      "preclip_gradient_norm": 0.09335646033287048
+    },
+    {
+      "step": 792,
+      "loss": 0.018906325101852417,
+      "preclip_gradient_norm": 0.05974007025361061
+    },
+    {
+      "step": 793,
+      "loss": 0.03003843128681183,
+      "preclip_gradient_norm": 0.12046553939580917
+    },
+    {
+      "step": 794,
+      "loss": 0.020951878279447556,
+      "preclip_gradient_norm": 0.06746336817741394
+    },
+    {
+      "step": 795,
+      "loss": 0.012101922184228897,
+      "preclip_gradient_norm": 0.0584203265607357
+    },
+    {
+      "step": 796,
+      "loss": 0.012122041545808315,
+      "preclip_gradient_norm": 0.0565408319234848
+    },
+    {
+      "step": 797,
+      "loss": 0.020908648148179054,
+      "preclip_gradient_norm": 0.060877103358507156
+    },
+    {
+      "step": 798,
+      "loss": 0.010541148483753204,
+      "preclip_gradient_norm": 0.05506548658013344
+    },
+    {
+      "step": 799,
+      "loss": 0.012180475518107414,
+      "preclip_gradient_norm": 0.07993867248296738
+    },
+    {
+      "step": 800,
+      "loss": 0.01615450158715248,
+      "preclip_gradient_norm": 0.06483303010463715,
+      "gradients/shape_cross_attention_kv": 0.02812720276415348,
+      "gradients/shape_cross_attention": 0.05793093889951706,
+      "gradients/touch_output_projection": 0.028967954218387604,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0028610918670892715,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 801,
+      "loss": 0.015136482194066048,
+      "preclip_gradient_norm": 0.08272750675678253
+    },
+    {
+      "step": 802,
+      "loss": 0.029543109238147736,
+      "preclip_gradient_norm": 0.18446902930736542
+    },
+    {
+      "step": 803,
+      "loss": 0.012900330126285553,
+      "preclip_gradient_norm": 0.05043041706085205
+    },
+    {
+      "step": 804,
+      "loss": 0.023569732904434204,
+      "preclip_gradient_norm": 0.11632503569126129
+    },
+    {
+      "step": 805,
+      "loss": 0.015747815370559692,
+      "preclip_gradient_norm": 0.10989346355199814
+    },
+    {
+      "step": 806,
+      "loss": 0.023487094789743423,
+      "preclip_gradient_norm": 0.11732485890388489
+    },
+    {
+      "step": 807,
+      "loss": 0.01794634759426117,
+      "preclip_gradient_norm": 0.07728717476129532
+    },
+    {
+      "step": 808,
+      "loss": 0.02152181789278984,
+      "preclip_gradient_norm": 0.07236846536397934
+    },
+    {
+      "step": 809,
+      "loss": 0.013867847621440887,
+      "preclip_gradient_norm": 0.0684400126338005
+    },
+    {
+      "step": 810,
+      "loss": 0.016685884445905685,
+      "preclip_gradient_norm": 0.07756227999925613
+    },
+    {
+      "step": 811,
+      "loss": 0.012496348470449448,
+      "preclip_gradient_norm": 0.06559113413095474
+    },
+    {
+      "step": 812,
+      "loss": 0.015620633959770203,
+      "preclip_gradient_norm": 0.07459459453821182
+    },
+    {
+      "step": 813,
+      "loss": 0.01309937983751297,
+      "preclip_gradient_norm": 0.05307510867714882
+    },
+    {
+      "step": 814,
+      "loss": 0.012157367542386055,
+      "preclip_gradient_norm": 0.052827928215265274
+    },
+    {
+      "step": 815,
+      "loss": 0.011784949339926243,
+      "preclip_gradient_norm": 0.04758594557642937
+    },
+    {
+      "step": 816,
+      "loss": 0.02459307760000229,
+      "preclip_gradient_norm": 0.11961733549833298
+    },
+    {
+      "step": 817,
+      "loss": 0.01133583765476942,
+      "preclip_gradient_norm": 0.04087485373020172
+    },
+    {
+      "step": 818,
+      "loss": 0.010664006695151329,
+      "preclip_gradient_norm": 0.05032091960310936
+    },
+    {
+      "step": 819,
+      "loss": 0.015780262649059296,
+      "preclip_gradient_norm": 0.06971000880002975
+    },
+    {
+      "step": 820,
+      "loss": 0.013874461874365807,
+      "preclip_gradient_norm": 0.08400874584913254,
+      "gradients/shape_cross_attention_kv": 0.033340394496917725,
+      "gradients/shape_cross_attention": 0.07779285311698914,
+      "gradients/touch_output_projection": 0.0315479040145874,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0032361838966608047,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 821,
+      "loss": 0.019416585564613342,
+      "preclip_gradient_norm": 0.06425546854734421
+    },
+    {
+      "step": 822,
+      "loss": 0.014419482089579105,
+      "preclip_gradient_norm": 0.056539058685302734
+    },
+    {
+      "step": 823,
+      "loss": 0.018845289945602417,
+      "preclip_gradient_norm": 0.08225870132446289
+    },
+    {
+      "step": 824,
+      "loss": 0.010276696644723415,
+      "preclip_gradient_norm": 0.04189945012331009
+    },
+    {
+      "step": 825,
+      "loss": 0.02458580769598484,
+      "preclip_gradient_norm": 0.10508380830287933
+    },
+    {
+      "step": 826,
+      "loss": 0.011002914980053902,
+      "preclip_gradient_norm": 0.06137777119874954
+    },
+    {
+      "step": 827,
+      "loss": 0.01053864136338234,
+      "preclip_gradient_norm": 0.07887069880962372
+    },
+    {
+      "step": 828,
+      "loss": 0.01562732830643654,
+      "preclip_gradient_norm": 0.0681607648730278
+    },
+    {
+      "step": 829,
+      "loss": 0.011321348138153553,
+      "preclip_gradient_norm": 0.04119085520505905
+    },
+    {
+      "step": 830,
+      "loss": 0.012058224529027939,
+      "preclip_gradient_norm": 0.047311555594205856
+    },
+    {
+      "step": 831,
+      "loss": 0.020007703453302383,
+      "preclip_gradient_norm": 0.06465525180101395
+    },
+    {
+      "step": 832,
+      "loss": 0.018571829423308372,
+      "preclip_gradient_norm": 0.0681283175945282
+    },
+    {
+      "step": 833,
+      "loss": 0.03177550435066223,
+      "preclip_gradient_norm": 0.09952802956104279
+    },
+    {
+      "step": 834,
+      "loss": 0.01614569127559662,
+      "preclip_gradient_norm": 0.08596701920032501
+    },
+    {
+      "step": 835,
+      "loss": 0.015914784744381905,
+      "preclip_gradient_norm": 0.06379728764295578
+    },
+    {
+      "step": 836,
+      "loss": 0.04135702922940254,
+      "preclip_gradient_norm": 0.20324143767356873
+    },
+    {
+      "step": 837,
+      "loss": 0.012726801447570324,
+      "preclip_gradient_norm": 0.05277138948440552
+    },
+    {
+      "step": 838,
+      "loss": 0.07343943417072296,
+      "preclip_gradient_norm": 0.17734010517597198
+    },
+    {
+      "step": 839,
+      "loss": 0.014664022251963615,
+      "preclip_gradient_norm": 0.08135563135147095
+    },
+    {
+      "step": 840,
+      "loss": 0.02011655457317829,
+      "preclip_gradient_norm": 0.1846400499343872,
+      "gradients/shape_cross_attention_kv": 0.06662631034851074,
+      "gradients/shape_cross_attention": 0.16720454394817352,
+      "gradients/touch_output_projection": 0.07786720246076584,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.008443285711109638,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 841,
+      "loss": 0.02132362872362137,
+      "preclip_gradient_norm": 0.15999388694763184
+    },
+    {
+      "step": 842,
+      "loss": 0.013991191983222961,
+      "preclip_gradient_norm": 0.10545184463262558
+    },
+    {
+      "step": 843,
+      "loss": 0.01466680970042944,
+      "preclip_gradient_norm": 0.0839623212814331
+    },
+    {
+      "step": 844,
+      "loss": 0.0339914932847023,
+      "preclip_gradient_norm": 0.14119549095630646
+    },
+    {
+      "step": 845,
+      "loss": 0.019140733405947685,
+      "preclip_gradient_norm": 0.10595282167196274
+    },
+    {
+      "step": 846,
+      "loss": 0.014660012908279896,
+      "preclip_gradient_norm": 0.14908082783222198
+    },
+    {
+      "step": 847,
+      "loss": 0.02577601745724678,
+      "preclip_gradient_norm": 0.09130508452653885
+    },
+    {
+      "step": 848,
+      "loss": 0.01878964714705944,
+      "preclip_gradient_norm": 0.06649164110422134
+    },
+    {
+      "step": 849,
+      "loss": 0.015712199732661247,
+      "preclip_gradient_norm": 0.07248208671808243
+    },
+    {
+      "step": 850,
+      "loss": 0.02627928927540779,
+      "preclip_gradient_norm": 0.10777104645967484
+    },
+    {
+      "step": 851,
+      "loss": 0.013789258897304535,
+      "preclip_gradient_norm": 0.07482907176017761
+    },
+    {
+      "step": 852,
+      "loss": 0.016248200088739395,
+      "preclip_gradient_norm": 0.08167769759893417
+    },
+    {
+      "step": 853,
+      "loss": 0.01612519472837448,
+      "preclip_gradient_norm": 0.11685264110565186
+    },
+    {
+      "step": 854,
+      "loss": 0.07369206845760345,
+      "preclip_gradient_norm": 0.18035002052783966
+    },
+    {
+      "step": 855,
+      "loss": 0.011144774034619331,
+      "preclip_gradient_norm": 0.06057298555970192
+    },
+    {
+      "step": 856,
+      "loss": 0.009987087920308113,
+      "preclip_gradient_norm": 0.05751670524477959
+    },
+    {
+      "step": 857,
+      "loss": 0.026051152497529984,
+      "preclip_gradient_norm": 0.08894495666027069
+    },
+    {
+      "step": 858,
+      "loss": 0.014905078336596489,
+      "preclip_gradient_norm": 0.07961783558130264
+    },
+    {
+      "step": 859,
+      "loss": 0.013457243330776691,
+      "preclip_gradient_norm": 0.07991700619459152
+    },
+    {
+      "step": 860,
+      "loss": 0.010364196263253689,
+      "preclip_gradient_norm": 0.042941536754369736,
+      "gradients/shape_cross_attention_kv": 0.022558677941560745,
+      "gradients/shape_cross_attention": 0.03793645277619362,
+      "gradients/touch_output_projection": 0.01998957060277462,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0022843056358397007,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 861,
+      "loss": 0.03964252024888992,
+      "preclip_gradient_norm": 0.18019936978816986
+    },
+    {
+      "step": 862,
+      "loss": 0.015142123214900494,
+      "preclip_gradient_norm": 0.07436390221118927
+    },
+    {
+      "step": 863,
+      "loss": 0.010679427534341812,
+      "preclip_gradient_norm": 0.06866870820522308
+    },
+    {
+      "step": 864,
+      "loss": 0.012201306410133839,
+      "preclip_gradient_norm": 0.07311780750751495
+    },
+    {
+      "step": 865,
+      "loss": 0.01114463061094284,
+      "preclip_gradient_norm": 0.049905795603990555
+    },
+    {
+      "step": 866,
+      "loss": 0.010535785928368568,
+      "preclip_gradient_norm": 0.050553735345602036
+    },
+    {
+      "step": 867,
+      "loss": 0.009482739493250847,
+      "preclip_gradient_norm": 0.038077909499406815
+    },
+    {
+      "step": 868,
+      "loss": 0.01570640131831169,
+      "preclip_gradient_norm": 0.08259917050600052
+    },
+    {
+      "step": 869,
+      "loss": 0.02753359079360962,
+      "preclip_gradient_norm": 0.12202135473489761
+    },
+    {
+      "step": 870,
+      "loss": 0.013965535908937454,
+      "preclip_gradient_norm": 0.05328518897294998
+    },
+    {
+      "step": 871,
+      "loss": 0.030252065509557724,
+      "preclip_gradient_norm": 0.159542053937912
+    },
+    {
+      "step": 872,
+      "loss": 0.01158635038882494,
+      "preclip_gradient_norm": 0.0635385513305664
+    },
+    {
+      "step": 873,
+      "loss": 0.022586707025766373,
+      "preclip_gradient_norm": 0.11824837327003479
+    },
+    {
+      "step": 874,
+      "loss": 0.021311026066541672,
+      "preclip_gradient_norm": 0.10138171166181564
+    },
+    {
+      "step": 875,
+      "loss": 0.015552360564470291,
+      "preclip_gradient_norm": 0.07489003986120224
+    },
+    {
+      "step": 876,
+      "loss": 0.015312125906348228,
+      "preclip_gradient_norm": 0.06261906027793884
+    },
+    {
+      "step": 877,
+      "loss": 0.015530738979578018,
+      "preclip_gradient_norm": 0.051048774272203445
+    },
+    {
+      "step": 878,
+      "loss": 0.011021721176803112,
+      "preclip_gradient_norm": 0.05845923721790314
+    },
+    {
+      "step": 879,
+      "loss": 0.013540368527173996,
+      "preclip_gradient_norm": 0.07063952833414078
+    },
+    {
+      "step": 880,
+      "loss": 0.009158588014543056,
+      "preclip_gradient_norm": 0.04491601884365082,
+      "gradients/shape_cross_attention_kv": 0.02140568383038044,
+      "gradients/shape_cross_attention": 0.04068953916430473,
+      "gradients/touch_output_projection": 0.01890963315963745,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0020581581629812717,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 881,
+      "loss": 0.009647917933762074,
+      "preclip_gradient_norm": 0.056753162294626236
+    },
+    {
+      "step": 882,
+      "loss": 0.011084279045462608,
+      "preclip_gradient_norm": 0.07187359035015106
+    },
+    {
+      "step": 883,
+      "loss": 0.011929364874958992,
+      "preclip_gradient_norm": 0.05157725140452385
+    },
+    {
+      "step": 884,
+      "loss": 0.013070154935121536,
+      "preclip_gradient_norm": 0.051025211811065674
+    },
+    {
+      "step": 885,
+      "loss": 0.014335679821670055,
+      "preclip_gradient_norm": 0.06351037323474884
+    },
+    {
+      "step": 886,
+      "loss": 0.021826712414622307,
+      "preclip_gradient_norm": 0.07562711089849472
+    },
+    {
+      "step": 887,
+      "loss": 0.012137099169194698,
+      "preclip_gradient_norm": 0.04887431487441063
+    },
+    {
+      "step": 888,
+      "loss": 0.01381730753928423,
+      "preclip_gradient_norm": 0.05569547414779663
+    },
+    {
+      "step": 889,
+      "loss": 0.013869617134332657,
+      "preclip_gradient_norm": 0.061317991465330124
+    },
+    {
+      "step": 890,
+      "loss": 0.009490269236266613,
+      "preclip_gradient_norm": 0.035680703818798065
+    },
+    {
+      "step": 891,
+      "loss": 0.013072439469397068,
+      "preclip_gradient_norm": 0.05379491671919823
+    },
+    {
+      "step": 892,
+      "loss": 0.02056041732430458,
+      "preclip_gradient_norm": 0.06592439115047455
+    },
+    {
+      "step": 893,
+      "loss": 0.010763170197606087,
+      "preclip_gradient_norm": 0.04647216945886612
+    },
+    {
+      "step": 894,
+      "loss": 0.02446576952934265,
+      "preclip_gradient_norm": 0.07281177490949631
+    },
+    {
+      "step": 895,
+      "loss": 0.011058136820793152,
+      "preclip_gradient_norm": 0.035445570945739746
+    },
+    {
+      "step": 896,
+      "loss": 0.01559265237301588,
+      "preclip_gradient_norm": 0.10058874636888504
+    },
+    {
+      "step": 897,
+      "loss": 0.010732803493738174,
+      "preclip_gradient_norm": 0.03810800984501839
+    },
+    {
+      "step": 898,
+      "loss": 0.012148854322731495,
+      "preclip_gradient_norm": 0.04753470793366432
+    },
+    {
+      "step": 899,
+      "loss": 0.012654186226427555,
+      "preclip_gradient_norm": 0.07165344804525375
+    },
+    {
+      "step": 900,
+      "loss": 0.011784209869801998,
+      "preclip_gradient_norm": 0.06281008571386337,
+      "gradients/shape_cross_attention_kv": 0.034744326025247574,
+      "gradients/shape_cross_attention": 0.05465684458613396,
+      "gradients/touch_output_projection": 0.03078773058950901,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.00313870538957417,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 901,
+      "loss": 0.010657291859388351,
+      "preclip_gradient_norm": 0.04483342170715332
+    },
+    {
+      "step": 902,
+      "loss": 0.01095866970717907,
+      "preclip_gradient_norm": 0.035838499665260315
+    },
+    {
+      "step": 903,
+      "loss": 0.008592966943979263,
+      "preclip_gradient_norm": 0.03363338112831116
+    },
+    {
+      "step": 904,
+      "loss": 0.009822594933211803,
+      "preclip_gradient_norm": 0.04319613426923752
+    },
+    {
+      "step": 905,
+      "loss": 0.009504113346338272,
+      "preclip_gradient_norm": 0.040222153067588806
+    },
+    {
+      "step": 906,
+      "loss": 0.01497555524110794,
+      "preclip_gradient_norm": 0.04003476724028587
+    },
+    {
+      "step": 907,
+      "loss": 0.011548837646842003,
+      "preclip_gradient_norm": 0.04314003884792328
+    },
+    {
+      "step": 908,
+      "loss": 0.00863916240632534,
+      "preclip_gradient_norm": 0.03988615795969963
+    },
+    {
+      "step": 909,
+      "loss": 0.024135803803801537,
+      "preclip_gradient_norm": 0.05298670008778572
+    },
+    {
+      "step": 910,
+      "loss": 0.018060866743326187,
+      "preclip_gradient_norm": 0.054766956716775894
+    },
+    {
+      "step": 911,
+      "loss": 0.01207897998392582,
+      "preclip_gradient_norm": 0.04102044925093651
+    },
+    {
+      "step": 912,
+      "loss": 0.008976362645626068,
+      "preclip_gradient_norm": 0.050499629229307175
+    },
+    {
+      "step": 913,
+      "loss": 0.027605658397078514,
+      "preclip_gradient_norm": 0.08647367358207703
+    },
+    {
+      "step": 914,
+      "loss": 0.028824161738157272,
+      "preclip_gradient_norm": 0.08250011503696442
+    },
+    {
+      "step": 915,
+      "loss": 0.008751099929213524,
+      "preclip_gradient_norm": 0.036793049424886703
+    },
+    {
+      "step": 916,
+      "loss": 0.014184470288455486,
+      "preclip_gradient_norm": 0.04163645580410957
+    },
+    {
+      "step": 917,
+      "loss": 0.016275517642498016,
+      "preclip_gradient_norm": 0.04512043297290802
+    },
+    {
+      "step": 918,
+      "loss": 0.016229946166276932,
+      "preclip_gradient_norm": 0.05651487037539482
+    },
+    {
+      "step": 919,
+      "loss": 0.012327640317380428,
+      "preclip_gradient_norm": 0.047795370221138
+    },
+    {
+      "step": 920,
+      "loss": 0.008731678128242493,
+      "preclip_gradient_norm": 0.0378255732357502,
+      "gradients/shape_cross_attention_kv": 0.02042384445667267,
+      "gradients/shape_cross_attention": 0.032468490302562714,
+      "gradients/touch_output_projection": 0.01930859312415123,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0019363125320523977,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 921,
+      "loss": 0.009980222210288048,
+      "preclip_gradient_norm": 0.03440479934215546
+    },
+    {
+      "step": 922,
+      "loss": 0.010805799625813961,
+      "preclip_gradient_norm": 0.04155823215842247
+    },
+    {
+      "step": 923,
+      "loss": 0.008849987760186195,
+      "preclip_gradient_norm": 0.037991415709257126
+    },
+    {
+      "step": 924,
+      "loss": 0.0225461944937706,
+      "preclip_gradient_norm": 0.07111354917287827
+    },
+    {
+      "step": 925,
+      "loss": 0.016474802047014236,
+      "preclip_gradient_norm": 0.04437875375151634
+    },
+    {
+      "step": 926,
+      "loss": 0.00845764297991991,
+      "preclip_gradient_norm": 0.04318288341164589
+    },
+    {
+      "step": 927,
+      "loss": 0.018700968474149704,
+      "preclip_gradient_norm": 0.06585092842578888
+    },
+    {
+      "step": 928,
+      "loss": 0.022631783038377762,
+      "preclip_gradient_norm": 0.06678938120603561
+    },
+    {
+      "step": 929,
+      "loss": 0.010212268680334091,
+      "preclip_gradient_norm": 0.04290639981627464
+    },
+    {
+      "step": 930,
+      "loss": 0.01389705017209053,
+      "preclip_gradient_norm": 0.05484427511692047
+    },
+    {
+      "step": 931,
+      "loss": 0.008212266489863396,
+      "preclip_gradient_norm": 0.04103007912635803
+    },
+    {
+      "step": 932,
+      "loss": 0.009891368448734283,
+      "preclip_gradient_norm": 0.05025810748338699
+    },
+    {
+      "step": 933,
+      "loss": 0.008541688323020935,
+      "preclip_gradient_norm": 0.05950773507356644
+    },
+    {
+      "step": 934,
+      "loss": 0.014722045511007309,
+      "preclip_gradient_norm": 0.06119909510016441
+    },
+    {
+      "step": 935,
+      "loss": 0.009267836809158325,
+      "preclip_gradient_norm": 0.036027535796165466
+    },
+    {
+      "step": 936,
+      "loss": 0.007974899373948574,
+      "preclip_gradient_norm": 0.035060569643974304
+    },
+    {
+      "step": 937,
+      "loss": 0.011312171816825867,
+      "preclip_gradient_norm": 0.03450919687747955
+    },
+    {
+      "step": 938,
+      "loss": 0.020854458212852478,
+      "preclip_gradient_norm": 0.06062759459018707
+    },
+    {
+      "step": 939,
+      "loss": 0.011706008575856686,
+      "preclip_gradient_norm": 0.05281941592693329
+    },
+    {
+      "step": 940,
+      "loss": 0.008997250348329544,
+      "preclip_gradient_norm": 0.04676128923892975,
+      "gradients/shape_cross_attention_kv": 0.021011734381318092,
+      "gradients/shape_cross_attention": 0.04184560850262642,
+      "gradients/touch_output_projection": 0.020747188478708267,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0022622111719101667,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 941,
+      "loss": 0.010905442759394646,
+      "preclip_gradient_norm": 0.04748738557100296
+    },
+    {
+      "step": 942,
+      "loss": 0.05329343304038048,
+      "preclip_gradient_norm": 0.13210266828536987
+    },
+    {
+      "step": 943,
+      "loss": 0.014898804016411304,
+      "preclip_gradient_norm": 0.09146677702665329
+    },
+    {
+      "step": 944,
+      "loss": 0.011660953983664513,
+      "preclip_gradient_norm": 0.05657684803009033
+    },
+    {
+      "step": 945,
+      "loss": 0.008587406948208809,
+      "preclip_gradient_norm": 0.047753121703863144
+    },
+    {
+      "step": 946,
+      "loss": 0.00928488653153181,
+      "preclip_gradient_norm": 0.05195774883031845
+    },
+    {
+      "step": 947,
+      "loss": 0.02808876521885395,
+      "preclip_gradient_norm": 0.13331206142902374
+    },
+    {
+      "step": 948,
+      "loss": 0.008359715342521667,
+      "preclip_gradient_norm": 0.03390325605869293
+    },
+    {
+      "step": 949,
+      "loss": 0.009117395617067814,
+      "preclip_gradient_norm": 0.04107299819588661
+    },
+    {
+      "step": 950,
+      "loss": 0.017745401710271835,
+      "preclip_gradient_norm": 0.0843186154961586
+    },
+    {
+      "step": 951,
+      "loss": 0.027966022491455078,
+      "preclip_gradient_norm": 0.15873833000659943
+    },
+    {
+      "step": 952,
+      "loss": 0.009390441700816154,
+      "preclip_gradient_norm": 0.059028539806604385
+    },
+    {
+      "step": 953,
+      "loss": 0.019115976989269257,
+      "preclip_gradient_norm": 0.07443785667419434
+    },
+    {
+      "step": 954,
+      "loss": 0.008250581100583076,
+      "preclip_gradient_norm": 0.04913049563765526
+    },
+    {
+      "step": 955,
+      "loss": 0.008161086589097977,
+      "preclip_gradient_norm": 0.06039771810173988
+    },
+    {
+      "step": 956,
+      "loss": 0.013742854818701744,
+      "preclip_gradient_norm": 0.11948086321353912
+    },
+    {
+      "step": 957,
+      "loss": 0.009894231334328651,
+      "preclip_gradient_norm": 0.08890581876039505
+    },
+    {
+      "step": 958,
+      "loss": 0.009225340560078621,
+      "preclip_gradient_norm": 0.05129851773381233
+    },
+    {
+      "step": 959,
+      "loss": 0.008264871314167976,
+      "preclip_gradient_norm": 0.03498241677880287
+    },
+    {
+      "step": 960,
+      "loss": 0.021367147564888,
+      "preclip_gradient_norm": 0.10707754641771317,
+      "gradients/shape_cross_attention_kv": 0.023894470185041428,
+      "gradients/shape_cross_attention": 0.10450954735279083,
+      "gradients/touch_output_projection": 0.02319597639143467,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.0023028142750263214,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 961,
+      "loss": 0.03927523270249367,
+      "preclip_gradient_norm": 0.10948842763900757
+    },
+    {
+      "step": 962,
+      "loss": 0.012426314875483513,
+      "preclip_gradient_norm": 0.07667220383882523
+    },
+    {
+      "step": 963,
+      "loss": 0.00815517082810402,
+      "preclip_gradient_norm": 0.04464637115597725
+    },
+    {
+      "step": 964,
+      "loss": 0.009839372709393501,
+      "preclip_gradient_norm": 0.06459835171699524
+    },
+    {
+      "step": 965,
+      "loss": 0.032352082431316376,
+      "preclip_gradient_norm": 0.17233075201511383
+    },
+    {
+      "step": 966,
+      "loss": 0.041063666343688965,
+      "preclip_gradient_norm": 0.18192891776561737
+    },
+    {
+      "step": 967,
+      "loss": 0.01414269208908081,
+      "preclip_gradient_norm": 0.07923301309347153
+    },
+    {
+      "step": 968,
+      "loss": 0.009694160893559456,
+      "preclip_gradient_norm": 0.08727095276117325
+    },
+    {
+      "step": 969,
+      "loss": 0.015218088403344154,
+      "preclip_gradient_norm": 0.10782080888748169
+    },
+    {
+      "step": 970,
+      "loss": 0.008975984528660774,
+      "preclip_gradient_norm": 0.07415177673101425
+    },
+    {
+      "step": 971,
+      "loss": 0.012579532340168953,
+      "preclip_gradient_norm": 0.08474720269441605
+    },
+    {
+      "step": 972,
+      "loss": 0.017264073714613914,
+      "preclip_gradient_norm": 0.09465089440345764
+    },
+    {
+      "step": 973,
+      "loss": 0.014053069055080414,
+      "preclip_gradient_norm": 0.045134276151657104
+    },
+    {
+      "step": 974,
+      "loss": 0.013639458455145359,
+      "preclip_gradient_norm": 0.10028158873319626
+    },
+    {
+      "step": 975,
+      "loss": 0.008750461041927338,
+      "preclip_gradient_norm": 0.08347294479608536
+    },
+    {
+      "step": 976,
+      "loss": 0.008681463077664375,
+      "preclip_gradient_norm": 0.070163793861866
+    },
+    {
+      "step": 977,
+      "loss": 0.016428684815764427,
+      "preclip_gradient_norm": 0.09121142327785492
+    },
+    {
+      "step": 978,
+      "loss": 0.010130016133189201,
+      "preclip_gradient_norm": 0.052898503839969635
+    },
+    {
+      "step": 979,
+      "loss": 0.010410845279693604,
+      "preclip_gradient_norm": 0.05951685458421707
+    },
+    {
+      "step": 980,
+      "loss": 0.009218801744282246,
+      "preclip_gradient_norm": 0.039926689118146896,
+      "gradients/shape_cross_attention_kv": 0.018475433811545372,
+      "gradients/shape_cross_attention": 0.03624529018998146,
+      "gradients/touch_output_projection": 0.016640761867165565,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.001871857326477766,
+      "gradients/vecsetx_encoder": 0.0
+    },
+    {
+      "step": 981,
+      "loss": 0.019125796854496002,
+      "preclip_gradient_norm": 0.16817571222782135
+    },
+    {
+      "step": 982,
+      "loss": 0.02590201050043106,
+      "preclip_gradient_norm": 0.1200537383556366
+    },
+    {
+      "step": 983,
+      "loss": 0.009470679797232151,
+      "preclip_gradient_norm": 0.06920069456100464
+    },
+    {
+      "step": 984,
+      "loss": 0.013472575694322586,
+      "preclip_gradient_norm": 0.06071839481592178
+    },
+    {
+      "step": 985,
+      "loss": 0.00820110272616148,
+      "preclip_gradient_norm": 0.055703770369291306
+    },
+    {
+      "step": 986,
+      "loss": 0.01700388267636299,
+      "preclip_gradient_norm": 0.19421926140785217
+    },
+    {
+      "step": 987,
+      "loss": 0.011188941076397896,
+      "preclip_gradient_norm": 0.05336277186870575
+    },
+    {
+      "step": 988,
+      "loss": 0.008386938832700253,
+      "preclip_gradient_norm": 0.059959832578897476
+    },
+    {
+      "step": 989,
+      "loss": 0.013504820875823498,
+      "preclip_gradient_norm": 0.07137389481067657
+    },
+    {
+      "step": 990,
+      "loss": 0.02464728057384491,
+      "preclip_gradient_norm": 0.17641986906528473
+    },
+    {
+      "step": 991,
+      "loss": 0.009324438869953156,
+      "preclip_gradient_norm": 0.06709150224924088
+    },
+    {
+      "step": 992,
+      "loss": 0.013324664905667305,
+      "preclip_gradient_norm": 0.055233344435691833
+    },
+    {
+      "step": 993,
+      "loss": 0.011355869472026825,
+      "preclip_gradient_norm": 0.06124222278594971
+    },
+    {
+      "step": 994,
+      "loss": 0.01412368193268776,
+      "preclip_gradient_norm": 0.0772445797920227
+    },
+    {
+      "step": 995,
+      "loss": 0.008172563277184963,
+      "preclip_gradient_norm": 0.041469622403383255
+    },
+    {
+      "step": 996,
+      "loss": 0.01039077714085579,
+      "preclip_gradient_norm": 0.06991943717002869
+    },
+    {
+      "step": 997,
+      "loss": 0.01613793894648552,
+      "preclip_gradient_norm": 0.12121598422527313
+    },
+    {
+      "step": 998,
+      "loss": 0.01866181567311287,
+      "preclip_gradient_norm": 0.10098129510879517
+    },
+    {
+      "step": 999,
+      "loss": 0.028264418244361877,
+      "preclip_gradient_norm": 0.1379971206188202
+    },
+    {
+      "step": 1000,
+      "loss": 0.009975876659154892,
+      "preclip_gradient_norm": 0.06630110740661621,
+      "gradients/shape_cross_attention_kv": 0.018521137535572052,
+      "gradients/shape_cross_attention": 0.06315185129642487,
+      "gradients/touch_output_projection": 0.020083259791135788,
+      "gradients/touch_position_projection": 0.0,
+      "gradients/touch_embedding": 0.002083913655951619,
+      "gradients/vecsetx_encoder": 0.0
+    }
+  ],
+  "assessments": [
+    {
+      "step": 0,
+      "fresh_noise_native_losses": [
+        0.8351717591285706,
+        0.419750839471817,
+        0.6493891477584839,
+        0.3171786665916443,
+        0.3708980083465576,
+        0.33148103952407837,
+        0.5438955426216125,
+        0.305780827999115
+      ],
+      "swapped_surface_native_losses": [
+        0.8350967168807983,
+        0.4196661710739136,
+        0.6493338346481323,
+        0.3172515630722046,
+        0.3708895146846771,
+        0.33156657218933105,
+        0.5438252091407776,
+        0.30590301752090454
+      ],
+      "sampled": [
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 1.0439624786376953,
+          "voxel_iou": 0.036995174542450986,
+          "predicted_occupied": 11988,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.1577864509288277,
+          "artifact": "step0_479bbf9062de4b3196f08e52d1c12821_000_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.9637911915779114,
+          "voxel_iou": 0.07367672337146583,
+          "predicted_occupied": 9303,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.10574384837944067,
+          "artifact": "step0_e846574df9334973955c80286af47ba7_007_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.923233151435852,
+          "voxel_iou": 0.00727069351230425,
+          "predicted_occupied": 2301,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.22359892477941568,
+          "artifact": "step0_fe200ce00a5d4c298eee89de0fc15f01_011_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.9907577633857727,
+          "voxel_iou": 0.21573301549463647,
+          "predicted_occupied": 7450,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.016619120936428707,
+          "artifact": "step0_146b6c1f10bd445da977424c64dbb051_002_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 1.0775116682052612,
+          "voxel_iou": 0.039420991156349075,
+          "predicted_occupied": 13051,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.15422693969341866,
+          "artifact": "step0_479bbf9062de4b3196f08e52d1c12821_000_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 1.0315744876861572,
+          "voxel_iou": 0.07808863128109168,
+          "predicted_occupied": 14811,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.10395518766448525,
+          "artifact": "step0_e846574df9334973955c80286af47ba7_007_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.9160805940628052,
+          "voxel_iou": 0.0,
+          "predicted_occupied": 1520,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.31338149708497065,
+          "artifact": "step0_fe200ce00a5d4c298eee89de0fc15f01_011_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 1.0184065103530884,
+          "voxel_iou": 0.24585892425088404,
+          "predicted_occupied": 12232,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.01609769103769177,
+          "artifact": "step0_146b6c1f10bd445da977424c64dbb051_002_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 1.0280771255493164,
+          "voxel_iou": 0.05055924343002637,
+          "predicted_occupied": 11240,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.13390119998052175,
+          "artifact": "step0_479bbf9062de4b3196f08e52d1c12821_000_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.9601017236709595,
+          "voxel_iou": 0.08649556804356642,
+          "predicted_occupied": 9943,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.1005203839529905,
+          "artifact": "step0_e846574df9334973955c80286af47ba7_007_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.9240637421607971,
+          "voxel_iou": 0.0,
+          "predicted_occupied": 1027,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.2806012555942859,
+          "artifact": "step0_fe200ce00a5d4c298eee89de0fc15f01_011_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.9857100248336792,
+          "voxel_iou": 0.209079754601227,
+          "predicted_occupied": 6931,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.019279679438534054,
+          "artifact": "step0_146b6c1f10bd445da977424c64dbb051_002_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 1.1187903881072998,
+          "voxel_iou": 0.051916621125770945,
+          "predicted_occupied": 15082,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.13509468046059256,
+          "artifact": "step0_479bbf9062de4b3196f08e52d1c12821_000_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.9928786754608154,
+          "voxel_iou": 0.08725949037961518,
+          "predicted_occupied": 12097,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.09918695611770904,
+          "artifact": "step0_e846574df9334973955c80286af47ba7_007_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.9202307462692261,
+          "voxel_iou": 0.0,
+          "predicted_occupied": 1891,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.27248865480930223,
+          "artifact": "step0_fe200ce00a5d4c298eee89de0fc15f01_011_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 1.02207612991333,
+          "voxel_iou": 0.22625565341585338,
+          "predicted_occupied": 12756,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.01635189123421552,
+          "artifact": "step0_146b6c1f10bd445da977424c64dbb051_002_draw1_cfg7.npz"
+        }
+      ],
+      "sample_noise_sha256": [
+        {
+          "6drotation_normalized": "8e53df1b6aae003cdc9b25f36f128c2c2d26f42846654e76502968b35c89ff7e",
+          "scale": "535c2b0f3a9e2b685ef571bac79d7ac935f81935c81da01198c8de02f4e3c833",
+          "shape": "dc7652c4b367a9a1ff485549a5405da5fb605311e374d4bdf0d8c89d91d2d48f",
+          "translation": "581091a7662af9bce111c8d992c6b5c4c7b4c8474a752e83512e4b17653ab9f7",
+          "translation_scale": "21cd79a6b47a02638031755207e816c3f710b5e7d8422325ddc4982175f7aaf7"
+        },
+        {
+          "6drotation_normalized": "371158e02cf6bd8a846c73e9fcd147eb6141595a1c8de412321615ab0fe3db25",
+          "scale": "c7db1b38eec759a3f8e7ff88f94e2fe3a8094631ac4312f2e0ad20e5fe099e35",
+          "shape": "c84fe606ddc3e355d053b623a735664142822741135a3adab4f077adee1ac827",
+          "translation": "8b15e4e2af09d89d5ba7a63fbc4c2ec8950100745ea47e01285c2305ca15487b",
+          "translation_scale": "87ef0583b59faa4bb682b0de20340cecebd5855e7d09a5402c5700b263e086c4"
+        }
+      ]
+    },
+    {
+      "step": 100,
+      "fresh_noise_native_losses": [
+        0.12072877585887909,
+        0.12281843274831772,
+        0.17936305701732635,
+        0.08568736165761948,
+        0.0933549553155899,
+        0.08587191998958588,
+        0.11031334102153778,
+        0.08980201184749603
+      ],
+      "swapped_surface_native_losses": [
+        0.12595076858997345,
+        0.12557920813560486,
+        0.19276994466781616,
+        0.09069770574569702,
+        0.09568177908658981,
+        0.09114342927932739,
+        0.11287175118923187,
+        0.09497465193271637
+      ],
+      "sampled": [
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.3428904414176941,
+          "voxel_iou": 0.046633748726389215,
+          "predicted_occupied": 14842,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.14192271589789562,
+          "artifact": "step100_479bbf9062de4b3196f08e52d1c12821_000_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.09398046135902405,
+          "voxel_iou": 0.5406428885953325,
+          "predicted_occupied": 8683,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.005084898967418345,
+          "artifact": "step100_e846574df9334973955c80286af47ba7_007_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.06809157133102417,
+          "voxel_iou": 0.1721479958890031,
+          "predicted_occupied": 980,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.024632800006905972,
+          "artifact": "step100_fe200ce00a5d4c298eee89de0fc15f01_011_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.14215724170207977,
+          "voxel_iou": 0.6235443573999576,
+          "predicted_occupied": 7486,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.0037652105279279502,
+          "artifact": "step100_146b6c1f10bd445da977424c64dbb051_002_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.3491900861263275,
+          "voxel_iou": 0.06986522911051213,
+          "predicted_occupied": 17903,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.11876530976677523,
+          "artifact": "step100_479bbf9062de4b3196f08e52d1c12821_000_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.06405257433652878,
+          "voxel_iou": 0.6836627518380598,
+          "predicted_occupied": 8822,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.0030087097252534624,
+          "artifact": "step100_e846574df9334973955c80286af47ba7_007_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.06927688419818878,
+          "voxel_iou": 0.0,
+          "predicted_occupied": 798,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.29108922069427323,
+          "artifact": "step100_fe200ce00a5d4c298eee89de0fc15f01_011_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.12370413541793823,
+          "voxel_iou": 0.6164411230054534,
+          "predicted_occupied": 8156,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.003962517804164357,
+          "artifact": "step100_146b6c1f10bd445da977424c64dbb051_002_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.2796148955821991,
+          "voxel_iou": 0.05080614923134608,
+          "predicted_occupied": 10554,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.12972363085550132,
+          "artifact": "step100_479bbf9062de4b3196f08e52d1c12821_000_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.09922716021537781,
+          "voxel_iou": 0.5885309162703042,
+          "predicted_occupied": 8890,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.004519517117952211,
+          "artifact": "step100_e846574df9334973955c80286af47ba7_007_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.08521713316440582,
+          "voxel_iou": 0.010567514677103719,
+          "predicted_occupied": 1281,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.2712625103872796,
+          "artifact": "step100_fe200ce00a5d4c298eee89de0fc15f01_011_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.18920329213142395,
+          "voxel_iou": 0.2917316692667707,
+          "predicted_occupied": 8710,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.010045126160754082,
+          "artifact": "step100_146b6c1f10bd445da977424c64dbb051_002_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.29988089203834534,
+          "voxel_iou": 0.05642726538248926,
+          "predicted_occupied": 12978,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.12891990893873223,
+          "artifact": "step100_479bbf9062de4b3196f08e52d1c12821_000_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.05614539235830307,
+          "voxel_iou": 0.688039457459926,
+          "predicted_occupied": 8986,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.002954022672050173,
+          "artifact": "step100_e846574df9334973955c80286af47ba7_007_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.07084352523088455,
+          "voxel_iou": 0.005445544554455445,
+          "predicted_occupied": 730,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.2825231260332552,
+          "artifact": "step100_fe200ce00a5d4c298eee89de0fc15f01_011_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.1387816071510315,
+          "voxel_iou": 0.5059288537549407,
+          "predicted_occupied": 8533,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.00566266309056577,
+          "artifact": "step100_146b6c1f10bd445da977424c64dbb051_002_draw1_cfg7.npz"
+        }
+      ],
+      "sample_noise_sha256": [
+        {
+          "6drotation_normalized": "8e53df1b6aae003cdc9b25f36f128c2c2d26f42846654e76502968b35c89ff7e",
+          "scale": "535c2b0f3a9e2b685ef571bac79d7ac935f81935c81da01198c8de02f4e3c833",
+          "shape": "dc7652c4b367a9a1ff485549a5405da5fb605311e374d4bdf0d8c89d91d2d48f",
+          "translation": "581091a7662af9bce111c8d992c6b5c4c7b4c8474a752e83512e4b17653ab9f7",
+          "translation_scale": "21cd79a6b47a02638031755207e816c3f710b5e7d8422325ddc4982175f7aaf7"
+        },
+        {
+          "6drotation_normalized": "371158e02cf6bd8a846c73e9fcd147eb6141595a1c8de412321615ab0fe3db25",
+          "scale": "c7db1b38eec759a3f8e7ff88f94e2fe3a8094631ac4312f2e0ad20e5fe099e35",
+          "shape": "c84fe606ddc3e355d053b623a735664142822741135a3adab4f077adee1ac827",
+          "translation": "8b15e4e2af09d89d5ba7a63fbc4c2ec8950100745ea47e01285c2305ca15487b",
+          "translation_scale": "87ef0583b59faa4bb682b0de20340cecebd5855e7d09a5402c5700b263e086c4"
+        }
+      ]
+    },
+    {
+      "step": 300,
+      "fresh_noise_native_losses": [
+        0.07574139535427094,
+        0.07730670273303986,
+        0.1201278492808342,
+        0.0612485371530056,
+        0.06486456096172333,
+        0.060089971870183945,
+        0.07630535960197449,
+        0.05925484746694565
+      ],
+      "swapped_surface_native_losses": [
+        0.08314916491508484,
+        0.08399201184511185,
+        0.1417887806892395,
+        0.06797631084918976,
+        0.0706055611371994,
+        0.06776225566864014,
+        0.08032388240098953,
+        0.06972800195217133
+      ],
+      "sampled": [
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.13571009039878845,
+          "voxel_iou": 0.7629954049396899,
+          "predicted_occupied": 12689,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.002099940097425759,
+          "artifact": "step300_479bbf9062de4b3196f08e52d1c12821_000_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.05279206484556198,
+          "voxel_iou": 0.8269150707743547,
+          "predicted_occupied": 8742,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.0014907820626348645,
+          "artifact": "step300_e846574df9334973955c80286af47ba7_007_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.04260024428367615,
+          "voxel_iou": 0.47194329592439455,
+          "predicted_occupied": 1191,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.005936262673236432,
+          "artifact": "step300_fe200ce00a5d4c298eee89de0fc15f01_011_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.13772135972976685,
+          "voxel_iou": 0.6659088448630508,
+          "predicted_occupied": 7538,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.0032476593937983897,
+          "artifact": "step300_146b6c1f10bd445da977424c64dbb051_002_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.13993306457996368,
+          "voxel_iou": 0.7505555555555555,
+          "predicted_occupied": 13342,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.002219052746143981,
+          "artifact": "step300_479bbf9062de4b3196f08e52d1c12821_000_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.029292598366737366,
+          "voxel_iou": 0.9336186087338161,
+          "predicted_occupied": 8812,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.0005371428010653019,
+          "artifact": "step300_e846574df9334973955c80286af47ba7_007_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.025849804282188416,
+          "voxel_iou": 0.7750172532781229,
+          "predicted_occupied": 1271,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.002015214878765754,
+          "artifact": "step300_fe200ce00a5d4c298eee89de0fc15f01_011_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.1158197820186615,
+          "voxel_iou": 0.7869929753002493,
+          "predicted_occupied": 7922,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.0018654589015036625,
+          "artifact": "step300_146b6c1f10bd445da977424c64dbb051_002_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.14604535698890686,
+          "voxel_iou": 0.7545904761904761,
+          "predicted_occupied": 11163,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.0023321256046622144,
+          "artifact": "step300_479bbf9062de4b3196f08e52d1c12821_000_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.038972750306129456,
+          "voxel_iou": 0.9354838709677419,
+          "predicted_occupied": 8829,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.000520817606362911,
+          "artifact": "step300_e846574df9334973955c80286af47ba7_007_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.04326581954956055,
+          "voxel_iou": 0.5124069478908189,
+          "predicted_occupied": 1137,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.005631655247915523,
+          "artifact": "step300_fe200ce00a5d4c298eee89de0fc15f01_011_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.13965283334255219,
+          "voxel_iou": 0.6274733243551227,
+          "predicted_occupied": 7860,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.003604390861603893,
+          "artifact": "step300_146b6c1f10bd445da977424c64dbb051_002_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.109664686024189,
+          "voxel_iou": 0.8248978075065032,
+          "predicted_occupied": 12688,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 0.0014844532350890057,
+          "artifact": "step300_479bbf9062de4b3196f08e52d1c12821_000_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.02579200640320778,
+          "voxel_iou": 0.9479558011049724,
+          "predicted_occupied": 8818,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 0.0004174560514189013,
+          "artifact": "step300_e846574df9334973955c80286af47ba7_007_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.026905402541160583,
+          "voxel_iou": 0.7408136482939632,
+          "predicted_occupied": 1352,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.0023785341292094963,
+          "artifact": "step300_fe200ce00a5d4c298eee89de0fc15f01_011_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.11035608500242233,
+          "voxel_iou": 0.8177946593001841,
+          "predicted_occupied": 7943,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 0.0015660805192190203,
+          "artifact": "step300_146b6c1f10bd445da977424c64dbb051_002_draw1_cfg7.npz"
+        }
+      ],
+      "sample_noise_sha256": [
+        {
+          "6drotation_normalized": "8e53df1b6aae003cdc9b25f36f128c2c2d26f42846654e76502968b35c89ff7e",
+          "scale": "535c2b0f3a9e2b685ef571bac79d7ac935f81935c81da01198c8de02f4e3c833",
+          "shape": "dc7652c4b367a9a1ff485549a5405da5fb605311e374d4bdf0d8c89d91d2d48f",
+          "translation": "581091a7662af9bce111c8d992c6b5c4c7b4c8474a752e83512e4b17653ab9f7",
+          "translation_scale": "21cd79a6b47a02638031755207e816c3f710b5e7d8422325ddc4982175f7aaf7"
+        },
+        {
+          "6drotation_normalized": "371158e02cf6bd8a846c73e9fcd147eb6141595a1c8de412321615ab0fe3db25",
+          "scale": "c7db1b38eec759a3f8e7ff88f94e2fe3a8094631ac4312f2e0ad20e5fe099e35",
+          "shape": "c84fe606ddc3e355d053b623a735664142822741135a3adab4f077adee1ac827",
+          "translation": "8b15e4e2af09d89d5ba7a63fbc4c2ec8950100745ea47e01285c2305ca15487b",
+          "translation_scale": "87ef0583b59faa4bb682b0de20340cecebd5855e7d09a5402c5700b263e086c4"
+        }
+      ]
+    },
+    {
+      "step": 1000,
+      "fresh_noise_native_losses": [
+        0.024246327579021454,
+        0.027392517775297165,
+        0.039706792682409286,
+        0.008125003427267075,
+        0.008877487853169441,
+        0.008512064814567566,
+        0.024375511333346367,
+        0.009728970006108284
+      ],
+      "swapped_surface_native_losses": [
+        0.07719849050045013,
+        0.07853488624095917,
+        0.09992878139019012,
+        0.06120557337999344,
+        0.0658780187368393,
+        0.08359558880329132,
+        0.072876937687397,
+        0.06314074993133545
+      ],
+      "sampled": [
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.014480838552117348,
+          "voxel_iou": 0.9954583683767873,
+          "predicted_occupied": 11860,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 3.556125540713345e-05,
+          "artifact": "step1000_479bbf9062de4b3196f08e52d1c12821_000_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.00611847173422575,
+          "voxel_iou": 0.9997730367680435,
+          "predicted_occupied": 8811,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 1.7733514924526161e-06,
+          "artifact": "step1000_e846574df9334973955c80286af47ba7_007_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.006178505718708038,
+          "voxel_iou": 0.9710586443259711,
+          "predicted_occupied": 1287,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.0002289737229206868,
+          "artifact": "step1000_fe200ce00a5d4c298eee89de0fc15f01_011_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 0,
+          "cfg": 0,
+          "latent_mse": 0.011153100058436394,
+          "voxel_iou": 0.9952962115433511,
+          "predicted_occupied": 7845,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 3.683339727117358e-05,
+          "artifact": "step1000_146b6c1f10bd445da977424c64dbb051_002_draw0_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.01073983684182167,
+          "voxel_iou": 0.996551724137931,
+          "predicted_occupied": 11873,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 2.6984826821685185e-05,
+          "artifact": "step1000_479bbf9062de4b3196f08e52d1c12821_000_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.0035424530506134033,
+          "voxel_iou": 0.9998865183840218,
+          "predicted_occupied": 8812,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 8.865751248297776e-07,
+          "artifact": "step1000_e846574df9334973955c80286af47ba7_007_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.0033682677894830704,
+          "voxel_iou": 0.9923312883435583,
+          "predicted_occupied": 1297,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 6.0105520514733645e-05,
+          "artifact": "step1000_fe200ce00a5d4c298eee89de0fc15f01_011_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 0,
+          "cfg": 7,
+          "latent_mse": 0.00816078670322895,
+          "voxel_iou": 0.9960624920614759,
+          "predicted_occupied": 7865,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 3.080825514959852e-05,
+          "artifact": "step1000_146b6c1f10bd445da977424c64dbb051_002_draw0_cfg7.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.013557427562773228,
+          "voxel_iou": 0.9959657085224407,
+          "predicted_occupied": 11882,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 3.157452859744792e-05,
+          "artifact": "step1000_479bbf9062de4b3196f08e52d1c12821_000_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.006219115108251572,
+          "voxel_iou": 0.999659593781913,
+          "predicted_occupied": 8812,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 2.6598259958858634e-06,
+          "artifact": "step1000_e846574df9334973955c80286af47ba7_007_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.005611923988908529,
+          "voxel_iou": 0.9816653934300993,
+          "predicted_occupied": 1293,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 0.00014441713881819743,
+          "artifact": "step1000_fe200ce00a5d4c298eee89de0fc15f01_011_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 1,
+          "cfg": 0,
+          "latent_mse": 0.011117428541183472,
+          "voxel_iou": 0.996186117467582,
+          "predicted_occupied": 7852,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 2.9852631971731814e-05,
+          "artifact": "step1000_146b6c1f10bd445da977424c64dbb051_002_draw1_cfg0.npz"
+        },
+        {
+          "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.010264525189995766,
+          "voxel_iou": 0.9965502734539335,
+          "predicted_occupied": 11863,
+          "target_occupied": 11866,
+          "unaligned_voxel_center_chamfer": 2.699730641606853e-05,
+          "artifact": "step1000_479bbf9062de4b3196f08e52d1c12821_000_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "e846574df9334973955c80286af47ba7_007",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.003564107231795788,
+          "voxel_iou": 0.999659593781913,
+          "predicted_occupied": 8812,
+          "target_occupied": 8811,
+          "unaligned_voxel_center_chamfer": 2.6598259958858634e-06,
+          "artifact": "step1000_e846574df9334973955c80286af47ba7_007_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.0034113358706235886,
+          "voxel_iou": 0.9938650306748467,
+          "predicted_occupied": 1299,
+          "target_occupied": 1301,
+          "unaligned_voxel_center_chamfer": 4.806770595722246e-05,
+          "artifact": "step1000_fe200ce00a5d4c298eee89de0fc15f01_011_draw1_cfg7.npz"
+        },
+        {
+          "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+          "noise_draw": 1,
+          "cfg": 7,
+          "latent_mse": 0.008059993386268616,
+          "voxel_iou": 0.9966950552942672,
+          "predicted_occupied": 7858,
+          "target_occupied": 7850,
+          "unaligned_voxel_center_chamfer": 2.5858571653213975e-05,
+          "artifact": "step1000_146b6c1f10bd445da977424c64dbb051_002_draw1_cfg7.npz"
+        }
+      ],
+      "sample_noise_sha256": [
+        {
+          "6drotation_normalized": "8e53df1b6aae003cdc9b25f36f128c2c2d26f42846654e76502968b35c89ff7e",
+          "scale": "535c2b0f3a9e2b685ef571bac79d7ac935f81935c81da01198c8de02f4e3c833",
+          "shape": "dc7652c4b367a9a1ff485549a5405da5fb605311e374d4bdf0d8c89d91d2d48f",
+          "translation": "581091a7662af9bce111c8d992c6b5c4c7b4c8474a752e83512e4b17653ab9f7",
+          "translation_scale": "21cd79a6b47a02638031755207e816c3f710b5e7d8422325ddc4982175f7aaf7"
+        },
+        {
+          "6drotation_normalized": "371158e02cf6bd8a846c73e9fcd147eb6141595a1c8de412321615ab0fe3db25",
+          "scale": "c7db1b38eec759a3f8e7ff88f94e2fe3a8094631ac4312f2e0ad20e5fe099e35",
+          "shape": "c84fe606ddc3e355d053b623a735664142822741135a3adab4f077adee1ac827",
+          "translation": "8b15e4e2af09d89d5ba7a63fbc4c2ec8950100745ea47e01285c2305ca15487b",
+          "translation_scale": "87ef0583b59faa4bb682b0de20340cecebd5855e7d09a5402c5700b263e086c4"
+        }
+      ]
+    }
+  ],
+  "purpose": "Fitting these exact training inputs; no held-out generalization claim.",
+  "trainable_parameters": {
+    "touch_encoder": 3064896,
+    "cross_attention": 100810752
+  },
+  "data_yaml": "seed: 29\n\ndataset:\n  root: /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch-data/objaverse-dexonomy\n  manifest: generated_data/samples_full_surface.jsonl\n  split_file: generated_data/splits.json\n  split: train\n\ntouch:\n  source: full_surface\n",
+  "source_sha256": {
+    "train.py": "116d7f5268ed30062e9641f69f5920a0598be493bf95a083f48670e29c52b07f",
+    "dataloader.py": "d50137bf75a146ccb3ef71ff92d6a6f15523c5011e036f1b7bdbcd0541d4a0da",
+    "sam3d_objects/model/backbone/dit/embedder/touch.py": "a2db76b3e7cc2666890c600278915ed3e6d081fbbe3a980567ba591fa4d6418c"
+  },
+  "final_trainable_ca_sha256": "c12b8c4131542be86c9e261fbbe1f9eef5aa0a42a26c9618d276760afba2d29f",
+  "final_all_parameters_sha256": "378a14207c7c1110d89808810c2c221258fa4ced47cbc23ed6ca91f25ecc4f18"
+}

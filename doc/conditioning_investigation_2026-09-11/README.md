@@ -1,6 +1,8 @@
 # Full-surface conditioning investigation — 11 September 2026
 
-**Latest result — returned geometry bundle:** [GEOMETRY_FINDINGS.md](GEOMETRY_FINDINGS.md) documents verified inputs and sample-dependent output orientation errors. These do not by themselves explain aligned Stage-2 CD. The next experiment directly tests tiny-set training fit with camera-frame versus oracle target-frame surfaces; run `run_tiny_fit.sh` after transferring the new scripts.
+**Latest result — successful tiny fitting:** [TINY_FIT_FINDINGS.md](TINY_FIT_FINDINGS.md) validates the three returned 1,000-update runs. Camera-frame surfaces achieve 99.20% raw target voxel IoU at CFG 0, versus 90.07% for image + pointmap; swapped surfaces triple native loss. Oracle coordinates provide no qualitative fitting rescue because both surface arms succeed. This demonstrates small-set fitting with frozen VecSetX and cross-attention adaptation, not dataset-wide generalization. The next bounded GPU probe reuses fitted weights to measure transfer across views, without training.
+
+**Previous result — returned geometry bundle:** [GEOMETRY_FINDINGS.md](GEOMETRY_FINDINGS.md) documents verified inputs and sample-dependent output orientation errors. These do not by themselves explain aligned Stage-2 CD. The subsequent tiny-fit experiment has now completed; see the latest result above.
 
 **Previous result — actual rollouts:** [ROLLOUT_FINDINGS.md](ROLLOUT_FINDINGS.md) shows guidance 7 improves sampled geometry relative to guidance 0. The large velocity-error increase did not predict reconstruction degradation. The requested CPU geometry bundle has now been received and analyzed; see the latest update above.
 
