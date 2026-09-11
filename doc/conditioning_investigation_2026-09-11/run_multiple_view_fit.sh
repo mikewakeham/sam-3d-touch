@@ -13,7 +13,7 @@ cd /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch
 export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 export LIDRA_SKIP_INIT=true
-reference_root="${1:-outputs/frame_tiny_fit/46083371}"
+reference_root="${1:-outputs/conditioning_investigation/frame_tiny_fit/46083371}"
 for arm in image camera oracle; do
  /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python \
   doc/conditioning_investigation_2026-09-11/fit_multiple_views_gpu.py \
