@@ -18,5 +18,5 @@ for arm in image camera oracle; do
  /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python \
   doc/conditioning_investigation_2026-09-11/fit_multiple_views_gpu.py \
   --reference-fit-dir "$reference_root/$arm" \
-  --output-dir "outputs/multiple_view_fit/${SLURM_JOB_ID:-manual}/$arm"
+  --output-dir "outputs/conditioning_investigation/multiple_view_fit/${SLURM_JOB_ID:-manual}/$arm"
 done
