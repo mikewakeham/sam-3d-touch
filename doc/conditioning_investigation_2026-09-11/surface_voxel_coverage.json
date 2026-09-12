@@ -1,0 +1,116 @@
+{
+  "rows": [
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "point_count": 8192,
+      "target_occupied": 11866,
+      "raw_point_hits": {
+        "occupied": 5602,
+        "iou": 0.4721051744480027,
+        "precision": 1.0,
+        "recall": 0.4721051744480027
+      },
+      "six_neighbor_one_voxel_dilation": {
+        "occupied": 17587,
+        "iou": 0.6202552536032567,
+        "precision": 0.6410985386933531,
+        "recall": 0.9501938311141075
+      },
+      "source_sha256": {
+        "data/generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/camera.npz": "d8f40b01aacae7595fd816d46a49afbd98d1fbf8d1fdfd9a06d3bb05f08136d6",
+        "data/generated_data/479bbf9062de4b3196f08e52d1c12821/views/000/full_surface.npz": "3341797e8b4a01751de8d54e6282ba0222f931cc8e94f62e0a6c3d756c4493af",
+        "rollouts/stage1_image_full_cross_attention/479bbf9062de4b3196f08e52d1c12821_000_seed29_cfg7.npz": "60077a8bc8a409a4da1b1fdbcf30e4412d91c018c0e662319afb412e10114eae"
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "point_count": 8192,
+      "target_occupied": 8811,
+      "raw_point_hits": {
+        "occupied": 5188,
+        "iou": 0.5888094427420271,
+        "precision": 1.0,
+        "recall": 0.5888094427420271
+      },
+      "six_neighbor_one_voxel_dilation": {
+        "occupied": 17622,
+        "iou": 0.48859604662949824,
+        "precision": 0.4923391215526047,
+        "recall": 0.9846782431052093
+      },
+      "source_sha256": {
+        "data/generated_data/e846574df9334973955c80286af47ba7/views/007/camera.npz": "3d2e94961d14ce05f4301c702fa03133624ada2be72fda87604435bf82656a8a",
+        "data/generated_data/e846574df9334973955c80286af47ba7/views/007/full_surface.npz": "1f2e31dba7558cdd7400104ccec3c5ee796a2a8ec58a609342cec8f0c7be5757",
+        "rollouts/stage1_image_full_cross_attention/e846574df9334973955c80286af47ba7_007_seed29_cfg7.npz": "43612a9f6256977d837b234d9f11d4643de4ecb88a90d2b5e277500cc01ed3b3"
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "point_count": 8192,
+      "target_occupied": 1301,
+      "raw_point_hits": {
+        "occupied": 1143,
+        "iou": 0.8785549577248271,
+        "precision": 1.0,
+        "recall": 0.8785549577248271
+      },
+      "six_neighbor_one_voxel_dilation": {
+        "occupied": 2655,
+        "iou": 0.49001883239171373,
+        "precision": 0.49001883239171373,
+        "recall": 1.0
+      },
+      "source_sha256": {
+        "data/generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/camera.npz": "887396e2c19db83102fbfa5fc94d847da62e04faf660d7d498a6d9bd6a1d6c96",
+        "data/generated_data/fe200ce00a5d4c298eee89de0fc15f01/views/011/full_surface.npz": "3ff1037c4bd271c35a577ed5b2d6b10840722c3d308fb308d98f41be46db5f7c",
+        "rollouts/stage1_image_full_cross_attention/fe200ce00a5d4c298eee89de0fc15f01_011_seed29_cfg7.npz": "a71eb0807bcd7d2571942a2a17a10640ac2a5e7846532d35349fd510ffb6061b"
+      }
+    },
+    {
+      "sample_id": "c5867189a04446d7b20b79fcc24c6afa_004",
+      "point_count": 8192,
+      "target_occupied": 1526,
+      "raw_point_hits": {
+        "occupied": 1482,
+        "iou": 0.9711664482306684,
+        "precision": 1.0,
+        "recall": 0.9711664482306684
+      },
+      "six_neighbor_one_voxel_dilation": {
+        "occupied": 3816,
+        "iou": 0.399895178197065,
+        "precision": 0.399895178197065,
+        "recall": 1.0
+      },
+      "source_sha256": {
+        "data/generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/camera.npz": "c5652e58a51aca0ad01431eb75eb46d26148b251befb2db448f3869b388f0431",
+        "data/generated_data/c5867189a04446d7b20b79fcc24c6afa/views/004/full_surface.npz": "c4f30eb443c7e66b4cd4678db33b6c273d28cff123623cde65025777c5448ed7",
+        "rollouts/stage1_image_full_cross_attention/c5867189a04446d7b20b79fcc24c6afa_004_seed29_cfg7.npz": "e87f77b84f1544d33ac23ba418dca0b9f9ff7ba3dada17ed0d67e7b2b6e8de5c"
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "point_count": 8192,
+      "target_occupied": 7850,
+      "raw_point_hits": {
+        "occupied": 4813,
+        "iou": 0.6131210191082802,
+        "precision": 1.0,
+        "recall": 0.6131210191082802
+      },
+      "six_neighbor_one_voxel_dilation": {
+        "occupied": 15236,
+        "iou": 0.5082973997125311,
+        "precision": 0.5106327119978997,
+        "recall": 0.9910828025477707
+      },
+      "source_sha256": {
+        "data/generated_data/146b6c1f10bd445da977424c64dbb051/views/002/camera.npz": "a28de960fc3851334a539caf655f6e94ae689af25b523d1c45ddc9d3576dab73",
+        "data/generated_data/146b6c1f10bd445da977424c64dbb051/views/002/full_surface.npz": "0540639cdb9f61fcb8771c41c4d1986e453f05cdb54ae79b2c5e0ae8a8b03d25",
+        "rollouts/stage1_image_full_cross_attention/146b6c1f10bd445da977424c64dbb051_002_seed29_cfg7.npz": "6c03a290d8ac227aac44a52ec866cee6b7d46ad10335afc9bfcf2e3272263eb9"
+      }
+    }
+  ],
+  "driver_sha256": "cba79e971fd76f81dd693ab22de8c5118641252f5797822951452298c53bdc18",
+  "limits": "Five previously selected diagnostic objects, not population prevalence. Target is decoded occupancy, not independently voxelized original mesh. Uses oracle camera inversion. Coverage is not an information-theoretic bound on reconstruction; interpolation may infer unsampled surface. Dilation is a fixed geometric comparison, not an adopted preprocessing fix. No VAE execution."
+}

@@ -1,0 +1,31 @@
+{
+  "attachment_sha256": "ff0a19b4d18f25a81ed64be40585351341994e6733065a36322d36307e5d4a5a",
+  "source_hash_matches": {
+    "data_generation/objaverse-dexonomy/generate_target_latents.py": true,
+    "doc/conditioning_investigation_2026-09-11/probe_target_frames_gpu.py": true,
+    "doc/conditioning_investigation_2026-09-11/frame_contract.py": true,
+    "train.py": true,
+    "dataloader.py": true
+  },
+  "original_target_max_error": 0.0,
+  "minimum_candidate_vae_iou": 0.9995934339584286,
+  "native_explicit_abs_difference": 1.4901161193847656e-08,
+  "preselected_yaw_held_loss_by_time": {
+    "0.2": {
+      "identity": 0.18058813270181417,
+      "selected": 0.17509961314499378,
+      "relative_change": -0.03039247083795371
+    },
+    "0.5": {
+      "identity": 0.9367512539029121,
+      "selected": 0.9348055049777031,
+      "relative_change": -0.002077124441629774
+    },
+    "0.8": {
+      "identity": 1.3488092571496964,
+      "selected": 1.3477634638547897,
+      "relative_change": -0.0007753455793420017
+    }
+  },
+  "scope": "JSON and source validated. NPZ artifacts and Slurm log not supplied. Checkpoint hashes recorded by GPU job but weights unavailable locally for independent hash verification."
+}
