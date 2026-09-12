@@ -1,0 +1,21 @@
+{
+  "attachment_sha256": "37b5ed8f3d5770ee50a22070b654aab25f1bc12d6e998f1a499f5e88b32b6b20",
+  "source_matches": {
+    "doc/conditioning_investigation_2026-09-11/probe_representations_gpu.py": true,
+    "doc/conditioning_investigation_2026-09-11/representation_geometry.py": true,
+    "data_generation/objaverse-dexonomy/generate_target_latents.py": true,
+    "dataloader.py": true,
+    "sam3d_objects/model/backbone/dit/embedder/touch.py": true,
+    "sam3d_objects/model/backbone/dit/embedder/vecsetx/autoencoder.py": true,
+    "sam3d_objects/model/backbone/dit/embedder/vecsetx/utils.py": true,
+    "sam3d_objects/model/backbone/tdfy_dit/models/sparse_structure_vae.py": true
+  },
+  "target_regeneration_max_abs_error": 0.0,
+  "native_forward_max_abs_error": 0.0,
+  "max_boundary_fraction": 0.0,
+  "own_target_nearest_count": 20,
+  "surface_latent_beats_mean_target_count": 7,
+  "mean_target_control_mse": 0.17515176150127643,
+  "mean_decoded_minus_raw_iou": 0.00758502446941421,
+  "limits": "JSON/source checks only. Slurm log and NPZ outputs not supplied; checkpoint hashes recorded, weights unavailable for independent verification."
+}
