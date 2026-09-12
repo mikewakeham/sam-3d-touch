@@ -1,0 +1,223 @@
+{
+  "source_sha256": {
+    "sam3d_objects/pipeline/inference_utils.py": "8606f2815c657b8a71433cb24d1df904c7d13a884fc7258391e2427ddb5992b0",
+    "sam3d_objects/model/backbone/tdfy_dit/utils/postprocessing_utils.py": "7fdd03ebb0ac45ee41e0a35408d7e068b568793e677de4e485af0f9faf812b72",
+    "doc/conditioning_investigation_2026-09-11/frame_contract.py": "2df9de066d39b2d85e87a68d713447ce0d37795ae80ced8f5a663ff8ae6d9c22"
+  },
+  "stock_column_rotation": [
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      -1
+    ],
+    [
+      0,
+      1,
+      0
+    ]
+  ],
+  "saved_transforms": [
+    {
+      "object_id": "07569a25210449ab8b54606974e6c767",
+      "scale": 0.7158827185630798,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "973ede93c0c1356e555a31962dab77c33cf766962ce35ce59f997aaad1fdc3c8"
+    },
+    {
+      "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+      "scale": 0.665048360824585,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "21c5f4ee5a6fb9f85f7ca94beb1258950e59b038b5a48a4be50114708c417223"
+    },
+    {
+      "object_id": "0afbd2427ca84114b659e1d8cfcb647a",
+      "scale": 0.6575084924697876,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "7b19f2b80fbf04a73a44f7ec13a75dd8db05dd089deb9b26cdcfd7ec012c1d47"
+    },
+    {
+      "object_id": "0c15a58c6a0c4ec9bff9336312f675d2",
+      "scale": 0.6985094547271729,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "ca6af4fe630b871c109d7365095c7cecd0e5c430d3e3a1f4cf2377f45c520ac2"
+    },
+    {
+      "object_id": "199b2202bc4543acb5a7a557212b605d",
+      "scale": 0.6661520600318909,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "40460dc71df4790fe80ee80ed4fe58327d1febc3a7dd267c0bcae2807316237c"
+    },
+    {
+      "object_id": "1bf2bf7383d34e45aa5ac504c85e572c",
+      "scale": 0.5678574442863464,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "bcb51813244f94026fc3835c17b11e0b18ae9f57ce7d8a6e44b14df43229dacd"
+    },
+    {
+      "object_id": "1cf32d0ef332402c81cdf8ea6d6030b3",
+      "scale": 0.7182062864303589,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "0d710d22339120deebdd544d54b8a4b7e5b129675586799eb8e9184342ecb8e4"
+    },
+    {
+      "object_id": "1f51096857cb46c5a2bd1ef8bc2c1803",
+      "scale": 0.7099108695983887,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "e594c8b75fc7bb3f5c4b3b790efbd3b31b4ceb8e5c754b92ea4d1eca5cd1a748"
+    },
+    {
+      "object_id": "1fb985a5d5974bdcb412e91293d817f7",
+      "scale": 0.7202634215354919,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "184527cec2a2bc0c8d22dce00ab16831036aaad4118631e3a41866e0eee0eea2"
+    },
+    {
+      "object_id": "49853261fbbe48929211cfb4f5b13866",
+      "scale": 0.5170195698738098,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "9743fdc1f477745703ade37cb1b96c874d0752b65d7a3c71c0d7212cab84bc56"
+    },
+    {
+      "object_id": "548362a5ab6f4c8e8fda42143172614e",
+      "scale": 0.597170889377594,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "3d52edc1ea1bab406ba6c76af27d0a3ff35a19583dee4fa66ba23190555306c2"
+    },
+    {
+      "object_id": "68a31a8eb07d4b84aeb3b13484d4c9e8",
+      "scale": 0.6158238053321838,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "19360cc5993e4b37c7c142b9c29b5e53799090b03be4870ca56b087d4d0fcc7d"
+    },
+    {
+      "object_id": "6a836cf7662f4cfaa7e1244a24d6e73a",
+      "scale": 0.5467017889022827,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "ee1a54599c482d72f178ef9bfe2104857fe53b92f93e960d95762fa6923ea785"
+    },
+    {
+      "object_id": "72b8b1136e124387a8a8b5dc10f9c58f",
+      "scale": 0.866025447845459,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "0426e92a1d7d0b91b085b568e40a137f44b1ac1cdc91a96ac653b0a8e8be02cb"
+    },
+    {
+      "object_id": "7bd547dc65b04894b6f37b33088f1a9e",
+      "scale": 0.7378427982330322,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "fb8aa8a44cddee3b10cada36b8a1da7c1f9727acfc30d7768fc0366023be51a0"
+    },
+    {
+      "object_id": "7c3286c7a4934e48860badc106f63ab3",
+      "scale": 0.5663751363754272,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "a2b879de0f4a718aa5f1b7b5b4b9d84f905cbdc3782740284a67e92070eb15a7"
+    },
+    {
+      "object_id": "8262743abb7f4f759aa0b3bda08551e5",
+      "scale": 0.7145469784736633,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "8f2a3b664b694f59b6560fc9c10d0cb1f3b8cc4a4d47c51df1496ebe50237691"
+    },
+    {
+      "object_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+      "scale": 0.5925855040550232,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "5f516db081e5e540e00dc45f10dca63e9499db3fab6a1336276b82c238812141"
+    },
+    {
+      "object_id": "949af5011ce84b0098c5a0688420e569",
+      "scale": 0.5870715379714966,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "15499bb2d4213f099edf9b1373b6f27a98464a1fe11ba0646af5db76ed664da7"
+    },
+    {
+      "object_id": "9e134caf65e04f5abaf742ac24df647d",
+      "scale": 0.565193235874176,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "d1b9a4cad9d0450293174baf9987ce8dee627fbcdeda1bc0d2f501f1c412a521"
+    },
+    {
+      "object_id": "a807e2119b24443da16a2e28529cfa26",
+      "scale": 0.6877620816230774,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "159b3dec108805e5af658fea6a414e6b87c5c0f777068dc098ee0591a0f2fe86"
+    },
+    {
+      "object_id": "b38765d87b644fdeb6c4c9ffe1ca98ba",
+      "scale": 0.5914347171783447,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "c41ed438bc619c95af26a9281ce901635df7501759ac1e00c746cb6a199061a6"
+    },
+    {
+      "object_id": "c057e4593f9e42f5a353718f6c3c9150",
+      "scale": 0.5757766962051392,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "38d6208805ae16b57c0ab2f48212ae1547dad2ea49c9c445e22f95ddfec89680"
+    },
+    {
+      "object_id": "d3eae95d30064e4baafe4427d7c9038a",
+      "scale": 0.7652121782302856,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "c10199e20486805af37116e267db5be5cea6a8aea1c6e6b5ff863c9f45423f16"
+    },
+    {
+      "object_id": "d7167aa45e6e43b4a91fdbf5eb70b661",
+      "scale": 0.5238870978355408,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "f5dcae3cc65ee6f2fd2804480ebe33b0a26eb8bfc99e5f9bab404b12b9585869"
+    },
+    {
+      "object_id": "d87e82071e24487481bf90c8f2682fb6",
+      "scale": 0.6739094257354736,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "e47de766d176f42641ce952d78c170bf70bb40b34f1ab34a8d603c31cf669af9"
+    },
+    {
+      "object_id": "dbba322581594949944949744937c788",
+      "scale": 0.5575693249702454,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "e8705df84c61f38505dac877a3b8422ffc09e9c2ccb2fbbb8d20dece5e37740e"
+    },
+    {
+      "object_id": "e2759dc44b4b40fb9cf9544afc650282",
+      "scale": 0.5110662579536438,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "20cbad8d6f9b595a7860937299d34304f4bbf6bd637b204beec7e10ec88aead2"
+    },
+    {
+      "object_id": "e697fbdea7d04aa2b09122e36efadf16",
+      "scale": 0.6735187768936157,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "b79d6579660d02ed7368a6d34d06e27c7bf197da92642213d55005fb8d1a8713"
+    },
+    {
+      "object_id": "f240fc675fe649acafb6da700d299d55",
+      "scale": 0.51613450050354,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "e3a397db6e9835a8832bc113d3bfdeab4acc1f76da91b121527779545fe39feb"
+    },
+    {
+      "object_id": "f4e66b252b324dad84ba036a92b99f43",
+      "scale": 0.6905368566513062,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "9b2f63d308611152a404c4c0a9bfd74ce6987cbca3a70625aa081bf3010e998c"
+    },
+    {
+      "object_id": "fe725496195f49bfbabb52407c58edf8",
+      "scale": 0.7111620306968689,
+      "rotation_max_abs_error": 0.0,
+      "sha256": "1721b82c9c16e5dd0e56d28aea9cecc99e150a17f928f06308bc6b215cd1c397"
+    }
+  ],
+  "objects": 32,
+  "max_rotation_error": 0.0,
+  "proper_grid_rotations_verified": 24,
+  "conclusion": "Saved source-to-render rotation equals stock voxelizer rotation. Applying stock rotation again to the already transformed mesh would double it.",
+  "limits": "Checks linear rotation and export inverse, not source semantic front direction, source mesh reconstruction, or neural compatibility."
+}

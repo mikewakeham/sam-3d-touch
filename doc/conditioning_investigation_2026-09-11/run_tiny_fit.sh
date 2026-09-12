@@ -17,8 +17,8 @@ for arm in image camera oracle; do
  /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python \
   doc/conditioning_investigation_2026-09-11/tiny_fit_gpu.py \
   --arm "$arm" --objects 4 --steps 1000 \
-  --output-dir "outputs/frame_tiny_fit/${SLURM_JOB_ID:-manual}/$arm"
+  --output-dir "outputs/conditioning_investigation/frame_tiny_fit/${SLURM_JOB_ID:-manual}/$arm"
 done
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python \
  doc/conditioning_investigation_2026-09-11/check_tiny_fit.py \
- "outputs/frame_tiny_fit/${SLURM_JOB_ID:-manual}"
+ "outputs/conditioning_investigation/frame_tiny_fit/${SLURM_JOB_ID:-manual}"

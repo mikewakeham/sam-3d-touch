@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=conditioning_probe
+#SBATCH --job-name=target_frame_probe
 #SBATCH --partition=kempner_h100
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
@@ -16,9 +16,5 @@ export PYTHONUNBUFFERED=1
 export LIDRA_SKIP_INIT=true
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python \
-  doc/conditioning_investigation_2026-09-11/probe_gpu.py \
-  --pipeline-config checkpoints/hf/pipeline.yaml \
-  --checkpoints outputs/stage1_image_full_cross_attention/best.pt \
-                outputs/stage1_full_surface_full_cross_attention/best.pt \
-  --split train --objects 8 --batch-size 4 --draws 4 \
-  --output "outputs/conditioning_investigation/conditioning_probe/train-${SLURM_JOB_ID:-manual}.json"
+  doc/conditioning_investigation_2026-09-11/probe_target_frames_gpu.py \
+  --output-dir "outputs/conditioning_investigation/target_frame_probe/${SLURM_JOB_ID:-manual}"

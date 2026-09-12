@@ -19,5 +19,5 @@ export LIDRA_SKIP_INIT=true
   doc/conditioning_investigation_2026-09-11/rollout_gpu.py \
   --probe-json doc/conditioning_investigation_2026-09-11/gpu_probe_train_46083371.json \
   --pipeline-config checkpoints/hf/pipeline.yaml \
-  --output-dir "outputs/conditioning_rollout/train-${SLURM_JOB_ID:-manual}" \
+  --output-dir "outputs/conditioning_investigation/conditioning_rollout/train-${SLURM_JOB_ID:-manual}" \
   --strengths 0 1 7 --seeds 29 30 --steps 25
