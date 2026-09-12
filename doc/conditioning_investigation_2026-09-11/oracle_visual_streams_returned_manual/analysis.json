@@ -1,0 +1,429 @@
+{
+  "summary": {
+    "fit_view_changes": {
+      "correct_surface_loss": {
+        "cells_rgb_silhouette_pointmap": {
+          "000": 0.017953547881916165,
+          "001": 0.01899514199855427,
+          "010": 0.0359721293207258,
+          "011": 0.03739112514692048,
+          "100": 0.02855589675406615,
+          "101": 0.02818099968135357,
+          "110": 0.020206216683921713,
+          "111": 0.018985515033515792
+        },
+        "conditional_effects": {
+          "rgb": [
+            {
+              "other_stream_settings": {
+                "silhouette": 0,
+                "pointmap": 0
+              },
+              "mean_delta": 0.010602348872149983
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 0,
+                "pointmap": 1
+              },
+              "mean_delta": 0.0091858576827993
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 1,
+                "pointmap": 0
+              },
+              "mean_delta": -0.015765912636804085
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 1,
+                "pointmap": 1
+              },
+              "mean_delta": -0.01840561011340469
+            }
+          ],
+          "silhouette": [
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "pointmap": 0
+              },
+              "mean_delta": 0.018018581438809633
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "pointmap": 1
+              },
+              "mean_delta": 0.018395983148366213
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "pointmap": 0
+              },
+              "mean_delta": -0.008349680070144435
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "pointmap": 1
+              },
+              "mean_delta": -0.009195484647837779
+            }
+          ],
+          "pointmap": [
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "silhouette": 0
+              },
+              "mean_delta": 0.0010415941166381042
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "silhouette": 1
+              },
+              "mean_delta": 0.0014189958261946838
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "silhouette": 0
+              },
+              "mean_delta": -0.0003748970727125804
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "silhouette": 1
+              },
+              "mean_delta": -0.0012207016504059236
+            }
+          ]
+        },
+        "coherent_other_minus_anchor": 0.001031967151599627
+      },
+      "surface_benefit_wrong_minus_correct": {
+        "cells_rgb_silhouette_pointmap": {
+          "000": 0.06559668364934623,
+          "001": 0.06545924604870379,
+          "010": 0.06669613524960975,
+          "011": 0.06413254273744921,
+          "100": 0.06593095387021701,
+          "101": 0.06712457382430632,
+          "110": 0.06736271770205349,
+          "111": 0.0678286114319538
+        },
+        "conditional_effects": {
+          "rgb": [
+            {
+              "other_stream_settings": {
+                "silhouette": 0,
+                "pointmap": 0
+              },
+              "mean_delta": 0.000334270220870773
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 0,
+                "pointmap": 1
+              },
+              "mean_delta": 0.0016653277756025393
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 1,
+                "pointmap": 0
+              },
+              "mean_delta": 0.0006665824524437388
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 1,
+                "pointmap": 1
+              },
+              "mean_delta": 0.0036960686945045986
+            }
+          ],
+          "silhouette": [
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "pointmap": 0
+              },
+              "mean_delta": 0.0010994516002635162
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "pointmap": 1
+              },
+              "mean_delta": -0.0013267033112545807
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "pointmap": 0
+              },
+              "mean_delta": 0.0014317638318364818
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "pointmap": 1
+              },
+              "mean_delta": 0.0007040376076474786
+            }
+          ],
+          "pointmap": [
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "silhouette": 0
+              },
+              "mean_delta": -0.0001374376006424427
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "silhouette": 1
+              },
+              "mean_delta": -0.0025635925121605396
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "silhouette": 0
+              },
+              "mean_delta": 0.0011936199540893238
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "silhouette": 1
+              },
+              "mean_delta": 0.00046589372990032035
+            }
+          ]
+        },
+        "coherent_other_minus_anchor": 0.0022319277826075706
+      }
+    },
+    "reserved_view_changes": {
+      "correct_surface_loss": {
+        "cells_rgb_silhouette_pointmap": {
+          "000": 0.017953547881916165,
+          "001": 0.01916604182527711,
+          "010": 0.041854788549244404,
+          "011": 0.043051700883855425,
+          "100": 0.06201943522319198,
+          "101": 0.05929421617959937,
+          "110": 0.05815810586015383,
+          "111": 0.05591087136417627
+        },
+        "conditional_effects": {
+          "rgb": [
+            {
+              "other_stream_settings": {
+                "silhouette": 0,
+                "pointmap": 0
+              },
+              "mean_delta": 0.04406588734127581
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 0,
+                "pointmap": 1
+              },
+              "mean_delta": 0.040128174354322255
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 1,
+                "pointmap": 0
+              },
+              "mean_delta": 0.01630331731090943
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 1,
+                "pointmap": 1
+              },
+              "mean_delta": 0.01285917048032085
+            }
+          ],
+          "silhouette": [
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "pointmap": 0
+              },
+              "mean_delta": 0.02390124066732824
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "pointmap": 1
+              },
+              "mean_delta": 0.023885659058578312
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "pointmap": 0
+              },
+              "mean_delta": -0.0038613293630381427
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "pointmap": 1
+              },
+              "mean_delta": -0.0033833448154230914
+            }
+          ],
+          "pointmap": [
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "silhouette": 0
+              },
+              "mean_delta": 0.0012124939433609445
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "silhouette": 1
+              },
+              "mean_delta": 0.0011969123346110184
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "silhouette": 0
+              },
+              "mean_delta": -0.002725219043592612
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "silhouette": 1
+              },
+              "mean_delta": -0.0022472344959775605
+            }
+          ]
+        },
+        "coherent_other_minus_anchor": 0.03795732348226011
+      },
+      "surface_benefit_wrong_minus_correct": {
+        "cells_rgb_silhouette_pointmap": {
+          "000": 0.06559668364934623,
+          "001": 0.06547285829825948,
+          "010": 0.060916442424058914,
+          "011": 0.0598625287724038,
+          "100": 0.053071515479435526,
+          "101": 0.05424542026594281,
+          "110": 0.05380649430056413,
+          "111": 0.05469400559862455
+        },
+        "conditional_effects": {
+          "rgb": [
+            {
+              "other_stream_settings": {
+                "silhouette": 0,
+                "pointmap": 0
+              },
+              "mean_delta": -0.012525168169910708
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 0,
+                "pointmap": 1
+              },
+              "mean_delta": -0.011227438032316664
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 1,
+                "pointmap": 0
+              },
+              "mean_delta": -0.007109948123494784
+            },
+            {
+              "other_stream_settings": {
+                "silhouette": 1,
+                "pointmap": 1
+              },
+              "mean_delta": -0.005168523173779249
+            }
+          ],
+          "silhouette": [
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "pointmap": 0
+              },
+              "mean_delta": -0.004680241225287318
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "pointmap": 1
+              },
+              "mean_delta": -0.00561032952585568
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "pointmap": 0
+              },
+              "mean_delta": 0.0007349788211286068
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "pointmap": 1
+              },
+              "mean_delta": 0.00044858533268173534
+            }
+          ],
+          "pointmap": [
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "silhouette": 0
+              },
+              "mean_delta": -0.0001238253510867556
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 0,
+                "silhouette": 1
+              },
+              "mean_delta": -0.0010539136516551177
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "silhouette": 0
+              },
+              "mean_delta": 0.0011739047865072887
+            },
+            {
+              "other_stream_settings": {
+                "rgb": 1,
+                "silhouette": 1
+              },
+              "mean_delta": 0.0008875112980604172
+            }
+          ]
+        },
+        "coherent_other_minus_anchor": -0.010902678050721683
+      }
+    }
+  },
+  "limits": "Four fitted objects and one checkpoint. Changes in mismatched view streams measure model dependence, not physical inconsistency of natural inputs. Do not assign additive blame percentages. Draws and views share objects; no independent-sample significance claim. A positive wrong-minus-correct surface gap establishes relative preference, not superiority to image-only."
+}

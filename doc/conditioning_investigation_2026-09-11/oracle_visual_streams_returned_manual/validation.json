@@ -1,0 +1,76 @@
+{
+  "sources_match": true,
+  "analysis_exact_match": true,
+  "input_hashes_match": true,
+  "final_parameters_match": true,
+  "max_replay_abs_error": 0.0,
+  "rows": 96,
+  "per_group": [
+    {
+      "group": 1,
+      "anchor_loss": 0.017953547881916165,
+      "pointmap_only_loss": 0.018300537834875286,
+      "rgb_only_loss": 0.03647466632537544,
+      "silhouette_only_loss": 0.038613477256149054,
+      "rgb_silhouette_loss": 0.018712646677158773,
+      "all_other_loss": 0.018547310610301793,
+      "coherent_surface_benefit": 0.06581880140583962
+    },
+    {
+      "group": 2,
+      "anchor_loss": 0.017953547881916165,
+      "pointmap_only_loss": 0.018814823240973055,
+      "rgb_only_loss": 0.02807458583265543,
+      "silhouette_only_loss": 0.04166609654203057,
+      "rgb_silhouette_loss": 0.023215750930830836,
+      "all_other_loss": 0.02088515879586339,
+      "coherent_surface_benefit": 0.08222324075177312
+    },
+    {
+      "group": 3,
+      "anchor_loss": 0.017953547881916165,
+      "pointmap_only_loss": 0.019870064919814467,
+      "rgb_only_loss": 0.02111843810416758,
+      "silhouette_only_loss": 0.02763681416399777,
+      "rgb_silhouette_loss": 0.018690252443775535,
+      "all_other_loss": 0.01752407569438219,
+      "coherent_surface_benefit": 0.05544379213824868
+    },
+    {
+      "group": 4,
+      "anchor_loss": 0.017953547881916165,
+      "pointmap_only_loss": 0.018963432172313333,
+      "rgb_only_loss": 0.04977389983832836,
+      "silhouette_only_loss": 0.03776432131417096,
+      "rgb_silhouette_loss": 0.04518955620005727,
+      "all_other_loss": 0.03957151109352708,
+      "coherent_surface_benefit": 0.056431999895721674
+    },
+    {
+      "group": 5,
+      "anchor_loss": 0.017953547881916165,
+      "pointmap_only_loss": 0.019348110421560705,
+      "rgb_only_loss": 0.07593185966834426,
+      "silhouette_only_loss": 0.04182278993539512,
+      "rgb_silhouette_loss": 0.0810763374902308,
+      "all_other_loss": 0.08224959671497345,
+      "coherent_surface_benefit": 0.06029892340302467
+    },
+    {
+      "group": 6,
+      "anchor_loss": 0.017953547881916165,
+      "pointmap_only_loss": 0.019186582881957293,
+      "rgb_only_loss": 0.06035254616290331,
+      "silhouette_only_loss": 0.04597725439816713,
+      "rgb_silhouette_loss": 0.048208423890173435,
+      "all_other_loss": 0.04591150628402829,
+      "coherent_surface_benefit": 0.047351093497127295
+    }
+  ],
+  "positive_wrong_minus_correct_draw_cells": 384,
+  "total_wrong_minus_correct_draw_cells": 384,
+  "attachment_sha256": {
+    "probe": "f4b58183c5fe1df04fab35e92ecd8273cabe24692cec92440556dd82bc3ed077",
+    "analysis": "4de90f1c43feb08bbf35570e3ad2e39819891520503b9935e7fc2c75a1c4e937"
+  }
+}
