@@ -1,0 +1,996 @@
+{
+  "summary": {
+    "samples": 64,
+    "objects": 32,
+    "camera_translation_min": [
+      -2.9744859020297554e-08,
+      -8.403821283309298e-08,
+      1.9999995231628418
+    ],
+    "camera_translation_max": [
+      4.473976744634456e-09,
+      5.9245969907806284e-08,
+      2.0
+    ],
+    "within_object_relative_rotation_degrees": {
+      "min": 30.314021405487537,
+      "median": 113.86105506230004,
+      "max": 180.0,
+      "pairs": 32
+    }
+  },
+  "rows": [
+    {
+      "sample_id": "07569a25210449ab8b54606974e6c767_007",
+      "object_id": "07569a25210449ab8b54606974e6c767",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.8045461446636182,
+        -0.5500488543082104,
+        0.6641231432251405
+      ],
+      "camera_sha256": "849edcdc3a3d4cbe0c88a406b2a730267f9e430b2227a82f5a5bcee7304d46ac"
+    },
+    {
+      "sample_id": "07569a25210449ab8b54606974e6c767_012",
+      "object_id": "07569a25210449ab8b54606974e6c767",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.8424242150663331,
+        -1.0236922128597907,
+        1.497456475633557
+      ],
+      "camera_sha256": "2fa32eac705ba08305877290a4679e1f6d213e12316d300d7235b1d41c34f7f1"
+    },
+    {
+      "sample_id": "0afbd2427ca84114b659e1d8cfcb647a_001",
+      "object_id": "0afbd2427ca84114b659e1d8cfcb647a",
+      "translation_camera": [
+        -1.6084175769037756e-08,
+        5.9245969907806284e-08,
+        1.999999761581421
+      ],
+      "camera_position_object": [
+        0.18517772556505668,
+        1.6803524075891023,
+        -1.0687024217883778
+      ],
+      "camera_sha256": "d12721503d54e9fc2dbfb2e3c4a7907bd103af429864c723d636971cc5646dca"
+    },
+    {
+      "sample_id": "0afbd2427ca84114b659e1d8cfcb647a_011",
+      "object_id": "0afbd2427ca84114b659e1d8cfcb647a",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.450807974518925,
+        -0.4218085682599735,
+        1.3104325496095612
+      ],
+      "camera_sha256": "94ac23add920d3f6be83d9e0e458b16737f24222728e7398a0b804084b30b47b"
+    },
+    {
+      "sample_id": "199b2202bc4543acb5a7a557212b605d_005",
+      "object_id": "199b2202bc4543acb5a7a557212b605d",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        1.3077140548766122,
+        1.484831649398076,
+        0.2918197939368395
+      ],
+      "camera_sha256": "c792c869f99d2cb49d47b0c68da1b3870044c7c88541004096f4fbe28c8d03ca"
+    },
+    {
+      "sample_id": "199b2202bc4543acb5a7a557212b605d_015",
+      "object_id": "199b2202bc4543acb5a7a557212b605d",
+      "translation_camera": [
+        -9.816612411839287e-09,
+        -2.8200442869774633e-08,
+        1.999999761581421
+      ],
+      "camera_position_object": [
+        -0.3835881562816017,
+        0.13111373088228692,
+        1.958486523347844
+      ],
+      "camera_sha256": "92aff474f136d1d0fd9fc7547e49525bd6801d6af043e3f933c8a79596f32052"
+    },
+    {
+      "sample_id": "1bf2bf7383d34e45aa5ac504c85e572c_013",
+      "object_id": "1bf2bf7383d34e45aa5ac504c85e572c",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.5136492736384298,
+        -1.0930749646363829,
+        1.5941615092545567
+      ],
+      "camera_sha256": "c51d02c50f39b26618ac56fb1318e53f272793fc11129133bb0bc9c3be4b019b"
+    },
+    {
+      "sample_id": "1bf2bf7383d34e45aa5ac504c85e572c_015",
+      "object_id": "1bf2bf7383d34e45aa5ac504c85e572c",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.48296587935430374,
+        -0.22695157192104898,
+        1.9274948324542212
+      ],
+      "camera_sha256": "438d38e99b2b7d357bd86cdbeb7d183f05e9c5b7d052db1bda8ccd79dae4e21a"
+    },
+    {
+      "sample_id": "1fb985a5d5974bdcb412e91293d817f7_006",
+      "object_id": "1fb985a5d5974bdcb412e91293d817f7",
+      "translation_camera": [
+        -2.8458058132230235e-09,
+        7.99211719026971e-09,
+        1.999999761581421
+      ],
+      "camera_position_object": [
+        -1.0448615229734013,
+        -1.6442194913956514,
+        0.4525560428186243
+      ],
+      "camera_sha256": "33ee7fadcc533d70d6fcda7deb693f82785760460245c4d47abff52789e7f796"
+    },
+    {
+      "sample_id": "1fb985a5d5974bdcb412e91293d817f7_007",
+      "object_id": "1fb985a5d5974bdcb412e91293d817f7",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        1.0199756144187606,
+        1.6050584259386282,
+        0.6192227035191842
+      ],
+      "camera_sha256": "599f19b5efc98fbeafbf6121b27bf1cc4f9e9ee04a4f32c280587ff28899d1b9"
+    },
+    {
+      "sample_id": "6a836cf7662f4cfaa7e1244a24d6e73a_003",
+      "object_id": "6a836cf7662f4cfaa7e1244a24d6e73a",
+      "translation_camera": [
+        5.369023003964912e-10,
+        4.596389102662357e-10,
+        2.0
+      ],
+      "camera_position_object": [
+        0.24415043875405656,
+        1.9636751804662667,
+        -0.29046671956316106
+      ],
+      "camera_sha256": "0a5142e9d4aadf734e895ee9cba6ce3517a4cedbb6fe5b4e237db5998ce3438e"
+    },
+    {
+      "sample_id": "6a836cf7662f4cfaa7e1244a24d6e73a_005",
+      "object_id": "6a836cf7662f4cfaa7e1244a24d6e73a",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        1.5668261327333772,
+        1.2202940983407062,
+        0.23651107382123712
+      ],
+      "camera_sha256": "ef99ff7576c09b4e429e52a653b045c44fbb9dd39819053d26e19d2dc64c3493"
+    },
+    {
+      "sample_id": "7bd547dc65b04894b6f37b33088f1a9e_012",
+      "object_id": "7bd547dc65b04894b6f37b33088f1a9e",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.8079915270695927,
+        -1.1205467811076426,
+        1.4462103310873964
+      ],
+      "camera_sha256": "799af2d7fd72f8343ccac50bfdb70218741c3da08a750e2881f1b0a8e2a44671"
+    },
+    {
+      "sample_id": "7bd547dc65b04894b6f37b33088f1a9e_013",
+      "object_id": "7bd547dc65b04894b6f37b33088f1a9e",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.6916950150919453,
+        0.9592631955621446,
+        1.6128770992457264
+      ],
+      "camera_sha256": "59a68e85d2f827bdaa400164e0dacb24364109c8a2a4ece044cdb71e8c159423"
+    },
+    {
+      "sample_id": "7c3286c7a4934e48860badc106f63ab3_010",
+      "object_id": "7c3286c7a4934e48860badc106f63ab3",
+      "translation_camera": [
+        -3.1356182095265694e-09,
+        6.938892249546003e-18,
+        1.9999995231628418
+      ],
+      "camera_position_object": [
+        -1.6825058298231905,
+        0.055543546827827854,
+        1.0798559638441094
+      ],
+      "camera_sha256": "f1212d80f71b005e9de71c95ac250fef35a791554d2f0900591105a4c8c11429"
+    },
+    {
+      "sample_id": "7c3286c7a4934e48860badc106f63ab3_013",
+      "object_id": "7c3286c7a4934e48860badc106f63ab3",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.8381105163384944,
+        -0.8953357046966952,
+        1.5798559500953877
+      ],
+      "camera_sha256": "0934772b961002c69bd595f77a8241d7a3ab16e46d4ee5691c8606520674be9a"
+    },
+    {
+      "sample_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_006",
+      "object_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+      "translation_camera": [
+        0.0,
+        0.0,
+        1.999999761581421
+      ],
+      "camera_position_object": [
+        1.9418714509689285,
+        0.3186719219815664,
+        0.3571884534670301
+      ],
+      "camera_sha256": "f5aabb29c2f0b80c60f71c8d77ad16aacb7eb8473e0123513336f11389e62791"
+    },
+    {
+      "sample_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_008",
+      "object_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+      "translation_camera": [
+        3.1680433276726205e-10,
+        -6.143220332432975e-08,
+        1.999999761581421
+      ],
+      "camera_position_object": [
+        -0.4279960228155835,
+        -1.827566447894488,
+        0.6905218685381881
+      ],
+      "camera_sha256": "f1ce94403d0f450e40ff4cb36acf6e5f0becd812ddf14ab6910a3d4ff61ed8d7"
+    },
+    {
+      "sample_id": "949af5011ce84b0098c5a0688420e569_004",
+      "object_id": "949af5011ce84b0098c5a0688420e569",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.9742338194743108,
+        -0.2899345440683829,
+        0.13542133718267038
+      ],
+      "camera_sha256": "9b880dbf4af3f09f681a006e7b06cb269878a3fab3a0d757a19f69d0dce38ea9"
+    },
+    {
+      "sample_id": "949af5011ce84b0098c5a0688420e569_013",
+      "object_id": "949af5011ce84b0098c5a0688420e569",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.9883218887571882,
+        0.5904375469465267,
+        1.6354212460969
+      ],
+      "camera_sha256": "a1cec263749fba54a33af3a1ccf97219c9a4ce605681ee87d3f5b1c8f74f3470"
+    },
+    {
+      "sample_id": "9e134caf65e04f5abaf742ac24df647d_008",
+      "object_id": "9e134caf65e04f5abaf742ac24df647d",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.36607164393648683,
+        -1.8250429607932364,
+        0.7315807786283431
+      ],
+      "camera_sha256": "2418178a37af998ee8b3877bd31b362256e9333377f8425fecd579aed5205e84"
+    },
+    {
+      "sample_id": "9e134caf65e04f5abaf742ac24df647d_015",
+      "object_id": "9e134caf65e04f5abaf742ac24df647d",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.3490605626587092,
+        -0.5242267108003853,
+        1.8982474670081624
+      ],
+      "camera_sha256": "28e5b031b0c82726315fa78bf7f74e38dbc14b0ef2dd2f4cbc9a66e3349fa333"
+    },
+    {
+      "sample_id": "b38765d87b644fdeb6c4c9ffe1ca98ba_007",
+      "object_id": "b38765d87b644fdeb6c4c9ffe1ca98ba",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.4208858710469245,
+        -1.8811281442336605,
+        0.5331150653369024
+      ],
+      "camera_sha256": "0a79f4bc9a357831dd99926824964a006be9cac63beb97cce65605c53bf3695f"
+    },
+    {
+      "sample_id": "b38765d87b644fdeb6c4c9ffe1ca98ba_013",
+      "object_id": "b38765d87b644fdeb6c4c9ffe1ca98ba",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.2652716541872602,
+        -0.22055863532645478,
+        1.5331151354761243
+      ],
+      "camera_sha256": "ea1e277584f447f5adcf40523b1962f3b0928fbb49afae2202806b8f5aecd1da"
+    },
+    {
+      "sample_id": "c057e4593f9e42f5a353718f6c3c9150_012",
+      "object_id": "c057e4593f9e42f5a353718f6c3c9150",
+      "translation_camera": [
+        4.473976744634456e-09,
+        -8.403821283309298e-08,
+        1.9999998807907104
+      ],
+      "camera_position_object": [
+        0.9504073113979474,
+        1.1112903401159828,
+        1.3644631114007906
+      ],
+      "camera_sha256": "40d1c463e311077b0ffa65c97d45485e9ab510013e0b0684697329d74746beff"
+    },
+    {
+      "sample_id": "c057e4593f9e42f5a353718f6c3c9150_013",
+      "object_id": "c057e4593f9e42f5a353718f6c3c9150",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.8363048994587909,
+        -0.9778729364788493,
+        1.5311297659559866
+      ],
+      "camera_sha256": "c907effb4da115d25c58abd54b548e0d28e2d7634fd56b484eff478cf6dc8407"
+    },
+    {
+      "sample_id": "d3eae95d30064e4baafe4427d7c9038a_008",
+      "object_id": "d3eae95d30064e4baafe4427d7c9038a",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.1320820025353608,
+        1.4871610843896652,
+        0.7118580809117881
+      ],
+      "camera_sha256": "7a92b0b06bb93a894dd4baf3a32e9246bc0b13c61629d360ec9da36c001112eb"
+    },
+    {
+      "sample_id": "d3eae95d30064e4baafe4427d7c9038a_015",
+      "object_id": "d3eae95d30064e4baafe4427d7c9038a",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.09220874413108107,
+        0.6801780593271326,
+        1.8785248849989524
+      ],
+      "camera_sha256": "dbe395ccd85bf758437fe80a6cb290fd6792b4313994b7f064f21cab3706905f"
+    },
+    {
+      "sample_id": "d7167aa45e6e43b4a91fdbf5eb70b661_004",
+      "object_id": "d7167aa45e6e43b4a91fdbf5eb70b661",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.8918052424560119,
+        -1.789153715846284,
+        0.06010133697846191
+      ],
+      "camera_sha256": "7188b44fd88106aa031f954354fd03cd8adce2029dbdd2cfaa828ec015df5bf6"
+    },
+    {
+      "sample_id": "d7167aa45e6e43b4a91fdbf5eb70b661_012",
+      "object_id": "d7167aa45e6e43b4a91fdbf5eb70b661",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        1.0826769262249172,
+        -0.9413557543161207,
+        1.3934346695685436
+      ],
+      "camera_sha256": "19868bead18614006b8de5513f4b8781f5d33a1c307aff916b1b8306685cdd33"
+    },
+    {
+      "sample_id": "e697fbdea7d04aa2b09122e36efadf16_009",
+      "object_id": "e697fbdea7d04aa2b09122e36efadf16",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.380164664541961,
+        1.0520213716769642,
+        0.9941812190058696
+      ],
+      "camera_sha256": "33fe214bcfcff2c2c8ae14abe5f611fe2a0cb7d73cb232f0bb920bf55bb76458"
+    },
+    {
+      "sample_id": "e697fbdea7d04aa2b09122e36efadf16_012",
+      "object_id": "e697fbdea7d04aa2b09122e36efadf16",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        1.3175073018199341,
+        0.1777541515753091,
+        1.4941811676605414
+      ],
+      "camera_sha256": "03d6d2813a56131788b58ae4210c6442fcc9fa4cdc4a639e57cbeea5ff29752b"
+    },
+    {
+      "sample_id": "0838b73f246f4768aa0671e7b2ba7c30_002",
+      "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.861237447255071,
+        0.15501874607672642,
+        -0.7153771543287021
+      ],
+      "camera_sha256": "2063df3db6b66117314e7889f5e1a9129ba5cd68213d8ec155b9f53ed2e579f2"
+    },
+    {
+      "sample_id": "0838b73f246f4768aa0671e7b2ba7c30_012",
+      "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.2445709168713268,
+        0.6413002430668452,
+        1.4282075763956201
+      ],
+      "camera_sha256": "dc0f0f696862c4c1a7fddfcf2949a9166ee02c1be5443ef4e9e79ccc9e8eb92a"
+    },
+    {
+      "sample_id": "0c15a58c6a0c4ec9bff9336312f675d2_010",
+      "object_id": "0c15a58c6a0c4ec9bff9336312f675d2",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.9095748555298523,
+        -1.4342516814444148,
+        1.056217666261676
+      ],
+      "camera_sha256": "bd8ec8319048bc47f5ed232f918f72271b96405fe538e0fef738ed0ad9498476"
+    },
+    {
+      "sample_id": "0c15a58c6a0c4ec9bff9336312f675d2_013",
+      "object_id": "0c15a58c6a0c4ec9bff9336312f675d2",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.2744277564856788,
+        1.2259184914356158,
+        1.5562175413306816
+      ],
+      "camera_sha256": "cc41c0549d5e4a3a0e0dd7efe40048a18858c0c1902bcf36633c7f108aff656d"
+    },
+    {
+      "sample_id": "1cf32d0ef332402c81cdf8ea6d6030b3_007",
+      "object_id": "1cf32d0ef332402c81cdf8ea6d6030b3",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.07927678584888895,
+        -1.9313554002165076,
+        0.5134022444444385
+      ],
+      "camera_sha256": "e98c1f72aa57dcf3ffffa05ef2aa0a2558dd50b0d3bf6169d4039042c8497e36"
+    },
+    {
+      "sample_id": "1cf32d0ef332402c81cdf8ea6d6030b3_013",
+      "object_id": "1cf32d0ef332402c81cdf8ea6d6030b3",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.2274979726782669,
+        -0.45040304324548214,
+        1.5134024167042845
+      ],
+      "camera_sha256": "e94b7ed31ad3bd1b140ea4662189efe8aab4d9c20aaa1c3cb4a2664761309230"
+    },
+    {
+      "sample_id": "1f51096857cb46c5a2bd1ef8bc2c1803_009",
+      "object_id": "1f51096857cb46c5a2bd1ef8bc2c1803",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.7870998641403524,
+        -0.3201512903657042,
+        0.8389146265791292
+      ],
+      "camera_sha256": "3eafb4ef424a37a2a1fbf84875011bd5b57b6115502687909a3097932da1d474"
+    },
+    {
+      "sample_id": "1f51096857cb46c5a2bd1ef8bc2c1803_014",
+      "object_id": "1f51096857cb46c5a2bd1ef8bc2c1803",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.9003922244057284,
+        0.6268020001842466,
+        1.672247844670518
+      ],
+      "camera_sha256": "0908252ab8b690009be927b354777f16bbfdb7d15f2e952e86888717c55db27e"
+    },
+    {
+      "sample_id": "49853261fbbe48929211cfb4f5b13866_004",
+      "object_id": "49853261fbbe48929211cfb4f5b13866",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        1.851040818389065,
+        -0.7558989124942069,
+        0.04759115857504318
+      ],
+      "camera_sha256": "6b7765e6dafa79037ed61fd8329eda47cb5b9bddce8b9ffe8d11637fc61103f5"
+    },
+    {
+      "sample_id": "49853261fbbe48929211cfb4f5b13866_005",
+      "object_id": "49853261fbbe48929211cfb4f5b13866",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.8409096174128476,
+        0.7517616921130551,
+        0.2142578135364515
+      ],
+      "camera_sha256": "2517dd4ab59dba7f799bf5c51199cc1431ada1643983cfd073dddc5f4be232bf"
+    },
+    {
+      "sample_id": "548362a5ab6f4c8e8fda42143172614e_006",
+      "object_id": "548362a5ab6f4c8e8fda42143172614e",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.052284776584465,
+        -1.6657499861562837,
+        0.34347380344202083
+      ],
+      "camera_sha256": "aaa14a0357cc6f309053c6fa6968a503d412dd7a5f73eabcf6bb89e867a7df0c"
+    },
+    {
+      "sample_id": "548362a5ab6f4c8e8fda42143172614e_010",
+      "object_id": "548362a5ab6f4c8e8fda42143172614e",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.4101960231357016,
+        -0.9954713424075096,
+        1.0101403127601187
+      ],
+      "camera_sha256": "bbb4a1a30bd6884507dd2b2968d3199a915fe7ae4d17474757eec78e3bc1abe4"
+    },
+    {
+      "sample_id": "68a31a8eb07d4b84aeb3b13484d4c9e8_000",
+      "object_id": "68a31a8eb07d4b84aeb3b13484d4c9e8",
+      "translation_camera": [
+        -3.0845348497621217e-09,
+        -3.0616904567182246e-09,
+        1.999999761581421
+      ],
+      "camera_position_object": [
+        0.24081230200149895,
+        1.1470203337129863,
+        -1.6206027928247764
+      ],
+      "camera_sha256": "77960ed5f8b14c5de978a05c655544d29a04a9f63af36556dd3fab0d335412c0"
+    },
+    {
+      "sample_id": "68a31a8eb07d4b84aeb3b13484d4c9e8_008",
+      "object_id": "68a31a8eb07d4b84aeb3b13484d4c9e8",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.3390970557918659,
+        1.8044261490286113,
+        0.7931322955196748
+      ],
+      "camera_sha256": "be69f807404ad86619dcbf24ff80e995c657e3c8d7ef13835adbd7281fb43a15"
+    },
+    {
+      "sample_id": "72b8b1136e124387a8a8b5dc10f9c58f_000",
+      "object_id": "72b8b1136e124387a8a8b5dc10f9c58f",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        1.0084192898549782,
+        0.6074065493634324,
+        -1.6168325966270913
+      ],
+      "camera_sha256": "ebd3c6baf443abca8f1208e19907f0ee042c1086c00ccef296c2b74341a53300"
+    },
+    {
+      "sample_id": "72b8b1136e124387a8a8b5dc10f9c58f_006",
+      "object_id": "72b8b1136e124387a8a8b5dc10f9c58f",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.8888316958589257,
+        0.468766828796124,
+        0.46105574999511695
+      ],
+      "camera_sha256": "c6b4bda604e3ecd2231cb0cb1cc07968cb0d8f3ade43f2d4e3ff2fadfde8c4a0"
+    },
+    {
+      "sample_id": "8262743abb7f4f759aa0b3bda08551e5_013",
+      "object_id": "8262743abb7f4f759aa0b3bda08551e5",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.3144944378665093,
+        0.05444834626495419,
+        1.506366290499458
+      ],
+      "camera_sha256": "4a96006a51be315d45267a54b20693a2a798e2eee1db4c3fda1933a14552c02e"
+    },
+    {
+      "sample_id": "8262743abb7f4f759aa0b3bda08551e5_014",
+      "object_id": "8262743abb7f4f759aa0b3bda08551e5",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.04535425937050208,
+        1.0949444822358363,
+        1.673033013670535
+      ],
+      "camera_sha256": "8e079072d057a71677ac4e3dd8de9a7f9327ecbd0d43d13379cb7e7d2c16e37d"
+    },
+    {
+      "sample_id": "a807e2119b24443da16a2e28529cfa26_004",
+      "object_id": "a807e2119b24443da16a2e28529cfa26",
+      "translation_camera": [
+        -2.9744859020297554e-08,
+        -1.535437199606804e-08,
+        1.999999761581421
+      ],
+      "camera_position_object": [
+        1.9466339246635325,
+        0.4322024350229708,
+        0.15432963898643706
+      ],
+      "camera_sha256": "e1ea161009de1d0b13435af89d680d2c7e93ec771d04f975a5d66b9efefb533b"
+    },
+    {
+      "sample_id": "a807e2119b24443da16a2e28529cfa26_006",
+      "object_id": "a807e2119b24443da16a2e28529cfa26",
+      "translation_camera": [
+        -1.7734990143125628e-09,
+        -1.6148945514160573e-09,
+        1.999999761581421
+      ],
+      "camera_position_object": [
+        -0.42041108968813523,
+        1.893525587532923,
+        0.4876629224909925
+      ],
+      "camera_sha256": "db734afdf64ba87ab70373544e66abc4ca5ad0a2fde85037fb42f7dbf8656bca"
+    },
+    {
+      "sample_id": "d87e82071e24487481bf90c8f2682fb6_004",
+      "object_id": "d87e82071e24487481bf90c8f2682fb6",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.982239823360838,
+        -0.24380646270199807,
+        0.10622227415885296
+      ],
+      "camera_sha256": "08f78a23768572bde9a0569a8ba8393f1fe9ffcff357b0b51e95d2ff1985bf78"
+    },
+    {
+      "sample_id": "d87e82071e24487481bf90c8f2682fb6_015",
+      "object_id": "d87e82071e24487481bf90c8f2682fb6",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.24038083608675673,
+        0.4246658397621867,
+        1.9395556426078375
+      ],
+      "camera_sha256": "57ea8c229ca55380ca4fb60fffc6bfc8eb35dee9e32f303c0993cf7f59bfddcc"
+    },
+    {
+      "sample_id": "dbba322581594949944949744937c788_000",
+      "object_id": "dbba322581594949944949744937c788",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.4151023997477394,
+        1.1775612000550955,
+        -1.56238291055605
+      ],
+      "camera_sha256": "ebe87fb40e3952e72c2581feaf5544d76172b7cceedbe3081e0c352c74aa9b0a"
+    },
+    {
+      "sample_id": "dbba322581594949944949744937c788_013",
+      "object_id": "dbba322581594949944949744937c788",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.8454975524830397,
+        -0.7591032851490735,
+        1.6458721683459252
+      ],
+      "camera_sha256": "060118be90d3b5528409e9f2b8c0c4ff2258f854a42dc282f549a193f724aff6"
+    },
+    {
+      "sample_id": "e2759dc44b4b40fb9cf9544afc650282_001",
+      "object_id": "e2759dc44b4b40fb9cf9544afc650282",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        1.1025358538132717,
+        0.8296073971968763,
+        -1.447814320495349
+      ],
+      "camera_sha256": "45d1b7e9b26a907c7c3f024330e7cbfb79f92401f34bc1969360e45a20479d49"
+    },
+    {
+      "sample_id": "e2759dc44b4b40fb9cf9544afc650282_011",
+      "object_id": "e2759dc44b4b40fb9cf9544afc650282",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.3882255251630145,
+        0.8190405854709835,
+        1.1840618661955822
+      ],
+      "camera_sha256": "dd43824c20c51825f4cb4a159056df1cae78f9162da3fdafc5b683d064fce126"
+    },
+    {
+      "sample_id": "f240fc675fe649acafb6da700d299d55_001",
+      "object_id": "f240fc675fe649acafb6da700d299d55",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.8418357888354969,
+        1.3597464531807013,
+        -1.2010003096891593
+      ],
+      "camera_sha256": "ad565b1366328353abd4f2334861405428ac875a2bc3781894d500e0f8270d8c"
+    },
+    {
+      "sample_id": "f240fc675fe649acafb6da700d299d55_012",
+      "object_id": "f240fc675fe649acafb6da700d299d55",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        0.8148897681537819,
+        -1.1324600019921043,
+        1.4329997734065114
+      ],
+      "camera_sha256": "1b07f472ea14e3aa6f29c553f45bb31e4e2946f148e3c60c938393acda790a30"
+    },
+    {
+      "sample_id": "f4e66b252b324dad84ba036a92b99f43_001",
+      "object_id": "f4e66b252b324dad84ba036a92b99f43",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -1.1828166702689367,
+        -1.0855528147983644,
+        -1.1926942136146832
+      ],
+      "camera_sha256": "fb7283fdadfe97c04e15e75c907502da6f3372b0d454dc2c2967e94224f11ba2"
+    },
+    {
+      "sample_id": "f4e66b252b324dad84ba036a92b99f43_009",
+      "object_id": "f4e66b252b324dad84ba036a92b99f43",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.7457597211678529,
+        -1.6025541502875758,
+        0.9357685592986912
+      ],
+      "camera_sha256": "bb53b7f26516badd80f3fbf49b3d0a077419cc441224d28972ac0bcf3818c71f"
+    },
+    {
+      "sample_id": "fe725496195f49bfbabb52407c58edf8_000",
+      "object_id": "fe725496195f49bfbabb52407c58edf8",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        -0.6545928226543145,
+        -0.8556840634730998,
+        -1.6850261063751297
+      ],
+      "camera_sha256": "11aadb93bbd40a52472bb68de41ba8d3cca1e80f33ae45ec01e10df8371251e1"
+    },
+    {
+      "sample_id": "fe725496195f49bfbabb52407c58edf8_010",
+      "object_id": "fe725496195f49bfbabb52407c58edf8",
+      "translation_camera": [
+        0.0,
+        0.0,
+        2.0
+      ],
+      "camera_position_object": [
+        1.610861595838665,
+        -0.4290915360931903,
+        1.1049913821298933
+      ],
+      "camera_sha256": "e27a1d0b7227189fb2bfcc0d7e18c6211fb09f86c85012fde0a8727b83abe64a"
+    }
+  ],
+  "source_sha256": {
+    "doc/conditioning_investigation_2026-09-11/audit_pose_observability.py": "22d44eab077aeb72b6fbfde20033b3f0b75db5b9a5dc9827f9833ba16b3111ec",
+    "outputs/diagnostics/sample_selection.json": "7fa6d6a00741a7f7d2be083c03f5f0b9cfa9780525ac2e6dcd0af04e7b5d132b",
+    "data_generation/objaverse-dexonomy/generated_data/samples_full_surface.jsonl": "72ca53b2428507f0761f64dd849bd2b0dde52b69dd70f2d04ac7340a51503a96",
+    "train.py": "116d7f5268ed30062e9641f69f5920a0598be493bf95a083f48670e29c52b07f",
+    "dataloader.py": "d50137bf75a146ccb3ef71ff92d6a6f15523c5011e036f1b7bdbcd0541d4a0da",
+    "data_generation/objaverse-dexonomy/render_blender.py": "e3d7d7e744ccbf08bc359adc23c73d8678c9a0b7b974bee16ae821eb5d47cc4c",
+    "data_generation/objaverse-dexonomy/make_data.py": "c2274a5c8f7b2fd963df63d87202cc44deef9e67e1a54bce58f611ff7597cd17",
+    "sam3d_objects/model/backbone/tdfy_dit/modules/attention/modules.py": "42f884bf8f774791083151a80472419ad1d115c504124f517a11746f6e84c049",
+    "sam3d_objects/model/backbone/tdfy_dit/modules/transformer/modulated.py": "098d0f48024944f8d4688fd2b477d53bdf7980f9426bfc0f45a6fd48d6b11237"
+  },
+  "limits": "Camera metadata audit only. Camera translation is the location of the object origin in camera axes; it is not camera position in object axes. These statistics do not prove object orientation is unidentifiable from RGB or geometry, nor measure the pretrained layout prediction."
+}

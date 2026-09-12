@@ -1,0 +1,10 @@
+{
+  "attachments": {
+    "rotation_only": "/Users/michaelwakeham/.codex/attachments/ec602a26-e6c3-48bf-80d6-8a1b7971c159/pasted-text.txt",
+    "normalization_only": "/Users/michaelwakeham/.codex/attachments/dffccbbb-cbae-4303-91ec-6aa90e3aa9ba/pasted-text.txt"
+  },
+  "driver_and_training_source_hashes_match": true,
+  "single_and_multiview_reference_hashes_match": true,
+  "baseline_preflight_reproduces_historical_losses": true,
+  "returned_analysis_equals_recomputed": true
+}

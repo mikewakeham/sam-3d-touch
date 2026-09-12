@@ -1,0 +1,449 @@
+{
+  "curves": {
+    "oracle": [
+      {
+        "step": 0,
+        "fit": {
+          "loss": 0.47317739576101303,
+          "swapped_loss": 0.4731628904119134,
+          "group_losses": [
+            0.4716932289302349,
+            0.472823154181242,
+            0.48061353713274,
+            0.4675796627998352
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.47465118765830994,
+          "swapped_loss": 0.47454654425382614,
+          "group_losses": [
+            0.4700152352452278,
+            0.481559831649065,
+            0.472378496080637
+          ]
+        }
+      },
+      {
+        "step": 100,
+        "fit": {
+          "loss": 0.12196057895198464,
+          "swapped_loss": 0.12658842862583697,
+          "group_losses": [
+            0.11878803092986345,
+            0.12134612817317247,
+            0.1320830900222063,
+            0.11562506668269634
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.12686482351273298,
+          "swapped_loss": 0.13069585151970387,
+          "group_losses": [
+            0.12243364658206701,
+            0.13630645535886288,
+            0.12185436859726906
+          ]
+        }
+      },
+      {
+        "step": 300,
+        "fit": {
+          "loss": 0.08774733520112932,
+          "swapped_loss": 0.0950817852281034,
+          "group_losses": [
+            0.08466791268438101,
+            0.08522366173565388,
+            0.09772210009396076,
+            0.08337566629052162
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.09817011219759782,
+          "swapped_loss": 0.10348470353831847,
+          "group_losses": [
+            0.08981086872518063,
+            0.11303713079541922,
+            0.09166233707219362
+          ]
+        }
+      },
+      {
+        "step": 1000,
+        "fit": {
+          "loss": 0.026873418246395886,
+          "swapped_loss": 0.09181819413788617,
+          "group_losses": [
+            0.02616018184926361,
+            0.026625996688380837,
+            0.028876435942947865,
+            0.025831058504991233
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.06012590656367441,
+          "swapped_loss": 0.11430409799019496,
+          "group_losses": [
+            0.043363216100260615,
+            0.08564298693090677,
+            0.05137151665985584
+          ]
+        }
+      }
+    ],
+    "rotation_only": [
+      {
+        "step": 0,
+        "fit": {
+          "loss": 0.47322400379925966,
+          "swapped_loss": 0.4732338348403573,
+          "group_losses": [
+            0.4717358723282814,
+            0.4728303924202919,
+            0.48070814460515976,
+            0.4676216058433056
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.47460726151863736,
+          "swapped_loss": 0.47449299196402234,
+          "group_losses": [
+            0.46989281848073006,
+            0.4815802350640297,
+            0.47234873101115227
+          ]
+        }
+      },
+      {
+        "step": 100,
+        "fit": {
+          "loss": 0.12327936734072864,
+          "swapped_loss": 0.12653731228783727,
+          "group_losses": [
+            0.1205423604696989,
+            0.1216774731874466,
+            0.13331745471805334,
+            0.11758018098771572
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.13771930430084467,
+          "swapped_loss": 0.13446539919823408,
+          "group_losses": [
+            0.12387830391526222,
+            0.1439745808020234,
+            0.14530502818524837
+          ]
+        }
+      },
+      {
+        "step": 300,
+        "fit": {
+          "loss": 0.08881820156238973,
+          "swapped_loss": 0.09402315807528794,
+          "group_losses": [
+            0.08589180000126362,
+            0.0865847235545516,
+            0.09764061588793993,
+            0.08515566680580378
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.10840407603730758,
+          "swapped_loss": 0.10645784189303716,
+          "group_losses": [
+            0.09252472408115864,
+            0.12325126677751541,
+            0.10943623725324869
+          ]
+        }
+      },
+      {
+        "step": 1000,
+        "fit": {
+          "loss": 0.03277924103895202,
+          "swapped_loss": 0.05508224235381931,
+          "group_losses": [
+            0.03129411884583533,
+            0.03228589193895459,
+            0.03618415049277246,
+            0.03135280287824571
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.0807370338588953,
+          "swapped_loss": 0.08836855630700786,
+          "group_losses": [
+            0.05732146371155977,
+            0.10894959978759289,
+            0.07594003807753325
+          ]
+        }
+      }
+    ],
+    "normalization_only": [
+      {
+        "step": 0,
+        "fit": {
+          "loss": 0.4731804933398962,
+          "swapped_loss": 0.4731411039829254,
+          "group_losses": [
+            0.471662200987339,
+            0.4728613942861557,
+            0.4806295894086361,
+            0.467568788677454
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.47467030212283134,
+          "swapped_loss": 0.47460081800818443,
+          "group_losses": [
+            0.4700356237590313,
+            0.48159271478652954,
+            0.4723825678229332
+          ]
+        }
+      },
+      {
+        "step": 100,
+        "fit": {
+          "loss": 0.11964274104684591,
+          "swapped_loss": 0.12518371315672994,
+          "group_losses": [
+            0.11638183891773224,
+            0.11934052407741547,
+            0.12910069897770882,
+            0.11374790221452713
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.1246675830334425,
+          "swapped_loss": 0.1284172460436821,
+          "group_losses": [
+            0.11990364268422127,
+            0.13401846587657928,
+            0.12008064053952694
+          ]
+        }
+      },
+      {
+        "step": 300,
+        "fit": {
+          "loss": 0.08679737988859415,
+          "swapped_loss": 0.09364148881286383,
+          "group_losses": [
+            0.08414927776902914,
+            0.08461549878120422,
+            0.09602322429418564,
+            0.0824015187099576
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.09703468841811021,
+          "swapped_loss": 0.10252210156371196,
+          "group_losses": [
+            0.08931773994117975,
+            0.11050485353916883,
+            0.09128147177398205
+          ]
+        }
+      },
+      {
+        "step": 1000,
+        "fit": {
+          "loss": 0.0281298496411182,
+          "swapped_loss": 0.08195058337878436,
+          "group_losses": [
+            0.02744609280489385,
+            0.027754540089517832,
+            0.030417790403589606,
+            0.026900975266471505
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.0642688626733919,
+          "swapped_loss": 0.09874189117302497,
+          "group_losses": [
+            0.04694088734686375,
+            0.0901412284001708,
+            0.055724472273141146
+          ]
+        }
+      }
+    ],
+    "camera": [
+      {
+        "step": 0,
+        "fit": {
+          "loss": 0.4732266431674361,
+          "swapped_loss": 0.4732308108359575,
+          "group_losses": [
+            0.4717677980661392,
+            0.47280724719166756,
+            0.48073749989271164,
+            0.4675940275192261
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.4746253900229931,
+          "swapped_loss": 0.47436252733071643,
+          "group_losses": [
+            0.46992459520697594,
+            0.48158077523112297,
+            0.47237079963088036
+          ]
+        }
+      },
+      {
+        "step": 100,
+        "fit": {
+          "loss": 0.12141599273309112,
+          "swapped_loss": 0.12374971457757056,
+          "group_losses": [
+            0.11919498536735773,
+            0.12015137448906898,
+            0.1313557531684637,
+            0.11496185790747404
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.12787626155962548,
+          "swapped_loss": 0.12684931109348932,
+          "group_losses": [
+            0.12012352235615253,
+            0.14117712806910276,
+            0.1223281342536211
+          ]
+        }
+      },
+      {
+        "step": 300,
+        "fit": {
+          "loss": 0.08884818968363106,
+          "swapped_loss": 0.0930242829490453,
+          "group_losses": [
+            0.08643131051212549,
+            0.08741829171776772,
+            0.09644752833992243,
+            0.08509562816470861
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.1018480792020758,
+          "swapped_loss": 0.10161498685677846,
+          "group_losses": [
+            0.09216078743338585,
+            0.11858764383941889,
+            0.09479580633342266
+          ]
+        }
+      },
+      {
+        "step": 1000,
+        "fit": {
+          "loss": 0.03321698715444654,
+          "swapped_loss": 0.05858374806120992,
+          "group_losses": [
+            0.03207719069905579,
+            0.03292179084382951,
+            0.036407214822247624,
+            0.03146175225265324
+          ]
+        },
+        "reserved_view": {
+          "loss": 0.08071343119566639,
+          "swapped_loss": 0.08380358417828877,
+          "group_losses": [
+            0.06211460800841451,
+            0.11505581066012383,
+            0.06496987491846085
+          ]
+        }
+      }
+    ]
+  },
+  "contrasts": [
+    {
+      "step": 0,
+      "fit": {
+        "rotation_with_object_normalization": 4.660803824663162e-05,
+        "rotation_with_camera_normalization": 4.614982753992081e-05,
+        "normalization_in_object_axes": 3.0975788831710815e-06,
+        "normalization_in_camera_axes": 2.639368176460266e-06,
+        "interaction": -4.5821070671081543e-07,
+        "total_camera_minus_oracle": 4.924740642309189e-05
+      },
+      "reserved_view": {
+        "rotation_with_object_normalization": -4.3926139672578746e-05,
+        "rotation_with_camera_normalization": -4.4912099838256836e-05,
+        "normalization_in_object_axes": 1.911446452140808e-05,
+        "normalization_in_camera_axes": 1.812850435572999e-05,
+        "interaction": -9.859601656780903e-07,
+        "total_camera_minus_oracle": -2.5797635316848755e-05
+      }
+    },
+    {
+      "step": 100,
+      "fit": {
+        "rotation_with_object_normalization": 0.0013187883887439966,
+        "rotation_with_camera_normalization": 0.001773251686245203,
+        "normalization_in_object_axes": -0.002317837905138731,
+        "normalization_in_camera_axes": -0.0018633746076375246,
+        "interaction": 0.0004544632975012064,
+        "total_camera_minus_oracle": -0.000544586218893528
+      },
+      "reserved_view": {
+        "rotation_with_object_normalization": 0.010854480788111687,
+        "rotation_with_camera_normalization": 0.0032086785261829787,
+        "normalization_in_object_axes": -0.0021972404792904854,
+        "normalization_in_camera_axes": -0.009843042741219193,
+        "interaction": -0.007645802261928708,
+        "total_camera_minus_oracle": 0.0010114380468924933
+      }
+    },
+    {
+      "step": 300,
+      "fit": {
+        "rotation_with_object_normalization": 0.0010708663612604141,
+        "rotation_with_camera_normalization": 0.002050809795036912,
+        "normalization_in_object_axes": -0.0009499553125351667,
+        "normalization_in_camera_axes": 2.99881212413311e-05,
+        "interaction": 0.0009799434337764978,
+        "total_camera_minus_oracle": 0.0011008544825017452
+      },
+      "reserved_view": {
+        "rotation_with_object_normalization": 0.010233963839709759,
+        "rotation_with_camera_normalization": 0.004813390783965588,
+        "normalization_in_object_axes": -0.0011354237794876099,
+        "normalization_in_camera_axes": -0.006555996835231781,
+        "interaction": -0.005420573055744171,
+        "total_camera_minus_oracle": 0.0036779670044779778
+      }
+    },
+    {
+      "step": 1000,
+      "fit": {
+        "rotation_with_object_normalization": 0.005905822792556137,
+        "rotation_with_camera_normalization": 0.005087137513328344,
+        "normalization_in_object_axes": 0.0012564313947223127,
+        "normalization_in_camera_axes": 0.00043774611549451947,
+        "interaction": -0.0008186852792277932,
+        "total_camera_minus_oracle": 0.006343568908050656
+      },
+      "reserved_view": {
+        "rotation_with_object_normalization": 0.02061112729522089,
+        "rotation_with_camera_normalization": 0.016444568522274494,
+        "normalization_in_object_axes": 0.004142956109717481,
+        "normalization_in_camera_axes": -2.36026632289138e-05,
+        "interaction": -0.004166558772946395,
+        "total_camera_minus_oracle": 0.020587524631991976
+      }
+    }
+  ],
+  "limits": "Four objects, one training seed, same-object reserved views. Positive differences mean higher loss. Report conditional effects and interaction separately; input coordinate magnitudes are not causal contribution percentages. A falling finite-budget curve is not an architectural ceiling. Baseline replay checks do not independently rerun historical optimization.",
+  "report_sha256": {
+    "oracle": "76a75e74ccb69017e059ef8052d7352bca604ea6278358af34512c0d65df2674",
+    "camera": "ed621cc6f53670656788357f2f17fcfc63edfd94856042ab1ba3dac71ca00635",
+    "rotation_only": "4eabbfb9c30d7ae2316569509987a194536119036c91e7d9dea946fbf90225e2",
+    "normalization_only": "99a286d21683a60d42f9ba364e20ae95758bd11e5cf8a3f1c898d1b36d93cf4b"
+  }
+}
