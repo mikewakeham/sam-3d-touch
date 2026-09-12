@@ -1,0 +1,1010 @@
+{
+  "source_sha256": {
+    "doc/conditioning_investigation_2026-09-11/audit_frame_factorization.py": "14f197ce1d4a0224ec2ed3b623dae4e9de183d23a704f4cb118d7325a5106e3b",
+    "train.py": "116d7f5268ed30062e9641f69f5920a0598be493bf95a083f48670e29c52b07f",
+    "dataloader.py": "d50137bf75a146ccb3ef71ff92d6a6f15523c5011e036f1b7bdbcd0541d4a0da",
+    "sam3d_objects/model/backbone/dit/embedder/touch.py": "a2db76b3e7cc2666890c600278915ed3e6d081fbbe3a980567ba591fa4d6418c"
+  },
+  "rows": [
+    {
+      "sample_id": "07569a25210449ab8b54606974e6c767_007",
+      "object_id": "07569a25210449ab8b54606974e6c767",
+      "rotation_only_rms_change": 0.5944388327431819,
+      "normalization_only_rms_change": 0.03213548221142817,
+      "normalization_only_max_change": 0.040268068463692575,
+      "camera_to_oracle_radius_ratio": 0.9943723814173339,
+      "normalization_offset_object_units": 0.037047335589952164,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 4.474212000893374e-09,
+      "inputs_sha256": {
+        "generated_data/07569a25210449ab8b54606974e6c767/views/007/full_surface.npz": "8f8a2594290ac41cd28e98a3654cf6d699bdd709b569dfce3162c52cada5b9c2",
+        "generated_data/07569a25210449ab8b54606974e6c767/views/007/camera.npz": "849edcdc3a3d4cbe0c88a406b2a730267f9e430b2227a82f5a5bcee7304d46ac"
+      }
+    },
+    {
+      "sample_id": "07569a25210449ab8b54606974e6c767_012",
+      "object_id": "07569a25210449ab8b54606974e6c767",
+      "rotation_only_rms_change": 0.6219452983108039,
+      "normalization_only_rms_change": 0.014632971347910136,
+      "normalization_only_max_change": 0.026681005641433053,
+      "camera_to_oracle_radius_ratio": 0.9932500327423543,
+      "normalization_offset_object_units": 0.01606210934661797,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 7.463394424700454e-08,
+      "inputs_sha256": {
+        "generated_data/07569a25210449ab8b54606974e6c767/views/012/full_surface.npz": "60cb6fb56be25267978db0413d8a764c832bf80caf4982247314013f9b3e796f",
+        "generated_data/07569a25210449ab8b54606974e6c767/views/012/camera.npz": "2fa32eac705ba08305877290a4679e1f6d213e12316d300d7235b1d41c34f7f1"
+      }
+    },
+    {
+      "sample_id": "0afbd2427ca84114b659e1d8cfcb647a_001",
+      "object_id": "0afbd2427ca84114b659e1d8cfcb647a",
+      "rotation_only_rms_change": 0.3326413865593214,
+      "normalization_only_rms_change": 0.04436840803171364,
+      "normalization_only_max_change": 0.08440750297973643,
+      "camera_to_oracle_radius_ratio": 1.0318270342492786,
+      "normalization_offset_object_units": 0.03734458637669444,
+      "factorization_max_error": 6.106226635438361e-16,
+      "centroid_commutation_max_error": 6.078627223793376e-08,
+      "inputs_sha256": {
+        "generated_data/0afbd2427ca84114b659e1d8cfcb647a/views/001/full_surface.npz": "7324f3a96c2711394e5ce26ee2f3981bf6535a36f21312587915d1f22d2bd050",
+        "generated_data/0afbd2427ca84114b659e1d8cfcb647a/views/001/camera.npz": "d12721503d54e9fc2dbfb2e3c4a7907bd103af429864c723d636971cc5646dca"
+      }
+    },
+    {
+      "sample_id": "0afbd2427ca84114b659e1d8cfcb647a_011",
+      "object_id": "0afbd2427ca84114b659e1d8cfcb647a",
+      "rotation_only_rms_change": 0.6440792375862016,
+      "normalization_only_rms_change": 0.024511152402165913,
+      "normalization_only_max_change": 0.06314091243672848,
+      "camera_to_oracle_radius_ratio": 1.0330477497221748,
+      "normalization_offset_object_units": 0.01795799293284386,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 3.361926415035299e-08,
+      "inputs_sha256": {
+        "generated_data/0afbd2427ca84114b659e1d8cfcb647a/views/011/full_surface.npz": "0df561c6e4c17303f6aa320bbf00fcb79cc149075ba5abf5e22d3bf1526db500",
+        "generated_data/0afbd2427ca84114b659e1d8cfcb647a/views/011/camera.npz": "94ac23add920d3f6be83d9e0e458b16737f24222728e7398a0b804084b30b47b"
+      }
+    },
+    {
+      "sample_id": "199b2202bc4543acb5a7a557212b605d_005",
+      "object_id": "199b2202bc4543acb5a7a557212b605d",
+      "rotation_only_rms_change": 0.497447321083806,
+      "normalization_only_rms_change": 0.06096157369838949,
+      "normalization_only_max_change": 0.14283887931834827,
+      "camera_to_oracle_radius_ratio": 1.0643967390132052,
+      "normalization_offset_object_units": 0.0466343708052399,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 9.148192980923397e-09,
+      "inputs_sha256": {
+        "generated_data/199b2202bc4543acb5a7a557212b605d/views/005/full_surface.npz": "812ffe52b7c920034bff9260e3cd269fef478bd89a510f4633de5b04eb7a0976",
+        "generated_data/199b2202bc4543acb5a7a557212b605d/views/005/camera.npz": "c792c869f99d2cb49d47b0c68da1b3870044c7c88541004096f4fbe28c8d03ca"
+      }
+    },
+    {
+      "sample_id": "199b2202bc4543acb5a7a557212b605d_015",
+      "object_id": "199b2202bc4543acb5a7a557212b605d",
+      "rotation_only_rms_change": 0.5725293876793953,
+      "normalization_only_rms_change": 0.03337722574543676,
+      "normalization_only_max_change": 0.06536950575543832,
+      "camera_to_oracle_radius_ratio": 1.023733896604756,
+      "normalization_offset_object_units": 0.028159508912165107,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 4.490670624246462e-08,
+      "inputs_sha256": {
+        "generated_data/199b2202bc4543acb5a7a557212b605d/views/015/full_surface.npz": "40183178e7aabf3c9321ed692921145d4fa7999b5038aee8bf5598cb9fed9c5a",
+        "generated_data/199b2202bc4543acb5a7a557212b605d/views/015/camera.npz": "92aff474f136d1d0fd9fc7547e49525bd6801d6af043e3f933c8a79596f32052"
+      }
+    },
+    {
+      "sample_id": "1bf2bf7383d34e45aa5ac504c85e572c_013",
+      "object_id": "1bf2bf7383d34e45aa5ac504c85e572c",
+      "rotation_only_rms_change": 0.38174789606272447,
+      "normalization_only_rms_change": 0.042441071889055174,
+      "normalization_only_max_change": 0.07371151814616399,
+      "camera_to_oracle_radius_ratio": 0.9974150326878309,
+      "normalization_offset_object_units": 0.03672655034173086,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 4.636412231917575e-08,
+      "inputs_sha256": {
+        "generated_data/1bf2bf7383d34e45aa5ac504c85e572c/views/013/full_surface.npz": "c54ff651ab767bb9992bc1d732d115e6faf40a0a6a0491797e4788953d341946",
+        "generated_data/1bf2bf7383d34e45aa5ac504c85e572c/views/013/camera.npz": "c51d02c50f39b26618ac56fb1318e53f272793fc11129133bb0bc9c3be4b019b"
+      }
+    },
+    {
+      "sample_id": "1bf2bf7383d34e45aa5ac504c85e572c_015",
+      "object_id": "1bf2bf7383d34e45aa5ac504c85e572c",
+      "rotation_only_rms_change": 0.42008088474748095,
+      "normalization_only_rms_change": 0.025227498531323667,
+      "normalization_only_max_change": 0.04311297693798525,
+      "camera_to_oracle_radius_ratio": 1.001628062058305,
+      "normalization_offset_object_units": 0.021837761779870263,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 4.407316955834517e-09,
+      "inputs_sha256": {
+        "generated_data/1bf2bf7383d34e45aa5ac504c85e572c/views/015/full_surface.npz": "f011d575c562201ca301d4b7e31d7521c173d2d4eeda21d3e8827d8acf9daa93",
+        "generated_data/1bf2bf7383d34e45aa5ac504c85e572c/views/015/camera.npz": "438d38e99b2b7d357bd86cdbeb7d183f05e9c5b7d052db1bda8ccd79dae4e21a"
+      }
+    },
+    {
+      "sample_id": "1fb985a5d5974bdcb412e91293d817f7_006",
+      "object_id": "1fb985a5d5974bdcb412e91293d817f7",
+      "rotation_only_rms_change": 0.5836627067487351,
+      "normalization_only_rms_change": 0.08330658697733094,
+      "normalization_only_max_change": 0.1970942738330873,
+      "camera_to_oracle_radius_ratio": 0.9271126734689459,
+      "normalization_offset_object_units": 0.09551138983686415,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 4.846982404327349e-08,
+      "inputs_sha256": {
+        "generated_data/1fb985a5d5974bdcb412e91293d817f7/views/006/full_surface.npz": "01e90bfdad0c2cfdf4d25bbd2e3282c3f9d8aaf4db3fa27afd95f4f60878d2f7",
+        "generated_data/1fb985a5d5974bdcb412e91293d817f7/views/006/camera.npz": "33ee7fadcc533d70d6fcda7deb693f82785760460245c4d47abff52789e7f796"
+      }
+    },
+    {
+      "sample_id": "1fb985a5d5974bdcb412e91293d817f7_007",
+      "object_id": "1fb985a5d5974bdcb412e91293d817f7",
+      "rotation_only_rms_change": 0.549542241815936,
+      "normalization_only_rms_change": 0.10443145466175303,
+      "normalization_only_max_change": 0.2543234093249267,
+      "camera_to_oracle_radius_ratio": 0.9006023746696896,
+      "normalization_offset_object_units": 0.11881030596985205,
+      "factorization_max_error": 5.551115123125783e-16,
+      "centroid_commutation_max_error": 1.0171853848106593e-07,
+      "inputs_sha256": {
+        "generated_data/1fb985a5d5974bdcb412e91293d817f7/views/007/full_surface.npz": "745afd52fc621521b9523696c6b2f15687375476fef7eed8d6b102edba807c5a",
+        "generated_data/1fb985a5d5974bdcb412e91293d817f7/views/007/camera.npz": "599f19b5efc98fbeafbf6121b27bf1cc4f9e9ee04a4f32c280587ff28899d1b9"
+      }
+    },
+    {
+      "sample_id": "6a836cf7662f4cfaa7e1244a24d6e73a_003",
+      "object_id": "6a836cf7662f4cfaa7e1244a24d6e73a",
+      "rotation_only_rms_change": 0.44502647530837036,
+      "normalization_only_rms_change": 0.030042352473834997,
+      "normalization_only_max_change": 0.04908113311845558,
+      "camera_to_oracle_radius_ratio": 0.9923792104163895,
+      "normalization_offset_object_units": 0.027478816358005784,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 2.624699957376464e-08,
+      "inputs_sha256": {
+        "generated_data/6a836cf7662f4cfaa7e1244a24d6e73a/views/003/full_surface.npz": "cd9a485f9fad2fd3ae5ca75d898cac48b4bf249c0a93245776fd25d216ffff34",
+        "generated_data/6a836cf7662f4cfaa7e1244a24d6e73a/views/003/camera.npz": "0a5142e9d4aadf734e895ee9cba6ce3517a4cedbb6fe5b4e237db5998ce3438e"
+      }
+    },
+    {
+      "sample_id": "6a836cf7662f4cfaa7e1244a24d6e73a_005",
+      "object_id": "6a836cf7662f4cfaa7e1244a24d6e73a",
+      "rotation_only_rms_change": 0.5288949487633572,
+      "normalization_only_rms_change": 0.04079221135612943,
+      "normalization_only_max_change": 0.07276492872685902,
+      "camera_to_oracle_radius_ratio": 0.9775249928959296,
+      "normalization_offset_object_units": 0.037570188614978565,
+      "factorization_max_error": 2.7755575615628914e-16,
+      "centroid_commutation_max_error": 1.4605692566505013e-07,
+      "inputs_sha256": {
+        "generated_data/6a836cf7662f4cfaa7e1244a24d6e73a/views/005/full_surface.npz": "9fe0d365db48161df0e15d2fdbfb05c488db6938668904d2cc42287a5b90fd53",
+        "generated_data/6a836cf7662f4cfaa7e1244a24d6e73a/views/005/camera.npz": "ef99ff7576c09b4e429e52a653b045c44fbb9dd39819053d26e19d2dc64c3493"
+      }
+    },
+    {
+      "sample_id": "7bd547dc65b04894b6f37b33088f1a9e_012",
+      "object_id": "7bd547dc65b04894b6f37b33088f1a9e",
+      "rotation_only_rms_change": 0.646591275188729,
+      "normalization_only_rms_change": 0.09815482083035666,
+      "normalization_only_max_change": 0.18164765406824823,
+      "camera_to_oracle_radius_ratio": 1.018790786670786,
+      "normalization_offset_object_units": 0.10356578008070327,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 1.7081187131395836e-08,
+      "inputs_sha256": {
+        "generated_data/7bd547dc65b04894b6f37b33088f1a9e/views/012/full_surface.npz": "9c919569060017828792246e05079649b4c9d6aa8f2d0828fe2c2f249e5db018",
+        "generated_data/7bd547dc65b04894b6f37b33088f1a9e/views/012/camera.npz": "799af2d7fd72f8343ccac50bfdb70218741c3da08a750e2881f1b0a8e2a44671"
+      }
+    },
+    {
+      "sample_id": "7bd547dc65b04894b6f37b33088f1a9e_013",
+      "object_id": "7bd547dc65b04894b6f37b33088f1a9e",
+      "rotation_only_rms_change": 0.5626381169293966,
+      "normalization_only_rms_change": 0.0973987205014728,
+      "normalization_only_max_change": 0.17222150452236606,
+      "camera_to_oracle_radius_ratio": 1.0181573427987693,
+      "normalization_offset_object_units": 0.10271985797871279,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 5.5685604904986974e-08,
+      "inputs_sha256": {
+        "generated_data/7bd547dc65b04894b6f37b33088f1a9e/views/013/full_surface.npz": "6007ceae2a06cd075858a590e5082cdc918bbebff3a8610b821ebf995c11b738",
+        "generated_data/7bd547dc65b04894b6f37b33088f1a9e/views/013/camera.npz": "59a68e85d2f827bdaa400164e0dacb24364109c8a2a4ece044cdb71e8c159423"
+      }
+    },
+    {
+      "sample_id": "7c3286c7a4934e48860badc106f63ab3_010",
+      "object_id": "7c3286c7a4934e48860badc106f63ab3",
+      "rotation_only_rms_change": 0.7499221585157789,
+      "normalization_only_rms_change": 0.015205997460909499,
+      "normalization_only_max_change": 0.031186037459142724,
+      "camera_to_oracle_radius_ratio": 0.9905163579861636,
+      "normalization_offset_object_units": 0.013354317973301897,
+      "factorization_max_error": 5.551115123125783e-16,
+      "centroid_commutation_max_error": 1.416723082181548e-07,
+      "inputs_sha256": {
+        "generated_data/7c3286c7a4934e48860badc106f63ab3/views/010/full_surface.npz": "0fc334e93353beda1ef4b06e0aa4c14307df784a5ef41b7db6d613af298c2a6a",
+        "generated_data/7c3286c7a4934e48860badc106f63ab3/views/010/camera.npz": "f1212d80f71b005e9de71c95ac250fef35a791554d2f0900591105a4c8c11429"
+      }
+    },
+    {
+      "sample_id": "7c3286c7a4934e48860badc106f63ab3_013",
+      "object_id": "7c3286c7a4934e48860badc106f63ab3",
+      "rotation_only_rms_change": 0.7676607196584551,
+      "normalization_only_rms_change": 0.12002810244702697,
+      "normalization_only_max_change": 0.16451358550034956,
+      "camera_to_oracle_radius_ratio": 1.0674848753416326,
+      "normalization_offset_object_units": 0.10620194852116346,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 5.690487747678219e-09,
+      "inputs_sha256": {
+        "generated_data/7c3286c7a4934e48860badc106f63ab3/views/013/full_surface.npz": "87b50cde4a33aafe53fdfbbdb776866d4311e701b0dbfe2e112a9e3c9f938881",
+        "generated_data/7c3286c7a4934e48860badc106f63ab3/views/013/camera.npz": "0934772b961002c69bd595f77a8241d7a3ab16e46d4ee5691c8606520674be9a"
+      }
+    },
+    {
+      "sample_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_006",
+      "object_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+      "rotation_only_rms_change": 0.5580242983059971,
+      "normalization_only_rms_change": 0.010003442324232278,
+      "normalization_only_max_change": 0.014184250291290279,
+      "camera_to_oracle_radius_ratio": 0.9988047395976901,
+      "normalization_offset_object_units": 0.008808043777502703,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 3.7838167155079816e-08,
+      "inputs_sha256": {
+        "generated_data/8ea6a2ff878b4ab7aab5a7ecd8ccc4a4/views/006/full_surface.npz": "0fedb0905c7bd4da5eb7483e93e8e11f6c14c989d11cd7d9c75705edba8268ef",
+        "generated_data/8ea6a2ff878b4ab7aab5a7ecd8ccc4a4/views/006/camera.npz": "f5aabb29c2f0b80c60f71c8d77ad16aacb7eb8473e0123513336f11389e62791"
+      }
+    },
+    {
+      "sample_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_008",
+      "object_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+      "rotation_only_rms_change": 0.616262583695717,
+      "normalization_only_rms_change": 0.02338526436781787,
+      "normalization_only_max_change": 0.04852935406455572,
+      "camera_to_oracle_radius_ratio": 1.019399348527305,
+      "normalization_offset_object_units": 0.019104065206855873,
+      "factorization_max_error": 2.220446049250313e-16,
+      "centroid_commutation_max_error": 2.816339328415296e-08,
+      "inputs_sha256": {
+        "generated_data/8ea6a2ff878b4ab7aab5a7ecd8ccc4a4/views/008/full_surface.npz": "4d8afef383c33d0feb91933cf75e583128e4e79f4416abb43b012293e5f2277f",
+        "generated_data/8ea6a2ff878b4ab7aab5a7ecd8ccc4a4/views/008/camera.npz": "f1ce94403d0f450e40ff4cb36acf6e5f0becd812ddf14ab6910a3d4ff61ed8d7"
+      }
+    },
+    {
+      "sample_id": "949af5011ce84b0098c5a0688420e569_004",
+      "object_id": "949af5011ce84b0098c5a0688420e569",
+      "rotation_only_rms_change": 0.47855063222503125,
+      "normalization_only_rms_change": 0.004466424123069877,
+      "normalization_only_max_change": 0.00967567208198783,
+      "camera_to_oracle_radius_ratio": 1.0041495261485345,
+      "normalization_offset_object_units": 0.004006528739641131,
+      "factorization_max_error": 5.551115123125783e-16,
+      "centroid_commutation_max_error": 1.6387817214358336e-08,
+      "inputs_sha256": {
+        "generated_data/949af5011ce84b0098c5a0688420e569/views/004/full_surface.npz": "96e89f28eb69208a94cfa015bcb8060f2de08c2aeeadf0b770cde4f74f77268a",
+        "generated_data/949af5011ce84b0098c5a0688420e569/views/004/camera.npz": "9b880dbf4af3f09f681a006e7b06cb269878a3fab3a0d757a19f69d0dce38ea9"
+      }
+    },
+    {
+      "sample_id": "949af5011ce84b0098c5a0688420e569_013",
+      "object_id": "949af5011ce84b0098c5a0688420e569",
+      "rotation_only_rms_change": 0.573329908362935,
+      "normalization_only_rms_change": 0.06185604847066503,
+      "normalization_only_max_change": 0.10530727245439175,
+      "camera_to_oracle_radius_ratio": 1.041451111049953,
+      "normalization_offset_object_units": 0.05276513497565458,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 1.3799895337562873e-07,
+      "inputs_sha256": {
+        "generated_data/949af5011ce84b0098c5a0688420e569/views/013/full_surface.npz": "e512a5263bd7d2ab0c7141bfc424ebe92e85886f336975f8c829b412081cd2b4",
+        "generated_data/949af5011ce84b0098c5a0688420e569/views/013/camera.npz": "a1cec263749fba54a33af3a1ccf97219c9a4ce605681ee87d3f5b1c8f74f3470"
+      }
+    },
+    {
+      "sample_id": "9e134caf65e04f5abaf742ac24df647d_008",
+      "object_id": "9e134caf65e04f5abaf742ac24df647d",
+      "rotation_only_rms_change": 0.585798852006305,
+      "normalization_only_rms_change": 0.01412123076742738,
+      "normalization_only_max_change": 0.03247337531519923,
+      "camera_to_oracle_radius_ratio": 0.9835944030506777,
+      "normalization_offset_object_units": 0.01243767392017802,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 3.8941999069841415e-08,
+      "inputs_sha256": {
+        "generated_data/9e134caf65e04f5abaf742ac24df647d/views/008/full_surface.npz": "14f8d010d07c2417f2fa13d718c2742e316dfba1d83828c558908a3378582b69",
+        "generated_data/9e134caf65e04f5abaf742ac24df647d/views/008/camera.npz": "2418178a37af998ee8b3877bd31b362256e9333377f8425fecd579aed5205e84"
+      }
+    },
+    {
+      "sample_id": "9e134caf65e04f5abaf742ac24df647d_015",
+      "object_id": "9e134caf65e04f5abaf742ac24df647d",
+      "rotation_only_rms_change": 0.6594976950217472,
+      "normalization_only_rms_change": 0.030959308763799123,
+      "normalization_only_max_change": 0.0770339155252352,
+      "camera_to_oracle_radius_ratio": 0.9600068175921141,
+      "normalization_offset_object_units": 0.026611634600839106,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 2.5886777166306274e-08,
+      "inputs_sha256": {
+        "generated_data/9e134caf65e04f5abaf742ac24df647d/views/015/full_surface.npz": "dae481726364e6cdd7091d1f949957dfd0b09bd8451f7ee8e80709aafa8ee6cc",
+        "generated_data/9e134caf65e04f5abaf742ac24df647d/views/015/camera.npz": "28e5b031b0c82726315fa78bf7f74e38dbc14b0ef2dd2f4cbc9a66e3349fa333"
+      }
+    },
+    {
+      "sample_id": "b38765d87b644fdeb6c4c9ffe1ca98ba_007",
+      "object_id": "b38765d87b644fdeb6c4c9ffe1ca98ba",
+      "rotation_only_rms_change": 0.6290620451858315,
+      "normalization_only_rms_change": 0.09241154603442574,
+      "normalization_only_max_change": 0.133040703040048,
+      "camera_to_oracle_radius_ratio": 1.0126346584972565,
+      "normalization_offset_object_units": 0.08609037641257625,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 1.2986582365037691e-08,
+      "inputs_sha256": {
+        "generated_data/b38765d87b644fdeb6c4c9ffe1ca98ba/views/007/full_surface.npz": "170178f46a3219140e33a76470ed5b5dcd45f9dc350deed1eaae3fb82c6da3ff",
+        "generated_data/b38765d87b644fdeb6c4c9ffe1ca98ba/views/007/camera.npz": "0a79f4bc9a357831dd99926824964a006be9cac63beb97cce65605c53bf3695f"
+      }
+    },
+    {
+      "sample_id": "b38765d87b644fdeb6c4c9ffe1ca98ba_013",
+      "object_id": "b38765d87b644fdeb6c4c9ffe1ca98ba",
+      "rotation_only_rms_change": 0.7013572161438981,
+      "normalization_only_rms_change": 0.0689620884993188,
+      "normalization_only_max_change": 0.12993291721614864,
+      "camera_to_oracle_radius_ratio": 1.0244345060661757,
+      "normalization_offset_object_units": 0.06005008323486743,
+      "factorization_max_error": 5.551115123125783e-16,
+      "centroid_commutation_max_error": 3.684771165968215e-08,
+      "inputs_sha256": {
+        "generated_data/b38765d87b644fdeb6c4c9ffe1ca98ba/views/013/full_surface.npz": "7057227cb1b789d87fb787a275c7bf708df25ea56bdee4ec99aa18ce3c2f6873",
+        "generated_data/b38765d87b644fdeb6c4c9ffe1ca98ba/views/013/camera.npz": "ea1e277584f447f5adcf40523b1962f3b0928fbb49afae2202806b8f5aecd1da"
+      }
+    },
+    {
+      "sample_id": "c057e4593f9e42f5a353718f6c3c9150_012",
+      "object_id": "c057e4593f9e42f5a353718f6c3c9150",
+      "rotation_only_rms_change": 0.5312233577520336,
+      "normalization_only_rms_change": 0.010998807178688922,
+      "normalization_only_max_change": 0.019080926522212383,
+      "camera_to_oracle_radius_ratio": 0.9970460272434661,
+      "normalization_offset_object_units": 0.009774506364823231,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 6.450839995508773e-08,
+      "inputs_sha256": {
+        "generated_data/c057e4593f9e42f5a353718f6c3c9150/views/012/full_surface.npz": "6697d358d665d0c14debf8c2a3c214d7281160a984f0fb0a9cafc33c227b97fd",
+        "generated_data/c057e4593f9e42f5a353718f6c3c9150/views/012/camera.npz": "40d1c463e311077b0ffa65c97d45485e9ab510013e0b0684697329d74746beff"
+      }
+    },
+    {
+      "sample_id": "c057e4593f9e42f5a353718f6c3c9150_013",
+      "object_id": "c057e4593f9e42f5a353718f6c3c9150",
+      "rotation_only_rms_change": 0.5847620292200176,
+      "normalization_only_rms_change": 0.00993232734812577,
+      "normalization_only_max_change": 0.016817584294810506,
+      "camera_to_oracle_radius_ratio": 0.9982196294019006,
+      "normalization_offset_object_units": 0.008840537357183821,
+      "factorization_max_error": 5.551115123125783e-16,
+      "centroid_commutation_max_error": 8.007935903275865e-08,
+      "inputs_sha256": {
+        "generated_data/c057e4593f9e42f5a353718f6c3c9150/views/013/full_surface.npz": "89afb20c11d5121884e539d298729e0b3d50ea419bd4e92b7dc0daa24b0bef6c",
+        "generated_data/c057e4593f9e42f5a353718f6c3c9150/views/013/camera.npz": "c907effb4da115d25c58abd54b548e0d28e2d7634fd56b484eff478cf6dc8407"
+      }
+    },
+    {
+      "sample_id": "d3eae95d30064e4baafe4427d7c9038a_008",
+      "object_id": "d3eae95d30064e4baafe4427d7c9038a",
+      "rotation_only_rms_change": 0.6273392366768347,
+      "normalization_only_rms_change": 0.02608655328664639,
+      "normalization_only_max_change": 0.03931302369317913,
+      "camera_to_oracle_radius_ratio": 1.010648132499658,
+      "normalization_offset_object_units": 0.02219774745489027,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 1.1746690053993092e-07,
+      "inputs_sha256": {
+        "generated_data/d3eae95d30064e4baafe4427d7c9038a/views/008/full_surface.npz": "530b0e3b64a48e504123e768228c86dffa351bf74ea08feeb9644e4b622f86b5",
+        "generated_data/d3eae95d30064e4baafe4427d7c9038a/views/008/camera.npz": "7a92b0b06bb93a894dd4baf3a32e9246bc0b13c61629d360ec9da36c001112eb"
+      }
+    },
+    {
+      "sample_id": "d3eae95d30064e4baafe4427d7c9038a_015",
+      "object_id": "d3eae95d30064e4baafe4427d7c9038a",
+      "rotation_only_rms_change": 0.7206308197157911,
+      "normalization_only_rms_change": 0.023289560781094145,
+      "normalization_only_max_change": 0.04175236839414709,
+      "camera_to_oracle_radius_ratio": 1.0037809346198447,
+      "normalization_offset_object_units": 0.020378065007785332,
+      "factorization_max_error": 6.661338147750939e-16,
+      "centroid_commutation_max_error": 9.28079957329686e-09,
+      "inputs_sha256": {
+        "generated_data/d3eae95d30064e4baafe4427d7c9038a/views/015/full_surface.npz": "3f906a4f056a0148bae36b761fcc631ea9470ed6ec7b8fce70247c74a25b4478",
+        "generated_data/d3eae95d30064e4baafe4427d7c9038a/views/015/camera.npz": "dbe395ccd85bf758437fe80a6cb290fd6792b4313994b7f064f21cab3706905f"
+      }
+    },
+    {
+      "sample_id": "d7167aa45e6e43b4a91fdbf5eb70b661_004",
+      "object_id": "d7167aa45e6e43b4a91fdbf5eb70b661",
+      "rotation_only_rms_change": 0.4394383401650346,
+      "normalization_only_rms_change": 0.013980473813572048,
+      "normalization_only_max_change": 0.022738348310307924,
+      "camera_to_oracle_radius_ratio": 0.9889293322373461,
+      "normalization_offset_object_units": 0.01228267633686901,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 1.1393793908354155e-08,
+      "inputs_sha256": {
+        "generated_data/d7167aa45e6e43b4a91fdbf5eb70b661/views/004/full_surface.npz": "0751e8f1343941e6ccf1737935cd143ecb471fa56514993fd2233532c31859da",
+        "generated_data/d7167aa45e6e43b4a91fdbf5eb70b661/views/004/camera.npz": "7188b44fd88106aa031f954354fd03cd8adce2029dbdd2cfaa828ec015df5bf6"
+      }
+    },
+    {
+      "sample_id": "d7167aa45e6e43b4a91fdbf5eb70b661_012",
+      "object_id": "d7167aa45e6e43b4a91fdbf5eb70b661",
+      "rotation_only_rms_change": 0.35165624424955727,
+      "normalization_only_rms_change": 0.06730199383316811,
+      "normalization_only_max_change": 0.13839078671438254,
+      "camera_to_oracle_radius_ratio": 1.0622493645496884,
+      "normalization_offset_object_units": 0.05561972441038483,
+      "factorization_max_error": 5.551115123125783e-16,
+      "centroid_commutation_max_error": 5.493090626806918e-08,
+      "inputs_sha256": {
+        "generated_data/d7167aa45e6e43b4a91fdbf5eb70b661/views/012/full_surface.npz": "a9279960513e180e31467c95b1327727491fdbff7f011e258c27c3caf783d0b3",
+        "generated_data/d7167aa45e6e43b4a91fdbf5eb70b661/views/012/camera.npz": "19868bead18614006b8de5513f4b8781f5d33a1c307aff916b1b8306685cdd33"
+      }
+    },
+    {
+      "sample_id": "e697fbdea7d04aa2b09122e36efadf16_009",
+      "object_id": "e697fbdea7d04aa2b09122e36efadf16",
+      "rotation_only_rms_change": 0.6184057887770562,
+      "normalization_only_rms_change": 0.050735378638070046,
+      "normalization_only_max_change": 0.08553827276305581,
+      "camera_to_oracle_radius_ratio": 1.0520794873668038,
+      "normalization_offset_object_units": 0.05099094245275825,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 3.974434037434804e-08,
+      "inputs_sha256": {
+        "generated_data/e697fbdea7d04aa2b09122e36efadf16/views/009/full_surface.npz": "a8097fba760847725189175a56e7df0ac877b2b38d3d7739fce45dad0094d4e0",
+        "generated_data/e697fbdea7d04aa2b09122e36efadf16/views/009/camera.npz": "33fe214bcfcff2c2c8ae14abe5f611fe2a0cb7d73cb232f0bb920bf55bb76458"
+      }
+    },
+    {
+      "sample_id": "e697fbdea7d04aa2b09122e36efadf16_012",
+      "object_id": "e697fbdea7d04aa2b09122e36efadf16",
+      "rotation_only_rms_change": 0.6991821452864947,
+      "normalization_only_rms_change": 0.007825105580632267,
+      "normalization_only_max_change": 0.013613318901459781,
+      "camera_to_oracle_radius_ratio": 1.004615869302567,
+      "normalization_offset_object_units": 0.008676041538522136,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 3.1660445265480064e-08,
+      "inputs_sha256": {
+        "generated_data/e697fbdea7d04aa2b09122e36efadf16/views/012/full_surface.npz": "396a023ea8e1d9aae34d8ad008644251c064f769874158be424cb95023fa8c80",
+        "generated_data/e697fbdea7d04aa2b09122e36efadf16/views/012/camera.npz": "03d6d2813a56131788b58ae4210c6442fcc9fa4cdc4a639e57cbeea5ff29752b"
+      }
+    },
+    {
+      "sample_id": "0838b73f246f4768aa0671e7b2ba7c30_002",
+      "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+      "rotation_only_rms_change": 0.5056539859833086,
+      "normalization_only_rms_change": 0.01478255721970984,
+      "normalization_only_max_change": 0.026878566837641782,
+      "camera_to_oracle_radius_ratio": 1.0060708684616295,
+      "normalization_offset_object_units": 0.014902587354286671,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 9.20468812282138e-09,
+      "inputs_sha256": {
+        "generated_data/0838b73f246f4768aa0671e7b2ba7c30/views/002/full_surface.npz": "7d1c6c53d8ecb56080b9692139f923559472cb930a6747e3b3cf12d0002e9b7c",
+        "generated_data/0838b73f246f4768aa0671e7b2ba7c30/views/002/camera.npz": "2063df3db6b66117314e7889f5e1a9129ba5cd68213d8ec155b9f53ed2e579f2"
+      }
+    },
+    {
+      "sample_id": "0838b73f246f4768aa0671e7b2ba7c30_012",
+      "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+      "rotation_only_rms_change": 0.5154217267565512,
+      "normalization_only_rms_change": 0.051981830878700834,
+      "normalization_only_max_change": 0.0860316137218663,
+      "camera_to_oracle_radius_ratio": 0.9702788992996735,
+      "normalization_offset_object_units": 0.05302127695747943,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 5.392607371756952e-08,
+      "inputs_sha256": {
+        "generated_data/0838b73f246f4768aa0671e7b2ba7c30/views/012/full_surface.npz": "80405e034f1abaaecc2f63301783f4543f57fa68cc6d611387bfec221a121f83",
+        "generated_data/0838b73f246f4768aa0671e7b2ba7c30/views/012/camera.npz": "dc0f0f696862c4c1a7fddfcf2949a9166ee02c1be5443ef4e9e79ccc9e8eb92a"
+      }
+    },
+    {
+      "sample_id": "0c15a58c6a0c4ec9bff9336312f675d2_010",
+      "object_id": "0c15a58c6a0c4ec9bff9336312f675d2",
+      "rotation_only_rms_change": 0.6203786569000442,
+      "normalization_only_rms_change": 0.09550804453012643,
+      "normalization_only_max_change": 0.18035183204559424,
+      "camera_to_oracle_radius_ratio": 1.0622412406521027,
+      "normalization_offset_object_units": 0.08298268800729997,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 1.693743179043139e-08,
+      "inputs_sha256": {
+        "generated_data/0c15a58c6a0c4ec9bff9336312f675d2/views/010/full_surface.npz": "a46335974cb57ba5a1ecd0ccec845ce4830d4254a16be73f3618ae7bd8dd37d3",
+        "generated_data/0c15a58c6a0c4ec9bff9336312f675d2/views/010/camera.npz": "bd8ec8319048bc47f5ed232f918f72271b96405fe538e0fef738ed0ad9498476"
+      }
+    },
+    {
+      "sample_id": "0c15a58c6a0c4ec9bff9336312f675d2_013",
+      "object_id": "0c15a58c6a0c4ec9bff9336312f675d2",
+      "rotation_only_rms_change": 0.5198027466998458,
+      "normalization_only_rms_change": 0.04124451288306471,
+      "normalization_only_max_change": 0.054427846809586455,
+      "camera_to_oracle_radius_ratio": 0.9979766019607358,
+      "normalization_offset_object_units": 0.03849099201040249,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 6.041563971326269e-08,
+      "inputs_sha256": {
+        "generated_data/0c15a58c6a0c4ec9bff9336312f675d2/views/013/full_surface.npz": "e72feb308895617aebbbd1e92c621b7def9adfa50a7b9e548516ed99ec2f46e5",
+        "generated_data/0c15a58c6a0c4ec9bff9336312f675d2/views/013/camera.npz": "cc41c0549d5e4a3a0e0dd7efe40048a18858c0c1902bcf36633c7f108aff656d"
+      }
+    },
+    {
+      "sample_id": "1cf32d0ef332402c81cdf8ea6d6030b3_007",
+      "object_id": "1cf32d0ef332402c81cdf8ea6d6030b3",
+      "rotation_only_rms_change": 0.6394893334884649,
+      "normalization_only_rms_change": 0.05784140040493202,
+      "normalization_only_max_change": 0.09608514128331413,
+      "camera_to_oracle_radius_ratio": 0.958463090593637,
+      "normalization_offset_object_units": 0.06764830464020764,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 9.167939440946071e-08,
+      "inputs_sha256": {
+        "generated_data/1cf32d0ef332402c81cdf8ea6d6030b3/views/007/full_surface.npz": "cca04fff56a12e45d56b242539215db566b05095bf1c0b3e3687a8ee0e5b9da3",
+        "generated_data/1cf32d0ef332402c81cdf8ea6d6030b3/views/007/camera.npz": "e98c1f72aa57dcf3ffffa05ef2aa0a2558dd50b0d3bf6169d4039042c8497e36"
+      }
+    },
+    {
+      "sample_id": "1cf32d0ef332402c81cdf8ea6d6030b3_013",
+      "object_id": "1cf32d0ef332402c81cdf8ea6d6030b3",
+      "rotation_only_rms_change": 0.6434242983809181,
+      "normalization_only_rms_change": 0.13612530699864875,
+      "normalization_only_max_change": 0.26057843288042337,
+      "camera_to_oracle_radius_ratio": 0.9674863423166142,
+      "normalization_offset_object_units": 0.15989462326655643,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 1.185251102819862e-07,
+      "inputs_sha256": {
+        "generated_data/1cf32d0ef332402c81cdf8ea6d6030b3/views/013/full_surface.npz": "8886e1cbff1358100a40051dfe866a8e325e8f133b51f27f8efca7df01d275d8",
+        "generated_data/1cf32d0ef332402c81cdf8ea6d6030b3/views/013/camera.npz": "e94b7ed31ad3bd1b140ea4662189efe8aab4d9c20aaa1c3cb4a2664761309230"
+      }
+    },
+    {
+      "sample_id": "1f51096857cb46c5a2bd1ef8bc2c1803_009",
+      "object_id": "1f51096857cb46c5a2bd1ef8bc2c1803",
+      "rotation_only_rms_change": 0.5629988225689566,
+      "normalization_only_rms_change": 0.012508836669078252,
+      "normalization_only_max_change": 0.023840946905861693,
+      "camera_to_oracle_radius_ratio": 1.0043792666018194,
+      "normalization_offset_object_units": 0.010700440648251033,
+      "factorization_max_error": 5.551115123125783e-16,
+      "centroid_commutation_max_error": 4.244966456123933e-08,
+      "inputs_sha256": {
+        "generated_data/1f51096857cb46c5a2bd1ef8bc2c1803/views/009/full_surface.npz": "d1862bca0d2bda85e7650b845ee95b6509d1526c5db94f7d20faeec247e54e32",
+        "generated_data/1f51096857cb46c5a2bd1ef8bc2c1803/views/009/camera.npz": "3eafb4ef424a37a2a1fbf84875011bd5b57b6115502687909a3097932da1d474"
+      }
+    },
+    {
+      "sample_id": "1f51096857cb46c5a2bd1ef8bc2c1803_014",
+      "object_id": "1f51096857cb46c5a2bd1ef8bc2c1803",
+      "rotation_only_rms_change": 0.5283958593346262,
+      "normalization_only_rms_change": 0.004913539063917873,
+      "normalization_only_max_change": 0.011222017540790663,
+      "camera_to_oracle_radius_ratio": 0.9962591468144366,
+      "normalization_offset_object_units": 0.004107046556922386,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 1.3257633546537306e-08,
+      "inputs_sha256": {
+        "generated_data/1f51096857cb46c5a2bd1ef8bc2c1803/views/014/full_surface.npz": "1e00970fe4b8e2da1f0fea2c57497e3fa63f8577fc6f513c2f6e77f3dbb41016",
+        "generated_data/1f51096857cb46c5a2bd1ef8bc2c1803/views/014/camera.npz": "0908252ab8b690009be927b354777f16bbfdb7d15f2e952e86888717c55db27e"
+      }
+    },
+    {
+      "sample_id": "49853261fbbe48929211cfb4f5b13866_004",
+      "object_id": "49853261fbbe48929211cfb4f5b13866",
+      "rotation_only_rms_change": 0.4693752886059929,
+      "normalization_only_rms_change": 0.0017730639338983721,
+      "normalization_only_max_change": 0.002430135962811719,
+      "camera_to_oracle_radius_ratio": 1.0007477146368202,
+      "normalization_offset_object_units": 0.0015376437632725578,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 2.9377187016343953e-08,
+      "inputs_sha256": {
+        "generated_data/49853261fbbe48929211cfb4f5b13866/views/004/full_surface.npz": "1275cac9f8ebefa8c797879907ad1d47ae1662f96f62bccbdf6f172ce1345dbc",
+        "generated_data/49853261fbbe48929211cfb4f5b13866/views/004/camera.npz": "6b7765e6dafa79037ed61fd8329eda47cb5b9bddce8b9ffe8d11637fc61103f5"
+      }
+    },
+    {
+      "sample_id": "49853261fbbe48929211cfb4f5b13866_005",
+      "object_id": "49853261fbbe48929211cfb4f5b13866",
+      "rotation_only_rms_change": 0.4878294043545132,
+      "normalization_only_rms_change": 0.012988955289644092,
+      "normalization_only_max_change": 0.020223020142456097,
+      "camera_to_oracle_radius_ratio": 1.001186955080801,
+      "normalization_offset_object_units": 0.011321377862642134,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 2.7177369354980385e-08,
+      "inputs_sha256": {
+        "generated_data/49853261fbbe48929211cfb4f5b13866/views/005/full_surface.npz": "239841db5981270eb34fa2b980e00ef9377a542033dd276873e3acb53df3fade",
+        "generated_data/49853261fbbe48929211cfb4f5b13866/views/005/camera.npz": "2517dd4ab59dba7f799bf5c51199cc1431ada1643983cfd073dddc5f4be232bf"
+      }
+    },
+    {
+      "sample_id": "548362a5ab6f4c8e8fda42143172614e_006",
+      "object_id": "548362a5ab6f4c8e8fda42143172614e",
+      "rotation_only_rms_change": 0.5672225825670419,
+      "normalization_only_rms_change": 0.01821762285963839,
+      "normalization_only_max_change": 0.033229844762616034,
+      "camera_to_oracle_radius_ratio": 1.0094715761426105,
+      "normalization_offset_object_units": 0.015682585870653142,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 2.4606693016515635e-08,
+      "inputs_sha256": {
+        "generated_data/548362a5ab6f4c8e8fda42143172614e/views/006/full_surface.npz": "b05806ae3181ee51104b860583821c595eba777b8da586aa6ea0ded5b9dc3e66",
+        "generated_data/548362a5ab6f4c8e8fda42143172614e/views/006/camera.npz": "aaa14a0357cc6f309053c6fa6968a503d412dd7a5f73eabcf6bb89e867a7df0c"
+      }
+    },
+    {
+      "sample_id": "548362a5ab6f4c8e8fda42143172614e_010",
+      "object_id": "548362a5ab6f4c8e8fda42143172614e",
+      "rotation_only_rms_change": 0.5931772751917421,
+      "normalization_only_rms_change": 0.04677319040769122,
+      "normalization_only_max_change": 0.09141730434666517,
+      "camera_to_oracle_radius_ratio": 1.0380949189576774,
+      "normalization_offset_object_units": 0.03835683885814079,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 1.126939316309361e-07,
+      "inputs_sha256": {
+        "generated_data/548362a5ab6f4c8e8fda42143172614e/views/010/full_surface.npz": "c3e7322466ca9a1f65cc1cf3349919d62fa1b0bda0af3355038291770360613a",
+        "generated_data/548362a5ab6f4c8e8fda42143172614e/views/010/camera.npz": "bbb4a1a30bd6884507dd2b2968d3199a915fe7ae4d17474757eec78e3bc1abe4"
+      }
+    },
+    {
+      "sample_id": "68a31a8eb07d4b84aeb3b13484d4c9e8_000",
+      "object_id": "68a31a8eb07d4b84aeb3b13484d4c9e8",
+      "rotation_only_rms_change": 0.15746671274096563,
+      "normalization_only_rms_change": 0.013563784306328682,
+      "normalization_only_max_change": 0.031190755734867848,
+      "camera_to_oracle_radius_ratio": 0.9901106200105997,
+      "normalization_offset_object_units": 0.012522958169438533,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 3.0191697475423496e-08,
+      "inputs_sha256": {
+        "generated_data/68a31a8eb07d4b84aeb3b13484d4c9e8/views/000/full_surface.npz": "e3b68752a45ce4e6d011f293c2b0e76c01b5970e8d7fc1907022d9ff9431d234",
+        "generated_data/68a31a8eb07d4b84aeb3b13484d4c9e8/views/000/camera.npz": "77960ed5f8b14c5de978a05c655544d29a04a9f63af36556dd3fab0d335412c0"
+      }
+    },
+    {
+      "sample_id": "68a31a8eb07d4b84aeb3b13484d4c9e8_008",
+      "object_id": "68a31a8eb07d4b84aeb3b13484d4c9e8",
+      "rotation_only_rms_change": 0.3960167183721978,
+      "normalization_only_rms_change": 0.006793323847390931,
+      "normalization_only_max_change": 0.015625775489262472,
+      "camera_to_oracle_radius_ratio": 0.9934881553376975,
+      "normalization_offset_object_units": 0.006066641113004198,
+      "factorization_max_error": 3.885780586188048e-16,
+      "centroid_commutation_max_error": 1.2495859347261273e-08,
+      "inputs_sha256": {
+        "generated_data/68a31a8eb07d4b84aeb3b13484d4c9e8/views/008/full_surface.npz": "1149f02cb7d8af8e40611ad01c4282730cff591cace06f50ae1460ea8188e8b6",
+        "generated_data/68a31a8eb07d4b84aeb3b13484d4c9e8/views/008/camera.npz": "be69f807404ad86619dcbf24ff80e995c657e3c8d7ef13835adbd7281fb43a15"
+      }
+    },
+    {
+      "sample_id": "72b8b1136e124387a8a8b5dc10f9c58f_000",
+      "object_id": "72b8b1136e124387a8a8b5dc10f9c58f",
+      "rotation_only_rms_change": 0.39457350490072846,
+      "normalization_only_rms_change": 0.00141300567895637,
+      "normalization_only_max_change": 0.0018528803459663123,
+      "camera_to_oracle_radius_ratio": 0.9999331027112333,
+      "normalization_offset_object_units": 0.0021061971684616316,
+      "factorization_max_error": 4.0245584642661925e-16,
+      "centroid_commutation_max_error": 2.900792162030541e-09,
+      "inputs_sha256": {
+        "generated_data/72b8b1136e124387a8a8b5dc10f9c58f/views/000/full_surface.npz": "8a70be1b7b5c51c5cae1e7bf3860b7e254fcc598e7f30a110076b1e032422c52",
+        "generated_data/72b8b1136e124387a8a8b5dc10f9c58f/views/000/camera.npz": "ebd3c6baf443abca8f1208e19907f0ee042c1086c00ccef296c2b74341a53300"
+      }
+    },
+    {
+      "sample_id": "72b8b1136e124387a8a8b5dc10f9c58f_006",
+      "object_id": "72b8b1136e124387a8a8b5dc10f9c58f",
+      "rotation_only_rms_change": 0.6176121090950005,
+      "normalization_only_rms_change": 0.002152923355147042,
+      "normalization_only_max_change": 0.0038311631544075686,
+      "camera_to_oracle_radius_ratio": 0.9987170771899564,
+      "normalization_offset_object_units": 0.0031065627307000905,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 8.60126625479296e-09,
+      "inputs_sha256": {
+        "generated_data/72b8b1136e124387a8a8b5dc10f9c58f/views/006/full_surface.npz": "eb1bd6e951c2301ccb1135130e01ed47976388fb62700ac000256daaa4cc9155",
+        "generated_data/72b8b1136e124387a8a8b5dc10f9c58f/views/006/camera.npz": "c6b4bda604e3ecd2231cb0cb1cc07968cb0d8f3ade43f2d4e3ff2fadfde8c4a0"
+      }
+    },
+    {
+      "sample_id": "8262743abb7f4f759aa0b3bda08551e5_013",
+      "object_id": "8262743abb7f4f759aa0b3bda08551e5",
+      "rotation_only_rms_change": 0.7051408643641334,
+      "normalization_only_rms_change": 0.0043776712797129235,
+      "normalization_only_max_change": 0.0077503734391912715,
+      "camera_to_oracle_radius_ratio": 1.001187490345047,
+      "normalization_offset_object_units": 0.003779317973869152,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 5.297310623486595e-08,
+      "inputs_sha256": {
+        "generated_data/8262743abb7f4f759aa0b3bda08551e5/views/013/full_surface.npz": "1a1a9aa2139d9df0a9607ad27ec75ec141ba656855eb7e00ff391fed0f6d14c4",
+        "generated_data/8262743abb7f4f759aa0b3bda08551e5/views/013/camera.npz": "4a96006a51be315d45267a54b20693a2a798e2eee1db4c3fda1933a14552c02e"
+      }
+    },
+    {
+      "sample_id": "8262743abb7f4f759aa0b3bda08551e5_014",
+      "object_id": "8262743abb7f4f759aa0b3bda08551e5",
+      "rotation_only_rms_change": 0.6847706985337642,
+      "normalization_only_rms_change": 0.0036016614694050135,
+      "normalization_only_max_change": 0.007297684667861626,
+      "camera_to_oracle_radius_ratio": 1.0031760405625976,
+      "normalization_offset_object_units": 0.002828625331578911,
+      "factorization_max_error": 5.551115123125783e-16,
+      "centroid_commutation_max_error": 9.658837285542177e-09,
+      "inputs_sha256": {
+        "generated_data/8262743abb7f4f759aa0b3bda08551e5/views/014/full_surface.npz": "b4465461f9a5a116f4b887c3f54deb65274eff179b4a94a540162f89f5ab7ade",
+        "generated_data/8262743abb7f4f759aa0b3bda08551e5/views/014/camera.npz": "8e079072d057a71677ac4e3dd8de9a7f9327ecbd0d43d13379cb7e7d2c16e37d"
+      }
+    },
+    {
+      "sample_id": "a807e2119b24443da16a2e28529cfa26_004",
+      "object_id": "a807e2119b24443da16a2e28529cfa26",
+      "rotation_only_rms_change": 0.679569262908263,
+      "normalization_only_rms_change": 0.006001150174166897,
+      "normalization_only_max_change": 0.012531486047335338,
+      "camera_to_oracle_radius_ratio": 1.0041178883386304,
+      "normalization_offset_object_units": 0.004984411227823657,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 3.643145307652418e-08,
+      "inputs_sha256": {
+        "generated_data/a807e2119b24443da16a2e28529cfa26/views/004/full_surface.npz": "d93033bb5dfad9271a49694c6d81cece43d7bdd1fafaa6e9fa51845e4bde4b51",
+        "generated_data/a807e2119b24443da16a2e28529cfa26/views/004/camera.npz": "e1ea161009de1d0b13435af89d680d2c7e93ec771d04f975a5d66b9efefb533b"
+      }
+    },
+    {
+      "sample_id": "a807e2119b24443da16a2e28529cfa26_006",
+      "object_id": "a807e2119b24443da16a2e28529cfa26",
+      "rotation_only_rms_change": 0.6004175951860287,
+      "normalization_only_rms_change": 0.004381165656949177,
+      "normalization_only_max_change": 0.008616510868680316,
+      "camera_to_oracle_radius_ratio": 1.0028055180880893,
+      "normalization_offset_object_units": 0.0037490701200454195,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 1.6207869490969529e-09,
+      "inputs_sha256": {
+        "generated_data/a807e2119b24443da16a2e28529cfa26/views/006/full_surface.npz": "147dedbe99bb1ce1cad5152b2e3562a7af93d47cf1d047e266b638a9eb4b6f0c",
+        "generated_data/a807e2119b24443da16a2e28529cfa26/views/006/camera.npz": "db734afdf64ba87ab70373544e66abc4ca5ad0a2fde85037fb42f7dbf8656bca"
+      }
+    },
+    {
+      "sample_id": "d87e82071e24487481bf90c8f2682fb6_004",
+      "object_id": "d87e82071e24487481bf90c8f2682fb6",
+      "rotation_only_rms_change": 0.4516151303205914,
+      "normalization_only_rms_change": 0.014269281649869806,
+      "normalization_only_max_change": 0.024532427968122494,
+      "camera_to_oracle_radius_ratio": 0.9990477790297715,
+      "normalization_offset_object_units": 0.014319591633516121,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 9.190511096601739e-08,
+      "inputs_sha256": {
+        "generated_data/d87e82071e24487481bf90c8f2682fb6/views/004/full_surface.npz": "3793f65821ce27c8b9ec54c572b5221383473d88c45b8e8f5cae3ea8675280f0",
+        "generated_data/d87e82071e24487481bf90c8f2682fb6/views/004/camera.npz": "08f78a23768572bde9a0569a8ba8393f1fe9ffcff357b0b51e95d2ff1985bf78"
+      }
+    },
+    {
+      "sample_id": "d87e82071e24487481bf90c8f2682fb6_015",
+      "object_id": "d87e82071e24487481bf90c8f2682fb6",
+      "rotation_only_rms_change": 0.5393428498653441,
+      "normalization_only_rms_change": 0.022931648444688587,
+      "normalization_only_max_change": 0.03621271486976224,
+      "camera_to_oracle_radius_ratio": 1.0121853443348559,
+      "normalization_offset_object_units": 0.022826675330862956,
+      "factorization_max_error": 2.220446049250313e-16,
+      "centroid_commutation_max_error": 2.2691108103600754e-08,
+      "inputs_sha256": {
+        "generated_data/d87e82071e24487481bf90c8f2682fb6/views/015/full_surface.npz": "7d102dbb1904cf6385d354dc1a8d67966280430cd351b285d9dbc28b2ed8b461",
+        "generated_data/d87e82071e24487481bf90c8f2682fb6/views/015/camera.npz": "57ea8c229ca55380ca4fb60fffc6bfc8eb35dee9e32f303c0993cf7f59bfddcc"
+      }
+    },
+    {
+      "sample_id": "dbba322581594949944949744937c788_000",
+      "object_id": "dbba322581594949944949744937c788",
+      "rotation_only_rms_change": 0.17821859877331253,
+      "normalization_only_rms_change": 0.030525026393901027,
+      "normalization_only_max_change": 0.04851224049012237,
+      "camera_to_oracle_radius_ratio": 1.0003348964795165,
+      "normalization_offset_object_units": 0.027055668400794604,
+      "factorization_max_error": 5.551115123125783e-16,
+      "centroid_commutation_max_error": 8.64865001837245e-08,
+      "inputs_sha256": {
+        "generated_data/dbba322581594949944949744937c788/views/000/full_surface.npz": "7554baaa3a7f2769139b796302741746be227285176a24acc03f36da8a0fe45b",
+        "generated_data/dbba322581594949944949744937c788/views/000/camera.npz": "ebe87fb40e3952e72c2581feaf5544d76172b7cceedbe3081e0c352c74aa9b0a"
+      }
+    },
+    {
+      "sample_id": "dbba322581594949944949744937c788_013",
+      "object_id": "dbba322581594949944949744937c788",
+      "rotation_only_rms_change": 0.5372907664061627,
+      "normalization_only_rms_change": 0.043837605722059296,
+      "normalization_only_max_change": 0.08624674597304982,
+      "camera_to_oracle_radius_ratio": 1.0402854979436555,
+      "normalization_offset_object_units": 0.03528021441478841,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 1.3217428118661445e-07,
+      "inputs_sha256": {
+        "generated_data/dbba322581594949944949744937c788/views/013/full_surface.npz": "3234ab118b39a79fe9fc97327b0de1bd877b38ce978e6d52e3b3725171bf4255",
+        "generated_data/dbba322581594949944949744937c788/views/013/camera.npz": "060118be90d3b5528409e9f2b8c0c4ff2258f854a42dc282f549a193f724aff6"
+      }
+    },
+    {
+      "sample_id": "e2759dc44b4b40fb9cf9544afc650282_001",
+      "object_id": "e2759dc44b4b40fb9cf9544afc650282",
+      "rotation_only_rms_change": 0.2478774023384608,
+      "normalization_only_rms_change": 0.01593548182590238,
+      "normalization_only_max_change": 0.04009954955336614,
+      "camera_to_oracle_radius_ratio": 1.0150375544728285,
+      "normalization_offset_object_units": 0.012909582951770821,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 2.2193329618502844e-08,
+      "inputs_sha256": {
+        "generated_data/e2759dc44b4b40fb9cf9544afc650282/views/001/full_surface.npz": "40dcea23242d998ead8f784bb633867ab278190e14d87cc952e4a0ff3d3d24fd",
+        "generated_data/e2759dc44b4b40fb9cf9544afc650282/views/001/camera.npz": "45d1b7e9b26a907c7c3f024330e7cbfb79f92401f34bc1969360e45a20479d49"
+      }
+    },
+    {
+      "sample_id": "e2759dc44b4b40fb9cf9544afc650282_011",
+      "object_id": "e2759dc44b4b40fb9cf9544afc650282",
+      "rotation_only_rms_change": 0.5768730539643967,
+      "normalization_only_rms_change": 0.01683792209733616,
+      "normalization_only_max_change": 0.04182631439850104,
+      "camera_to_oracle_radius_ratio": 1.0160345215082842,
+      "normalization_offset_object_units": 0.013638739931083443,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 3.598137454652317e-09,
+      "inputs_sha256": {
+        "generated_data/e2759dc44b4b40fb9cf9544afc650282/views/011/full_surface.npz": "68f51ca016250586d8bff5e08685f40550d36c8cf16a02b579de10697ad23bb1",
+        "generated_data/e2759dc44b4b40fb9cf9544afc650282/views/011/camera.npz": "dd43824c20c51825f4cb4a159056df1cae78f9162da3fdafc5b683d064fce126"
+      }
+    },
+    {
+      "sample_id": "f240fc675fe649acafb6da700d299d55_001",
+      "object_id": "f240fc675fe649acafb6da700d299d55",
+      "rotation_only_rms_change": 0.20414245630473096,
+      "normalization_only_rms_change": 0.0028445735042937127,
+      "normalization_only_max_change": 0.004582182516729823,
+      "camera_to_oracle_radius_ratio": 1.0006269607075848,
+      "normalization_offset_object_units": 0.002535080598356808,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 3.4607123944319085e-08,
+      "inputs_sha256": {
+        "generated_data/f240fc675fe649acafb6da700d299d55/views/001/full_surface.npz": "2c8f1205a6e2a0df42cd87506e86aaa8af459fe0828579ed7b6507493931bf13",
+        "generated_data/f240fc675fe649acafb6da700d299d55/views/001/camera.npz": "ad565b1366328353abd4f2334861405428ac875a2bc3781894d500e0f8270d8c"
+      }
+    },
+    {
+      "sample_id": "f240fc675fe649acafb6da700d299d55_012",
+      "object_id": "f240fc675fe649acafb6da700d299d55",
+      "rotation_only_rms_change": 0.6664058579650087,
+      "normalization_only_rms_change": 0.0032550555846385634,
+      "normalization_only_max_change": 0.005738141254663293,
+      "camera_to_oracle_radius_ratio": 1.0012643504627856,
+      "normalization_offset_object_units": 0.0028803234719031933,
+      "factorization_max_error": 6.661338147750939e-16,
+      "centroid_commutation_max_error": 1.1248411313502515e-08,
+      "inputs_sha256": {
+        "generated_data/f240fc675fe649acafb6da700d299d55/views/012/full_surface.npz": "8e9dd8448baddcb46653174ec9a32e57cf4aef0f8a156aaef7e56b71b2c47bc9",
+        "generated_data/f240fc675fe649acafb6da700d299d55/views/012/camera.npz": "1b07f472ea14e3aa6f29c553f45bb31e4e2946f148e3c60c938393acda790a30"
+      }
+    },
+    {
+      "sample_id": "f4e66b252b324dad84ba036a92b99f43_001",
+      "object_id": "f4e66b252b324dad84ba036a92b99f43",
+      "rotation_only_rms_change": 0.5767188370437065,
+      "normalization_only_rms_change": 0.0068237927490963505,
+      "normalization_only_max_change": 0.009515567384563939,
+      "camera_to_oracle_radius_ratio": 0.996791695787032,
+      "normalization_offset_object_units": 0.006041669982488465,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 3.911092938402305e-08,
+      "inputs_sha256": {
+        "generated_data/f4e66b252b324dad84ba036a92b99f43/views/001/full_surface.npz": "e963f89840151bdb1ddef429573953e1e1fa1bb6896de5a4a4df96e956a336a1",
+        "generated_data/f4e66b252b324dad84ba036a92b99f43/views/001/camera.npz": "fb7283fdadfe97c04e15e75c907502da6f3372b0d454dc2c2967e94224f11ba2"
+      }
+    },
+    {
+      "sample_id": "f4e66b252b324dad84ba036a92b99f43_009",
+      "object_id": "f4e66b252b324dad84ba036a92b99f43",
+      "rotation_only_rms_change": 0.6911533483929869,
+      "normalization_only_rms_change": 0.010600759200390731,
+      "normalization_only_max_change": 0.018474032690866005,
+      "camera_to_oracle_radius_ratio": 1.003254803215366,
+      "normalization_offset_object_units": 0.009640021118736202,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 2.7616402276109397e-08,
+      "inputs_sha256": {
+        "generated_data/f4e66b252b324dad84ba036a92b99f43/views/009/full_surface.npz": "b11a38a67087558055c65a230b0a8ba90eb4c1b7a42f42becbc26f62f2ab9bb6",
+        "generated_data/f4e66b252b324dad84ba036a92b99f43/views/009/camera.npz": "bb53b7f26516badd80f3fbf49b3d0a077419cc441224d28972ac0bcf3818c71f"
+      }
+    },
+    {
+      "sample_id": "fe725496195f49bfbabb52407c58edf8_000",
+      "object_id": "fe725496195f49bfbabb52407c58edf8",
+      "rotation_only_rms_change": 0.6202240883159175,
+      "normalization_only_rms_change": 0.05653763140373945,
+      "normalization_only_max_change": 0.10005830392361859,
+      "camera_to_oracle_radius_ratio": 0.9905047379613338,
+      "normalization_offset_object_units": 0.04990348339094537,
+      "factorization_max_error": 4.440892098500626e-16,
+      "centroid_commutation_max_error": 2.935829002126411e-08,
+      "inputs_sha256": {
+        "generated_data/fe725496195f49bfbabb52407c58edf8/views/000/full_surface.npz": "4b4d5a9a07934bdb7497e0897ca00b3dcb1a2e7ba5ed832bce34d4fdf4ff5796",
+        "generated_data/fe725496195f49bfbabb52407c58edf8/views/000/camera.npz": "11aadb93bbd40a52472bb68de41ba8d3cca1e80f33ae45ec01e10df8371251e1"
+      }
+    },
+    {
+      "sample_id": "fe725496195f49bfbabb52407c58edf8_010",
+      "object_id": "fe725496195f49bfbabb52407c58edf8",
+      "rotation_only_rms_change": 0.7228842176977476,
+      "normalization_only_rms_change": 0.05799306084799435,
+      "normalization_only_max_change": 0.10246106370488456,
+      "camera_to_oracle_radius_ratio": 0.9910688552783082,
+      "normalization_offset_object_units": 0.051170876029578344,
+      "factorization_max_error": 3.3306690738754696e-16,
+      "centroid_commutation_max_error": 4.717360257977532e-08,
+      "inputs_sha256": {
+        "generated_data/fe725496195f49bfbabb52407c58edf8/views/010/full_surface.npz": "9d95c3b9c5bc989b6e6d088b54d4be3d21bff2fb80e600a17fdbdcd87e05c3a3",
+        "generated_data/fe725496195f49bfbabb52407c58edf8/views/010/camera.npz": "e27a1d0b7227189fb2bfcc0d7e18c6211fb09f86c85012fde0a8727b83abe64a"
+      }
+    }
+  ],
+  "summary": {
+    "samples": 64,
+    "objects": 32,
+    "rotation_only_rms_change": {
+      "min": 0.15746671274096563,
+      "median": 0.5750243727033207,
+      "max": 0.7676607196584551
+    },
+    "normalization_only_rms_change": {
+      "min": 0.00141300567895637,
+      "median": 0.023337412574456005,
+      "max": 0.13612530699864875
+    },
+    "normalization_only_max_change": {
+      "min": 0.0018528803459663123,
+      "median": 0.04101021842891983,
+      "max": 0.26057843288042337
+    },
+    "camera_to_oracle_radius_ratio": {
+      "min": 0.9006023746696896,
+      "median": 1.0012259204039164,
+      "max": 1.0674848753416326
+    },
+    "normalization_offset_object_units": {
+      "min": 0.0015376437632725578,
+      "median": 0.019741065107320602,
+      "max": 0.15989462326655643
+    },
+    "factorization_max_error": {
+      "min": 2.220446049250313e-16,
+      "median": 3.3306690738754696e-16,
+      "max": 6.661338147750939e-16
+    },
+    "centroid_commutation_max_error": {
+      "min": 1.6207869490969529e-09,
+      "median": 3.411319404733604e-08,
+      "max": 1.4605692566505013e-07
+    }
+  },
+  "limits": "Input-space factorization, no neural tests. RMS magnitudes do not determine training impact. Centroid normalization is an algebraic control, not a validated replacement for pretrained VecSetX preprocessing."
+}

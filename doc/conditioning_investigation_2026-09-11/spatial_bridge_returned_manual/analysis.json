@@ -1,0 +1,59 @@
+{
+  "fit": {
+    "native_mesh": {
+      "mse": 0.10492987383622676,
+      "input_iou": 0.8223359976467868
+    },
+    "point_hits": {
+      "mse": 0.46022033303355175,
+      "input_iou": 0.6326913876285352
+    },
+    "target_shell_plus_one_x_voxel_control": {
+      "mse": 0.0836322278676865,
+      "input_iou": 0.5819482585071077
+    },
+    "mean_control": 0.15108378060782948,
+    "native_beats_mean": 23,
+    "native_beats_point": 24,
+    "shift_crop_voxels": 4606,
+    "native_decoded_iou": 0.8223359976467868
+  },
+  "reserved_object": {
+    "native_mesh": {
+      "mse": 0.1566432609979529,
+      "input_iou": 0.8012583816455592
+    },
+    "point_hits": {
+      "mse": 0.5447513960534707,
+      "input_iou": 0.5697864121267774
+    },
+    "target_shell_plus_one_x_voxel_control": {
+      "mse": 0.12974508083425462,
+      "input_iou": 0.45091183622579734
+    },
+    "mean_control": 0.2116883008275181,
+    "native_beats_mean": 6,
+    "native_beats_point": 7,
+    "shift_crop_voxels": 470,
+    "native_decoded_iou": 0.8012583816455592
+  },
+  "all": {
+    "native_mesh": {
+      "mse": 0.1178582206266583,
+      "input_iou": 0.8170665936464798
+    },
+    "point_hits": {
+      "mse": 0.4813530987885315,
+      "input_iou": 0.6169651437530957
+    },
+    "target_shell_plus_one_x_voxel_control": {
+      "mse": 0.09516044110932853,
+      "input_iou": 0.5491891529367802
+    },
+    "mean_control": 0.16623491066275164,
+    "native_beats_mean": 29,
+    "native_beats_point": 31,
+    "shift_crop_voxels": 5076,
+    "native_decoded_iou": 0.8170665936464798
+  }
+}

@@ -1,0 +1,2311 @@
+{
+  "settings": {
+    "representation_dir": "outputs/conditioning_investigation/representation_probe/46083371",
+    "output_dir": "outputs/conditioning_investigation/spatial_bridge/manual",
+    "encoder_checkpoint": "checkpoints/hf/ss_encoder.ckpt",
+    "decoder_checkpoint": "checkpoints/hf/ss_decoder.ckpt"
+  },
+  "sample_ids": [
+    "146b6c1f10bd445da977424c64dbb051_015",
+    "fe200ce00a5d4c298eee89de0fc15f01_015",
+    "a72de5f2b9024234b9321750c12c6a4e_015",
+    "479bbf9062de4b3196f08e52d1c12821_015",
+    "ec184a627685495e9d0f3a370dfc1422_015",
+    "e846574df9334973955c80286af47ba7_015",
+    "ec69f16ebfac4a4c8e46b1c2369069b3_015",
+    "c5867189a04446d7b20b79fcc24c6afa_015",
+    "abb9321ad29243228b4ea6dabc325db9_015",
+    "08c168482e214a9ea7f49e4bee23f8c3_015",
+    "70d2e748dcae4a4cba64ad7f6714da26_015",
+    "1197376809f344cca0867443f0863889_015",
+    "ccff4352ce3b4da79b00328b8fce5eea_015",
+    "65798018fef64775a573c7669e53d4f5_015",
+    "0895a4f1b8d04f8aa6b95c5048a4118c_015",
+    "447108f97bc74b00888659e891847f38_015",
+    "9253e319f1d24cd1959db9b02ad974f8_015",
+    "a9964b95aee34a8d94677fe648757ee8_015",
+    "cb605b2e7b3e4e1390c6a29f3552e37d_015",
+    "2d8208b578b74a418a3968859f026234_015",
+    "def6c0a876cc46cb8d3b794ebe1cc688_015",
+    "771617c7ae35433eb50414178b0ca450_015",
+    "2c8aff21a5a846839fa17bd5718b5520_015",
+    "eb86041ef75c4a01bed40f5c8073c82c_015",
+    "92893cd677e24d8f8c39c231839c12e0_015",
+    "2d02192c6be8434f9bb74de4e8a67ca4_015",
+    "b802a11f8dd24ba3a7b40278b681c892_015",
+    "d00b1f085da54789b373776e0e4fefcf_015",
+    "aea7145ee8fc4b508cdd48b942fd36d8_015",
+    "b5a53303003d48b6800161fe25c1b76e_015",
+    "a0c4aa289d494456b754e096406a9349_015",
+    "caa8b33766f94328a5fa9e6b8a684eca_015"
+  ],
+  "source_report_sha256": "37b5ed8f3d5770ee50a22070b654aab25f1bc12d6e998f1a499f5e88b32b6b20",
+  "driver_sha256": "e7722cbba281fcd3ad996bced086266296c9f7abf6b8980f72d6dfa66275c48d",
+  "artifact_sha256": {
+    "146b6c1f10bd445da977424c64dbb051_015_vecset_oracle.npz": "d2da83132691c8c621477ec310a1773dbdb7cba01a18dfdb2bc85d64ee50bb0a",
+    "fe200ce00a5d4c298eee89de0fc15f01_015_vecset_oracle.npz": "6689848c9d9d62e01ed973648720fb4d54f62cae5bfb71cca39151c8ac90a427",
+    "a72de5f2b9024234b9321750c12c6a4e_015_vecset_oracle.npz": "799ee6b6d1bc2df06b71c1fd29c9364581d8a4ef90c7324b6749dcbd0bc666c1",
+    "479bbf9062de4b3196f08e52d1c12821_015_vecset_oracle.npz": "1c5626b1b684a46c9d7619db1cb4c5f52b7a8476757072e2a2aa0ffb5a361186",
+    "ec184a627685495e9d0f3a370dfc1422_015_vecset_oracle.npz": "cdd65df1f096ef725abb9b063c0104d60c7e0f3e4578b2ef30cd0023f1c94bbd",
+    "e846574df9334973955c80286af47ba7_015_vecset_oracle.npz": "7b18cc37a7d56544429f520adbbcca7a7cd2aa37612fb58a5d4c5348c6d31892",
+    "ec69f16ebfac4a4c8e46b1c2369069b3_015_vecset_oracle.npz": "6624dc59eb74a4e8bc9970d8a739efcde5800cbf3a0b746e2c1dbf35cf81aad8",
+    "c5867189a04446d7b20b79fcc24c6afa_015_vecset_oracle.npz": "98e6d098feba0e817cc3dc6aafc75387819d8d82a50660f5b43d0761fde6eb18",
+    "abb9321ad29243228b4ea6dabc325db9_015_vecset_oracle.npz": "0cde828fe2e6c26f468c19ddc03ad5ee19be3fb06807b9a1ce24c3486160e30f",
+    "08c168482e214a9ea7f49e4bee23f8c3_015_vecset_oracle.npz": "9d7f8019fbec65f17f98ffbc93b1e75637a32fe148516ceccef2d320a1f413e1",
+    "70d2e748dcae4a4cba64ad7f6714da26_015_vecset_oracle.npz": "5ef2a640e3d89e712428f042c4060e59c9a7ac60405c54d2ad8bf96ec0eb34fa",
+    "1197376809f344cca0867443f0863889_015_vecset_oracle.npz": "ca2de68f9b23dd92a34c1cbe4d3ecfd9551214d7e00fab1f9df1b1e93c35a122",
+    "ccff4352ce3b4da79b00328b8fce5eea_015_vecset_oracle.npz": "4c46e8526b5561e0541c08b4c3994b3ef5ac0799edf90b1d1c2c39e308189aed",
+    "65798018fef64775a573c7669e53d4f5_015_vecset_oracle.npz": "1f0654f59738b54e97647af9b7543d041bd1a90a85a07a30c10ced9e2914ab85",
+    "0895a4f1b8d04f8aa6b95c5048a4118c_015_vecset_oracle.npz": "ade1fd33c975b7fa693977d82c3285a920d72866d305cc3044ef2b21893d85c3",
+    "447108f97bc74b00888659e891847f38_015_vecset_oracle.npz": "1b83260ac95c0542277e110762c85696cd37f3af2886c3a997c721af84605beb",
+    "9253e319f1d24cd1959db9b02ad974f8_015_vecset_oracle.npz": "1f17219ef1c24396efc5a86367deb3e30f31fe37c1b2aa12909c343bf0ed28cc",
+    "a9964b95aee34a8d94677fe648757ee8_015_vecset_oracle.npz": "586617f8a9880f61fc9b5581387e7f7305ce40a602b8f9add47ce90ba9b3c03b",
+    "cb605b2e7b3e4e1390c6a29f3552e37d_015_vecset_oracle.npz": "410e30fd57b28157d5dcb82451d4d6f97c7996f59af1951be1b06084288af49c",
+    "2d8208b578b74a418a3968859f026234_015_vecset_oracle.npz": "8c8529d36fc2c0151500e5dedbd22331d41321db7faa9b5de241a0939e13f242",
+    "def6c0a876cc46cb8d3b794ebe1cc688_015_vecset_oracle.npz": "27d6f58ceca4a67bf9c2a880f4f976c0b70d1da11742f8c9201b1c0202ea8508",
+    "771617c7ae35433eb50414178b0ca450_015_vecset_oracle.npz": "95b4c360a336cc5c1061136338a770dc9febaa3247a9c73cf94f733e694d41a8",
+    "2c8aff21a5a846839fa17bd5718b5520_015_vecset_oracle.npz": "01455d9eb6aa1ac63ddc4c2b4900563ceedc2d2cd3d389472b53609d507ae809",
+    "eb86041ef75c4a01bed40f5c8073c82c_015_vecset_oracle.npz": "fd5a0bdcbf4e29b027a8ed5b1533eab373c7c087b6c175e1875e522bda21dd61",
+    "92893cd677e24d8f8c39c231839c12e0_015_vecset_oracle.npz": "d3035775c07190ba79ac1a3f71b831a0183bc10d87a9943cc3dae2ee0b2c463e",
+    "2d02192c6be8434f9bb74de4e8a67ca4_015_vecset_oracle.npz": "63f153c58b3b658a4fd8a3183d4c6bf39d267059cc4b7aa0b148eba1e40b6a47",
+    "b802a11f8dd24ba3a7b40278b681c892_015_vecset_oracle.npz": "2305cdc08bc4b7381a9d878cff44382940d696616aac130ad24506086da1e76f",
+    "d00b1f085da54789b373776e0e4fefcf_015_vecset_oracle.npz": "73fa2849e198a8c639cda528592af34672ad98d20930859ed038f2c626f3641d",
+    "aea7145ee8fc4b508cdd48b942fd36d8_015_vecset_oracle.npz": "32d617b0ff81482cbc1254af27f1cd4dc014799c95b39cdbfb42500362fefae1",
+    "b5a53303003d48b6800161fe25c1b76e_015_vecset_oracle.npz": "217493ee8f3006f717ddacf00b9ff48a99ea942526ab6fa5c96451b9f4bdd580",
+    "a0c4aa289d494456b754e096406a9349_015_vecset_oracle.npz": "ad514937938e920310808dfea0ac3dd13b8b8173617190fde80f764947f56ac9",
+    "caa8b33766f94328a5fa9e6b8a684eca_015_vecset_oracle.npz": "25c9a2af6681b737a7bdde7d8f6ef48531b1c1359c64b78a74064becca9b6dea",
+    "146b6c1f10bd445da977424c64dbb051_015_sam.npz": "d0d48e02defecf97f57e56133fe1144cb331b3f421c61b0a402ca361c9b2cb38",
+    "fe200ce00a5d4c298eee89de0fc15f01_015_sam.npz": "6b274a1192f9f622c9930a5bcdbd60b3c58a7e001f191a562940fd8da79f1af5",
+    "a72de5f2b9024234b9321750c12c6a4e_015_sam.npz": "8bbd866450de63131e2c7075d7ed1daf5537ac3c03f06cf423f1e60bfa54423e",
+    "479bbf9062de4b3196f08e52d1c12821_015_sam.npz": "1ae11e405b2c71c550e9c0ca67c7c291e94d0c0df82bb630f8b6dae82da181be",
+    "ec184a627685495e9d0f3a370dfc1422_015_sam.npz": "44bab42c8d5ac2853581bf8b4bf91869d196a3d5974a3492baf1cf82cd072aa4",
+    "e846574df9334973955c80286af47ba7_015_sam.npz": "85a4fb2b592a0f9e7ba288098de5feadc82fb46b0e8c4601bd866e175127df5e",
+    "ec69f16ebfac4a4c8e46b1c2369069b3_015_sam.npz": "4f3d5cf3e05c99d9a308a2d73c734b7843cc8058f5c84ccebaf9648ac6b5eb23",
+    "c5867189a04446d7b20b79fcc24c6afa_015_sam.npz": "a3179cf4960eda4c5d6e94d70feef020fd58660c10fc3daea9a4bfb9b4634941",
+    "abb9321ad29243228b4ea6dabc325db9_015_sam.npz": "5bf5315a47e9c68d421b5dc50cad638ac35a70660b5431330381c32d21fbe25d",
+    "08c168482e214a9ea7f49e4bee23f8c3_015_sam.npz": "b7d39001c1fa13a425282778635002b0b469a7fc5aded621ef779031fb2c09c3",
+    "70d2e748dcae4a4cba64ad7f6714da26_015_sam.npz": "2f1a11ccc73f97eceb8b0da437f020ad235c24cb2cb5479e2d6b5bb39187fcc5",
+    "1197376809f344cca0867443f0863889_015_sam.npz": "28a4325c2a9435e792d2cd660c2e747f076ae131bbf4034d0fd6e2bd8d9171e3",
+    "ccff4352ce3b4da79b00328b8fce5eea_015_sam.npz": "eda8895606df73c76797a593938ee227aedf68d4ebc27c6985e0a944b141ffe3",
+    "65798018fef64775a573c7669e53d4f5_015_sam.npz": "c5aa1a73282118bee61e7f4b742422d4e9de1e781e6ce3f325eb65e0669b819f",
+    "0895a4f1b8d04f8aa6b95c5048a4118c_015_sam.npz": "0c878a80e85fdf3c2811899b1abc73f50f5f3fb16d065cd1818812dc1d30bd00",
+    "447108f97bc74b00888659e891847f38_015_sam.npz": "b2442d12ea296d5dedd60c45cde030113108424fa03b522b2c7ee6e1aa59228e",
+    "9253e319f1d24cd1959db9b02ad974f8_015_sam.npz": "0bb2266c990a93ccabc9b15b2d30b5d96f3aae6674581d63fe50802bcccfbe8a",
+    "a9964b95aee34a8d94677fe648757ee8_015_sam.npz": "28e072ac90935e5a99d6d6674eb86508d02499b837e03311a62ec84575e2f067",
+    "cb605b2e7b3e4e1390c6a29f3552e37d_015_sam.npz": "9db80e6fd63e68d10213d092d0b608c12dc8fd6045f9a7d76a545b55368c2d27",
+    "2d8208b578b74a418a3968859f026234_015_sam.npz": "ef767e97702d55df888da13509ec2780ddc44ec2914741404988c72edf6c35a2",
+    "def6c0a876cc46cb8d3b794ebe1cc688_015_sam.npz": "8090d4de66daa2e7cf235f2a6321bf68bec0b59579a6dc8dba1cb8c64fdd744d",
+    "771617c7ae35433eb50414178b0ca450_015_sam.npz": "856d35b37216546927cb4585eccd25c34c1c4d6598dfc1e451109c2a66c9fe42",
+    "2c8aff21a5a846839fa17bd5718b5520_015_sam.npz": "10eeccede459382ae8f935822c38044b4a0b1e6841ebd2536fd16e7cc10f6194",
+    "eb86041ef75c4a01bed40f5c8073c82c_015_sam.npz": "7a4906fe48dce119b190689bd3d9a5915dfa12ab42426bea4f42bc50be449629",
+    "92893cd677e24d8f8c39c231839c12e0_015_sam.npz": "5706d7624b36804b8661797bf7b90d05c77cc933b40af2cc6a7c403c5c4a690d",
+    "2d02192c6be8434f9bb74de4e8a67ca4_015_sam.npz": "7ecb17a53c8a6678c253768c2677e444ade5a70784c753acd94b5037a55707f5",
+    "b802a11f8dd24ba3a7b40278b681c892_015_sam.npz": "f8f4bc982523b9fe879d4fd973a0f05937506decf87413fdf8647927cc502d4b",
+    "d00b1f085da54789b373776e0e4fefcf_015_sam.npz": "445b788c15d5272dc333692ffd64e284af3e6b0355d1fca3ffc1e982e189c0f1",
+    "aea7145ee8fc4b508cdd48b942fd36d8_015_sam.npz": "be7d601e345c1826f219f079e16525fd6b62b6268165ce5ba23073573f30ce38",
+    "b5a53303003d48b6800161fe25c1b76e_015_sam.npz": "bd7676ac322fbe8ed5af481045629a65d7aff09aee07ded4a9d10cc6cfda0930",
+    "a0c4aa289d494456b754e096406a9349_015_sam.npz": "832a4ed9d7b9ecf6503ece53b7cca7034b825f406e7664908ceaadc25cf8f884",
+    "caa8b33766f94328a5fa9e6b8a684eca_015_sam.npz": "fe2a32f4e339cf1e97f4b38df29da9e026cbdbc49212943960fe12085a0f7dbf"
+  },
+  "checkpoint_sha256": {
+    "sam_encoder": "dcc47810ac568b11fe6e4821ea1c8d6b960dfbda3e5f68e94c19f44b3bf9e83b",
+    "sam_decoder": "6dac1cd7b7fda5a38e0614fadae441f1794f80e39ea2981f1ac8aff0a7e99340",
+    "vecsetx": "c18de2a64721e2d59b96c82b074e6a04e8a51417aa6c2fe1234a7221cb868d51"
+  },
+  "input_checks": [
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "native_surface_sha256": "13afdec548208120e419027000ddf629533675fe560911a0cf5c1d9446d240bd",
+      "grid_sha256": "f4fdf1c6f4e62aa998575d2807b7ed783abc8421d16fd0eb0c605b90e69b2e17",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.12271897810218978,
+      "max_outside_cube_distance": 0.002553941853167485,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "native_surface_sha256": "1faf40a8b463fc58a4e3bbaff403b9ed1d6a4fd05c2e43f6db3286b53b77f835",
+      "grid_sha256": "767106ecaa5ed368c6cfb1ce66dc0fd3be4aacc75a5ec520f5d3b68371b1d12d",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "a72de5f2b9024234b9321750c12c6a4e_015",
+      "native_surface_sha256": "042b0b8856c5ad320f899b0ed2468de3005a29f5ca89f7bf9ab3c8ade55df05f",
+      "grid_sha256": "e9ab97a27e06ac95badc274148977fd8572ad4b0982647c1fcc9739ccd9b83c7",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "native_surface_sha256": "1db9c55751856d4f0c713e919fd0fd79fb30e578951dcb23434c480c00b42227",
+      "grid_sha256": "ffb7b7114b3ea2efd93d414b279799d8be194e73690e8cb31f70676a224859c4",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0011160714285714285,
+      "max_outside_cube_distance": 0.0015105092954529331,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "ec184a627685495e9d0f3a370dfc1422_015",
+      "native_surface_sha256": "23b19f37b02221b8c13884ee50a9534ddcaccf9592baf1868c1f7a1022ce204d",
+      "grid_sha256": "ccd76dddc3171b6e41b4968c41fb34f17f32a5933b9b8db92c05b5532066ad02",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "native_surface_sha256": "13d1740a141489f6cc17d5ac6ec80ed031c89ac2009981432a537638cf592f4d",
+      "grid_sha256": "a7890cfad055d69e19d1a2ed4f9de70a82e8556b3ef9947899ffc6091ae19297",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.07363819771351715,
+      "max_outside_cube_distance": 0.003969221283377844,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_015",
+      "native_surface_sha256": "7febee6913d5b0ff424231729afeae22071881706e9ce4b5fe5c6ba35b09e59e",
+      "grid_sha256": "5c595bb866953faff4a916698251293f8ef4479b5c5edec7d20aafb6fc2ec5ad",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "c5867189a04446d7b20b79fcc24c6afa_015",
+      "native_surface_sha256": "404110f02525b6d94e3985adf1ff75ea31e11e4341d98323ece6460c1cc1c841",
+      "grid_sha256": "ecc6fd5650236094c6051c5516560b5c65738ffc746a03c5a7312c1293519b46",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "abb9321ad29243228b4ea6dabc325db9_015",
+      "native_surface_sha256": "9b9ad39402f1be4c40226e8bd913f35e6c870acac5b8ac12bc2187e79c44bc48",
+      "grid_sha256": "8dee493679dd562ab54000a3cd141b672bc57259d59ea06432ee244ea9c38ae0",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "08c168482e214a9ea7f49e4bee23f8c3_015",
+      "native_surface_sha256": "f58a07cf26546d0a8e2dbfdecce4496c1512aead7b81e1f36d554368d6cad530",
+      "grid_sha256": "997e1092f7612df370225c64d26f77ef5d84a9b575c8d0b0f884b60ca2a37468",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0028046120286693674,
+      "max_outside_cube_distance": 0.0007811678594304983,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "70d2e748dcae4a4cba64ad7f6714da26_015",
+      "native_surface_sha256": "897644b80a5e82e5c6704f83430f11b57e7b926ea227f3fb90792bf818595063",
+      "grid_sha256": "5785b0ec918d128b11bc9999b5524ba9f374d0829daac7fec469c3be9c8e6c7d",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.010436432637571158,
+      "max_outside_cube_distance": 0.0023070697061517986,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "1197376809f344cca0867443f0863889_015",
+      "native_surface_sha256": "79400c5022369828fc7f3460f640d2cad84ddc960eb893d4fda732e02f658383",
+      "grid_sha256": "32e8aec4cbcb7fa8a85de4d1936980e93c3cd7ddc62ede41fc194605fdc43360",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "ccff4352ce3b4da79b00328b8fce5eea_015",
+      "native_surface_sha256": "f3f6962707fb73f7618bc37e23189ed803c2bf0b9b213e13019f4a1abe392f1d",
+      "grid_sha256": "68884fae0bc5072609744823d0924eff5dd4d86c7282c9f4a64919f0092f4437",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0004418912947414936,
+      "max_outside_cube_distance": 0.004099808991083198,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "65798018fef64775a573c7669e53d4f5_015",
+      "native_surface_sha256": "9680e449c33ee8b1defb7954dedc42b28ac1c1a344e3131de4e9e4e5a1458c1f",
+      "grid_sha256": "eff80717805773de8f968b822aca8c37ebc916370339af1cff2abf546e4dbfb7",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0004858791375645308,
+      "max_outside_cube_distance": 0.003693978675487597,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "0895a4f1b8d04f8aa6b95c5048a4118c_015",
+      "native_surface_sha256": "6c35e9ac45293f0a076f3f4edcca12073364843a0de2e16f44bed7ac2348c4e6",
+      "grid_sha256": "4ae0072dc81d1e3da9361b3de05dffafda46404155b9ff986a92a7b45bd47803",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.000297029702970297,
+      "max_outside_cube_distance": 0.0014421835262075078,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "447108f97bc74b00888659e891847f38_015",
+      "native_surface_sha256": "ce53a2dbb87c3e00e47a06b61624663ba6f2a75591981f1a1b619e057984e9a3",
+      "grid_sha256": "68c03af97bbe795c34a76e742577abbb6373ff7ecd6b8c1563b8a36c10732aab",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.002053388090349076,
+      "max_outside_cube_distance": 0.0017372128307708845,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "9253e319f1d24cd1959db9b02ad974f8_015",
+      "native_surface_sha256": "39ddac8432d7036d6fe5c7ed2a27d483dc7576cdd8a7db52ea22a7a3a7bee4d6",
+      "grid_sha256": "7eaf425e85857ad982c2a6799e13d5318d932028fc585b10b919571e34c2bf7b",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.03850210970464135,
+      "max_outside_cube_distance": 0.0028418316409928313,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "a9964b95aee34a8d94677fe648757ee8_015",
+      "native_surface_sha256": "4c05c0ef78ae129a8c8447bea8dafecfd495991c5eec24f7fe2821cfab797163",
+      "grid_sha256": "ae1c2bd964d7449af2def81e87de557a958f6d3cb07957323f8abfb7aa7491af",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0018190086402910413,
+      "max_outside_cube_distance": 0.0010324750273100758,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "cb605b2e7b3e4e1390c6a29f3552e37d_015",
+      "native_surface_sha256": "4270f6264e7d5e7256a9a6845aef1c6ed3efb37587d362ba1899a894befe51ad",
+      "grid_sha256": "a8f9f1633f9bb8a0e134d0438142d62305d7b9848fad02d2e47ce861f3687b16",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.04179377669310555,
+      "max_outside_cube_distance": 0.0035409754330992804,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "2d8208b578b74a418a3968859f026234_015",
+      "native_surface_sha256": "805bb675ff307f14028a7a2988a0e78d3794ea60b81ab4f2fc76284b43106403",
+      "grid_sha256": "6f2b82adabdb2004b0cb4ac3c14f0c8d7d97a9734535a9ae0abc3f0629d55c10",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.6964625850340136,
+      "max_outside_cube_distance": 0.00445756557981658,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "def6c0a876cc46cb8d3b794ebe1cc688_015",
+      "native_surface_sha256": "5a2aed874956f15fc7a7e621e8d55f7580430a658962a6e24ae426083a86721e",
+      "grid_sha256": "19c5bbfc6099f8ab601cb6cb08eb346c29756b864942f4df1ef9988a01524a84",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "771617c7ae35433eb50414178b0ca450_015",
+      "native_surface_sha256": "3851ee434c0f543f13a9786661228fef53295d40a8f5721597901c55dca32ad8",
+      "grid_sha256": "b21f736066cd45c60b50fa6c21d0e09deab72502dab429cd63430b5bb7d0281d",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.004381161007667032,
+      "max_outside_cube_distance": 0.008517313818172889,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "2c8aff21a5a846839fa17bd5718b5520_015",
+      "native_surface_sha256": "4221633d4fafc84d8f79c27c14eb3a3ec623d54cc5ec8d4446545a637e935af3",
+      "grid_sha256": "ce9c8b5af029977aaceed3ec249f6caba7b0419e270bf435fe78fd57240c73e1",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0004765308553728854,
+      "max_outside_cube_distance": 0.0046990627645401295,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "eb86041ef75c4a01bed40f5c8073c82c_015",
+      "native_surface_sha256": "a3b4c7b17dcdbb6d86cd9a9526c57bfba11562c9a8bddbdf7d06c3f4eb912bdd",
+      "grid_sha256": "4c79dfa8cc8fe4c24f2d83985cde4e78d6c5461aecfd09170b9f120a86c88b01",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0052970109723798715,
+      "max_outside_cube_distance": 0.006285579656838736,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "92893cd677e24d8f8c39c231839c12e0_015",
+      "native_surface_sha256": "b7270e70d60c81c59aee9d8505228797b0af74d0a97201d8af0f17a87c73ad74",
+      "grid_sha256": "7a0eecf6d7cbbf0d00af019ce14bb4772f52bb5b51e5794aa1c05545cea9f86c",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.004105571847507331,
+      "max_outside_cube_distance": 0.0011409346907456097,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "2d02192c6be8434f9bb74de4e8a67ca4_015",
+      "native_surface_sha256": "0c52525a36c18901a75c0196249babfad966044be81534941ea2acc09d1f7b93",
+      "grid_sha256": "84731480ebcbe25a5305e29bc04a48a548174c8e91ae39ca0148d532ec2bbbfc",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.09086879432624113,
+      "max_outside_cube_distance": 0.0019189676568862613,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "b802a11f8dd24ba3a7b40278b681c892_015",
+      "native_surface_sha256": "2fba21e408d0dfc8db34e5b39131aade592851acf9db17461ceae8c30c89d8fb",
+      "grid_sha256": "230a2584d3392d43cbcc056669aa7a1afeda402c1542ff8fdb8c0adf07c5d7ac",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.00849731663685152,
+      "max_outside_cube_distance": 0.0023912845019233853,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "d00b1f085da54789b373776e0e4fefcf_015",
+      "native_surface_sha256": "992ba13d7388d07f56c0993265db27d2cd7e756eb63477f9fe8247089a40939d",
+      "grid_sha256": "5d50de1d7e07579fe9b0a2791f159eb91ce59241a99288319e6ff00427a14c5b",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "aea7145ee8fc4b508cdd48b942fd36d8_015",
+      "native_surface_sha256": "7c8ddad0fc1ff7e11299296cb4c7e08c1c77b31d807d9f6aea24caa565f1a5e4",
+      "grid_sha256": "20a4620773fb310383399905b6992d0331059966f004fc475ddd85b47cbb57d1",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0003023583954847813,
+      "max_outside_cube_distance": 0.0005896038258190739,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "b5a53303003d48b6800161fe25c1b76e_015",
+      "native_surface_sha256": "ffc3eb73ac5566ea2225613f2f60796733b275dd3643f785f3755795a1ac37a1",
+      "grid_sha256": "abea6b7e07c3cdf8ecefe985e8d6a525d118ed8b3e8a5bc3b74ee6c353b88ffc",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "a0c4aa289d494456b754e096406a9349_015",
+      "native_surface_sha256": "c990d9a2fd64dca9152a3fd09d7f98a3ef7e46c671890702f107118da30ed1e7",
+      "grid_sha256": "52bed6afd7f52dc583de62551a246e3f3e06c4af40ab17d904e97299d4ab2341",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.0,
+      "max_outside_cube_distance": 0.0,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    },
+    {
+      "sample_id": "caa8b33766f94328a5fa9e6b8a684eca_015",
+      "native_surface_sha256": "3ffc319beb1daeada8d9ec5806a3126a3e68c7743cf2bea9037866f43c9bc689",
+      "grid_sha256": "004c7e61b0742f3f63ca8a99f2fae47a9b173fca5973d5118ecce50d7ea88a0b",
+      "field_to_saved_vertices_max_error": 0.0,
+      "outside_cube_vertex_fraction": 0.00392156862745098,
+      "max_outside_cube_distance": 0.0017173461767820974,
+      "clipping_policy": "Original target voxelizer clips vertices to +/- (0.5 - 1e-6); no target-dependent adjustment."
+    }
+  ],
+  "target_sha256_channels_first": "be59cf89893dcbc743beb5c00b37dd540f2b5ba74fdc8356cde209e8af55cf16",
+  "fit_mean_target_control_mse": [
+    0.14105170965194702,
+    0.05011884123086929,
+    0.3492652475833893,
+    0.1632293313741684,
+    0.12209147214889526,
+    0.1048102080821991,
+    0.043221648782491684,
+    0.03491620719432831,
+    0.11944454908370972,
+    0.20482350885868073,
+    0.03618361055850983,
+    0.06941834837198257,
+    0.19148102402687073,
+    0.35831695795059204,
+    0.2797403335571289,
+    0.3303763270378113,
+    0.0707935020327568,
+    0.062128495424985886,
+    0.05364977940917015,
+    0.12410591542720795,
+    0.3495524525642395,
+    0.06354465335607529,
+    0.16319505870342255,
+    0.14055155217647552,
+    0.07774783670902252,
+    0.2412303388118744,
+    0.07403217256069183,
+    0.03302118927240372,
+    0.28618326783180237,
+    0.03120548464357853,
+    0.5944949388504028,
+    0.35559117794036865
+  ],
+  "runtime": {
+    "torch": "2.5.1+cu121",
+    "gpu": "NVIDIA H100 80GB HBM3",
+    "precision": "fp32 weights and computation",
+    "tf32_matmul": false,
+    "tf32_cudnn": true
+  },
+  "rows": [
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.10148098319768906,
+      "input_vs_target": {
+        "iou": 0.8683894230769231,
+        "precision": 0.9389213775178687,
+        "recall": 0.9203821656050956,
+        "predicted_occupied": 7695,
+        "target_occupied": 7850
+      },
+      "decoded_vs_target": {
+        "iou": 0.8683894230769231,
+        "precision": 0.9389213775178687,
+        "recall": 0.9203821656050956,
+        "predicted_occupied": 7695,
+        "target_occupied": 7850
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.605090856552124,
+      "input_vs_target": {
+        "iou": 0.6131210191082802,
+        "precision": 1.0,
+        "recall": 0.6131210191082802,
+        "predicted_occupied": 4813,
+        "target_occupied": 7850
+      },
+      "decoded_vs_target": {
+        "iou": 0.6140061006609049,
+        "precision": 0.9962878944112188,
+        "recall": 0.6154140127388535,
+        "predicted_occupied": 4849,
+        "target_occupied": 7850
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.07821347564458847,
+      "input_vs_target": {
+        "iou": 0.6367806505421184,
+        "precision": 0.7780891719745223,
+        "recall": 0.7780891719745223,
+        "predicted_occupied": 7850,
+        "target_occupied": 7850
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.021759236231446266,
+      "input_vs_target": {
+        "iou": 0.8534798534798534,
+        "precision": 0.9479251423921887,
+        "recall": 0.8954650269023828,
+        "predicted_occupied": 1229,
+        "target_occupied": 1301
+      },
+      "decoded_vs_target": {
+        "iou": 0.8534798534798534,
+        "precision": 0.9479251423921887,
+        "recall": 0.8954650269023828,
+        "predicted_occupied": 1229,
+        "target_occupied": 1301
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.0228657778352499,
+      "input_vs_target": {
+        "iou": 0.8785549577248271,
+        "precision": 1.0,
+        "recall": 0.8785549577248271,
+        "predicted_occupied": 1143,
+        "target_occupied": 1301
+      },
+      "decoded_vs_target": {
+        "iou": 0.8785549577248271,
+        "precision": 1.0,
+        "recall": 0.8785549577248271,
+        "predicted_occupied": 1143,
+        "target_occupied": 1301
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.03040635585784912,
+      "input_vs_target": {
+        "iou": 0.552898983861327,
+        "precision": 0.7131842713955281,
+        "recall": 0.7109915449654112,
+        "predicted_occupied": 1297,
+        "target_occupied": 1301
+      },
+      "cropped_occupied_voxels": 4,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "a72de5f2b9024234b9321750c12c6a4e_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.325519323348999,
+      "input_vs_target": {
+        "iou": 0.7201210932503305,
+        "precision": 0.8171569576156377,
+        "recall": 0.858442614618278,
+        "predicted_occupied": 20668,
+        "target_occupied": 19674
+      },
+      "decoded_vs_target": {
+        "iou": 0.7201210932503305,
+        "precision": 0.8171569576156377,
+        "recall": 0.858442614618278,
+        "predicted_occupied": 20668,
+        "target_occupied": 19674
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "a72de5f2b9024234b9321750c12c6a4e_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.9507250189781189,
+      "input_vs_target": {
+        "iou": 0.3198129511029785,
+        "precision": 1.0,
+        "recall": 0.3198129511029785,
+        "predicted_occupied": 6292,
+        "target_occupied": 19674
+      },
+      "decoded_vs_target": {
+        "iou": 0.3415859164933286,
+        "precision": 0.9945347119645495,
+        "recall": 0.3422283216427773,
+        "predicted_occupied": 6770,
+        "target_occupied": 19674
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "a72de5f2b9024234b9321750c12c6a4e_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.21827509999275208,
+      "input_vs_target": {
+        "iou": 0.6535826854381173,
+        "precision": 0.7905250851420729,
+        "recall": 0.7904849039341263,
+        "predicted_occupied": 19673,
+        "target_occupied": 19674
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.17179358005523682,
+      "input_vs_target": {
+        "iou": 0.6233538191395961,
+        "precision": 0.921751445768913,
+        "recall": 0.6581830439912355,
+        "predicted_occupied": 8473,
+        "target_occupied": 11866
+      },
+      "decoded_vs_target": {
+        "iou": 0.6233538191395961,
+        "precision": 0.921751445768913,
+        "recall": 0.6581830439912355,
+        "predicted_occupied": 8473,
+        "target_occupied": 11866
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.6794514656066895,
+      "input_vs_target": {
+        "iou": 0.4721051744480027,
+        "precision": 1.0,
+        "recall": 0.4721051744480027,
+        "predicted_occupied": 5602,
+        "target_occupied": 11866
+      },
+      "decoded_vs_target": {
+        "iou": 0.4817432273262662,
+        "precision": 0.9965193177862861,
+        "recall": 0.4825551997303219,
+        "predicted_occupied": 5746,
+        "target_occupied": 11866
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.12869422137737274,
+      "input_vs_target": {
+        "iou": 0.298107428071327,
+        "precision": 0.45929546603741783,
+        "recall": 0.45929546603741783,
+        "predicted_occupied": 11866,
+        "target_occupied": 11866
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "ec184a627685495e9d0f3a370dfc1422_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.0740441083908081,
+      "input_vs_target": {
+        "iou": 0.8327180882067223,
+        "precision": 0.9275048690759576,
+        "recall": 0.8906899418121363,
+        "predicted_occupied": 4621,
+        "target_occupied": 4812
+      },
+      "decoded_vs_target": {
+        "iou": 0.8327180882067223,
+        "precision": 0.9275048690759576,
+        "recall": 0.8906899418121363,
+        "predicted_occupied": 4621,
+        "target_occupied": 4812
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "ec184a627685495e9d0f3a370dfc1422_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.2835618853569031,
+      "input_vs_target": {
+        "iou": 0.7078137988362427,
+        "precision": 1.0,
+        "recall": 0.7078137988362427,
+        "predicted_occupied": 3406,
+        "target_occupied": 4812
+      },
+      "decoded_vs_target": {
+        "iou": 0.7073727933541017,
+        "precision": 0.9991199765327076,
+        "recall": 0.7078137988362427,
+        "predicted_occupied": 3409,
+        "target_occupied": 4812
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "ec184a627685495e9d0f3a370dfc1422_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.06451725959777832,
+      "input_vs_target": {
+        "iou": 0.5371465090270011,
+        "precision": 0.6991058432106467,
+        "recall": 0.698669991687448,
+        "predicted_occupied": 4809,
+        "target_occupied": 4812
+      },
+      "cropped_occupied_voxels": 3,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.07496537268161774,
+      "input_vs_target": {
+        "iou": 0.7987780040733198,
+        "precision": 0.8860273353665424,
+        "recall": 0.8902508228350925,
+        "predicted_occupied": 8853,
+        "target_occupied": 8811
+      },
+      "decoded_vs_target": {
+        "iou": 0.7987780040733198,
+        "precision": 0.8860273353665424,
+        "recall": 0.8902508228350925,
+        "predicted_occupied": 8853,
+        "target_occupied": 8811
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.7132450342178345,
+      "input_vs_target": {
+        "iou": 0.5888094427420271,
+        "precision": 1.0,
+        "recall": 0.5888094427420271,
+        "predicted_occupied": 5188,
+        "target_occupied": 8811
+      },
+      "decoded_vs_target": {
+        "iou": 0.6122958257713249,
+        "precision": 0.9990745881917453,
+        "recall": 0.6126432868005902,
+        "predicted_occupied": 5403,
+        "target_occupied": 8811
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.05811166763305664,
+      "input_vs_target": {
+        "iou": 0.4641076769690927,
+        "precision": 0.6339802519577801,
+        "recall": 0.6339802519577801,
+        "predicted_occupied": 8811,
+        "target_occupied": 8811
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.021631959825754166,
+      "input_vs_target": {
+        "iou": 0.8488692774407061,
+        "precision": 0.9833865814696485,
+        "recall": 0.8612199216564074,
+        "predicted_occupied": 1565,
+        "target_occupied": 1787
+      },
+      "decoded_vs_target": {
+        "iou": 0.8488692774407061,
+        "precision": 0.9833865814696485,
+        "recall": 0.8612199216564074,
+        "predicted_occupied": 1565,
+        "target_occupied": 1787
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.02452554553747177,
+      "input_vs_target": {
+        "iou": 0.9501958589815332,
+        "precision": 1.0,
+        "recall": 0.9501958589815332,
+        "predicted_occupied": 1698,
+        "target_occupied": 1787
+      },
+      "decoded_vs_target": {
+        "iou": 0.9501958589815332,
+        "precision": 1.0,
+        "recall": 0.9501958589815332,
+        "predicted_occupied": 1698,
+        "target_occupied": 1787
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "ec69f16ebfac4a4c8e46b1c2369069b3_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.016419291496276855,
+      "input_vs_target": {
+        "iou": 0.934640522875817,
+        "precision": 0.9722379603399434,
+        "recall": 0.9602686066032456,
+        "predicted_occupied": 1765,
+        "target_occupied": 1787
+      },
+      "cropped_occupied_voxels": 22,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "c5867189a04446d7b20b79fcc24c6afa_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.007385368458926678,
+      "input_vs_target": {
+        "iou": 0.9703034215622982,
+        "precision": 0.9849279161205766,
+        "recall": 0.9849279161205766,
+        "predicted_occupied": 1526,
+        "target_occupied": 1526
+      },
+      "decoded_vs_target": {
+        "iou": 0.9703034215622982,
+        "precision": 0.9849279161205766,
+        "recall": 0.9849279161205766,
+        "predicted_occupied": 1526,
+        "target_occupied": 1526
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "c5867189a04446d7b20b79fcc24c6afa_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.014108888804912567,
+      "input_vs_target": {
+        "iou": 0.9711664482306684,
+        "precision": 1.0,
+        "recall": 0.9711664482306684,
+        "predicted_occupied": 1482,
+        "target_occupied": 1526
+      },
+      "decoded_vs_target": {
+        "iou": 0.9711664482306684,
+        "precision": 1.0,
+        "recall": 0.9711664482306684,
+        "predicted_occupied": 1482,
+        "target_occupied": 1526
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "c5867189a04446d7b20b79fcc24c6afa_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.01138504408299923,
+      "input_vs_target": {
+        "iou": 0.8495145631067961,
+        "precision": 0.9198423127463863,
+        "recall": 0.9174311926605505,
+        "predicted_occupied": 1522,
+        "target_occupied": 1526
+      },
+      "cropped_occupied_voxels": 4,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "abb9321ad29243228b4ea6dabc325db9_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.08496010303497314,
+      "input_vs_target": {
+        "iou": 0.7540865384615385,
+        "precision": 0.9226470588235294,
+        "recall": 0.8049781883500128,
+        "predicted_occupied": 3400,
+        "target_occupied": 3897
+      },
+      "decoded_vs_target": {
+        "iou": 0.7540865384615385,
+        "precision": 0.9226470588235294,
+        "recall": 0.8049781883500128,
+        "predicted_occupied": 3400,
+        "target_occupied": 3897
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "abb9321ad29243228b4ea6dabc325db9_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.15160246193408966,
+      "input_vs_target": {
+        "iou": 0.7244033872209392,
+        "precision": 1.0,
+        "recall": 0.7244033872209392,
+        "predicted_occupied": 2823,
+        "target_occupied": 3897
+      },
+      "decoded_vs_target": {
+        "iou": 0.7244740892765521,
+        "precision": 0.9996460176991151,
+        "recall": 0.724659994867847,
+        "predicted_occupied": 2825,
+        "target_occupied": 3897
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "abb9321ad29243228b4ea6dabc325db9_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.05668896436691284,
+      "input_vs_target": {
+        "iou": 0.5536249251048532,
+        "precision": 0.714064914992272,
+        "recall": 0.7113163972286374,
+        "predicted_occupied": 3882,
+        "target_occupied": 3897
+      },
+      "cropped_occupied_voxels": 15,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "08c168482e214a9ea7f49e4bee23f8c3_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.15852481126785278,
+      "input_vs_target": {
+        "iou": 0.77453447408153,
+        "precision": 0.9129196820500652,
+        "recall": 0.8363221388979458,
+        "predicted_occupied": 8429,
+        "target_occupied": 9201
+      },
+      "decoded_vs_target": {
+        "iou": 0.77453447408153,
+        "precision": 0.9129196820500652,
+        "recall": 0.8363221388979458,
+        "predicted_occupied": 8429,
+        "target_occupied": 9201
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "08c168482e214a9ea7f49e4bee23f8c3_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.6346074342727661,
+      "input_vs_target": {
+        "iou": 0.5283121399847842,
+        "precision": 1.0,
+        "recall": 0.5283121399847842,
+        "predicted_occupied": 4861,
+        "target_occupied": 9201
+      },
+      "decoded_vs_target": {
+        "iou": 0.5298013245033113,
+        "precision": 0.9979550102249489,
+        "recall": 0.5303771329203347,
+        "predicted_occupied": 4890,
+        "target_occupied": 9201
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "08c168482e214a9ea7f49e4bee23f8c3_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.12057939171791077,
+      "input_vs_target": {
+        "iou": 0.5338834708677169,
+        "precision": 0.6961199869579393,
+        "recall": 0.6961199869579393,
+        "predicted_occupied": 9201,
+        "target_occupied": 9201
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "70d2e748dcae4a4cba64ad7f6714da26_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.011041155084967613,
+      "input_vs_target": {
+        "iou": 0.8898240244835501,
+        "precision": 0.9548440065681445,
+        "recall": 0.9289137380191693,
+        "predicted_occupied": 1218,
+        "target_occupied": 1252
+      },
+      "decoded_vs_target": {
+        "iou": 0.8898240244835501,
+        "precision": 0.9548440065681445,
+        "recall": 0.9289137380191693,
+        "predicted_occupied": 1218,
+        "target_occupied": 1252
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "70d2e748dcae4a4cba64ad7f6714da26_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.0148333590477705,
+      "input_vs_target": {
+        "iou": 0.9376996805111821,
+        "precision": 1.0,
+        "recall": 0.9376996805111821,
+        "predicted_occupied": 1174,
+        "target_occupied": 1252
+      },
+      "decoded_vs_target": {
+        "iou": 0.9376996805111821,
+        "precision": 1.0,
+        "recall": 0.9376996805111821,
+        "predicted_occupied": 1174,
+        "target_occupied": 1252
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "70d2e748dcae4a4cba64ad7f6714da26_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.014390029013156891,
+      "input_vs_target": {
+        "iou": 0.3826615129762562,
+        "precision": 0.5535143769968051,
+        "recall": 0.5535143769968051,
+        "predicted_occupied": 1252,
+        "target_occupied": 1252
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "1197376809f344cca0867443f0863889_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.040626540780067444,
+      "input_vs_target": {
+        "iou": 0.7862870890136328,
+        "precision": 0.9732009925558313,
+        "recall": 0.8036885245901639,
+        "predicted_occupied": 2015,
+        "target_occupied": 2440
+      },
+      "decoded_vs_target": {
+        "iou": 0.7862870890136328,
+        "precision": 0.9732009925558313,
+        "recall": 0.8036885245901639,
+        "predicted_occupied": 2015,
+        "target_occupied": 2440
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "1197376809f344cca0867443f0863889_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.08036448061466217,
+      "input_vs_target": {
+        "iou": 0.8106557377049181,
+        "precision": 1.0,
+        "recall": 0.8106557377049181,
+        "predicted_occupied": 1978,
+        "target_occupied": 2440
+      },
+      "decoded_vs_target": {
+        "iou": 0.8110655737704918,
+        "precision": 1.0,
+        "recall": 0.8110655737704918,
+        "predicted_occupied": 1979,
+        "target_occupied": 2440
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "1197376809f344cca0867443f0863889_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.03183221071958542,
+      "input_vs_target": {
+        "iou": 0.5580428525743524,
+        "precision": 0.717516447368421,
+        "recall": 0.7151639344262295,
+        "predicted_occupied": 2432,
+        "target_occupied": 2440
+      },
+      "cropped_occupied_voxels": 8,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "ccff4352ce3b4da79b00328b8fce5eea_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.11405203491449356,
+      "input_vs_target": {
+        "iou": 0.8764783180026281,
+        "precision": 0.9397675237759775,
+        "recall": 0.9286460146188653,
+        "predicted_occupied": 8517,
+        "target_occupied": 8619
+      },
+      "decoded_vs_target": {
+        "iou": 0.8764783180026281,
+        "precision": 0.9397675237759775,
+        "recall": 0.9286460146188653,
+        "predicted_occupied": 8517,
+        "target_occupied": 8619
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "ccff4352ce3b4da79b00328b8fce5eea_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.6023945212364197,
+      "input_vs_target": {
+        "iou": 0.5463510848126233,
+        "precision": 1.0,
+        "recall": 0.5463510848126233,
+        "predicted_occupied": 4709,
+        "target_occupied": 8619
+      },
+      "decoded_vs_target": {
+        "iou": 0.5498724193922524,
+        "precision": 0.9993676222596964,
+        "recall": 0.5500638125072514,
+        "predicted_occupied": 4744,
+        "target_occupied": 8619
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "ccff4352ce3b4da79b00328b8fce5eea_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.09783777594566345,
+      "input_vs_target": {
+        "iou": 0.535956459671663,
+        "precision": 0.6988134015821312,
+        "recall": 0.6969486019259775,
+        "predicted_occupied": 8596,
+        "target_occupied": 8619
+      },
+      "cropped_occupied_voxels": 23,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "65798018fef64775a573c7669e53d4f5_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.3164902329444885,
+      "input_vs_target": {
+        "iou": 0.7520802864491402,
+        "precision": 0.9269641969169568,
+        "recall": 0.7994532003859762,
+        "predicted_occupied": 16088,
+        "target_occupied": 18654
+      },
+      "decoded_vs_target": {
+        "iou": 0.7520802864491402,
+        "precision": 0.9269641969169568,
+        "recall": 0.7994532003859762,
+        "predicted_occupied": 16088,
+        "target_occupied": 18654
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "65798018fef64775a573c7669e53d4f5_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.9869623780250549,
+      "input_vs_target": {
+        "iou": 0.3331189021121475,
+        "precision": 1.0,
+        "recall": 0.3331189021121475,
+        "predicted_occupied": 6214,
+        "target_occupied": 18654
+      },
+      "decoded_vs_target": {
+        "iou": 0.3536023980301895,
+        "precision": 0.9957793186614411,
+        "recall": 0.3541331617883564,
+        "predicted_occupied": 6634,
+        "target_occupied": 18654
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "65798018fef64775a573c7669e53d4f5_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.20291627943515778,
+      "input_vs_target": {
+        "iou": 0.7421180653007765,
+        "precision": 0.8534617246758835,
+        "recall": 0.8504878310281977,
+        "predicted_occupied": 18589,
+        "target_occupied": 18654
+      },
+      "cropped_occupied_voxels": 65,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "0895a4f1b8d04f8aa6b95c5048a4118c_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.14914751052856445,
+      "input_vs_target": {
+        "iou": 0.8879610299234516,
+        "precision": 0.9444855662472242,
+        "recall": 0.9368575624082232,
+        "predicted_occupied": 14861,
+        "target_occupied": 14982
+      },
+      "decoded_vs_target": {
+        "iou": 0.8879610299234516,
+        "precision": 0.9444855662472242,
+        "recall": 0.9368575624082232,
+        "predicted_occupied": 14861,
+        "target_occupied": 14982
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "0895a4f1b8d04f8aa6b95c5048a4118c_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.8245474100112915,
+      "input_vs_target": {
+        "iou": 0.3863970097450274,
+        "precision": 1.0,
+        "recall": 0.3863970097450274,
+        "predicted_occupied": 5789,
+        "target_occupied": 14982
+      },
+      "decoded_vs_target": {
+        "iou": 0.39832033593281346,
+        "precision": 0.9964982491245623,
+        "recall": 0.3988786543852623,
+        "predicted_occupied": 5997,
+        "target_occupied": 14982
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "0895a4f1b8d04f8aa6b95c5048a4118c_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.1673593968153,
+      "input_vs_target": {
+        "iou": 0.5163967611336032,
+        "precision": 0.6810839674275798,
+        "recall": 0.6810839674275798,
+        "predicted_occupied": 14982,
+        "target_occupied": 14982
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "447108f97bc74b00888659e891847f38_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.141741544008255,
+      "input_vs_target": {
+        "iou": 0.9286608887330294,
+        "precision": 0.9621613204609156,
+        "recall": 0.96386231281198,
+        "predicted_occupied": 19266,
+        "target_occupied": 19232
+      },
+      "decoded_vs_target": {
+        "iou": 0.9286608887330294,
+        "precision": 0.9621613204609156,
+        "recall": 0.96386231281198,
+        "predicted_occupied": 19266,
+        "target_occupied": 19232
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "447108f97bc74b00888659e891847f38_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.9403368234634399,
+      "input_vs_target": {
+        "iou": 0.3213914309484193,
+        "precision": 1.0,
+        "recall": 0.3213914309484193,
+        "predicted_occupied": 6181,
+        "target_occupied": 19232
+      },
+      "decoded_vs_target": {
+        "iou": 0.3368152998648789,
+        "precision": 0.9984594053304575,
+        "recall": 0.3369904326123128,
+        "predicted_occupied": 6491,
+        "target_occupied": 19232
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "447108f97bc74b00888659e891847f38_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.18636344373226166,
+      "input_vs_target": {
+        "iou": 0.5043273013375295,
+        "precision": 0.6744528619528619,
+        "recall": 0.6665973377703827,
+        "predicted_occupied": 19008,
+        "target_occupied": 19232
+      },
+      "cropped_occupied_voxels": 224,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "9253e319f1d24cd1959db9b02ad974f8_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.01747981645166874,
+      "input_vs_target": {
+        "iou": 0.9561591613056946,
+        "precision": 0.9840608141245709,
+        "recall": 0.9712003872216844,
+        "predicted_occupied": 4078,
+        "target_occupied": 4132
+      },
+      "decoded_vs_target": {
+        "iou": 0.9561591613056946,
+        "precision": 0.9840608141245709,
+        "recall": 0.9712003872216844,
+        "predicted_occupied": 4078,
+        "target_occupied": 4132
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "9253e319f1d24cd1959db9b02ad974f8_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.21212370693683624,
+      "input_vs_target": {
+        "iou": 0.7688770571151985,
+        "precision": 1.0,
+        "recall": 0.7688770571151985,
+        "predicted_occupied": 3177,
+        "target_occupied": 4132
+      },
+      "decoded_vs_target": {
+        "iou": 0.7691190706679574,
+        "precision": 1.0,
+        "recall": 0.7691190706679574,
+        "predicted_occupied": 3178,
+        "target_occupied": 4132
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "9253e319f1d24cd1959db9b02ad974f8_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.034715838730335236,
+      "input_vs_target": {
+        "iou": 0.40115293319769413,
+        "precision": 0.5726040658276863,
+        "recall": 0.5726040658276863,
+        "predicted_occupied": 4132,
+        "target_occupied": 4132
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "a9964b95aee34a8d94677fe648757ee8_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.023543447256088257,
+      "input_vs_target": {
+        "iou": 0.9259584945480127,
+        "precision": 0.9574468085106383,
+        "recall": 0.9657006603081438,
+        "predicted_occupied": 5499,
+        "target_occupied": 5452
+      },
+      "decoded_vs_target": {
+        "iou": 0.9259584945480127,
+        "precision": 0.9574468085106383,
+        "recall": 0.9657006603081438,
+        "predicted_occupied": 5499,
+        "target_occupied": 5452
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "a9964b95aee34a8d94677fe648757ee8_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.4787135720252991,
+      "input_vs_target": {
+        "iou": 0.7723771093176816,
+        "precision": 1.0,
+        "recall": 0.7723771093176816,
+        "predicted_occupied": 4211,
+        "target_occupied": 5452
+      },
+      "decoded_vs_target": {
+        "iou": 0.7703866593366319,
+        "precision": 0.9988120693751484,
+        "recall": 0.7710931768158474,
+        "predicted_occupied": 4209,
+        "target_occupied": 5452
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "a9964b95aee34a8d94677fe648757ee8_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.02443641424179077,
+      "input_vs_target": {
+        "iou": 0.6451418225709112,
+        "precision": 0.7842993396918562,
+        "recall": 0.7842993396918562,
+        "predicted_occupied": 5452,
+        "target_occupied": 5452
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "cb605b2e7b3e4e1390c6a29f3552e37d_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.02616211026906967,
+      "input_vs_target": {
+        "iou": 0.8081847853376851,
+        "precision": 0.9016806722689076,
+        "recall": 0.8862885462555066,
+        "predicted_occupied": 3570,
+        "target_occupied": 3632
+      },
+      "decoded_vs_target": {
+        "iou": 0.8081847853376851,
+        "precision": 0.9016806722689076,
+        "recall": 0.8862885462555066,
+        "predicted_occupied": 3570,
+        "target_occupied": 3632
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "cb605b2e7b3e4e1390c6a29f3552e37d_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.1994825154542923,
+      "input_vs_target": {
+        "iou": 0.8620594713656388,
+        "precision": 1.0,
+        "recall": 0.8620594713656388,
+        "predicted_occupied": 3131,
+        "target_occupied": 3632
+      },
+      "decoded_vs_target": {
+        "iou": 0.8620594713656388,
+        "precision": 1.0,
+        "recall": 0.8620594713656388,
+        "predicted_occupied": 3131,
+        "target_occupied": 3632
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "cb605b2e7b3e4e1390c6a29f3552e37d_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.005347199272364378,
+      "input_vs_target": {
+        "iou": 0.9145161290322581,
+        "precision": 0.974785100286533,
+        "recall": 0.9366740088105727,
+        "predicted_occupied": 3490,
+        "target_occupied": 3632
+      },
+      "cropped_occupied_voxels": 142,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "2d8208b578b74a418a3968859f026234_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.0,
+      "input_vs_target": {
+        "iou": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "predicted_occupied": 23816,
+        "target_occupied": 23816
+      },
+      "decoded_vs_target": {
+        "iou": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "predicted_occupied": 23816,
+        "target_occupied": 23816
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "2d8208b578b74a418a3968859f026234_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.8139545917510986,
+      "input_vs_target": {
+        "iou": 0.28997312730937186,
+        "precision": 1.0,
+        "recall": 0.28997312730937186,
+        "predicted_occupied": 6906,
+        "target_occupied": 23816
+      },
+      "decoded_vs_target": {
+        "iou": 0.32271049983227107,
+        "precision": 0.9958592132505176,
+        "recall": 0.3231441048034934,
+        "predicted_occupied": 7728,
+        "target_occupied": 23816
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "2d8208b578b74a418a3968859f026234_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.05996382236480713,
+      "input_vs_target": {
+        "iou": 0.5739696312364425,
+        "precision": 0.8050709939148073,
+        "recall": 0.6666106818945247,
+        "predicted_occupied": 19720,
+        "target_occupied": 23816
+      },
+      "cropped_occupied_voxels": 4096,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "def6c0a876cc46cb8d3b794ebe1cc688_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.33604103326797485,
+      "input_vs_target": {
+        "iou": 0.6425992779783394,
+        "precision": 0.889672914369717,
+        "recall": 0.6982405537929045,
+        "predicted_occupied": 13605,
+        "target_occupied": 17335
+      },
+      "decoded_vs_target": {
+        "iou": 0.6425992779783394,
+        "precision": 0.889672914369717,
+        "recall": 0.6982405537929045,
+        "predicted_occupied": 13605,
+        "target_occupied": 17335
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "def6c0a876cc46cb8d3b794ebe1cc688_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.850156307220459,
+      "input_vs_target": {
+        "iou": 0.35321603691952697,
+        "precision": 1.0,
+        "recall": 0.35321603691952697,
+        "predicted_occupied": 6123,
+        "target_occupied": 17335
+      },
+      "decoded_vs_target": {
+        "iou": 0.3721867265296725,
+        "precision": 0.9941574415744158,
+        "recall": 0.37300259590423995,
+        "predicted_occupied": 6504,
+        "target_occupied": 17335
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "def6c0a876cc46cb8d3b794ebe1cc688_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.1846282184123993,
+      "input_vs_target": {
+        "iou": 0.5620635278215814,
+        "precision": 0.7196423420824921,
+        "recall": 0.7196423420824921,
+        "predicted_occupied": 17335,
+        "target_occupied": 17335
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "771617c7ae35433eb50414178b0ca450_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.028092624619603157,
+      "input_vs_target": {
+        "iou": 0.8507462686567164,
+        "precision": 0.9678751720972923,
+        "recall": 0.8754669987546699,
+        "predicted_occupied": 2179,
+        "target_occupied": 2409
+      },
+      "decoded_vs_target": {
+        "iou": 0.8507462686567164,
+        "precision": 0.9678751720972923,
+        "recall": 0.8754669987546699,
+        "predicted_occupied": 2179,
+        "target_occupied": 2409
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "771617c7ae35433eb50414178b0ca450_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.06543660908937454,
+      "input_vs_target": {
+        "iou": 0.8082191780821918,
+        "precision": 1.0,
+        "recall": 0.8082191780821918,
+        "predicted_occupied": 1947,
+        "target_occupied": 2409
+      },
+      "decoded_vs_target": {
+        "iou": 0.8082191780821918,
+        "precision": 1.0,
+        "recall": 0.8082191780821918,
+        "predicted_occupied": 1947,
+        "target_occupied": 2409
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "771617c7ae35433eb50414178b0ca450_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.03377435356378555,
+      "input_vs_target": {
+        "iou": 0.5587188612099644,
+        "precision": 0.7168949771689498,
+        "recall": 0.7168949771689498,
+        "predicted_occupied": 2409,
+        "target_occupied": 2409
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "2c8aff21a5a846839fa17bd5718b5520_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.13310161232948303,
+      "input_vs_target": {
+        "iou": 0.7268158236057068,
+        "precision": 0.8957042957042957,
+        "recall": 0.7940134608572441,
+        "predicted_occupied": 5005,
+        "target_occupied": 5646
+      },
+      "decoded_vs_target": {
+        "iou": 0.7268158236057068,
+        "precision": 0.8957042957042957,
+        "recall": 0.7940134608572441,
+        "predicted_occupied": 5005,
+        "target_occupied": 5646
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "2c8aff21a5a846839fa17bd5718b5520_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.3486877977848053,
+      "input_vs_target": {
+        "iou": 0.6500177116542685,
+        "precision": 1.0,
+        "recall": 0.6500177116542685,
+        "predicted_occupied": 3670,
+        "target_occupied": 5646
+      },
+      "decoded_vs_target": {
+        "iou": 0.6509734513274337,
+        "precision": 0.9989136338946225,
+        "recall": 0.6514346439957492,
+        "predicted_occupied": 3682,
+        "target_occupied": 5646
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "2c8aff21a5a846839fa17bd5718b5520_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.0999797135591507,
+      "input_vs_target": {
+        "iou": 0.5240923201511675,
+        "precision": 0.687743535246192,
+        "recall": 0.687743535246192,
+        "predicted_occupied": 5646,
+        "target_occupied": 5646
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "eb86041ef75c4a01bed40f5c8073c82c_015",
+      "split": "fit",
+      "condition": "native_mesh",
+      "latent_mse": 0.13873246312141418,
+      "input_vs_target": {
+        "iou": 0.6596745027124774,
+        "precision": 0.8592964824120602,
+        "recall": 0.739559399918908,
+        "predicted_occupied": 6368,
+        "target_occupied": 7399
+      },
+      "decoded_vs_target": {
+        "iou": 0.6596745027124774,
+        "precision": 0.8592964824120602,
+        "recall": 0.739559399918908,
+        "predicted_occupied": 6368,
+        "target_occupied": 7399
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "eb86041ef75c4a01bed40f5c8073c82c_015",
+      "split": "fit",
+      "condition": "point_hits",
+      "latent_mse": 0.5475095510482788,
+      "input_vs_target": {
+        "iou": 0.5899445871063658,
+        "precision": 1.0,
+        "recall": 0.5899445871063658,
+        "predicted_occupied": 4365,
+        "target_occupied": 7399
+      },
+      "decoded_vs_target": {
+        "iou": 0.5942810898300512,
+        "precision": 0.9966071024655055,
+        "recall": 0.5954858764697932,
+        "predicted_occupied": 4421,
+        "target_occupied": 7399
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "eb86041ef75c4a01bed40f5c8073c82c_015",
+      "split": "fit",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.0803380012512207,
+      "input_vs_target": {
+        "iou": 0.5333126100922184,
+        "precision": 0.695634545208812,
+        "recall": 0.695634545208812,
+        "predicted_occupied": 7399,
+        "target_occupied": 7399
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "92893cd677e24d8f8c39c231839c12e0_015",
+      "split": "reserved_object",
+      "condition": "native_mesh",
+      "latent_mse": 0.02590135857462883,
+      "input_vs_target": {
+        "iou": 0.8909042411309682,
+        "precision": 0.9757522640958224,
+        "recall": 0.9110747408619749,
+        "predicted_occupied": 3423,
+        "target_occupied": 3666
+      },
+      "decoded_vs_target": {
+        "iou": 0.8909042411309682,
+        "precision": 0.9757522640958224,
+        "recall": 0.9110747408619749,
+        "predicted_occupied": 3423,
+        "target_occupied": 3666
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "92893cd677e24d8f8c39c231839c12e0_015",
+      "split": "reserved_object",
+      "condition": "point_hits",
+      "latent_mse": 0.17354848980903625,
+      "input_vs_target": {
+        "iou": 0.8273322422258592,
+        "precision": 1.0,
+        "recall": 0.8273322422258592,
+        "predicted_occupied": 3033,
+        "target_occupied": 3666
+      },
+      "decoded_vs_target": {
+        "iou": 0.8273322422258592,
+        "precision": 1.0,
+        "recall": 0.8273322422258592,
+        "predicted_occupied": 3033,
+        "target_occupied": 3666
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "92893cd677e24d8f8c39c231839c12e0_015",
+      "split": "reserved_object",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.030017323791980743,
+      "input_vs_target": {
+        "iou": 0.3532668881506091,
+        "precision": 0.5220949263502455,
+        "recall": 0.5220949263502455,
+        "predicted_occupied": 3666,
+        "target_occupied": 3666
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "2d02192c6be8434f9bb74de4e8a67ca4_015",
+      "split": "reserved_object",
+      "condition": "native_mesh",
+      "latent_mse": 0.15845215320587158,
+      "input_vs_target": {
+        "iou": 0.7816113132802064,
+        "precision": 0.8988716427398421,
+        "recall": 0.8569696969696969,
+        "predicted_occupied": 18877,
+        "target_occupied": 19800
+      },
+      "decoded_vs_target": {
+        "iou": 0.7816113132802064,
+        "precision": 0.8988716427398421,
+        "recall": 0.8569696969696969,
+        "predicted_occupied": 18877,
+        "target_occupied": 19800
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "2d02192c6be8434f9bb74de4e8a67ca4_015",
+      "split": "reserved_object",
+      "condition": "point_hits",
+      "latent_mse": 0.8186149597167969,
+      "input_vs_target": {
+        "iou": 0.3328282828282828,
+        "precision": 1.0,
+        "recall": 0.3328282828282828,
+        "predicted_occupied": 6590,
+        "target_occupied": 19800
+      },
+      "decoded_vs_target": {
+        "iou": 0.3841149773071104,
+        "precision": 0.9960768928991761,
+        "recall": 0.3846969696969697,
+        "predicted_occupied": 7647,
+        "target_occupied": 19800
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "2d02192c6be8434f9bb74de4e8a67ca4_015",
+      "split": "reserved_object",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.16790693998336792,
+      "input_vs_target": {
+        "iou": 0.37128610014543945,
+        "precision": 0.5415151515151515,
+        "recall": 0.5415151515151515,
+        "predicted_occupied": 19800,
+        "target_occupied": 19800
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "b802a11f8dd24ba3a7b40278b681c892_015",
+      "split": "reserved_object",
+      "condition": "native_mesh",
+      "latent_mse": 0.08808735758066177,
+      "input_vs_target": {
+        "iou": 0.41221137455447077,
+        "precision": 0.5344585091420534,
+        "recall": 0.6431334622823984,
+        "predicted_occupied": 4977,
+        "target_occupied": 4136
+      },
+      "decoded_vs_target": {
+        "iou": 0.41221137455447077,
+        "precision": 0.5344585091420534,
+        "recall": 0.6431334622823984,
+        "predicted_occupied": 4977,
+        "target_occupied": 4136
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "b802a11f8dd24ba3a7b40278b681c892_015",
+      "split": "reserved_object",
+      "condition": "point_hits",
+      "latent_mse": 0.5174869298934937,
+      "input_vs_target": {
+        "iou": 0.46163723916532906,
+        "precision": 0.578672032193159,
+        "recall": 0.695357833655706,
+        "predicted_occupied": 4970,
+        "target_occupied": 4136
+      },
+      "decoded_vs_target": {
+        "iou": 0.44866562009419153,
+        "precision": 0.5612725844461901,
+        "recall": 0.6910058027079303,
+        "predicted_occupied": 5092,
+        "target_occupied": 4136
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "b802a11f8dd24ba3a7b40278b681c892_015",
+      "split": "reserved_object",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.040641482919454575,
+      "input_vs_target": {
+        "iou": 0.1294374658656472,
+        "precision": 0.22920696324951645,
+        "recall": 0.22920696324951645,
+        "predicted_occupied": 4136,
+        "target_occupied": 4136
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "d00b1f085da54789b373776e0e4fefcf_015",
+      "split": "reserved_object",
+      "condition": "native_mesh",
+      "latent_mse": 0.011248858645558357,
+      "input_vs_target": {
+        "iou": 0.8610763454317898,
+        "precision": 0.9136786188579017,
+        "recall": 0.9373297002724795,
+        "predicted_occupied": 753,
+        "target_occupied": 734
+      },
+      "decoded_vs_target": {
+        "iou": 0.8610763454317898,
+        "precision": 0.9136786188579017,
+        "recall": 0.9373297002724795,
+        "predicted_occupied": 753,
+        "target_occupied": 734
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "d00b1f085da54789b373776e0e4fefcf_015",
+      "split": "reserved_object",
+      "condition": "point_hits",
+      "latent_mse": 0.005027752835303545,
+      "input_vs_target": {
+        "iou": 0.9632152588555858,
+        "precision": 1.0,
+        "recall": 0.9632152588555858,
+        "predicted_occupied": 707,
+        "target_occupied": 734
+      },
+      "decoded_vs_target": {
+        "iou": 0.9632152588555858,
+        "precision": 1.0,
+        "recall": 0.9632152588555858,
+        "predicted_occupied": 707,
+        "target_occupied": 734
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "d00b1f085da54789b373776e0e4fefcf_015",
+      "split": "reserved_object",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.01094486191868782,
+      "input_vs_target": {
+        "iou": 0.41835748792270533,
+        "precision": 0.5899182561307902,
+        "recall": 0.5899182561307902,
+        "predicted_occupied": 734,
+        "target_occupied": 734
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "aea7145ee8fc4b508cdd48b942fd36d8_015",
+      "split": "reserved_object",
+      "condition": "native_mesh",
+      "latent_mse": 0.11366865783929825,
+      "input_vs_target": {
+        "iou": 0.9283489096573209,
+        "precision": 0.964685108887581,
+        "recall": 0.9610085019055995,
+        "predicted_occupied": 13592,
+        "target_occupied": 13644
+      },
+      "decoded_vs_target": {
+        "iou": 0.9283489096573209,
+        "precision": 0.964685108887581,
+        "recall": 0.9610085019055995,
+        "predicted_occupied": 13592,
+        "target_occupied": 13644
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "aea7145ee8fc4b508cdd48b942fd36d8_015",
+      "split": "reserved_object",
+      "condition": "point_hits",
+      "latent_mse": 0.7951128482818604,
+      "input_vs_target": {
+        "iou": 0.41051011433597184,
+        "precision": 1.0,
+        "recall": 0.41051011433597184,
+        "predicted_occupied": 5601,
+        "target_occupied": 13644
+      },
+      "decoded_vs_target": {
+        "iou": 0.41995750604439885,
+        "precision": 0.9991284643541921,
+        "recall": 0.4201114042802697,
+        "predicted_occupied": 5737,
+        "target_occupied": 13644
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "aea7145ee8fc4b508cdd48b942fd36d8_015",
+      "split": "reserved_object",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.14309479296207428,
+      "input_vs_target": {
+        "iou": 0.5749666492662838,
+        "precision": 0.7337527757216876,
+        "recall": 0.7265464673116389,
+        "predicted_occupied": 13510,
+        "target_occupied": 13644
+      },
+      "cropped_occupied_voxels": 134,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "b5a53303003d48b6800161fe25c1b76e_015",
+      "split": "reserved_object",
+      "condition": "native_mesh",
+      "latent_mse": 0.003656901651993394,
+      "input_vs_target": {
+        "iou": 0.9714285714285714,
+        "precision": 0.9902912621359223,
+        "recall": 0.9807692307692307,
+        "predicted_occupied": 618,
+        "target_occupied": 624
+      },
+      "decoded_vs_target": {
+        "iou": 0.9714285714285714,
+        "precision": 0.9902912621359223,
+        "recall": 0.9807692307692307,
+        "predicted_occupied": 618,
+        "target_occupied": 624
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "b5a53303003d48b6800161fe25c1b76e_015",
+      "split": "reserved_object",
+      "condition": "point_hits",
+      "latent_mse": 0.0038004820235073566,
+      "input_vs_target": {
+        "iou": 0.9807692307692307,
+        "precision": 1.0,
+        "recall": 0.9807692307692307,
+        "predicted_occupied": 612,
+        "target_occupied": 624
+      },
+      "decoded_vs_target": {
+        "iou": 0.9807692307692307,
+        "precision": 1.0,
+        "recall": 0.9807692307692307,
+        "predicted_occupied": 612,
+        "target_occupied": 624
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "b5a53303003d48b6800161fe25c1b76e_015",
+      "split": "reserved_object",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.009243329986929893,
+      "input_vs_target": {
+        "iou": 0.6507936507936508,
+        "precision": 0.7884615384615384,
+        "recall": 0.7884615384615384,
+        "predicted_occupied": 624,
+        "target_occupied": 624
+      },
+      "cropped_occupied_voxels": 0,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "a0c4aa289d494456b754e096406a9349_015",
+      "split": "reserved_object",
+      "condition": "native_mesh",
+      "latent_mse": 0.6482651829719543,
+      "input_vs_target": {
+        "iou": 0.6670680532749498,
+        "precision": 0.871395204728538,
+        "recall": 0.7399117658963047,
+        "predicted_occupied": 20979,
+        "target_occupied": 24707
+      },
+      "decoded_vs_target": {
+        "iou": 0.6670680532749498,
+        "precision": 0.871395204728538,
+        "recall": 0.7399117658963047,
+        "predicted_occupied": 20979,
+        "target_occupied": 24707
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "a0c4aa289d494456b754e096406a9349_015",
+      "split": "reserved_object",
+      "condition": "point_hits",
+      "latent_mse": 1.1093953847885132,
+      "input_vs_target": {
+        "iou": 0.2625976443922775,
+        "precision": 1.0,
+        "recall": 0.2625976443922775,
+        "predicted_occupied": 6488,
+        "target_occupied": 24707
+      },
+      "decoded_vs_target": {
+        "iou": 0.2784661957618567,
+        "precision": 0.9902397014496914,
+        "recall": 0.27923260614400774,
+        "predicted_occupied": 6967,
+        "target_occupied": 24707
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "a0c4aa289d494456b754e096406a9349_015",
+      "split": "reserved_object",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.4413772225379944,
+      "input_vs_target": {
+        "iou": 0.6048767783312172,
+        "precision": 0.755591703944693,
+        "recall": 0.7520135993847897,
+        "predicted_occupied": 24590,
+        "target_occupied": 24707
+      },
+      "cropped_occupied_voxels": 116,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    },
+    {
+      "sample_id": "caa8b33766f94328a5fa9e6b8a684eca_015",
+      "split": "reserved_object",
+      "condition": "native_mesh",
+      "latent_mse": 0.20386561751365662,
+      "input_vs_target": {
+        "iou": 0.8974182444061962,
+        "precision": 0.9467213114754098,
+        "recall": 0.9451522684897452,
+        "predicted_occupied": 19276,
+        "target_occupied": 19308
+      },
+      "decoded_vs_target": {
+        "iou": 0.8974182444061962,
+        "precision": 0.9467213114754098,
+        "recall": 0.9451522684897452,
+        "predicted_occupied": 19276,
+        "target_occupied": 19308
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "caa8b33766f94328a5fa9e6b8a684eca_015",
+      "split": "reserved_object",
+      "condition": "point_hits",
+      "latent_mse": 0.9350243210792542,
+      "input_vs_target": {
+        "iou": 0.3194012844416822,
+        "precision": 1.0,
+        "recall": 0.3194012844416822,
+        "predicted_occupied": 6167,
+        "target_occupied": 19308
+      },
+      "decoded_vs_target": {
+        "iou": 0.33457595526561046,
+        "precision": 0.9990723562152134,
+        "recall": 0.33467992541951525,
+        "predicted_occupied": 6468,
+        "target_occupied": 19308
+      },
+      "target_regeneration_max_error": 0.0
+    },
+    {
+      "sample_id": "caa8b33766f94328a5fa9e6b8a684eca_015",
+      "split": "reserved_object",
+      "condition": "target_shell_plus_one_x_voxel_control",
+      "latent_mse": 0.19473469257354736,
+      "input_vs_target": {
+        "iou": 0.5043096693308259,
+        "precision": 0.6743503772003353,
+        "recall": 0.6666666666666666,
+        "predicted_occupied": 19088,
+        "target_occupied": 19308
+      },
+      "cropped_occupied_voxels": 220,
+      "scope": "Target-derived sensitivity control, never a conditioner or candidate correction."
+    }
+  ],
+  "scope": "Frozen spatial bridge; all 32 objects have no adaptation here. The 24/8 labels only match prior readout scoring. Oracle frame is privileged. Saved native mesh field resolution may limit accuracy. Source mesh grids and targets enter scoring controls only. No Stage 2 and no sparse-touch feasibility claim.",
+  "summary": {
+    "native_mesh": {
+      "fit": {
+        "latent_mse": 0.10492987383622676,
+        "input_iou": 0.8223359976467868,
+        "decoded_iou": 0.8223359976467868
+      },
+      "reserved_object": {
+        "latent_mse": 0.1566432609979529,
+        "input_iou": 0.8012583816455592,
+        "decoded_iou": 0.8012583816455592
+      }
+    },
+    "point_hits": {
+      "fit": {
+        "latent_mse": 0.46022033303355175,
+        "input_iou": 0.6326913876285352,
+        "decoded_iou": 0.6395211831998531
+      },
+      "reserved_object": {
+        "latent_mse": 0.5447513960534707,
+        "input_iou": 0.5697864121267774,
+        "decoded_iou": 0.5796371232904804
+      }
+    },
+    "target_shell_plus_one_x_voxel_control": {
+      "fit": {
+        "latent_mse": 0.0836322278676865,
+        "input_iou": 0.5819482585071077
+      },
+      "reserved_object": {
+        "latent_mse": 0.12974508083425462,
+        "input_iou": 0.45091183622579734
+      }
+    }
+  },
+  "complete": true
+}
