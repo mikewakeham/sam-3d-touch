@@ -1,0 +1,20 @@
+{
+  "analysis_exact_match": true,
+  "all_source_reference_and_report_hashes_match": true,
+  "all_anchor_replays_exact": true,
+  "parameter_digests_match": true,
+  "object_disjointness_and_per_object_scalar_reconstruction_pass": true,
+  "objects": 32,
+  "views_per_object": 2,
+  "split_counts": {
+    "train": 16,
+    "val": 16
+  },
+  "report_sha256": {
+    "camera_dropout": "1e0a921c413ceb8894e601aca8820e4e249207a0a308c080e79d482dddd95e93",
+    "camera_original": "10939cccf396cac49e3e2f26a280cc2158bdbb16a84d8a2504013fcd4e0b28ca",
+    "image_original": "1262226417d7724387f19de4f5b3c2697819c8b767f2b3781697101a1ad0c859",
+    "oracle_dropout": "eb7ce43279f5ec29a1f95bd907a174f644fde2d1c5413ff4c5b1de33744da94b",
+    "oracle_original": "12f01528400646c613039048664a996ad99f41c269aba3f9d342a84f90a588da"
+  }
+}

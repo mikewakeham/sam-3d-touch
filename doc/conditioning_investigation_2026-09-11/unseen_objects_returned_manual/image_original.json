@@ -1,0 +1,1874 @@
+{
+  "settings": {
+    "model_key": "image_original",
+    "checkpoint": "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/outputs/conditioning_investigation/multiple_view_fit/46083371/image/fitted_parameters.pt",
+    "draws": 8,
+    "seed": 29,
+    "precision": "bf16",
+    "unseen_bank_base": 500000
+  },
+  "reference_sha256": {
+    "single": "3f684221215b9b59490329c69724436a7c2f40b19bf1915d39caaa98a472b91a",
+    "multiple": "91c68aec00dbd36e1023cef250cffd1242f6b77a5a6b8866126f2bdcb7467bc8",
+    "trained": "91c68aec00dbd36e1023cef250cffd1242f6b77a5a6b8866126f2bdcb7467bc8"
+  },
+  "selection": {
+    "sample_ids": [
+      "07569a25210449ab8b54606974e6c767_007",
+      "07569a25210449ab8b54606974e6c767_012",
+      "0afbd2427ca84114b659e1d8cfcb647a_001",
+      "0afbd2427ca84114b659e1d8cfcb647a_011",
+      "199b2202bc4543acb5a7a557212b605d_005",
+      "199b2202bc4543acb5a7a557212b605d_015",
+      "1bf2bf7383d34e45aa5ac504c85e572c_013",
+      "1bf2bf7383d34e45aa5ac504c85e572c_015",
+      "1fb985a5d5974bdcb412e91293d817f7_006",
+      "1fb985a5d5974bdcb412e91293d817f7_007",
+      "6a836cf7662f4cfaa7e1244a24d6e73a_003",
+      "6a836cf7662f4cfaa7e1244a24d6e73a_005",
+      "7bd547dc65b04894b6f37b33088f1a9e_012",
+      "7bd547dc65b04894b6f37b33088f1a9e_013",
+      "7c3286c7a4934e48860badc106f63ab3_010",
+      "7c3286c7a4934e48860badc106f63ab3_013",
+      "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_006",
+      "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_008",
+      "949af5011ce84b0098c5a0688420e569_004",
+      "949af5011ce84b0098c5a0688420e569_013",
+      "9e134caf65e04f5abaf742ac24df647d_008",
+      "9e134caf65e04f5abaf742ac24df647d_015",
+      "b38765d87b644fdeb6c4c9ffe1ca98ba_007",
+      "b38765d87b644fdeb6c4c9ffe1ca98ba_013",
+      "c057e4593f9e42f5a353718f6c3c9150_012",
+      "c057e4593f9e42f5a353718f6c3c9150_013",
+      "d3eae95d30064e4baafe4427d7c9038a_008",
+      "d3eae95d30064e4baafe4427d7c9038a_015",
+      "d7167aa45e6e43b4a91fdbf5eb70b661_004",
+      "d7167aa45e6e43b4a91fdbf5eb70b661_012",
+      "e697fbdea7d04aa2b09122e36efadf16_009",
+      "e697fbdea7d04aa2b09122e36efadf16_012",
+      "0838b73f246f4768aa0671e7b2ba7c30_002",
+      "0838b73f246f4768aa0671e7b2ba7c30_012",
+      "0c15a58c6a0c4ec9bff9336312f675d2_010",
+      "0c15a58c6a0c4ec9bff9336312f675d2_013",
+      "1cf32d0ef332402c81cdf8ea6d6030b3_007",
+      "1cf32d0ef332402c81cdf8ea6d6030b3_013",
+      "1f51096857cb46c5a2bd1ef8bc2c1803_009",
+      "1f51096857cb46c5a2bd1ef8bc2c1803_014",
+      "49853261fbbe48929211cfb4f5b13866_004",
+      "49853261fbbe48929211cfb4f5b13866_005",
+      "548362a5ab6f4c8e8fda42143172614e_006",
+      "548362a5ab6f4c8e8fda42143172614e_010",
+      "68a31a8eb07d4b84aeb3b13484d4c9e8_000",
+      "68a31a8eb07d4b84aeb3b13484d4c9e8_008",
+      "72b8b1136e124387a8a8b5dc10f9c58f_000",
+      "72b8b1136e124387a8a8b5dc10f9c58f_006",
+      "8262743abb7f4f759aa0b3bda08551e5_013",
+      "8262743abb7f4f759aa0b3bda08551e5_014",
+      "a807e2119b24443da16a2e28529cfa26_004",
+      "a807e2119b24443da16a2e28529cfa26_006",
+      "d87e82071e24487481bf90c8f2682fb6_004",
+      "d87e82071e24487481bf90c8f2682fb6_015",
+      "dbba322581594949944949744937c788_000",
+      "dbba322581594949944949744937c788_013",
+      "e2759dc44b4b40fb9cf9544afc650282_001",
+      "e2759dc44b4b40fb9cf9544afc650282_011",
+      "f240fc675fe649acafb6da700d299d55_001",
+      "f240fc675fe649acafb6da700d299d55_012",
+      "f4e66b252b324dad84ba036a92b99f43_001",
+      "f4e66b252b324dad84ba036a92b99f43_009",
+      "fe725496195f49bfbabb52407c58edf8_000",
+      "fe725496195f49bfbabb52407c58edf8_010"
+    ],
+    "source_selection_sha256": "7fa6d6a00741a7f7d2be083c03f5f0b9cfa9780525ac2e6dcd0af04e7b5d132b",
+    "excluded_fitted_sample_ids": [
+      "479bbf9062de4b3196f08e52d1c12821_000",
+      "e846574df9334973955c80286af47ba7_007",
+      "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "146b6c1f10bd445da977424c64dbb051_002"
+    ],
+    "purpose": "Fixed diagnostic selection: 32 objects, two views each; disjoint from all four tiny-fit object identities. Not a new random population benchmark."
+  },
+  "selection_sha256": "0192dab0c9c955891c41bad5cd812be75d4d78db0b5397db20df426a42cd4ef6",
+  "fitted_object_ids": [
+    "146b6c1f10bd445da977424c64dbb051",
+    "479bbf9062de4b3196f08e52d1c12821",
+    "e846574df9334973955c80286af47ba7",
+    "fe200ce00a5d4c298eee89de0fc15f01"
+  ],
+  "final_parameters_sha256": "f750f22bb1a77297ee6de99824584a0452f8fe8e289033774f22e887821b5846",
+  "source_sha256": {
+    "doc/conditioning_investigation_2026-09-11/probe_unseen_objects_gpu.py": "1d86affd17542ed6961adc9782ee5822cb11415b69d60863fbc604877466d770",
+    "train.py": "116d7f5268ed30062e9641f69f5920a0598be493bf95a083f48670e29c52b07f",
+    "dataloader.py": "d50137bf75a146ccb3ef71ff92d6a6f15523c5011e036f1b7bdbcd0541d4a0da",
+    "sam3d_objects/model/backbone/generator/shortcut/model.py": "6b4c8fc6ac4f0e7456d89104a1b4b2f1479abbf13b50fa530cd9b57b6bc706ef"
+  },
+  "anchor_replay": {
+    "fresh_noise_native_losses": [
+      0.06134885549545288,
+      0.06499332189559937,
+      0.0955406203866005,
+      0.05419926717877388,
+      0.05651390552520752,
+      0.05436963960528374,
+      0.06331237405538559,
+      0.05291368067264557
+    ]
+  },
+  "anchor_replay_passed": true,
+  "input_batches": [
+    {
+      "batch": 0,
+      "sample_ids": [
+        "07569a25210449ab8b54606974e6c767_007",
+        "0838b73f246f4768aa0671e7b2ba7c30_002",
+        "0afbd2427ca84114b659e1d8cfcb647a_001",
+        "0c15a58c6a0c4ec9bff9336312f675d2_010"
+      ],
+      "object_ids": [
+        "07569a25210449ab8b54606974e6c767",
+        "0838b73f246f4768aa0671e7b2ba7c30",
+        "0afbd2427ca84114b659e1d8cfcb647a",
+        "0c15a58c6a0c4ec9bff9336312f675d2"
+      ],
+      "image_sha256": "1994af82264023df5b6fe83bc750901727546344ea63732a135baa5c053f5d1c",
+      "pointmap_sha256": "0c2b9a5eaf70ae01e263daeb06c0879f63341122eaffd42ed6a128873992c7c6",
+      "target_sha256": "d1c364f565b9f09645f5164848cfb6088c8c72df078f96fb132065544ba4e2dc",
+      "visual_sha256": "ec36f48c9f1c70d5ac2e17bf85fa440853252c1cc3697a996d1c2d1c5dc91e8f"
+    },
+    {
+      "batch": 1,
+      "sample_ids": [
+        "199b2202bc4543acb5a7a557212b605d_005",
+        "1bf2bf7383d34e45aa5ac504c85e572c_013",
+        "1cf32d0ef332402c81cdf8ea6d6030b3_007",
+        "1f51096857cb46c5a2bd1ef8bc2c1803_009"
+      ],
+      "object_ids": [
+        "199b2202bc4543acb5a7a557212b605d",
+        "1bf2bf7383d34e45aa5ac504c85e572c",
+        "1cf32d0ef332402c81cdf8ea6d6030b3",
+        "1f51096857cb46c5a2bd1ef8bc2c1803"
+      ],
+      "image_sha256": "74927c2711ad7124b11b574b348a3adbed2d5a16a03c5bb49bd16c9cb1cf577e",
+      "pointmap_sha256": "ebf40f8070eae92ad651a6b833363cf7e8c7a4335cf9b98b8138fbc4c7daac71",
+      "target_sha256": "93aaea096bf51171e4e7fea7f645e33eaaa66983399e6b8e7f252e2700417bd0",
+      "visual_sha256": "1b7ae2b9cc343b5d87a77ab6903d57dbfc465a83974b791b3119acfcd0509ce6"
+    },
+    {
+      "batch": 2,
+      "sample_ids": [
+        "1fb985a5d5974bdcb412e91293d817f7_006",
+        "49853261fbbe48929211cfb4f5b13866_004",
+        "548362a5ab6f4c8e8fda42143172614e_006",
+        "68a31a8eb07d4b84aeb3b13484d4c9e8_000"
+      ],
+      "object_ids": [
+        "1fb985a5d5974bdcb412e91293d817f7",
+        "49853261fbbe48929211cfb4f5b13866",
+        "548362a5ab6f4c8e8fda42143172614e",
+        "68a31a8eb07d4b84aeb3b13484d4c9e8"
+      ],
+      "image_sha256": "1c31acd29c19ec7ff13e11e5e741cabbeb7f812fb8023ca00dd05c5feb5aff7a",
+      "pointmap_sha256": "8189bacaef69cd7859933b4219ab4d0cb5660489e515098dd87e09ad30fe7714",
+      "target_sha256": "d0fdcfe291695aea7bd2dbdffedf36b4f9d319ad6bc2c083d0f21c60f4da457f",
+      "visual_sha256": "377b8e79ddb68490213fd6b1a73b4cec71283ccb7b1fccfa0aef1b34b81d3d11"
+    },
+    {
+      "batch": 3,
+      "sample_ids": [
+        "6a836cf7662f4cfaa7e1244a24d6e73a_003",
+        "72b8b1136e124387a8a8b5dc10f9c58f_000",
+        "7bd547dc65b04894b6f37b33088f1a9e_012",
+        "7c3286c7a4934e48860badc106f63ab3_010"
+      ],
+      "object_ids": [
+        "6a836cf7662f4cfaa7e1244a24d6e73a",
+        "72b8b1136e124387a8a8b5dc10f9c58f",
+        "7bd547dc65b04894b6f37b33088f1a9e",
+        "7c3286c7a4934e48860badc106f63ab3"
+      ],
+      "image_sha256": "ba7899aa4cc489b45332fd8b6ef9f43f91f10d345b1e12a3f3b40ca929418707",
+      "pointmap_sha256": "e7f2eda54e58cbaa8b43b4fd0968c73f6a601088c10164252e195d340bf602e8",
+      "target_sha256": "29f96c3ec3540565c29153753a9793c96903f17971e96f73d3d28a914e22cbf8",
+      "visual_sha256": "77e7650ca6a59d9052a95749f3844b47806690e209c1ee1accfbf76d1505ddbd"
+    },
+    {
+      "batch": 4,
+      "sample_ids": [
+        "8262743abb7f4f759aa0b3bda08551e5_013",
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_006",
+        "949af5011ce84b0098c5a0688420e569_004",
+        "9e134caf65e04f5abaf742ac24df647d_008"
+      ],
+      "object_ids": [
+        "8262743abb7f4f759aa0b3bda08551e5",
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+        "949af5011ce84b0098c5a0688420e569",
+        "9e134caf65e04f5abaf742ac24df647d"
+      ],
+      "image_sha256": "eddb652611b2d35dd835a8344b2c9b10bad48b748192384b9acf7b6208a368b0",
+      "pointmap_sha256": "8ec44e7cc22a8b68f79247b1f91a177be93459f54527413a3fcf4e1ceee0fe4a",
+      "target_sha256": "f819d378aeac2a015d2ff77fa8869e31090f2cc1d46d22abe5eee71501b11456",
+      "visual_sha256": "fd94144f9ecc3e9fcee1b33dd6ab0200e2eec117818d92a6a03ca75ec6033ac4"
+    },
+    {
+      "batch": 5,
+      "sample_ids": [
+        "a807e2119b24443da16a2e28529cfa26_004",
+        "b38765d87b644fdeb6c4c9ffe1ca98ba_007",
+        "c057e4593f9e42f5a353718f6c3c9150_012",
+        "d3eae95d30064e4baafe4427d7c9038a_008"
+      ],
+      "object_ids": [
+        "a807e2119b24443da16a2e28529cfa26",
+        "b38765d87b644fdeb6c4c9ffe1ca98ba",
+        "c057e4593f9e42f5a353718f6c3c9150",
+        "d3eae95d30064e4baafe4427d7c9038a"
+      ],
+      "image_sha256": "c5d162890d2edd1ee4ce1bc069c2f6611e80253d4ab9112a4642fc0aa36d12a5",
+      "pointmap_sha256": "6c0871582ff66b536e651cf9ee56e4648bae683bb63b4a9a353470158cf1202a",
+      "target_sha256": "4779cb8720c9e2b96a3695b815ec9f135005bbb5419519e254d6e4d6a75823ac",
+      "visual_sha256": "23636548d9901c47bbcda4ff65752e00724cd23ad368914147190aee9c4dd4e0"
+    },
+    {
+      "batch": 6,
+      "sample_ids": [
+        "d7167aa45e6e43b4a91fdbf5eb70b661_004",
+        "d87e82071e24487481bf90c8f2682fb6_004",
+        "dbba322581594949944949744937c788_000",
+        "e2759dc44b4b40fb9cf9544afc650282_001"
+      ],
+      "object_ids": [
+        "d7167aa45e6e43b4a91fdbf5eb70b661",
+        "d87e82071e24487481bf90c8f2682fb6",
+        "dbba322581594949944949744937c788",
+        "e2759dc44b4b40fb9cf9544afc650282"
+      ],
+      "image_sha256": "807d3ba3b713f835974e4de9b527433232d959e4d1ed0a4d3aca5b4ca6b72e89",
+      "pointmap_sha256": "6229287350946f93617ca26838d1997f9ab989e9b4f0d1b1cd322330454c8fbd",
+      "target_sha256": "776e1ec67150761d872fad6181278e2f2a3785420c29b40854c97fd51caa73de",
+      "visual_sha256": "e50de534fbcb56315582ba72cf7130c2a7ef4ed4fc0cf45102a1e027270a8b58"
+    },
+    {
+      "batch": 7,
+      "sample_ids": [
+        "e697fbdea7d04aa2b09122e36efadf16_009",
+        "f240fc675fe649acafb6da700d299d55_001",
+        "f4e66b252b324dad84ba036a92b99f43_001",
+        "fe725496195f49bfbabb52407c58edf8_000"
+      ],
+      "object_ids": [
+        "e697fbdea7d04aa2b09122e36efadf16",
+        "f240fc675fe649acafb6da700d299d55",
+        "f4e66b252b324dad84ba036a92b99f43",
+        "fe725496195f49bfbabb52407c58edf8"
+      ],
+      "image_sha256": "ec4cafde6d196f5ad63dbcccc476106da8dde103c9c0497d109177e04719a6bd",
+      "pointmap_sha256": "e5ed454276c8bcc56d58d2dd132f51c9ff16c1fd63577a173c6590c85ca9864c",
+      "target_sha256": "bef2a1d4ce2519a26f1033b003a9920b67a29ed7bceea3913bad76f237b5fcdb",
+      "visual_sha256": "43ae1746ea5ba0aed1cee47ff43caf2fda0a99f935961639186a0226c0695370"
+    },
+    {
+      "batch": 8,
+      "sample_ids": [
+        "07569a25210449ab8b54606974e6c767_012",
+        "0838b73f246f4768aa0671e7b2ba7c30_012",
+        "0afbd2427ca84114b659e1d8cfcb647a_011",
+        "0c15a58c6a0c4ec9bff9336312f675d2_013"
+      ],
+      "object_ids": [
+        "07569a25210449ab8b54606974e6c767",
+        "0838b73f246f4768aa0671e7b2ba7c30",
+        "0afbd2427ca84114b659e1d8cfcb647a",
+        "0c15a58c6a0c4ec9bff9336312f675d2"
+      ],
+      "image_sha256": "c386a8b1fb0e37dc5cdc4cfe6dc94fabe9760a356343c823455940467f800bcd",
+      "pointmap_sha256": "f68dfd0376c466d254e23d228f7b9f2342db6f76b2017d7c32a6f4ac91ee7242",
+      "target_sha256": "d1c364f565b9f09645f5164848cfb6088c8c72df078f96fb132065544ba4e2dc",
+      "visual_sha256": "a048b63e954d3b427f06ea112fcf769a5881abbbac613790a255bf5756b44e36"
+    },
+    {
+      "batch": 9,
+      "sample_ids": [
+        "199b2202bc4543acb5a7a557212b605d_015",
+        "1bf2bf7383d34e45aa5ac504c85e572c_015",
+        "1cf32d0ef332402c81cdf8ea6d6030b3_013",
+        "1f51096857cb46c5a2bd1ef8bc2c1803_014"
+      ],
+      "object_ids": [
+        "199b2202bc4543acb5a7a557212b605d",
+        "1bf2bf7383d34e45aa5ac504c85e572c",
+        "1cf32d0ef332402c81cdf8ea6d6030b3",
+        "1f51096857cb46c5a2bd1ef8bc2c1803"
+      ],
+      "image_sha256": "7b1096ada104e06bc57b61122c055b4d61dc3e6a32ee2f3ce59860a3962ca041",
+      "pointmap_sha256": "120125d20bfd91406ab7a01e53b94ccf283f02f7935a625e2a52c6ad075bd7f6",
+      "target_sha256": "93aaea096bf51171e4e7fea7f645e33eaaa66983399e6b8e7f252e2700417bd0",
+      "visual_sha256": "75cd0943b32531c761d8ec02955f3de2239544af9d64167141d77b19a2e63cd3"
+    },
+    {
+      "batch": 10,
+      "sample_ids": [
+        "1fb985a5d5974bdcb412e91293d817f7_007",
+        "49853261fbbe48929211cfb4f5b13866_005",
+        "548362a5ab6f4c8e8fda42143172614e_010",
+        "68a31a8eb07d4b84aeb3b13484d4c9e8_008"
+      ],
+      "object_ids": [
+        "1fb985a5d5974bdcb412e91293d817f7",
+        "49853261fbbe48929211cfb4f5b13866",
+        "548362a5ab6f4c8e8fda42143172614e",
+        "68a31a8eb07d4b84aeb3b13484d4c9e8"
+      ],
+      "image_sha256": "c4608f0e7255be5be355fe88d64ec674180a20ed573f1067f7507411b02bc4c4",
+      "pointmap_sha256": "2af1d5e3c7973e05b48616fa49d778f7428855716ca90ee5ee3cc62d595677d7",
+      "target_sha256": "d0fdcfe291695aea7bd2dbdffedf36b4f9d319ad6bc2c083d0f21c60f4da457f",
+      "visual_sha256": "fba1a12dbd2bb44b12827d0d49fe0b5ce15da7893bbaf96bcedef9f5e56e3008"
+    },
+    {
+      "batch": 11,
+      "sample_ids": [
+        "6a836cf7662f4cfaa7e1244a24d6e73a_005",
+        "72b8b1136e124387a8a8b5dc10f9c58f_006",
+        "7bd547dc65b04894b6f37b33088f1a9e_013",
+        "7c3286c7a4934e48860badc106f63ab3_013"
+      ],
+      "object_ids": [
+        "6a836cf7662f4cfaa7e1244a24d6e73a",
+        "72b8b1136e124387a8a8b5dc10f9c58f",
+        "7bd547dc65b04894b6f37b33088f1a9e",
+        "7c3286c7a4934e48860badc106f63ab3"
+      ],
+      "image_sha256": "cbb851b0d9de9b0c124b1b468e8ba34dc34157841eaae6527002d688930126e5",
+      "pointmap_sha256": "feb77f269d61102f2535b1a0388755b2623f7d59ed44fd1cca87202eb40ab1dd",
+      "target_sha256": "29f96c3ec3540565c29153753a9793c96903f17971e96f73d3d28a914e22cbf8",
+      "visual_sha256": "692c95d4b5360f42db4c42b92ef8faddc9e68600564ab29536d398c7475c792d"
+    },
+    {
+      "batch": 12,
+      "sample_ids": [
+        "8262743abb7f4f759aa0b3bda08551e5_014",
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_008",
+        "949af5011ce84b0098c5a0688420e569_013",
+        "9e134caf65e04f5abaf742ac24df647d_015"
+      ],
+      "object_ids": [
+        "8262743abb7f4f759aa0b3bda08551e5",
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+        "949af5011ce84b0098c5a0688420e569",
+        "9e134caf65e04f5abaf742ac24df647d"
+      ],
+      "image_sha256": "0a7b21528c7fb0e771ccc338869735af49a7526c23245cb0458262a38e83463f",
+      "pointmap_sha256": "7dca66a4de991a1284f8b44e4012339751e29fb2cafde00b6b9ad98a9fffe7f5",
+      "target_sha256": "f819d378aeac2a015d2ff77fa8869e31090f2cc1d46d22abe5eee71501b11456",
+      "visual_sha256": "f28c0d6dbf83dff27dfb0927b0eec4d36fb1fa8a00011856675c93c988b88541"
+    },
+    {
+      "batch": 13,
+      "sample_ids": [
+        "a807e2119b24443da16a2e28529cfa26_006",
+        "b38765d87b644fdeb6c4c9ffe1ca98ba_013",
+        "c057e4593f9e42f5a353718f6c3c9150_013",
+        "d3eae95d30064e4baafe4427d7c9038a_015"
+      ],
+      "object_ids": [
+        "a807e2119b24443da16a2e28529cfa26",
+        "b38765d87b644fdeb6c4c9ffe1ca98ba",
+        "c057e4593f9e42f5a353718f6c3c9150",
+        "d3eae95d30064e4baafe4427d7c9038a"
+      ],
+      "image_sha256": "5f17a40c93b6a7a4b317ed80db98c7b2277e4f5602f99c806e84128bf1c78a10",
+      "pointmap_sha256": "81ff89cc7440bf29a7711f4c85e9d038e3c3cb317265d50cadfeaeee9acef4a7",
+      "target_sha256": "4779cb8720c9e2b96a3695b815ec9f135005bbb5419519e254d6e4d6a75823ac",
+      "visual_sha256": "b47b0f500c8fd4ce4ce2ccdb750a525364e386843abe4a8b5d787e1ecfd54f84"
+    },
+    {
+      "batch": 14,
+      "sample_ids": [
+        "d7167aa45e6e43b4a91fdbf5eb70b661_012",
+        "d87e82071e24487481bf90c8f2682fb6_015",
+        "dbba322581594949944949744937c788_013",
+        "e2759dc44b4b40fb9cf9544afc650282_011"
+      ],
+      "object_ids": [
+        "d7167aa45e6e43b4a91fdbf5eb70b661",
+        "d87e82071e24487481bf90c8f2682fb6",
+        "dbba322581594949944949744937c788",
+        "e2759dc44b4b40fb9cf9544afc650282"
+      ],
+      "image_sha256": "865804edb8ddaa091eafa703bc6274c5c8fdd06f72417719b06efbd372d3d377",
+      "pointmap_sha256": "42f2e3f9fddd58c81a41b0f61073e1079de110e7253a2c1c8dabc3d9e6e79127",
+      "target_sha256": "776e1ec67150761d872fad6181278e2f2a3785420c29b40854c97fd51caa73de",
+      "visual_sha256": "ab65e035e441a1ace0d1f50cc90f0876fcd20cc9961333adf5ba9cebe2b92818"
+    },
+    {
+      "batch": 15,
+      "sample_ids": [
+        "e697fbdea7d04aa2b09122e36efadf16_012",
+        "f240fc675fe649acafb6da700d299d55_012",
+        "f4e66b252b324dad84ba036a92b99f43_009",
+        "fe725496195f49bfbabb52407c58edf8_010"
+      ],
+      "object_ids": [
+        "e697fbdea7d04aa2b09122e36efadf16",
+        "f240fc675fe649acafb6da700d299d55",
+        "f4e66b252b324dad84ba036a92b99f43",
+        "fe725496195f49bfbabb52407c58edf8"
+      ],
+      "image_sha256": "d03f494d85aecd729fcd8e5bd090f05ed49681f46d687ebdd298d04e9e7ce5f9",
+      "pointmap_sha256": "570ad17c077015e6aa633b1e285cfccf47eedda093bcb10f916bef83291a4dae",
+      "target_sha256": "bef2a1d4ce2519a26f1033b003a9920b67a29ed7bceea3913bad76f237b5fcdb",
+      "visual_sha256": "b7b1d3876971c87419e33e449baa55cdf8578bc5d6370dd1acc41c3b92d3ca53"
+    }
+  ],
+  "rows": [
+    {
+      "sample_id": "07569a25210449ab8b54606974e6c767_007",
+      "object_id": "07569a25210449ab8b54606974e6c767",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 0,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.16105735301971436,
+        0.1410493403673172,
+        0.10242624580860138,
+        0.09088186919689178,
+        0.18207865953445435,
+        0.17113319039344788,
+        0.1824290007352829,
+        0.15484333038330078
+      ]
+    },
+    {
+      "sample_id": "0838b73f246f4768aa0671e7b2ba7c30_002",
+      "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 0,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.13902634382247925,
+        0.050636887550354004,
+        0.09178280830383301,
+        0.08125264942646027,
+        0.13078145682811737,
+        0.06684835255146027,
+        0.05528602376580238,
+        0.05796540528535843
+      ]
+    },
+    {
+      "sample_id": "0afbd2427ca84114b659e1d8cfcb647a_001",
+      "object_id": "0afbd2427ca84114b659e1d8cfcb647a",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 0,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.11282958090305328,
+        0.09098175168037415,
+        0.09597815573215485,
+        0.13204418122768402,
+        0.14774134755134583,
+        0.09149385988712311,
+        0.1177891194820404,
+        0.09416414797306061
+      ]
+    },
+    {
+      "sample_id": "0c15a58c6a0c4ec9bff9336312f675d2_010",
+      "object_id": "0c15a58c6a0c4ec9bff9336312f675d2",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 0,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.09571588039398193,
+        0.08627720922231674,
+        0.07616651803255081,
+        0.21612921357154846,
+        0.08283258229494095,
+        0.07624728977680206,
+        0.07905077934265137,
+        0.06807678937911987
+      ]
+    },
+    {
+      "sample_id": "199b2202bc4543acb5a7a557212b605d_005",
+      "object_id": "199b2202bc4543acb5a7a557212b605d",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 1,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.010964533314108849,
+        0.01589302532374859,
+        0.01633167453110218,
+        0.04934827983379364,
+        0.022621240466833115,
+        0.02836069092154503,
+        0.06863103806972504,
+        0.019748643040657043
+      ]
+    },
+    {
+      "sample_id": "1bf2bf7383d34e45aa5ac504c85e572c_013",
+      "object_id": "1bf2bf7383d34e45aa5ac504c85e572c",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 1,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.02618384175002575,
+        0.019008414819836617,
+        0.04609191417694092,
+        0.045900002121925354,
+        0.0212971530854702,
+        0.04926680400967598,
+        0.03032354637980461,
+        0.05601153522729874
+      ]
+    },
+    {
+      "sample_id": "1cf32d0ef332402c81cdf8ea6d6030b3_007",
+      "object_id": "1cf32d0ef332402c81cdf8ea6d6030b3",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 1,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.20558364689350128,
+        0.23312565684318542,
+        0.24648308753967285,
+        0.23520272970199585,
+        0.21850189566612244,
+        0.24386346340179443,
+        0.2255856990814209,
+        0.24308553338050842
+      ]
+    },
+    {
+      "sample_id": "1f51096857cb46c5a2bd1ef8bc2c1803_009",
+      "object_id": "1f51096857cb46c5a2bd1ef8bc2c1803",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 1,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.266834557056427,
+        0.24548685550689697,
+        0.26226669549942017,
+        0.245531365275383,
+        0.24633145332336426,
+        0.2579466700553894,
+        0.39866411685943604,
+        0.24392080307006836
+      ]
+    },
+    {
+      "sample_id": "1fb985a5d5974bdcb412e91293d817f7_006",
+      "object_id": "1fb985a5d5974bdcb412e91293d817f7",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 2,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.13039325177669525,
+        0.16637611389160156,
+        0.1202961727976799,
+        0.14265526831150055,
+        0.1392764151096344,
+        0.10467901825904846,
+        0.22613433003425598,
+        0.09763859212398529
+      ]
+    },
+    {
+      "sample_id": "49853261fbbe48929211cfb4f5b13866_004",
+      "object_id": "49853261fbbe48929211cfb4f5b13866",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 2,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.035003989934921265,
+        0.049809858202934265,
+        0.06361611187458038,
+        0.033414121717214584,
+        0.06135445460677147,
+        0.05389257147908211,
+        0.04278883710503578,
+        0.041979942470788956
+      ]
+    },
+    {
+      "sample_id": "548362a5ab6f4c8e8fda42143172614e_006",
+      "object_id": "548362a5ab6f4c8e8fda42143172614e",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 2,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.09678437560796738,
+        0.10587821155786514,
+        0.14551082253456116,
+        0.06202487647533417,
+        0.10582822561264038,
+        0.1114104762673378,
+        0.10773015767335892,
+        0.10493024438619614
+      ]
+    },
+    {
+      "sample_id": "68a31a8eb07d4b84aeb3b13484d4c9e8_000",
+      "object_id": "68a31a8eb07d4b84aeb3b13484d4c9e8",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 2,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.28332972526550293,
+        0.3119971752166748,
+        0.21661844849586487,
+        0.174246683716774,
+        0.3688162565231323,
+        0.19602912664413452,
+        0.31128329038619995,
+        0.2759649455547333
+      ]
+    },
+    {
+      "sample_id": "6a836cf7662f4cfaa7e1244a24d6e73a_003",
+      "object_id": "6a836cf7662f4cfaa7e1244a24d6e73a",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 3,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.03981863707304001,
+        0.04260347783565521,
+        0.047936055809259415,
+        0.03683680295944214,
+        0.034533631056547165,
+        0.047790542244911194,
+        0.04381648823618889,
+        0.04392271488904953
+      ]
+    },
+    {
+      "sample_id": "72b8b1136e124387a8a8b5dc10f9c58f_000",
+      "object_id": "72b8b1136e124387a8a8b5dc10f9c58f",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 3,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.0033268250990659,
+        0.013947045430541039,
+        0.02719902992248535,
+        0.004248497076332569,
+        0.003198501653969288,
+        0.007233419455587864,
+        0.0033435621298849583,
+        0.003904838114976883
+      ]
+    },
+    {
+      "sample_id": "7bd547dc65b04894b6f37b33088f1a9e_012",
+      "object_id": "7bd547dc65b04894b6f37b33088f1a9e",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 3,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.15324491262435913,
+        0.17343589663505554,
+        0.14497977495193481,
+        0.1379503309726715,
+        0.10257601737976074,
+        0.1314667910337448,
+        0.1875896155834198,
+        0.16749267280101776
+      ]
+    },
+    {
+      "sample_id": "7c3286c7a4934e48860badc106f63ab3_010",
+      "object_id": "7c3286c7a4934e48860badc106f63ab3",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 3,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.01319790817797184,
+        0.018188197165727615,
+        0.0205010287463665,
+        0.033977434039115906,
+        0.05989321321249008,
+        0.01758081465959549,
+        0.01922456920146942,
+        0.019229386001825333
+      ]
+    },
+    {
+      "sample_id": "8262743abb7f4f759aa0b3bda08551e5_013",
+      "object_id": "8262743abb7f4f759aa0b3bda08551e5",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 4,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.03836561739444733,
+        0.31386643648147583,
+        0.11839506775140762,
+        0.03682775795459747,
+        0.06047321483492851,
+        0.14741450548171997,
+        0.13306434452533722,
+        0.06684485077857971
+      ]
+    },
+    {
+      "sample_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_006",
+      "object_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 4,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.02299518883228302,
+        0.1095256507396698,
+        0.08570566773414612,
+        0.03777909651398659,
+        0.03623582050204277,
+        0.07786642760038376,
+        0.026711076498031616,
+        0.0910445973277092
+      ]
+    },
+    {
+      "sample_id": "949af5011ce84b0098c5a0688420e569_004",
+      "object_id": "949af5011ce84b0098c5a0688420e569",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 4,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.1302793323993683,
+        0.10015647858381271,
+        0.12410435080528259,
+        0.12546369433403015,
+        0.0970160961151123,
+        0.14696115255355835,
+        0.1201547384262085,
+        0.11748126149177551
+      ]
+    },
+    {
+      "sample_id": "9e134caf65e04f5abaf742ac24df647d_008",
+      "object_id": "9e134caf65e04f5abaf742ac24df647d",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 4,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.042962655425071716,
+        0.04750474914908409,
+        0.03726183623075485,
+        0.03856835514307022,
+        0.038091327995061874,
+        0.04948394000530243,
+        0.047388285398483276,
+        0.043506041169166565
+      ]
+    },
+    {
+      "sample_id": "a807e2119b24443da16a2e28529cfa26_004",
+      "object_id": "a807e2119b24443da16a2e28529cfa26",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 5,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.17067474126815796,
+        0.16091212630271912,
+        0.18172231316566467,
+        0.17275118827819824,
+        0.14446544647216797,
+        0.15984667837619781,
+        0.1651560664176941,
+        0.17585667967796326
+      ]
+    },
+    {
+      "sample_id": "b38765d87b644fdeb6c4c9ffe1ca98ba_007",
+      "object_id": "b38765d87b644fdeb6c4c9ffe1ca98ba",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 5,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.055034272372722626,
+        0.05625837296247482,
+        0.04671509563922882,
+        0.04774296656250954,
+        0.05890108644962311,
+        0.06668827682733536,
+        0.05782495439052582,
+        0.053609732538461685
+      ]
+    },
+    {
+      "sample_id": "c057e4593f9e42f5a353718f6c3c9150_012",
+      "object_id": "c057e4593f9e42f5a353718f6c3c9150",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 5,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.045252811163663864,
+        0.08124931156635284,
+        0.04755892604589462,
+        0.07235856354236603,
+        0.06853781640529633,
+        0.053034864366054535,
+        0.043061450123786926,
+        0.050353411585092545
+      ]
+    },
+    {
+      "sample_id": "d3eae95d30064e4baafe4427d7c9038a_008",
+      "object_id": "d3eae95d30064e4baafe4427d7c9038a",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 5,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.09268912672996521,
+        0.10477802157402039,
+        0.06139421463012695,
+        0.08529726415872574,
+        0.11435943096876144,
+        0.06777962297201157,
+        0.0750998854637146,
+        0.09187114983797073
+      ]
+    },
+    {
+      "sample_id": "d7167aa45e6e43b4a91fdbf5eb70b661_004",
+      "object_id": "d7167aa45e6e43b4a91fdbf5eb70b661",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 6,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.06449565291404724,
+        0.06799497455358505,
+        0.06912572681903839,
+        0.08079789578914642,
+        0.0802401453256607,
+        0.07105955481529236,
+        0.0654485821723938,
+        0.059510208666324615
+      ]
+    },
+    {
+      "sample_id": "d87e82071e24487481bf90c8f2682fb6_004",
+      "object_id": "d87e82071e24487481bf90c8f2682fb6",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 6,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.26849085092544556,
+        0.2597406506538391,
+        0.2856680750846863,
+        0.1570623219013214,
+        0.21344691514968872,
+        0.18381233513355255,
+        0.16263088583946228,
+        0.2062268853187561
+      ]
+    },
+    {
+      "sample_id": "dbba322581594949944949744937c788_000",
+      "object_id": "dbba322581594949944949744937c788",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 6,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.22591190040111542,
+        0.2146732360124588,
+        0.19750568270683289,
+        0.21321320533752441,
+        0.20840319991111755,
+        0.20902544260025024,
+        0.2183007001876831,
+        0.22640371322631836
+      ]
+    },
+    {
+      "sample_id": "e2759dc44b4b40fb9cf9544afc650282_001",
+      "object_id": "e2759dc44b4b40fb9cf9544afc650282",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 6,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.03780868649482727,
+        0.02193373814225197,
+        0.07722532749176025,
+        0.057483017444610596,
+        0.030056919902563095,
+        0.03527127206325531,
+        0.028595877811312675,
+        0.056166209280490875
+      ]
+    },
+    {
+      "sample_id": "e697fbdea7d04aa2b09122e36efadf16_009",
+      "object_id": "e697fbdea7d04aa2b09122e36efadf16",
+      "dataset_split": "train",
+      "view_index": 0,
+      "batch": 7,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.05408952757716179,
+        0.054595135152339935,
+        0.058359816670417786,
+        0.047856032848358154,
+        0.074836365878582,
+        0.01847127638757229,
+        0.04599490016698837,
+        0.05371835082769394
+      ]
+    },
+    {
+      "sample_id": "f240fc675fe649acafb6da700d299d55_001",
+      "object_id": "f240fc675fe649acafb6da700d299d55",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 7,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.006667851936072111,
+        0.0018863548757508397,
+        0.0843869000673294,
+        0.011048957705497742,
+        0.020576752722263336,
+        0.0024829180911183357,
+        0.0015896421391516924,
+        0.0030173498671501875
+      ]
+    },
+    {
+      "sample_id": "f4e66b252b324dad84ba036a92b99f43_001",
+      "object_id": "f4e66b252b324dad84ba036a92b99f43",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 7,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.06115495413541794,
+        0.05912673845887184,
+        0.11535380780696869,
+        0.15015456080436707,
+        0.07403364032506943,
+        0.1414867788553238,
+        0.1555561125278473,
+        0.12192192673683167
+      ]
+    },
+    {
+      "sample_id": "fe725496195f49bfbabb52407c58edf8_000",
+      "object_id": "fe725496195f49bfbabb52407c58edf8",
+      "dataset_split": "val",
+      "view_index": 0,
+      "batch": 7,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.07194480299949646,
+        0.09021612256765366,
+        0.08768878132104874,
+        0.07092130929231644,
+        0.0773104876279831,
+        0.10237138718366623,
+        0.08087620139122009,
+        0.19487318396568298
+      ]
+    },
+    {
+      "sample_id": "07569a25210449ab8b54606974e6c767_012",
+      "object_id": "07569a25210449ab8b54606974e6c767",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 8,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.14656871557235718,
+        0.1297871172428131,
+        0.09500204026699066,
+        0.09049932658672333,
+        0.15285849571228027,
+        0.1477893888950348,
+        0.17356136441230774,
+        0.15260088443756104
+      ]
+    },
+    {
+      "sample_id": "0838b73f246f4768aa0671e7b2ba7c30_012",
+      "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 8,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.12267367541790009,
+        0.05331581085920334,
+        0.08365622162818909,
+        0.08042348921298981,
+        0.10761326551437378,
+        0.06407596915960312,
+        0.06195652857422829,
+        0.06031602993607521
+      ]
+    },
+    {
+      "sample_id": "0afbd2427ca84114b659e1d8cfcb647a_011",
+      "object_id": "0afbd2427ca84114b659e1d8cfcb647a",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 8,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.12954463064670563,
+        0.09918255358934402,
+        0.09604831039905548,
+        0.14399531483650208,
+        0.17270664870738983,
+        0.09699130803346634,
+        0.12813088297843933,
+        0.0969855785369873
+      ]
+    },
+    {
+      "sample_id": "0c15a58c6a0c4ec9bff9336312f675d2_013",
+      "object_id": "0c15a58c6a0c4ec9bff9336312f675d2",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 8,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.08476518094539642,
+        0.09014341235160828,
+        0.06713758409023285,
+        0.20918096601963043,
+        0.07887229323387146,
+        0.07912052422761917,
+        0.07765929400920868,
+        0.06318138539791107
+      ]
+    },
+    {
+      "sample_id": "199b2202bc4543acb5a7a557212b605d_015",
+      "object_id": "199b2202bc4543acb5a7a557212b605d",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 9,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.012350212782621384,
+        0.014597155153751373,
+        0.014376234263181686,
+        0.08219902217388153,
+        0.025653013959527016,
+        0.031170791015028954,
+        0.07147384434938431,
+        0.02067086100578308
+      ]
+    },
+    {
+      "sample_id": "1bf2bf7383d34e45aa5ac504c85e572c_015",
+      "object_id": "1bf2bf7383d34e45aa5ac504c85e572c",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 9,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.0247099157422781,
+        0.01841360330581665,
+        0.048787254840135574,
+        0.04247604310512543,
+        0.021480856463313103,
+        0.04978184029459953,
+        0.03326265513896942,
+        0.05178845673799515
+      ]
+    },
+    {
+      "sample_id": "1cf32d0ef332402c81cdf8ea6d6030b3_013",
+      "object_id": "1cf32d0ef332402c81cdf8ea6d6030b3",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 9,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.2017100304365158,
+        0.23151251673698425,
+        0.22482837736606598,
+        0.2745007276535034,
+        0.21296362578868866,
+        0.2225184440612793,
+        0.2242165058851242,
+        0.24699372053146362
+      ]
+    },
+    {
+      "sample_id": "1f51096857cb46c5a2bd1ef8bc2c1803_014",
+      "object_id": "1f51096857cb46c5a2bd1ef8bc2c1803",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 9,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.27383363246917725,
+        0.27358943223953247,
+        0.274170458316803,
+        0.27445414662361145,
+        0.26311835646629333,
+        0.26923030614852905,
+        0.4673154950141907,
+        0.2654104232788086
+      ]
+    },
+    {
+      "sample_id": "1fb985a5d5974bdcb412e91293d817f7_007",
+      "object_id": "1fb985a5d5974bdcb412e91293d817f7",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 10,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.13515305519104004,
+        0.16585677862167358,
+        0.1195630431175232,
+        0.14637550711631775,
+        0.13886737823486328,
+        0.11416953802108765,
+        0.2058437168598175,
+        0.10614612698554993
+      ]
+    },
+    {
+      "sample_id": "49853261fbbe48929211cfb4f5b13866_005",
+      "object_id": "49853261fbbe48929211cfb4f5b13866",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 10,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.043065741658210754,
+        0.056362517178058624,
+        0.06335558742284775,
+        0.033783942461013794,
+        0.05256088823080063,
+        0.05327022448182106,
+        0.04317557066679001,
+        0.045347195118665695
+      ]
+    },
+    {
+      "sample_id": "548362a5ab6f4c8e8fda42143172614e_010",
+      "object_id": "548362a5ab6f4c8e8fda42143172614e",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 10,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.0945286750793457,
+        0.10131973773241043,
+        0.12516361474990845,
+        0.06430278718471527,
+        0.10105584561824799,
+        0.10718733817338943,
+        0.10463956743478775,
+        0.10534210503101349
+      ]
+    },
+    {
+      "sample_id": "68a31a8eb07d4b84aeb3b13484d4c9e8_008",
+      "object_id": "68a31a8eb07d4b84aeb3b13484d4c9e8",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 10,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.27890434861183167,
+        0.30507591366767883,
+        0.231796532869339,
+        0.17637448012828827,
+        0.3685118556022644,
+        0.2070208340883255,
+        0.3200043737888336,
+        0.270413339138031
+      ]
+    },
+    {
+      "sample_id": "6a836cf7662f4cfaa7e1244a24d6e73a_005",
+      "object_id": "6a836cf7662f4cfaa7e1244a24d6e73a",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 11,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.04095742851495743,
+        0.043745674192905426,
+        0.044770773500204086,
+        0.0364159531891346,
+        0.033990658819675446,
+        0.045408688485622406,
+        0.058497220277786255,
+        0.04408542066812515
+      ]
+    },
+    {
+      "sample_id": "72b8b1136e124387a8a8b5dc10f9c58f_006",
+      "object_id": "72b8b1136e124387a8a8b5dc10f9c58f",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 11,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.0053101712837815285,
+        0.16147276759147644,
+        0.04155632108449936,
+        0.0067372992634773254,
+        0.004849269986152649,
+        0.011159133166074753,
+        0.0052770450711250305,
+        0.006074190139770508
+      ]
+    },
+    {
+      "sample_id": "7bd547dc65b04894b6f37b33088f1a9e_013",
+      "object_id": "7bd547dc65b04894b6f37b33088f1a9e",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 11,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.19738765060901642,
+        0.2014266699552536,
+        0.15834778547286987,
+        0.14184865355491638,
+        0.10763934254646301,
+        0.13114050030708313,
+        0.2278214395046234,
+        0.23549732565879822
+      ]
+    },
+    {
+      "sample_id": "7c3286c7a4934e48860badc106f63ab3_013",
+      "object_id": "7c3286c7a4934e48860badc106f63ab3",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 11,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.013040236197412014,
+        0.016948815435171127,
+        0.01862180046737194,
+        0.03666358441114426,
+        0.05768712982535362,
+        0.016158301383256912,
+        0.01824728026986122,
+        0.016530634835362434
+      ]
+    },
+    {
+      "sample_id": "8262743abb7f4f759aa0b3bda08551e5_014",
+      "object_id": "8262743abb7f4f759aa0b3bda08551e5",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 12,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.03989262878894806,
+        0.316219687461853,
+        0.12174111604690552,
+        0.03774552792310715,
+        0.06472592800855637,
+        0.1616973578929901,
+        0.13253870606422424,
+        0.07589574158191681
+      ]
+    },
+    {
+      "sample_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_008",
+      "object_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 12,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.028930217027664185,
+        0.11254239082336426,
+        0.07068122178316116,
+        0.04183456674218178,
+        0.038851119577884674,
+        0.06786812096834183,
+        0.03266138583421707,
+        0.081342414021492
+      ]
+    },
+    {
+      "sample_id": "949af5011ce84b0098c5a0688420e569_013",
+      "object_id": "949af5011ce84b0098c5a0688420e569",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 12,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.13705755770206451,
+        0.0947953388094902,
+        0.11841119825839996,
+        0.12312528491020203,
+        0.10079832375049591,
+        0.12176309525966644,
+        0.11561013013124466,
+        0.1280912458896637
+      ]
+    },
+    {
+      "sample_id": "9e134caf65e04f5abaf742ac24df647d_015",
+      "object_id": "9e134caf65e04f5abaf742ac24df647d",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 12,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.03632725402712822,
+        0.05702706426382065,
+        0.03503544628620148,
+        0.03460586071014404,
+        0.029818657785654068,
+        0.05094083398580551,
+        0.04628200829029083,
+        0.03357265889644623
+      ]
+    },
+    {
+      "sample_id": "a807e2119b24443da16a2e28529cfa26_006",
+      "object_id": "a807e2119b24443da16a2e28529cfa26",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 13,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.1833067089319229,
+        0.17700788378715515,
+        0.194504976272583,
+        0.17545929551124573,
+        0.158685564994812,
+        0.18015316128730774,
+        0.17475035786628723,
+        0.182861328125
+      ]
+    },
+    {
+      "sample_id": "b38765d87b644fdeb6c4c9ffe1ca98ba_013",
+      "object_id": "b38765d87b644fdeb6c4c9ffe1ca98ba",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 13,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.11056289076805115,
+        0.06017698347568512,
+        0.05281123146414757,
+        0.05264681950211525,
+        0.06674068421125412,
+        0.07382781058549881,
+        0.07057296484708786,
+        0.055907681584358215
+      ]
+    },
+    {
+      "sample_id": "c057e4593f9e42f5a353718f6c3c9150_013",
+      "object_id": "c057e4593f9e42f5a353718f6c3c9150",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 13,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.04786872863769531,
+        0.0730525404214859,
+        0.049181222915649414,
+        0.07567498087882996,
+        0.06893406063318253,
+        0.05253509059548378,
+        0.04174598678946495,
+        0.05208182334899902
+      ]
+    },
+    {
+      "sample_id": "d3eae95d30064e4baafe4427d7c9038a_015",
+      "object_id": "d3eae95d30064e4baafe4427d7c9038a",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 13,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.09935484826564789,
+        0.09733585268259048,
+        0.06118176877498627,
+        0.09109808504581451,
+        0.10723981261253357,
+        0.06961387395858765,
+        0.0735429972410202,
+        0.08515846729278564
+      ]
+    },
+    {
+      "sample_id": "d7167aa45e6e43b4a91fdbf5eb70b661_012",
+      "object_id": "d7167aa45e6e43b4a91fdbf5eb70b661",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 14,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.08338043093681335,
+        0.06654509156942368,
+        0.06832516193389893,
+        0.06809449195861816,
+        0.07623425126075745,
+        0.0662526935338974,
+        0.05556686967611313,
+        0.05698971450328827
+      ]
+    },
+    {
+      "sample_id": "d87e82071e24487481bf90c8f2682fb6_015",
+      "object_id": "d87e82071e24487481bf90c8f2682fb6",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 14,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.27433568239212036,
+        0.2594131827354431,
+        0.27472126483917236,
+        0.1518200933933258,
+        0.2335471510887146,
+        0.1856081336736679,
+        0.16128063201904297,
+        0.22313907742500305
+      ]
+    },
+    {
+      "sample_id": "dbba322581594949944949744937c788_013",
+      "object_id": "dbba322581594949944949744937c788",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 14,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.22168736159801483,
+        0.22342455387115479,
+        0.20933610200881958,
+        0.22210414707660675,
+        0.2143162041902542,
+        0.21165703237056732,
+        0.22726741433143616,
+        0.22295449674129486
+      ]
+    },
+    {
+      "sample_id": "e2759dc44b4b40fb9cf9544afc650282_011",
+      "object_id": "e2759dc44b4b40fb9cf9544afc650282",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 14,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.03459952771663666,
+        0.014509651809930801,
+        0.057476937770843506,
+        0.036066196858882904,
+        0.018744779750704765,
+        0.028832025825977325,
+        0.032638780772686005,
+        0.03732907772064209
+      ]
+    },
+    {
+      "sample_id": "e697fbdea7d04aa2b09122e36efadf16_012",
+      "object_id": "e697fbdea7d04aa2b09122e36efadf16",
+      "dataset_split": "train",
+      "view_index": 1,
+      "batch": 15,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.13911473751068115,
+        0.05104308947920799,
+        0.06485940515995026,
+        0.049927715212106705,
+        0.15750163793563843,
+        0.016671258956193924,
+        0.09421645104885101,
+        0.04960580915212631
+      ]
+    },
+    {
+      "sample_id": "f240fc675fe649acafb6da700d299d55_012",
+      "object_id": "f240fc675fe649acafb6da700d299d55",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 15,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.006790605373680592,
+        0.0019131239969283342,
+        0.07446445524692535,
+        0.029072381556034088,
+        0.022382672876119614,
+        0.0026296351570636034,
+        0.02136818878352642,
+        0.013416420668363571
+      ]
+    },
+    {
+      "sample_id": "f4e66b252b324dad84ba036a92b99f43_009",
+      "object_id": "f4e66b252b324dad84ba036a92b99f43",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 15,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.05865800753235817,
+        0.06041094660758972,
+        0.11771924048662186,
+        0.13867419958114624,
+        0.06126333773136139,
+        0.12825551629066467,
+        0.15610012412071228,
+        0.12879422307014465
+      ]
+    },
+    {
+      "sample_id": "fe725496195f49bfbabb52407c58edf8_010",
+      "object_id": "fe725496195f49bfbabb52407c58edf8",
+      "dataset_split": "val",
+      "view_index": 1,
+      "batch": 15,
+      "swapped_surface": false,
+      "surface_object_id": null,
+      "losses": [
+        0.07127774506807327,
+        0.09778822213411331,
+        0.08978992700576782,
+        0.06795671582221985,
+        0.07989360392093658,
+        0.10542256385087967,
+        0.09030868113040924,
+        0.1801263689994812
+      ]
+    }
+  ],
+  "complete": true,
+  "runtime": {
+    "torch": "2.5.1+cu121",
+    "gpu": "NVIDIA H100 80GB HBM3"
+  },
+  "scope": "32 identities unseen by these four-object finetunes, two fixed views each. Diagnostic selection, not a population benchmark or a claim of absence from pretraining. Frozen checkpoints; no optimization or decoding.",
+  "batch_scalar_losses": [
+    {
+      "batch": 0,
+      "swapped_surface": false,
+      "losses": [
+        0.1271572858095169,
+        0.09223629534244537,
+        0.09158842265605927,
+        0.13007697463035583,
+        0.13585850596427917,
+        0.10143066942691803,
+        0.10863873362541199,
+        0.09376242756843567
+      ]
+    },
+    {
+      "batch": 1,
+      "swapped_surface": false,
+      "losses": [
+        0.12739165127277374,
+        0.1283784806728363,
+        0.14279334247112274,
+        0.14399559795856476,
+        0.12718793749809265,
+        0.1448594033718109,
+        0.18080109357833862,
+        0.1406916230916977
+      ]
+    },
+    {
+      "batch": 2,
+      "swapped_surface": false,
+      "losses": [
+        0.13637784123420715,
+        0.1585153341293335,
+        0.13651038706302643,
+        0.1030852422118187,
+        0.16881884634494781,
+        0.1165027990937233,
+        0.17198416590690613,
+        0.1301284283399582
+      ]
+    },
+    {
+      "batch": 3,
+      "swapped_surface": false,
+      "losses": [
+        0.052397072315216064,
+        0.062043651938438416,
+        0.06015397608280182,
+        0.05325326696038246,
+        0.05005033686757088,
+        0.051017895340919495,
+        0.06349356472492218,
+        0.05863740295171738
+      ]
+    },
+    {
+      "batch": 4,
+      "swapped_surface": false,
+      "losses": [
+        0.05865069478750229,
+        0.14276333153247833,
+        0.0913667231798172,
+        0.059659723192453384,
+        0.05795411765575409,
+        0.10543150454759598,
+        0.08182961493730545,
+        0.0797191932797432
+      ]
+    },
+    {
+      "batch": 5,
+      "swapped_surface": false,
+      "losses": [
+        0.09091273695230484,
+        0.10079945623874664,
+        0.08434762805700302,
+        0.09453749656677246,
+        0.09656594693660736,
+        0.08683735877275467,
+        0.08528558909893036,
+        0.09292274713516235
+      ]
+    },
+    {
+      "batch": 6,
+      "swapped_surface": false,
+      "losses": [
+        0.14917676150798798,
+        0.1410856395959854,
+        0.15738120675086975,
+        0.1271391063928604,
+        0.1330367922782898,
+        0.12479214370250702,
+        0.11874401569366455,
+        0.1370767503976822
+      ]
+    },
+    {
+      "batch": 7,
+      "swapped_surface": false,
+      "losses": [
+        0.04846428334712982,
+        0.051456086337566376,
+        0.0864473283290863,
+        0.06999521702528,
+        0.061689309775829315,
+        0.06620308756828308,
+        0.07100421190261841,
+        0.09338270127773285
+      ]
+    },
+    {
+      "batch": 8,
+      "swapped_surface": false,
+      "losses": [
+        0.12088804692029953,
+        0.09310722351074219,
+        0.08546104282140732,
+        0.1310247778892517,
+        0.12801267206668854,
+        0.0969942957162857,
+        0.11032702028751373,
+        0.09327097237110138
+      ]
+    },
+    {
+      "batch": 9,
+      "swapped_surface": false,
+      "losses": [
+        0.12815093994140625,
+        0.13452816009521484,
+        0.14054057002067566,
+        0.16840749979019165,
+        0.13080395758152008,
+        0.14317536354064941,
+        0.1990671306848526,
+        0.14621585607528687
+      ]
+    },
+    {
+      "batch": 10,
+      "swapped_surface": false,
+      "losses": [
+        0.13791295886039734,
+        0.15715374052524567,
+        0.13496969640254974,
+        0.10520917922258377,
+        0.16524899005889893,
+        0.12041197717189789,
+        0.16841581463813782,
+        0.131812185049057
+      ]
+    },
+    {
+      "batch": 11,
+      "swapped_surface": false,
+      "losses": [
+        0.0641738697886467,
+        0.10589848458766937,
+        0.06582417339086533,
+        0.05541636794805527,
+        0.051041603088378906,
+        0.05096665769815445,
+        0.07746075093746185,
+        0.07554689049720764
+      ]
+    },
+    {
+      "batch": 12,
+      "swapped_surface": false,
+      "losses": [
+        0.06055191531777382,
+        0.14514613151550293,
+        0.08646724373102188,
+        0.05932781100273132,
+        0.05854851007461548,
+        0.10056735575199127,
+        0.0817730575799942,
+        0.07972551882266998
+      ]
+    },
+    {
+      "batch": 13,
+      "swapped_surface": false,
+      "losses": [
+        0.11027330160140991,
+        0.10189331322908401,
+        0.08941979706287384,
+        0.09871979057788849,
+        0.10040003061294556,
+        0.09403248131275177,
+        0.09015307575464249,
+        0.09400232881307602
+      ]
+    },
+    {
+      "batch": 14,
+      "swapped_surface": false,
+      "losses": [
+        0.1535007655620575,
+        0.14097312092781067,
+        0.1524648666381836,
+        0.11952122300863266,
+        0.13571058213710785,
+        0.12308746576309204,
+        0.11918842792510986,
+        0.13510309159755707
+      ]
+    },
+    {
+      "batch": 15,
+      "swapped_surface": false,
+      "losses": [
+        0.0689602792263031,
+        0.05278884246945381,
+        0.08670825511217117,
+        0.071407750248909,
+        0.08026031404733658,
+        0.06324474513530731,
+        0.09049835801124573,
+        0.09298570454120636
+      ]
+    }
+  ]
+}
