@@ -1,6 +1,6 @@
 # Coordinate diagnosis: reconciled state and next decision
 
-12 September 2026. This records the coordinate diagnosis resynchronization and the original factorial plan. That experiment and the subsequent view/identity transfer screens have completed. The latest evidence and next decision are in `OBJECT_TRANSFER_RETURNED_FINDINGS.md`; the only current GPU dependency is `TRANSFER_CHECKPOINTS_HANDOFF.md`. The coordinate contracts and user constraints below remain applicable; its next-experiment sections are historical, not queued jobs.
+12 September 2026. This records the coordinate diagnosis resynchronization and the original factorial plan. That experiment and the subsequent view/identity transfer screens have completed. The latest evidence and next decision are in `TRANSFER_CHECKPOINTS_RETURNED_FINDINGS.md`; the only current GPU dependency is `CONSTANT_SURFACE_HANDOFF.md`. The coordinate contracts and user constraints below remain applicable; its next-experiment sections are historical, not queued jobs.
 
 ## User objective and constraints
 

@@ -1,0 +1,32 @@
+{
+  "all_reports_complete": true,
+  "sources_and_fit_report_hashes_match": true,
+  "analysis_recomputed_exactly": true,
+  "all_held_object_replays_exact": true,
+  "condition_context_checks_pass": true,
+  "report_sha256": {
+    "oracle": "a728684d997cb0b27662bfe3f87afc1594398565caa3c376b423f3e551e7f8cf",
+    "image": "87c824e746c0304066d6027cb1580630e3e14ea44cdf00171e56d9835398faa6",
+    "camera": "3ea762cb2f07ad7c942e5f022d7e91cf7eb7d81eecd109c7f6b8873692fb7db4"
+  },
+  "attachment_folders": {
+    "oracle": "65b4c1ab-6af7-44f3-9f04-c1094dbf54d3",
+    "image": "e817279c-8dd0-4bde-b79a-a1fc252eac7d",
+    "camera": "f0fb63a8-c5fa-4da0-af39-868f643bf3df",
+    "analysis": "4504214e-2380-40b3-9129-8732a5935a76"
+  },
+  "next_control_local_validation": {
+    "python_ast": true,
+    "bash_and_zsh_syntax": true,
+    "synthetic_paired_effects": true,
+    "invalid_case_rejections": [
+      "held bank",
+      "replay mismatch",
+      "swap variation",
+      "dropout",
+      "token count"
+    ],
+    "real_surface_replay_initial_only": true,
+    "gpu_execution": "pending"
+  }
+}

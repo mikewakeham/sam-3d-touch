@@ -1,5 +1,7 @@
 # Frozen early/late checkpoint interventions
 
+**Completed:** all three reports and analysis returned and passed validation. See `TRANSFER_CHECKPOINTS_RETURNED_FINDINGS.md`; do not rerun this command. The next dependency is the single training control in `CONSTANT_SURFACE_HANDOFF.md`.
+
 The completed 16-object fits initially beat image+pointmap on held objects, then lose that advantage. We do not yet know whether the early advantage uses the correct surface, or whether late degradation remains in the trained shared visual attention when the surface is removed. This probe resolves that specific fork before another training intervention.
 
 Use existing step **256 and 1024** checkpoints for **image, camera and oracle**. No retraining or optimizer steps. Oracle dropout is omitted because it did not supply a held-identity rescue; the two original point arms retain the coordinate comparison. Evaluate only the 16 held identities × two views already reserved in `object_transfer_plan.json`.
