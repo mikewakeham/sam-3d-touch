@@ -1,0 +1,555 @@
+{
+  "fresh_bank": {
+    "visual_present": {
+      "fit": {
+        "cells": {
+          "camera_original": {
+            "correct_surface_loss": 0.029912134807091206,
+            "wrong_surface_loss": 0.05513430607970804,
+            "surface_benefit_wrong_minus_correct": 0.025222171272616833
+          },
+          "camera_dropout": {
+            "correct_surface_loss": 0.03692980227060616,
+            "wrong_surface_loss": 0.0699271815828979,
+            "surface_benefit_wrong_minus_correct": 0.03299737931229174
+          },
+          "oracle_original": {
+            "correct_surface_loss": 0.02384682619594969,
+            "wrong_surface_loss": 0.09320360817946494,
+            "surface_benefit_wrong_minus_correct": 0.06935678198351525
+          },
+          "oracle_dropout": {
+            "correct_surface_loss": 0.022046549973310903,
+            "wrong_surface_loss": 0.22416852694004774,
+            "surface_benefit_wrong_minus_correct": 0.20212197696673684
+          }
+        },
+        "dropout_minus_original": {
+          "camera": 0.007017667463514954,
+          "oracle": -0.0018002762226387858
+        },
+        "camera_minus_oracle": {
+          "original": 0.006065308611141518,
+          "dropout": 0.014883252297295257
+        },
+        "interaction_change_in_camera_oracle_gap": 0.00881794368615374
+      },
+      "reserved_view": {
+        "cells": {
+          "camera_original": {
+            "correct_surface_loss": 0.07717769499868155,
+            "wrong_surface_loss": 0.08121483431508143,
+            "surface_benefit_wrong_minus_correct": 0.0040371393163998875
+          },
+          "camera_dropout": {
+            "correct_surface_loss": 0.05381052537510792,
+            "wrong_surface_loss": 0.06430863915011287,
+            "surface_benefit_wrong_minus_correct": 0.010498113775004946
+          },
+          "oracle_original": {
+            "correct_surface_loss": 0.0578488731601586,
+            "wrong_surface_loss": 0.1160871833562851,
+            "surface_benefit_wrong_minus_correct": 0.0582383101961265
+          },
+          "oracle_dropout": {
+            "correct_surface_loss": 0.022732071462087333,
+            "wrong_surface_loss": 0.22534584688643614,
+            "surface_benefit_wrong_minus_correct": 0.2026137754243488
+          }
+        },
+        "dropout_minus_original": {
+          "camera": -0.023367169623573623,
+          "oracle": -0.035116801698071264
+        },
+        "camera_minus_oracle": {
+          "original": 0.01932882183852295,
+          "dropout": 0.03107845391302059
+        },
+        "interaction_change_in_camera_oracle_gap": 0.01174963207449764
+      }
+    },
+    "visual_zero": {
+      "fit": {
+        "cells": {
+          "camera_original": {
+            "correct_surface_loss": 0.10295935976319015,
+            "wrong_surface_loss": 0.11760303284972906,
+            "surface_benefit_wrong_minus_correct": 0.01464367308653891
+          },
+          "camera_dropout": {
+            "correct_surface_loss": 0.04001490242080763,
+            "wrong_surface_loss": 0.10801851283758879,
+            "surface_benefit_wrong_minus_correct": 0.06800361041678116
+          },
+          "oracle_original": {
+            "correct_surface_loss": 0.0899747961666435,
+            "wrong_surface_loss": 0.15641443710774183,
+            "surface_benefit_wrong_minus_correct": 0.06643964094109833
+          },
+          "oracle_dropout": {
+            "correct_surface_loss": 0.02225259636179544,
+            "wrong_surface_loss": 0.2502377391792834,
+            "surface_benefit_wrong_minus_correct": 0.22798514281748794
+          }
+        },
+        "dropout_minus_original": {
+          "camera": -0.06294445734238252,
+          "oracle": -0.06772219980484806
+        },
+        "camera_minus_oracle": {
+          "original": 0.01298456359654665,
+          "dropout": 0.01776230605901219
+        },
+        "interaction_change_in_camera_oracle_gap": 0.00477774246246554
+      },
+      "reserved_view": {
+        "cells": {
+          "camera_original": {
+            "correct_surface_loss": 0.10738089897980292,
+            "wrong_surface_loss": 0.1137526569267114,
+            "surface_benefit_wrong_minus_correct": 0.006371757946908474
+          },
+          "camera_dropout": {
+            "correct_surface_loss": 0.055473831947892904,
+            "wrong_surface_loss": 0.0796248884871602,
+            "surface_benefit_wrong_minus_correct": 0.0241510565392673
+          },
+          "oracle_original": {
+            "correct_surface_loss": 0.0899782283231616,
+            "wrong_surface_loss": 0.15640797838568687,
+            "surface_benefit_wrong_minus_correct": 0.06642975006252527
+          },
+          "oracle_dropout": {
+            "correct_surface_loss": 0.022255527670495212,
+            "wrong_surface_loss": 0.25023483112454414,
+            "surface_benefit_wrong_minus_correct": 0.22797930345404893
+          }
+        },
+        "dropout_minus_original": {
+          "camera": -0.05190706703191002,
+          "oracle": -0.06772270065266639
+        },
+        "camera_minus_oracle": {
+          "original": 0.01740267065664132,
+          "dropout": 0.03321830427739769
+        },
+        "interaction_change_in_camera_oracle_gap": 0.015815633620756372
+      }
+    }
+  },
+  "historical_bank_curves": {
+    "camera": {
+      "original": [
+        {
+          "step": 0,
+          "fit": {
+            "correct_surface_loss": 0.4732266431674361,
+            "wrong_surface_loss": 0.4732308108359575,
+            "surface_benefit_wrong_minus_correct": 4.167668521404266e-06
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.4746253900229931,
+            "wrong_surface_loss": 0.47436252733071643,
+            "surface_benefit_wrong_minus_correct": -0.00026286269227665526
+          }
+        },
+        {
+          "step": 100,
+          "fit": {
+            "correct_surface_loss": 0.12141599273309112,
+            "wrong_surface_loss": 0.12374971457757056,
+            "surface_benefit_wrong_minus_correct": 0.0023337218444794416
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.12787626155962548,
+            "wrong_surface_loss": 0.12684931109348932,
+            "surface_benefit_wrong_minus_correct": -0.0010269504661361561
+          }
+        },
+        {
+          "step": 300,
+          "fit": {
+            "correct_surface_loss": 0.08884818968363106,
+            "wrong_surface_loss": 0.0930242829490453,
+            "surface_benefit_wrong_minus_correct": 0.004176093265414238
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.1018480792020758,
+            "wrong_surface_loss": 0.10161498685677846,
+            "surface_benefit_wrong_minus_correct": -0.00023309234529733658
+          }
+        },
+        {
+          "step": 1000,
+          "fit": {
+            "correct_surface_loss": 0.03321698715444654,
+            "wrong_surface_loss": 0.05858374806120992,
+            "surface_benefit_wrong_minus_correct": 0.025366760906763375
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.08071343119566639,
+            "wrong_surface_loss": 0.08380358417828877,
+            "surface_benefit_wrong_minus_correct": 0.003090152982622385
+          }
+        }
+      ],
+      "dropout": [
+        {
+          "step": 0,
+          "fit": {
+            "correct_surface_loss": 0.4732266431674361,
+            "wrong_surface_loss": 0.4732308108359575,
+            "surface_benefit_wrong_minus_correct": 4.167668521404266e-06
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.4746253900229931,
+            "wrong_surface_loss": 0.47436252733071643,
+            "surface_benefit_wrong_minus_correct": -0.00026286269227665526
+          }
+        },
+        {
+          "step": 100,
+          "fit": {
+            "correct_surface_loss": 0.12299465015530586,
+            "wrong_surface_loss": 0.12554779695346951,
+            "surface_benefit_wrong_minus_correct": 0.0025531467981636524
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.1271360538279017,
+            "wrong_surface_loss": 0.12664354561517635,
+            "surface_benefit_wrong_minus_correct": -0.00049250821272534
+          }
+        },
+        {
+          "step": 300,
+          "fit": {
+            "correct_surface_loss": 0.09448892367072403,
+            "wrong_surface_loss": 0.09772798256017268,
+            "surface_benefit_wrong_minus_correct": 0.0032390588894486427
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.10252783820033073,
+            "wrong_surface_loss": 0.10212129199256499,
+            "surface_benefit_wrong_minus_correct": -0.0004065462077657428
+          }
+        },
+        {
+          "step": 1000,
+          "fit": {
+            "correct_surface_loss": 0.040096236451063305,
+            "wrong_surface_loss": 0.07318500138353556,
+            "surface_benefit_wrong_minus_correct": 0.03308876493247226
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.05724472925066948,
+            "wrong_surface_loss": 0.06782235469048221,
+            "surface_benefit_wrong_minus_correct": 0.010577625439812735
+          }
+        }
+      ]
+    },
+    "oracle": {
+      "original": [
+        {
+          "step": 0,
+          "fit": {
+            "correct_surface_loss": 0.47317739576101303,
+            "wrong_surface_loss": 0.4731628904119134,
+            "surface_benefit_wrong_minus_correct": -1.4505349099636078e-05
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.47465118765830994,
+            "wrong_surface_loss": 0.47454654425382614,
+            "surface_benefit_wrong_minus_correct": -0.00010464340448379517
+          }
+        },
+        {
+          "step": 100,
+          "fit": {
+            "correct_surface_loss": 0.12196057895198464,
+            "wrong_surface_loss": 0.12658842862583697,
+            "surface_benefit_wrong_minus_correct": 0.0046278496738523245
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.12686482351273298,
+            "wrong_surface_loss": 0.13069585151970387,
+            "surface_benefit_wrong_minus_correct": 0.0038310280069708824
+          }
+        },
+        {
+          "step": 300,
+          "fit": {
+            "correct_surface_loss": 0.08774733520112932,
+            "wrong_surface_loss": 0.0950817852281034,
+            "surface_benefit_wrong_minus_correct": 0.007334450026974082
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.09817011219759782,
+            "wrong_surface_loss": 0.10348470353831847,
+            "surface_benefit_wrong_minus_correct": 0.0053145913407206535
+          }
+        },
+        {
+          "step": 1000,
+          "fit": {
+            "correct_surface_loss": 0.026873418246395886,
+            "wrong_surface_loss": 0.09181819413788617,
+            "surface_benefit_wrong_minus_correct": 0.06494477589149028
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.06012590656367441,
+            "wrong_surface_loss": 0.11430409799019496,
+            "surface_benefit_wrong_minus_correct": 0.05417819142652055
+          }
+        }
+      ],
+      "dropout": [
+        {
+          "step": 0,
+          "fit": {
+            "correct_surface_loss": 0.47317739576101303,
+            "wrong_surface_loss": 0.4731628904119134,
+            "surface_benefit_wrong_minus_correct": -1.4505349099636078e-05
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.47465118765830994,
+            "wrong_surface_loss": 0.47454654425382614,
+            "surface_benefit_wrong_minus_correct": -0.00010464340448379517
+          }
+        },
+        {
+          "step": 100,
+          "fit": {
+            "correct_surface_loss": 0.12144303438253701,
+            "wrong_surface_loss": 0.12639088043943048,
+            "surface_benefit_wrong_minus_correct": 0.004947846056893468
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.12398374763627847,
+            "wrong_surface_loss": 0.12816424357394376,
+            "surface_benefit_wrong_minus_correct": 0.004180495937665299
+          }
+        },
+        {
+          "step": 300,
+          "fit": {
+            "correct_surface_loss": 0.09093400579877198,
+            "wrong_surface_loss": 0.09819244616664946,
+            "surface_benefit_wrong_minus_correct": 0.007258440367877483
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.09563497143487136,
+            "wrong_surface_loss": 0.10282521539678176,
+            "surface_benefit_wrong_minus_correct": 0.0071902439619103975
+          }
+        },
+        {
+          "step": 1000,
+          "fit": {
+            "correct_surface_loss": 0.025239749811589718,
+            "wrong_surface_loss": 0.22345893923193216,
+            "surface_benefit_wrong_minus_correct": 0.19821918942034245
+          },
+          "reserved_view": {
+            "correct_surface_loss": 0.025984267937019467,
+            "wrong_surface_loss": 0.22975831540922323,
+            "surface_benefit_wrong_minus_correct": 0.20377404747220376
+          }
+        }
+      ]
+    }
+  },
+  "per_group_all_inputs": {
+    "camera": [
+      {
+        "group": 0,
+        "original": {
+          "correct_surface_loss": 0.02858329424634576,
+          "wrong_surface_loss": 0.05410640500485897,
+          "surface_benefit_wrong_minus_correct": 0.025523110758513212
+        },
+        "dropout": {
+          "correct_surface_loss": 0.036340044578537345,
+          "wrong_surface_loss": 0.07547108456492424,
+          "surface_benefit_wrong_minus_correct": 0.039131039986386895
+        }
+      },
+      {
+        "group": 1,
+        "original": {
+          "correct_surface_loss": 0.029758973512798548,
+          "wrong_surface_loss": 0.05442187702283263,
+          "surface_benefit_wrong_minus_correct": 0.024662903510034084
+        },
+        "dropout": {
+          "correct_surface_loss": 0.03684701141901314,
+          "wrong_surface_loss": 0.06636268505826592,
+          "surface_benefit_wrong_minus_correct": 0.029515673639252782
+        }
+      },
+      {
+        "group": 2,
+        "original": {
+          "correct_surface_loss": 0.03311664750799537,
+          "wrong_surface_loss": 0.061863614711910486,
+          "surface_benefit_wrong_minus_correct": 0.02874696720391512
+        },
+        "dropout": {
+          "correct_surface_loss": 0.03854113072156906,
+          "wrong_surface_loss": 0.07693467987701297,
+          "surface_benefit_wrong_minus_correct": 0.03839354915544391
+        }
+      },
+      {
+        "group": 3,
+        "original": {
+          "correct_surface_loss": 0.028189623961225152,
+          "wrong_surface_loss": 0.05014532757923007,
+          "surface_benefit_wrong_minus_correct": 0.021955703618004918
+        },
+        "dropout": {
+          "correct_surface_loss": 0.03599102236330509,
+          "wrong_surface_loss": 0.060940276831388474,
+          "surface_benefit_wrong_minus_correct": 0.02494925446808338
+        }
+      },
+      {
+        "group": 4,
+        "original": {
+          "correct_surface_loss": 0.05666953278705478,
+          "wrong_surface_loss": 0.06243375688791275,
+          "surface_benefit_wrong_minus_correct": 0.005764224100857973
+        },
+        "dropout": {
+          "correct_surface_loss": 0.04707199474796653,
+          "wrong_surface_loss": 0.0653574662283063,
+          "surface_benefit_wrong_minus_correct": 0.018285471480339766
+        }
+      },
+      {
+        "group": 5,
+        "original": {
+          "correct_surface_loss": 0.11491420585662127,
+          "wrong_surface_loss": 0.11499197967350483,
+          "surface_benefit_wrong_minus_correct": 7.7773816883564e-05
+        },
+        "dropout": {
+          "correct_surface_loss": 0.06802049651741982,
+          "wrong_surface_loss": 0.06535771489143372,
+          "surface_benefit_wrong_minus_correct": -0.0026627816259860992
+        }
+      },
+      {
+        "group": 6,
+        "original": {
+          "correct_surface_loss": 0.05994934635236859,
+          "wrong_surface_loss": 0.06621876638382673,
+          "surface_benefit_wrong_minus_correct": 0.006269420031458139
+        },
+        "dropout": {
+          "correct_surface_loss": 0.04633908485993743,
+          "wrong_surface_loss": 0.06221073633059859,
+          "surface_benefit_wrong_minus_correct": 0.015871651470661163
+        }
+      }
+    ],
+    "oracle": [
+      {
+        "group": 0,
+        "original": {
+          "correct_surface_loss": 0.02311171474866569,
+          "wrong_surface_loss": 0.09344159439206123,
+          "surface_benefit_wrong_minus_correct": 0.07032987964339554
+        },
+        "dropout": {
+          "correct_surface_loss": 0.022119047353044152,
+          "wrong_surface_loss": 0.2254548966884613,
+          "surface_benefit_wrong_minus_correct": 0.20333584933541715
+        }
+      },
+      {
+        "group": 1,
+        "original": {
+          "correct_surface_loss": 0.02353921963367611,
+          "wrong_surface_loss": 0.08930900879204273,
+          "surface_benefit_wrong_minus_correct": 0.06576978915836662
+        },
+        "dropout": {
+          "correct_surface_loss": 0.022020717384293675,
+          "wrong_surface_loss": 0.21866071410477161,
+          "surface_benefit_wrong_minus_correct": 0.19663999672047794
+        }
+      },
+      {
+        "group": 2,
+        "original": {
+          "correct_surface_loss": 0.025970481568947434,
+          "wrong_surface_loss": 0.10683893505483866,
+          "surface_benefit_wrong_minus_correct": 0.08086845348589122
+        },
+        "dropout": {
+          "correct_surface_loss": 0.022141897352412343,
+          "wrong_surface_loss": 0.23303687386214733,
+          "surface_benefit_wrong_minus_correct": 0.210894976509735
+        }
+      },
+      {
+        "group": 3,
+        "original": {
+          "correct_surface_loss": 0.022765888832509518,
+          "wrong_surface_loss": 0.08322489447891712,
+          "surface_benefit_wrong_minus_correct": 0.060459005646407604
+        },
+        "dropout": {
+          "correct_surface_loss": 0.02190453780349344,
+          "wrong_surface_loss": 0.21952162310481071,
+          "surface_benefit_wrong_minus_correct": 0.19761708530131727
+        }
+      },
+      {
+        "group": 4,
+        "original": {
+          "correct_surface_loss": 0.03956955694593489,
+          "wrong_surface_loss": 0.09977639559656382,
+          "surface_benefit_wrong_minus_correct": 0.060206838650628924
+        },
+        "dropout": {
+          "correct_surface_loss": 0.022415863117203116,
+          "wrong_surface_loss": 0.22189310751855373,
+          "surface_benefit_wrong_minus_correct": 0.19947724440135062
+        }
+      },
+      {
+        "group": 5,
+        "original": {
+          "correct_surface_loss": 0.08774278964847326,
+          "wrong_surface_loss": 0.14880091696977615,
+          "surface_benefit_wrong_minus_correct": 0.06105812732130289
+        },
+        "dropout": {
+          "correct_surface_loss": 0.02300359949003905,
+          "wrong_surface_loss": 0.23687837272882462,
+          "surface_benefit_wrong_minus_correct": 0.21387477323878556
+        }
+      },
+      {
+        "group": 6,
+        "original": {
+          "correct_surface_loss": 0.04623427288606763,
+          "wrong_surface_loss": 0.09968423750251532,
+          "surface_benefit_wrong_minus_correct": 0.05344996461644769
+        },
+        "dropout": {
+          "correct_surface_loss": 0.022776751779019833,
+          "wrong_surface_loss": 0.21726606041193008,
+          "surface_benefit_wrong_minus_correct": 0.19448930863291025
+        }
+      }
+    ]
+  },
+  "limits": "Primary: coherent all-input visual_present assessment on fresh paired draws. visual_zero is a diagnostic, not the deployment criterion. Four fitted objects, one training seed, finite budget. Mixed-objective training losses are not directly comparable with original visual-present training losses. No per-object loss, unseen-object result, rollout result or inherent-limit conclusion.",
+  "report_sha256": {
+    "camera": "defcab71cd475b930c0db423d805c2fadd5c96c34493697468ce23673fca7152",
+    "oracle": "7672e619f5d4bcc7875f0608cd1689e2d2bc09c3324c2124574cfd6f4f509129"
+  }
+}

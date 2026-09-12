@@ -1,0 +1,12 @@
+{
+  "analysis_exact_match": true,
+  "report_byte_hashes_match": true,
+  "all_source_and_reference_hashes_match": true,
+  "full_protocol_validation_passed": true,
+  "replay": "exact initial and final historical loss vectors in both arms",
+  "attachment_sha256": {
+    "oracle": "7672e619f5d4bcc7875f0608cd1689e2d2bc09c3324c2124574cfd6f4f509129",
+    "camera": "defcab71cd475b930c0db423d805c2fadd5c96c34493697468ce23673fca7152",
+    "analysis": "52b0c8fc975a81b933fd120c3674059939c5a441da07a0eebe84882a12306f3c"
+  }
+}
