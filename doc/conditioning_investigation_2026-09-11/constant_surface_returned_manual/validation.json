@@ -1,0 +1,31 @@
+{
+  "source_and_baseline_hashes_match": true,
+  "analysis_recomputed_exactly": true,
+  "complete_schedule_and_native_loss_checks_pass": true,
+  "real_surface_initial_replay_exact": true,
+  "constant_context_and_swap_invariance_pass": true,
+  "bank_from_training_only": true,
+  "report_sha256": {
+    "constant": "cbb656123e2941ec21a428499cb56ef643ad99d706d3bbc5ec02cdaa2f4b2447",
+    "image": "1061754dec99daf15d3dd35649cc35c915fb1bb57bce15fe7e257f5ef7ecae7e",
+    "camera": "7cf6b6b22bf7c1bfb4ce77ee5f1f945d6acb911a9c311c846fcd8551effb5c1e",
+    "oracle": "f4b65965c8b80ce38cc49a670af00eeed5162221490dbaede9abf217ac9239a0"
+  },
+  "attachment_folders": {
+    "results": "1edf2946-38bc-496e-b865-fb14c55d5f3b",
+    "analysis": "221067c8-6c26-44ea-b191-deeab2f6dda0"
+  },
+  "next_pilot_local_validation": {
+    "python_ast": true,
+    "bash_and_zsh_syntax": true,
+    "synthetic_paired_effects": true,
+    "negative_cases": [
+      "frozen parameters changed",
+      "image fallback changed",
+      "wrong token allocation",
+      "constant swap varied",
+      "separate initialization mismatch"
+    ],
+    "gpu_module_gradient_and_replay_checks": "implemented but unexecuted locally"
+  }
+}

@@ -1,5 +1,7 @@
 # Does a sample-independent token pathway explain the apparent benefit?
 
+**Completed:** results and analysis returned and passed validation. See `CONSTANT_SURFACE_RETURNED_FINDINGS.md`; do not rerun this command. The next proposed correction and its controls are in `SEPARATE_SURFACE_HANDOFF.md`.
+
 The returned checkpoint probe shows that early improvement over image survives three wrong-object surface assignments, while removing surface tokens collapses performance. A same-path training control removes sample-specific geometry without removing the input stream at inference.
 
 Run **one** arm, `oracle_constant`, for 1024 updates. Reuse the completed real-oracle/image/camera reports from `object_transfer_returned_manual/`; do not rerun those baselines. Seed 37, bf16, same 16 training identities, four fitted views, two held views, and 16 held identities. Same batches, time/noise draws, trainable projector and full shape CA/norm2, learning rates and zero visual dropout. No full training.
