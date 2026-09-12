@@ -1,0 +1,15 @@
+{
+  "terminal_sha256": "437fd2674b83a49b7c90d6b6c8cbf07f8ac2bb7902250d4725a6d64ddbbc0d80",
+  "failure": "legacy gradient logger accesses wrapper.to_kv instead of wrapper.surface.to_kv",
+  "phase": "first backward completed; no optimizer update reached",
+  "scope": "first sequential arm, separate_oracle",
+  "fix": "experiment-local wrapper-aware gradient logger; production train.py unchanged",
+  "local_validation": [
+    "separate wrapper without direct to_kv",
+    "joint attention",
+    "absent gradients",
+    "Python AST",
+    "git diff --check"
+  ],
+  "gpu_retry": "pending"
+}

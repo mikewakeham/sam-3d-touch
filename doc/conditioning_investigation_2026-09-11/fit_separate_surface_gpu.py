@@ -25,11 +25,33 @@ from separate_surface_attention import SeparateSurfaceAttention, verify_module
 MODEL_KEYS = ('separate_oracle', 'separate_constant', 'separate_camera', 'joint_oracle')
 from tiny_fit_gpu import parameter_digest
 from train import (TouchTrainingModel, amp, build_optimizer, build_stage1_pipeline,
-                   component_gradient_norms, prepare_batch, trainable_state_dict)
+                   gradient_norm, prepare_batch, trainable_state_dict)
 
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def experiment_gradient_norms(model):
+    blocks = model.generator.reverse_fn.backbone.blocks
+    attention = [block.cross_attn['shape'] for block in blocks]
+    adapted = [module.surface if isinstance(module, SeparateSurfaceAttention) else module
+               for module in attention]
+    groups = {
+        'shape_cross_attention_kv': (p for module in adapted for p in module.to_kv.parameters()),
+        'shape_cross_attention': (p for block in blocks
+                                  for module in (block.cross_attn['shape'], block.norm2['shape'])
+                                  for p in module.parameters()),
+        'shape_visual_attention': (p for module in attention if isinstance(module, SeparateSurfaceAttention)
+                                   for p in module.visual.parameters()),
+    }
+    encoder = model.touch_encoder
+    if encoder is not None:
+        groups.update(touch_output_projection=encoder.output_projection.parameters(),
+                      touch_position_projection=encoder.position_projection.parameters(),
+                      touch_embedding=(encoder.touch_embedding,),
+                      vecsetx_encoder=encoder.encoder.parameters())
+    return {f'gradients/{name}': gradient_norm(parameters) for name, parameters in groups.items()}
 
 
 def main():
@@ -283,7 +305,7 @@ def main():
             loss = forward_loss(index, drop=drop)
         loss.backward()
         assert not any(p.grad is not None for p in model.parameters() if not p.requires_grad)
-        gradients = component_gradient_norms(model) if step == 1 or step % 32 == 0 else {}
+        gradients = experiment_gradient_norms(model) if step == 1 or step % 32 == 0 else {}
         norm = torch.nn.utils.clip_grad_norm_(optimized, 1., error_if_nonfinite=True)
         optimizer.step()
         report['training'].append(dict(step=step, batch=index, visual_dropped=drop,

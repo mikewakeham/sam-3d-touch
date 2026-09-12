@@ -1,0 +1,87 @@
+(sam3d-objects) [mwakeham@holygpu8a15401 sam-3d-touch]$ (
+> set -euo pipefail
+> cd /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch
+> export OMP_NUM_THREADS=1
+> export PYTHONUNBUFFERED=1
+> export LIDRA_SKIP_INIT=true
+> 
+> branch_python=/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python
+> branch_root=outputs/conditioning_investigation/separate_surface/manual
+> visible_gpus=$("$branch_python" -c 'import torch; print(torch.cuda.device_count())')
+> test "$visible_gpus" -ge 1
+> test ! -e "$branch_root"
+> mkdir -p "$branch_root"
+> 
+> if [ "$visible_gpus" -ge 4 ]; then
+>   branch_pids=()
+>   device_index=0
+>   for model_key in separate_oracle separate_constant separate_camera joint_oracle; do
+>     "$branch_python" doc/conditioning_investigation_2026-09-11/fit_separate_surface_gpu.py \
+>       --model-key "$model_key" --device-index "$device_index" \
+>       --output-dir "$branch_root/$model_key" > "$branch_root/$model_key.log" 2>&1 &
+>     branch_pids+=("$!")
+>     device_index=$((device_index + 1))
+>   done
+>   branch_failed=0
+>   for process_id in "${branch_pids[@]}"; do
+>     if ! wait "$process_id"; then
+>       branch_failed=1
+>     fi
+>   done
+>   test "$branch_failed" -eq 0
+> else
+>   for model_key in separate_oracle separate_constant separate_camera joint_oracle; do
+>     "$branch_python" doc/conditioning_investigation_2026-09-11/fit_separate_surface_gpu.py \
+>       --model-key "$model_key" --device-index 0 \
+>       --output-dir "$branch_root/$model_key"
+>   done
+> fi
+> 
+> "$branch_python" doc/conditioning_investigation_2026-09-11/analyze_separate_surface.py \
+>   "$branch_root" --output "$branch_root/analysis.json"
+> )
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/lib/python3.11/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/lib/python3.11/site-packages/torch/cuda/__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+2026-09-12 17:43:04.355 | INFO     | sam3d_objects.pipeline.inference_pipeline:set_attention_backend:17 - GPU name is NVIDIA H100 80GB HBM3
+2026-09-12 17:43:07.164 | INFO     | sam3d_objects.model.backbone.tdfy_dit.modules.sparse:__from_env:39 - [SPARSE] Backend: spconv, Attention: flash_attn
+2026-09-12 17:43:10.762 | INFO     | sam3d_objects.model.backbone.tdfy_dit.modules.attention:__from_env:30 - [ATTENTION] Using backend: flash_attn
+[SPARSE][CONV] spconv algo: auto
+Warp 1.16.0 initialized:
+   CUDA Toolkit 12.9, Driver 13.3
+   Devices:
+     "cpu"      : "x86_64"
+     "cuda:0"   : "NVIDIA H100 80GB HBM3" (79 GiB, sm_90, mempool enabled)
+   Kernel cache:
+     /n/home12/mwakeham/.cache/warp/1.16.0
+2026-09-12 17:43:13.812 | WARNING  | sam3d_objects.data.dataset.tdfy.preprocessor:__post_init__:51 - No rgb pointmap normalizer provided, using scale + shift 
+2026-09-12 17:43:13.812 | WARNING  | sam3d_objects.data.dataset.tdfy.preprocessor:__post_init__:51 - No rgb pointmap normalizer provided, using scale + shift 
+2026-09-12 17:43:13.830 | WARNING  | sam3d_objects.data.dataset.tdfy.preprocessor:__post_init__:51 - No rgb pointmap normalizer provided, using scale + shift 
+2026-09-12 17:43:20.951 | INFO     | sam3d_objects.model.io:load_model_from_checkpoint:158 - Loading checkpoint from /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/checkpoints/hf/ss_generator.ckpt
+2026-09-12 17:43:23.254 | INFO     | sam3d_objects.model.backbone.dit.embedder.dino:__init__:31 - Loading DINO model: dinov2_vitl14_reg from facebookresearch/dinov2 (source: github)
+2026-09-12 17:43:27.217 | INFO     | sam3d_objects.model.backbone.dit.embedder.dino:__init__:44 - Loaded DINO model - type: <class 'dinov2.models.vision_transformer.DinoVisionTransformer'>, embed_dim: 1024, patch_size: (14, 14)
+2026-09-12 17:43:27.220 | INFO     | sam3d_objects.model.backbone.dit.embedder.dino:__init__:31 - Loading DINO model: dinov2_vitl14_reg from facebookresearch/dinov2 (source: github)
+2026-09-12 17:43:30.217 | INFO     | sam3d_objects.model.backbone.dit.embedder.dino:__init__:44 - Loaded DINO model - type: <class 'dinov2.models.vision_transformer.DinoVisionTransformer'>, embed_dim: 1024, patch_size: (14, 14)
+2026-09-12 17:43:30.313 | INFO     | sam3d_objects.model.io:load_model_from_checkpoint:158 - Loading checkpoint from /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/checkpoints/hf/ss_generator.ckpt
+Traceback (most recent call last):
+  File "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/doc/conditioning_investigation_2026-09-11/fit_separate_surface_gpu.py", line 323, in <module>
+    main()
+  File "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/doc/conditioning_investigation_2026-09-11/fit_separate_surface_gpu.py", line 286, in main
+    gradients = component_gradient_norms(model) if step == 1 or step % 32 == 0 else {}
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/train.py", line 378, in component_gradient_norms
+    return {
+           ^
+  File "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/train.py", line 379, in <dictcomp>
+    f"gradients/{name}": gradient_norm(parameters)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/train.py", line 349, in gradient_norm
+    for parameter in parameters:
+  File "/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/train.py", line 362, in <genexpr>
+    for parameter in block.cross_attn["shape"].to_kv.parameters()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1931, in __getattr__
+    raise AttributeError(
+AttributeError: 'SeparateSurfaceAttention' object has no attribute 'to_kv'
+(sam3d-objects) [mwakeham@holygpu8a15401 sam-3d-touch]$ 

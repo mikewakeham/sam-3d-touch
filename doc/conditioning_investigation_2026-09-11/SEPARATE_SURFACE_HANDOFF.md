@@ -1,5 +1,7 @@
 # Constructive pilot: separate surface attention around a frozen image model
 
+**First attempt / logging fix:** the first sequential arm passed CUDA module checks, exact initial image replay, zero-residual replay and its first backward pass. The legacy gradient logger then raised `AttributeError` because the wrapper has `.surface.to_kv` and `.visual.to_kv`, not a direct `.to_kv`. No optimizer update was reached. `fit_separate_surface_gpu.py` now uses an experiment-local logger that handles both separate and joint modules and records frozen visual gradients separately. Production `train.py`, the model interface and optimization policy are unchanged. Local logger regression checks cover both module layouts and absent gradients. The terminal and failure record are in `separate_surface_first_attempt/`. Sync the updated driver and retry using the new output directory below; preserve the failed attempt. GPU training remains pending.
+
 ## Why this intervention now
 
 The constant-surface control reproduces fitting gains and early held-object gains without sample-specific full-surface information. The joint pathway depends on surface-token presence but has not demonstrated reliable geometric transfer, even with oracle coordinates. There is enough evidence to test an interface correction while retaining VecSetX. This is a candidate, not a proven root-cause fix.
@@ -67,7 +69,7 @@ export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 export LIDRA_SKIP_INIT=true
 branch_python=/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python
-branch_root=outputs/conditioning_investigation/separate_surface/manual
+branch_root=outputs/conditioning_investigation/separate_surface/manual_logging_fix
 visible_gpus=$("$branch_python" -c 'import torch; print(torch.cuda.device_count())')
 test "$visible_gpus" -ge 1
 test ! -e "$branch_root"
