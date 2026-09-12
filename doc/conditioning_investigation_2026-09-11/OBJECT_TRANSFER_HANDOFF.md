@@ -1,5 +1,7 @@
 # Four-arm training screen beyond the four fitted identities
 
+**Completed:** all four reports have returned and passed validation. See `OBJECT_TRANSFER_RETURNED_FINDINGS.md`. Do not rerun or automatically extend this command; the next action is the frozen checkpoint probe in `TRANSFER_CHECKPOINTS_HANDOFF.md`.
+
 ## Question and budget
 
 The four-object models fit aligned surfaces and benefited from visual dropout on new views of those same objects, yet every surface model lost to image+pointmap on every one of 32 new objects. More frozen tests of those checkpoints cannot establish whether the learned conditioner can benefit from broader training.

@@ -1,0 +1,32 @@
+{
+  "all_four_reports_complete": true,
+  "source_plan_reference_hashes_match_current_files": true,
+  "analysis_recomputed_exactly": true,
+  "report_bytes_match_supplied_analysis": true,
+  "report_sha256": {
+    "oracle_dropout": "ec221ec6208e87134669ffd7cc859692a3e1aeef0cbbdfb96b0ef21548bbe2ae",
+    "oracle": "f4b65965c8b80ce38cc49a670af00eeed5162221490dbaede9abf217ac9239a0",
+    "image": "1061754dec99daf15d3dd35649cc35c915fb1bb57bce15fe7e257f5ef7ecae7e",
+    "camera": "7cf6b6b22bf7c1bfb4ce77ee5f1f945d6acb911a9c311c846fcd8551effb5c1e"
+  },
+  "attachment_folders": {
+    "analysis": "0b29c8c9-4808-4800-a832-e620c93b3afb",
+    "oracle_dropout": "bf550953-f6eb-4823-abff-c2bedf21c891",
+    "oracle": "fa957bc9-3f1a-4c91-8e51-e342de2f7148",
+    "image": "61237b70-57d2-4fda-9e42-4b5ba89bc05e",
+    "camera": "c6a0a6f0-c9df-4ce4-95e7-428b670f48f6"
+  },
+  "new_probe_local_checks": {
+    "python_ast": true,
+    "bash_zsh_handoff_syntax": true,
+    "synthetic_paired_effects": true,
+    "rejected_invalid_cases": [
+      "missing condition",
+      "wrong native aggregate",
+      "replay mismatch",
+      "surface not removed",
+      "input mismatch"
+    ],
+    "gpu_execution": "not available locally; pending"
+  }
+}
