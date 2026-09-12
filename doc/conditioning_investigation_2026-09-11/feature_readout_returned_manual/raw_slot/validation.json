@@ -1,0 +1,80 @@
+{
+  "attachment": "/Users/michaelwakeham/.codex/attachments/0f92d788-37eb-4fd0-b456-c4376e25d520/pasted-text.txt",
+  "attachment_sha256": "caa6dda2e46de645c05bb8b23edc76d4c4814be354e110433be95d4d64336c2c",
+  "paired_fields_match_archived_raw": [
+    "sample_ids",
+    "fit_sample_ids",
+    "reserved_object_ids",
+    "target_sha256",
+    "raw_features_sha256",
+    "source_report_sha256",
+    "initial_common_parameters_sha256",
+    "driver_sha256",
+    "readout_features_sha256"
+  ],
+  "settings_match": [
+    "steps",
+    "learning_rate",
+    "seed"
+  ],
+  "current_driver_hash_matches": true,
+  "curves": [
+    {
+      "step": 0,
+      "fit": {
+        "latent_mse": 0.7156936600804329,
+        "wrong_object_latent_mse": 0.7160243565837542
+      },
+      "reserved": {
+        "latent_mse": 0.7310242205858231,
+        "wrong_object_latent_mse": 0.7316945642232895
+      }
+    },
+    {
+      "step": 500,
+      "fit": {
+        "latent_mse": 0.15539531409740448,
+        "wrong_object_latent_mse": 0.1581265681112806
+      },
+      "reserved": {
+        "latent_mse": 0.21185120148584247,
+        "wrong_object_latent_mse": 0.21229603933170438
+      }
+    },
+    {
+      "step": 1000,
+      "fit": {
+        "latent_mse": 0.1507977407115201,
+        "wrong_object_latent_mse": 0.16501370103408894
+      },
+      "reserved": {
+        "latent_mse": 0.22277025738731027,
+        "wrong_object_latent_mse": 0.22283587977290154
+      }
+    },
+    {
+      "step": 1500,
+      "fit": {
+        "latent_mse": 0.13907178522398075,
+        "wrong_object_latent_mse": 0.17450656679769358
+      },
+      "reserved": {
+        "latent_mse": 0.22954388987272978,
+        "wrong_object_latent_mse": 0.23078170511871576
+      }
+    },
+    {
+      "step": 2000,
+      "fit": {
+        "latent_mse": 0.12101984551797311,
+        "wrong_object_latent_mse": 0.18590181895221272
+      },
+      "reserved": {
+        "latent_mse": 0.23403062741272151,
+        "wrong_object_latent_mse": 0.23728435300290585
+      }
+    }
+  ],
+  "complete_comparison": false,
+  "missing_arm": "processed"
+}

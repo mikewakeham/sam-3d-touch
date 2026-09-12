@@ -1,0 +1,74 @@
+{
+  "attachment_sha256": "a0396bca1827aaf41012eda59bf7a5f64685b9b225ae7956d535391da8e6c5b8",
+  "driver_match": true,
+  "source_report_match": true,
+  "sample_split_and_rows_valid": true,
+  "curves": [
+    {
+      "step": 0,
+      "fit": {
+        "latent_mse": 0.8149096866448721,
+        "wrong_object_latent_mse": 0.8152896910905838
+      },
+      "reserved_object": {
+        "latent_mse": 0.8127774223685265,
+        "wrong_object_latent_mse": 0.8135743513703346
+      }
+    },
+    {
+      "step": 500,
+      "fit": {
+        "latent_mse": 0.1542710398013393,
+        "wrong_object_latent_mse": 0.15806738023335734
+      },
+      "reserved_object": {
+        "latent_mse": 0.21275190985761583,
+        "wrong_object_latent_mse": 0.21326087275519967
+      }
+    },
+    {
+      "step": 1000,
+      "fit": {
+        "latent_mse": 0.15200028584028283,
+        "wrong_object_latent_mse": 0.16938420928393802
+      },
+      "reserved_object": {
+        "latent_mse": 0.2272416423074901,
+        "wrong_object_latent_mse": 0.22804754134267569
+      }
+    },
+    {
+      "step": 1500,
+      "fit": {
+        "latent_mse": 0.13581336429342628,
+        "wrong_object_latent_mse": 0.1774372934984664
+      },
+      "reserved_object": {
+        "latent_mse": 0.23061879444867373,
+        "wrong_object_latent_mse": 0.2322056284174323
+      }
+    },
+    {
+      "step": 2000,
+      "fit": {
+        "latent_mse": 0.11625390003124873,
+        "wrong_object_latent_mse": 0.19364893157035112,
+        "mean_iou": 0.2383000985893198,
+        "empty_outputs": 8,
+        "swap_worsens": 24
+      },
+      "reserved_object": {
+        "latent_mse": 0.24584015738219023,
+        "wrong_object_latent_mse": 0.24991738237440586,
+        "mean_iou": 0.029385275982929584,
+        "empty_outputs": 1,
+        "swap_worsens": 3
+      }
+    }
+  ],
+  "fit_mean_target_control_mse": {
+    "fit": 0.1510837759512166,
+    "reserved_object": 0.21168830222450197
+  },
+  "limits": "Only raw arm received. No paired arm conclusion. JSON/source validation, no independent NPZ or GPU recomputation."
+}
