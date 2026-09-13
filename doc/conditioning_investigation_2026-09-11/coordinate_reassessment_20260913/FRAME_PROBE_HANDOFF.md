@@ -1,5 +1,7 @@
 # Complete the existing full-data frame comparison
 
+**Completed:** see `FULL_FRAME_RETURNED_FINDINGS.md` and F22. Do not rerun this handoff just to repeat the comparison. Whole-folder ZIP export below is historical; future returns should contain only the reports and new arrays needed for the stated analysis.
+
 Status: first cluster run completed all32 target encodings and64 reference observations, then stopped at the nearest-query gate before generator inference. See `FRAME_REFERENCE_RETURNED_FINDINGS.md` for the verified return and correction. Continuation now reuses the independently audited reference arrays and performs the unchanged camera comparison. It does not repeat mesh queries, seeded sampling, or target encoding. No new fitting, target convention or production edit.
 
 ## Questions and exact operations
