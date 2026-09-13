@@ -1,0 +1,265 @@
+{
+  "rows": [
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "roundtrip_iou": 0.9999408529011652,
+      "common_precision_1v": 0.9681197137280416,
+      "common_recall_1v": 0.9994943536153716,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.697333352653578
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9157100340136054,
+      "common_recall_1v": 0.9990920440358643,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.802441407705106
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9937062937062937,
+      "common_recall_1v": 0.994619523443505,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7096001301718606
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9504632929436921,
+      "common_recall_1v": 0.9974522292993631,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7981320139653931
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9827543114221444,
+      "common_recall_1v": 0.9989044328333052,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7714812038525358
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.8942797244684038,
+      "common_recall_1v": 0.9995460220179321,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.81026995165867
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9962490622655664,
+      "common_recall_1v": 0.9992313604919293,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7296285872787351
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9911731843575419,
+      "common_recall_1v": 0.999235668789809,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7322857748508225
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9841569473471314,
+      "common_recall_1v": 0.9998314512051238,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7042450994824436
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.928453947368421,
+      "common_recall_1v": 0.9958007036658723,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7730188792556272
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9926075268817204,
+      "common_recall_1v": 0.9961568024596464,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.6858237239681053
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9973756411785757,
+      "common_recall_1v": 0.9998726114649682,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.733826974238533
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.952013769363167,
+      "common_recall_1v": 0.9992415304230575,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7688139527928293
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.8959193470955353,
+      "common_recall_1v": 0.999886505504483,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7970873811422658
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9948308270676691,
+      "common_recall_1v": 0.9992313604919293,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.5771924854519104
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9327992347243812,
+      "common_recall_1v": 0.9974522292993631,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.8188918301552266
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.938180169286578,
+      "common_recall_1v": 0.9987358840384292,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.8124832315271862
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.8899483158082339,
+      "common_recall_1v": 0.9987515605493134,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7863041515869873
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9915552427867699,
+      "common_recall_1v": 0.9938508839354343,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7096001308134587
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9285631180919139,
+      "common_recall_1v": 0.9975796178343949,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.810927997744722
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9760614056128568,
+      "common_recall_1v": 0.9998314512051238,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.6298092645274032
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.892313657070854,
+      "common_recall_1v": 0.9996595165134491,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.807718828125612
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.998959958398336,
+      "common_recall_1v": 0.9984627209838586,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.5946614308764346
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9191555715485187,
+      "common_recall_1v": 0.9980891719745223,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.832860233446025
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.960874965498206,
+      "common_recall_1v": 0.9995786280128097,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.7568425451435612
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9208829636105343,
+      "common_recall_1v": 0.9994325275224152,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.8024412541110522
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.9985563041385948,
+      "common_recall_1v": 1.0,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.5771923466442292
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "roundtrip_iou": 1.0,
+      "common_precision_1v": 0.955794842731652,
+      "common_recall_1v": 0.9937579617834394,
+      "common_precision_2v": 1.0,
+      "common_recall_2v": 1.0,
+      "voxelization_bound_in_original_voxels": 1.832120390532258
+    }
+  ],
+  "all_28_pass_revised_pretraining_gate": true,
+  "optimizer_updates_in_returned_run": 0,
+  "scope": "Returned target metrics analyzed, no local VAE rerun. The voxelization bound covers half-cell diagonals plus boundary insets; separate VAE gate retained.",
+  "original_regeneration_max_error": 0.0,
+  "failed_old_one_voxel_gate": 11,
+  "min_roundtrip_iou": 0.9999408529011652,
+  "max_bound_in_voxels": 1.832860233446025,
+  "returned_sha256": "5bbfe01e6e6a376ec06aa53426df5ccc93c3822adb457a753f1e0f325746cc4b",
+  "corrected_runner_sha256": "c399ec985b988c32975976603a68ec50e01f438fcd621e64b7adaf726f21def5"
+}

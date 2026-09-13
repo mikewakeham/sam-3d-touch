@@ -1,0 +1,3071 @@
+{
+  "settings": {
+    "arm": "camera_shared_orientation",
+    "seed": 29,
+    "steps": 1000,
+    "precision": "bf16",
+    "fit_objects": 4,
+    "fit_views": 4,
+    "reserved_views": 3,
+    "visual_dropout_fraction": 0.5,
+    "target_convention": "camera_axes_centered_unit_bbox",
+    "sampling_steps": 25,
+    "cfg": 0
+  },
+  "reference_sha256": {
+    "tiny_fit_returned_46083371/camera/results.json": "9d4973e046cefd524a6ab00ac80968da912e2f95e97ec0a6b665aa22589f6c9b",
+    "multiple_view_returned_46083371/camera.json": "ed621cc6f53670656788357f2f17fcfc63edfd94856042ab1ba3dac71ca00635",
+    "visual_dropout_returned_manual/camera/results.json": "defcab71cd475b930c0db423d805c2fadd5c96c34493697468ce23673fca7152",
+    "camera_dropout_sampling_reference.json": "fdf0e22c2cd64b8439b8e1ed3f12fe2a26b5727b872350f973cc091fabc8b74e"
+  },
+  "source_sha256": {
+    "train.py": "116d7f5268ed30062e9641f69f5920a0598be493bf95a083f48670e29c52b07f",
+    "dataloader.py": "d50137bf75a146ccb3ef71ff92d6a6f15523c5011e036f1b7bdbcd0541d4a0da",
+    "sam3d_objects/model/backbone/dit/embedder/touch.py": "a2db76b3e7cc2666890c600278915ed3e6d081fbbe3a980567ba591fa4d6418c",
+    "doc/conditioning_investigation_2026-09-11/fit_visual_dropout_gpu.py": "87b70d12bd0d52aab9d7339a4110889e0476d9d61cafbdcd26b81f3fbeea278e",
+    "doc/conditioning_investigation_2026-09-11/visual_dropout_protocol.py": "86010593632485b50ad1ef59c6733f7c8849422e935d173c565da2c11b4a9681",
+    "doc/conditioning_investigation_2026-09-11/probe_oracle_visual_streams_gpu.py": "2dcc89ee3ba215d46c4096131e5ca441ea1155337ba31a331d4af4bbd2ef1c7d",
+    "doc/conditioning_investigation_2026-09-11/probe_tiny_fit_views.py": "4b9cea7a01bf9b2d6572377640d77c99238164d7269c17d5d854697a010ec6eb",
+    "doc/conditioning_investigation_2026-09-11/fit_shared_orientation_gpu.py": "91868ece43956f9c2139b7d4ec2d8c5136c939aa360bb5f8d30ee84b9d33a930",
+    "doc/conditioning_investigation_2026-09-11/shared_orientation_protocol.py": "58e0ef6692d8f063ad308165da13c5e0fc381d50bd53a70b4d5970bb0ee26caa",
+    "data_generation/objaverse-dexonomy/generate_target_latents.py": "5c2082375c787f40d76a69027c6345bb4ebf0242c8f140ad6ac1fdf6abc3f67d",
+    "doc/conditioning_investigation_2026-09-11/pose_shape_geometry.py": "b7654cb415c08496ece2e743ed0a7b96becd2470d64e8d342a9e1f2a36243200",
+    "doc/conditioning_investigation_2026-09-11/rollout_gpu.py": "c94b366caf79e72c981db6d10de477578d6dca75ef35322eae2c48798a5f02e6",
+    "doc/conditioning_investigation_2026-09-11/bundle_alignment_geometry.py": "f863629319691cc613290abcd50cb33b4fa8590bcc60e5af84b5701830a2877e"
+  },
+  "encoder_checkpoint_sha256": "dcc47810ac568b11fe6e4821ea1c8d6b960dfbda3e5f68e94c19f44b3bf9e83b",
+  "dropout_schedule_sha256": "6f0b78f8a7cf47cf1c01c4e4602e7715294dba49525661ae92db5f188871229f",
+  "target_checks": [
+    {
+      "object_id": "479bbf9062de4b3196f08e52d1c12821",
+      "mesh_sha256": "88bd34059f7d07da68cd2af4489b44dfd28ae4d709ded393ee674faba1570d8c",
+      "transform_sha256": "99274d0b62c0ee830d2c3b1c038bdacbaf427a29b72adf49d31133fd06f8f660",
+      "original_regeneration_max_error": 0.0
+    },
+    {
+      "object_id": "e846574df9334973955c80286af47ba7",
+      "mesh_sha256": "0b730bd131edc1d12d1505a7e91b5aa44caa75fb5d60d86165f2755c8d5ea5b0",
+      "transform_sha256": "e46341dec3aede57f20c9926122b559529a41424ac803bd1c145c0e80bf4cb18",
+      "original_regeneration_max_error": 0.0
+    },
+    {
+      "object_id": "fe200ce00a5d4c298eee89de0fc15f01",
+      "mesh_sha256": "f87145ad5e391a94025cc39e51ae6d6d4302d3d58816b875a87d7cd170ddf22c",
+      "transform_sha256": "da3cf5db2eb01e6d92e82218eec092d78551573731b9d10e9d2df1c1283db6f0",
+      "original_regeneration_max_error": 0.0
+    },
+    {
+      "object_id": "146b6c1f10bd445da977424c64dbb051",
+      "mesh_sha256": "e6bd797b82cf8b7c88e13b61517919a0b5a947e96d42fd5a3dfd4743ddb84279",
+      "transform_sha256": "b235192eae1c6c88965e4187cefd69c4049bd28ec5940386e47c9479f639f867",
+      "original_regeneration_max_error": 0.0
+    }
+  ],
+  "target_frames": [
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "group": 0,
+      "output_from_object": [
+        [
+          0.2850689692685526,
+          -1.002283583291893,
+          7.763763386063343e-09,
+          0.016043577484010533
+        ],
+        [
+          0.8827969382185797,
+          0.25108462416871147,
+          0.4934195780804062,
+          0.01959034867855944
+        ],
+        [
+          -0.47459676403393664,
+          -0.13498456454687746,
+          0.9178090971430982,
+          -0.049802035898685995
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.2625339127563014,
+          0.8130106374670647,
+          -0.4370793109382169,
+          -0.04190658457276188
+        ],
+        [
+          -0.9230518622822627,
+          0.23123606114934586,
+          -0.12431386103938334,
+          0.004087975639125693
+        ],
+        [
+          -8.979042691457043e-09,
+          0.4544142327495264,
+          0.8452554277548665,
+          0.03319330803659973
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999998019077587,
+        "singular_values": [
+          1.0000000266704523,
+          0.9999999543087763,
+          0.9999998209285283
+        ],
+        "orthogonality_max_error": 3.4837157159017806e-07,
+        "max_singular_value_error": 1.7907147165097115e-07,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.5508044354280593e-07,
+        "unit_cube_displacement_bound_in_voxels": 9.92514838673958e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.015396391242817692,
+        -0.018800088268275644,
+        0.04779305801023537
+      ],
+      "rotated_max_extent": 0.9596607276751183,
+      "naive_rotation_outside_cube_fraction": 0.035311795642374154,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "d8f40b01aacae7595fd816d46a49afbd98d1fbf8d1fdfd9a06d3bb05f08136d6",
+      "target_sha256": "b7ef4d81bbe0b60fedcb481cfc91011820002dd58e4b0fa63eb22a7e3381c122",
+      "latent_mean_square": 0.3032258450984955
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "group": 0,
+      "output_from_object": [
+        [
+          -0.24498066366228763,
+          -0.8920294062281495,
+          0.0,
+          -0.0
+        ],
+        [
+          -0.25216229888438746,
+          0.06925207522950182,
+          0.8873275907675369,
+          0.030511353415613666
+        ],
+        [
+          -0.8556461633680124,
+          0.2349886303711966,
+          -0.26149888231634166,
+          -0.013939906491970957
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.28628200285171973,
+          -0.294674430112832,
+          -0.9999000753529268,
+          -0.004947597872017345
+        ],
+        [
+          -1.0424168065026658,
+          0.08092730682343051,
+          0.27460550330028055,
+          0.0013587733787230418
+        ],
+        [
+          -9.735939465315442e-10,
+          1.0369223767111402,
+          -0.30558511360399,
+          -0.03589773300936963
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.0000000798279451,
+        "singular_values": [
+          1.0000000981703363,
+          1.0000000646006617,
+          0.9999999170569543
+        ],
+        "orthogonality_max_error": 1.7381041250708051e-07,
+        "max_singular_value_error": 9.81703363045483e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 8.501800513780058e-08,
+        "unit_cube_displacement_bound_in_voxels": 5.441152328819237e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.0,
+        -0.032983188132726604,
+        0.015069228562703124
+      ],
+      "rotated_max_extent": 1.0810136044587264,
+      "naive_rotation_outside_cube_fraction": 0.07088331515812432,
+      "normalized_max_absolute_coordinate": 0.5000000000000001,
+      "camera_sha256": "3d2e94961d14ce05f4301c702fa03133624ada2be72fda87604435bf82656a8a",
+      "target_sha256": "0c72cb160c8c571199fe8951f9cdf2712c26b18540152e46350081a05aafd97f",
+      "latent_mean_square": 0.1992548704147339
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "group": 0,
+      "output_from_object": [
+        [
+          -0.9622904868205615,
+          -0.3584407349906496,
+          1.5301704873235424e-08,
+          0.008429717556331156
+        ],
+        [
+          -0.2258823712074251,
+          0.6064167967488712,
+          0.7973196653683619,
+          -0.06639064768929066
+        ],
+        [
+          -0.27831083839012505,
+          0.7471691785634017,
+          -0.6471198262184126,
+          -0.06214440019693298
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.9125711153603147,
+          -0.21421151137043412,
+          -0.2639311262118147,
+          -0.02293076576156566
+        ],
+        [
+          -0.33992089974014283,
+          0.5750845007462282,
+          0.7085645624113289,
+          0.08507898938877213
+        ],
+        [
+          1.973539561815809e-08,
+          0.7561239503490002,
+          -0.6136846513441464,
+          0.012062494062845439
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999999007312212,
+        "singular_values": [
+          1.0000000206418174,
+          0.9999999478851013,
+          0.9999999322043012
+        ],
+        "orthogonality_max_error": 1.2502377422229927e-07,
+        "max_singular_value_error": 6.779569883264003e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 5.871279745638527e-08,
+        "unit_cube_displacement_bound_in_voxels": 3.7576190372086574e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.008209056846405632,
+        0.06465277125942956,
+        0.060517675769487356
+      ],
+      "rotated_max_extent": 0.973823475288351,
+      "naive_rotation_outside_cube_fraction": 0.0,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "887396e2c19db83102fbfa5fc94d847da62e04faf660d7d498a6d9bd6a1d6c96",
+      "target_sha256": "8596284ecb0ac87aeecbec1c89e3e4a3f4e8f30516795bc886a210712ee248bb",
+      "latent_mean_square": 0.050867266952991486
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "group": 0,
+      "output_from_object": [
+        [
+          -0.730725652145129,
+          -0.5741982268034334,
+          6.924085390894808e-09,
+          -0.0009956718407858115
+        ],
+        [
+          0.14358736220709262,
+          -0.18272952158157818,
+          0.8998089369712575,
+          0.0347418572390057
+        ],
+        [
+          -0.555955255935018,
+          0.7075096369709236,
+          0.23239490593314566,
+          0.1089734643778103
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.8460767300431103,
+          0.16625380099473291,
+          -0.6437174235016555,
+          0.06352973712448436
+        ],
+        [
+          -0.6648401403111879,
+          -0.21157486085585583,
+          0.8191959048135337,
+          -0.08258207474676099
+        ],
+        [
+          5.694986711351835e-09,
+          1.0418512682379917,
+          0.26908041548296796,
+          -0.06551847309113061
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999999762211962,
+        "singular_values": [
+          1.0000000154843194,
+          0.9999999983481385,
+          0.9999999623887391
+        ],
+        "orthogonality_max_error": 5.186370799492579e-08,
+        "max_singular_value_error": 3.761126088352995e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 3.2572307393500886e-08,
+        "unit_cube_displacement_bound_in_voxels": 2.0846276731840567e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.0010713809664475438,
+        -0.03738356661320469,
+        -0.11725961386041753
+      ],
+      "rotated_max_extent": 1.0760382312328733,
+      "naive_rotation_outside_cube_fraction": 0.07718191377497371,
+      "normalized_max_absolute_coordinate": 0.5000000000000001,
+      "camera_sha256": "a28de960fc3851334a539caf655f6e94ae689af25b523d1c45ddc9d3576dab73",
+      "target_sha256": "ce5003e3610ce976d03a9ec748736bb94e13203f57a8bd92f5639399ba52a225",
+      "latent_mean_square": 0.19949214160442352
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "group": 1,
+      "output_from_object": [
+        [
+          -0.9201964138075654,
+          -0.26172175121378866,
+          0.0,
+          -0.03135172704243358
+        ],
+        [
+          0.034229422578222014,
+          -0.12034838901100346,
+          0.9484747214831143,
+          -0.024453226213891146
+        ],
+        [
+          -0.2594737218948562,
+          0.9122924720510297,
+          0.12512148106689097,
+          -0.0569382639264564
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -1.005393766652672,
+          0.03739858913224323,
+          -0.2834974147412978,
+          -0.046748165405135704
+        ],
+        [
+          -0.2859535407914852,
+          -0.13149097253610204,
+          0.9967582104231094,
+          0.044573166201711485
+        ],
+        [
+          1.370802243513892e-10,
+          1.0362902868276935,
+          0.1367060130650343,
+          0.03312444386358395
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999997341334551,
+        "singular_values": [
+          0.99999994657262,
+          0.9999999303072858,
+          0.9999998572535272
+        ],
+        "orthogonality_max_error": 2.716843228167676e-07,
+        "max_singular_value_error": 1.4274647275325236e-07,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.2362207170493974e-07,
+        "unit_cube_displacement_bound_in_voxels": 7.911812589116143e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.03277096819093469,
+        0.025560183569362765,
+        0.05951576554157542
+      ],
+      "rotated_max_extent": 1.045268356240159,
+      "naive_rotation_outside_cube_fraction": 0.035311795642374154,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "7af06a257ebe15b2684f27cacba9a707fc995582eaa578fe7fa811f052d34490",
+      "target_sha256": "62d245c33c714e5217d038875476473ad46fb247614fc2ef4267219086343687",
+      "latent_mean_square": 0.20545797049999237
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "group": 1,
+      "output_from_object": [
+        [
+          0.7973209645703719,
+          0.4537387218267135,
+          -1.3670136979132647e-08,
+          -2.337887212298068e-09
+        ],
+        [
+          -0.18237957203148206,
+          0.3204819531513889,
+          0.8400169580778449,
+          0.03130261087179503
+        ],
+        [
+          0.41547141525609627,
+          -0.7300766858812519,
+          0.36874243059676565,
+          0.01965681442539675
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.9473875859558331,
+          -0.21670589986501787,
+          0.4936688285599458,
+          -0.002920493878623704
+        ],
+        [
+          0.5391385049943438,
+          0.3808010258795726,
+          -0.8674871278157426,
+          0.005131968415650892
+        ],
+        [
+          -2.2172342075297508e-08,
+          0.9981196285709798,
+          0.43814481980971676,
+          -0.03985628175110652
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999998511267152,
+        "singular_values": [
+          0.9999999845438429,
+          0.9999999446304539,
+          0.9999999219524118
+        ],
+        "orthogonality_max_error": 1.2420894868192534e-07,
+        "max_singular_value_error": 7.804758817009372e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 6.759119405940699e-08,
+        "unit_cube_displacement_bound_in_voxels": 4.325836419802047e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        2.54841880931167e-09,
+        -0.03412147596625628,
+        -0.0214269513727266
+      ],
+      "rotated_max_extent": 1.0900520760394836,
+      "naive_rotation_outside_cube_fraction": 0.03489640130861505,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "9c6d520d128a2729e0347a98181e526b9a8e5e9f9f26cf3b53128fd90f8638b0",
+      "target_sha256": "f1ddb81cc3dbeb76772cf046de1eb9eb573334321258d5919317865155a8a091",
+      "latent_mean_square": 0.2119092345237732
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "group": 1,
+      "output_from_object": [
+        [
+          1.0024071554999177,
+          -0.036236166339720335,
+          9.34174121173172e-10,
+          0.0015533314911226487
+        ],
+        [
+          0.013025391237527101,
+          0.3603236464713225,
+          0.9360184269915328,
+          -0.012608320502678214
+        ],
+        [
+          -0.033814181384085845,
+          -0.935407402309516,
+          0.36055902848434596,
+          0.0036683010468869315
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.9962967033386336,
+          0.012945992616513689,
+          -0.033608057538888784,
+          -0.0012610673470095266
+        ],
+        [
+          -0.036015277116786676,
+          0.35812719207802585,
+          -0.9297053310999739,
+          0.007981765121921362
+        ],
+        [
+          1.7411533042108735e-09,
+          0.9303125371473044,
+          0.35836107866173716,
+          0.010415102313289978
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999999399934014,
+        "singular_values": [
+          1.0000000226717267,
+          0.999999966617897,
+          0.9999999507037781
+        ],
+        "orthogonality_max_error": 9.857453819872575e-08,
+        "max_singular_value_error": 4.92962218823223e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 4.269178046068545e-08,
+        "unit_cube_displacement_bound_in_voxels": 2.7322739494838688e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.0015485897953075867,
+        0.012569832375125156,
+        -0.0036571032003089032
+      ],
+      "rotated_max_extent": 0.9969474025073457,
+      "naive_rotation_outside_cube_fraction": 6.90846286701209e-05,
+      "normalized_max_absolute_coordinate": 0.49999999999999994,
+      "camera_sha256": "b99c2793146879a059a8a5f26dad790ef57d4f7ab7cc0375c20de058cb91ab9a",
+      "target_sha256": "f9968afac7f37b70ba5bd086df49668679259dd67a62f7f191af6450363b55a0",
+      "latent_mean_square": 0.05046505108475685
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "group": 1,
+      "output_from_object": [
+        [
+          0.7862768173953917,
+          0.6178498174324806,
+          0.0,
+          0.0010713679662602213
+        ],
+        [
+          -4.0669392589915255e-05,
+          5.1755943091875815e-05,
+          0.9999848390867618,
+          1.1805228705515575e-05
+        ],
+        [
+          0.6178497578287395,
+          -0.7862766981879095,
+          6.582306990739427e-05,
+          -0.003036035910199108
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.7863006804227181,
+          -4.067062859146914e-05,
+          0.6178686597999136,
+          0.0010334545582116898
+        ],
+        [
+          0.6178686028714614,
+          5.1757516969510175e-05,
+          -0.7863007962269449,
+          -0.003049202693046923
+        ],
+        [
+          -1.1826610889458416e-12,
+          1.0000151568102205,
+          6.58250803253576e-05,
+          -1.1605560326200082e-05
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999998258425543,
+        "singular_values": [
+          1.0000000021664044,
+          0.9999999774173564,
+          0.9999998462587908
+        ],
+        "orthogonality_max_error": 2.3271712523698085e-07,
+        "max_singular_value_error": 1.5374120920785828e-07,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.331437927825433e-07,
+        "unit_cube_displacement_bound_in_voxels": 8.521202738082771e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.001071384209423265,
+        -1.1805407686277247e-05,
+        0.0030360819399739836
+      ],
+      "rotated_max_extent": 1.000015161143095,
+      "naive_rotation_outside_cube_fraction": 0.0544689800210305,
+      "normalized_max_absolute_coordinate": 0.5000000000000001,
+      "camera_sha256": "7a7c1ea63100420ec4231ed61256919863ceceeb91564049f47439b3f8371901",
+      "target_sha256": "8ee794fce897b54a52a1b4101ae8abc3903b9dd69e21c5a69fc655ddf603fdd0",
+      "latent_mean_square": 0.19359183311462402
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "group": 2,
+      "output_from_object": [
+        [
+          -0.11919679042065094,
+          -1.026544178447187,
+          3.849869059924484e-09,
+          -0.006303882086801212
+        ],
+        [
+          -0.9817918890776993,
+          0.11400039947752347,
+          0.30181054137101715,
+          -0.05229876415292302
+        ],
+        [
+          -0.2997963825158285,
+          0.03481074288221685,
+          -0.9883882231396772,
+          -0.005855597460382381
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.11160739891753074,
+          -0.9192798991425796,
+          -0.2807078817471718,
+          -0.05042447487803938
+        ],
+        [
+          -0.9611829446584271,
+          0.10674184011224444,
+          0.032594286431753536,
+          -0.00028585860483905823
+        ],
+        [
+          2.132967692625891e-09,
+          0.2825939691451697,
+          -0.9254563538590915,
+          0.00936021548145558
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.0000001975881798,
+        "singular_values": [
+          1.000000143199919,
+          1.0000000346799423,
+          1.0000000197083099
+        ],
+        "orthogonality_max_error": 2.586982414953809e-07,
+        "max_singular_value_error": 1.4319991903377627e-07,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.24014767703125e-07,
+        "unit_cube_displacement_bound_in_voxels": 7.936945133e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.0060998941040750765,
+        0.05060642294924449,
+        0.005666115566978852
+      ],
+      "rotated_max_extent": 0.9676408949410338,
+      "naive_rotation_outside_cube_fraction": 0.0,
+      "normalized_max_absolute_coordinate": 0.5000000000000001,
+      "camera_sha256": "485dfe1356def4ec63442da72842afe6fff780353760eeb2603a6acdf8bd1530",
+      "target_sha256": "30bae570fd86a8e5b3961a0cc5be0e19348bc57890c101fc40f036d65e573b1d",
+      "latent_mean_square": 0.31390729546546936
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "group": 2,
+      "output_from_object": [
+        [
+          0.11876430826176972,
+          -0.9476568875372201,
+          0.0,
+          -0.0
+        ],
+        [
+          -0.8996585925325623,
+          -0.11274895907495998,
+          0.30010116186719105,
+          0.01599770560204437
+        ],
+        [
+          -0.2977720381992699,
+          -0.037318030953144295,
+          -0.9066960874139145,
+          -0.03446303900187973
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.13020138527902997,
+          -0.986296145529176,
+          -0.32644744289418837,
+          0.004528104416080545
+        ],
+        [
+          -1.038916864838323,
+          -0.12360674101091433,
+          -0.04091175324004502,
+          0.0005674809055738005
+        ],
+        [
+          -1.666765755867388e-10,
+          0.3290012804182209,
+          -0.9940114951430938,
+          -0.03951992255225958
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999998622801535,
+        "singular_values": [
+          1.000000074365286,
+          0.9999999247565005,
+          0.9999998631583726
+        ],
+        "orthogonality_max_error": 1.8898193854255396e-07,
+        "max_singular_value_error": 1.36841627362827e-07,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.1850832559141195e-07,
+        "unit_cube_displacement_bound_in_voxels": 7.584532837850365e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.0,
+        -0.016750296697791517,
+        0.03608430750940164
+      ],
+      "rotated_max_extent": 1.0470436895432662,
+      "naive_rotation_outside_cube_fraction": 0.04798255179934569,
+      "normalized_max_absolute_coordinate": 0.49999999999999994,
+      "camera_sha256": "2c214ee6dc80f033d799fbfb900ca5f55e18d3831ea581718608ad7797154fb0",
+      "target_sha256": "34c72f37ea283a18a79d57c155aaea96add6df15ddb550b3d0ef2643796b7f14",
+      "latent_mean_square": 0.2080911099910736
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "group": 2,
+      "output_from_object": [
+        [
+          -0.43937187076552686,
+          -0.9609874024296148,
+          0.0,
+          0.003273218728790201
+        ],
+        [
+          -0.9259246841504023,
+          0.42334087460767655,
+          0.2828256650188917,
+          -0.025851568728301282
+        ],
+        [
+          -0.257216156214595,
+          0.11760148247518849,
+          -1.0181128632523626,
+          -0.0459027087540277
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.39351041343644705,
+          -0.8292771288007459,
+          -0.23036822724033468,
+          -0.030724594675961434
+        ],
+        [
+          -0.8606799541717108,
+          0.3791527782185836,
+          0.10532637442657558,
+          0.017453653739553997
+        ],
+        [
+          -2.5269609639036645e-09,
+          0.2533043374838205,
+          -0.9118429457155907,
+          -0.03530774666868634
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999997314718667,
+        "singular_values": [
+          0.9999999793155177,
+          0.9999999684371359,
+          0.9999997837192016
+        ],
+        "orthogonality_max_error": 2.944799177839741e-07,
+        "max_singular_value_error": 2.1628079838187375e-07,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.8730466574948297e-07,
+        "unit_cube_displacement_bound_in_voxels": 1.198749860796691e-05,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.0030976832792503073,
+        0.02446520652215839,
+        0.04344104844841923
+      ],
+      "rotated_max_extent": 0.9463722213257736,
+      "naive_rotation_outside_cube_fraction": 0.0,
+      "normalized_max_absolute_coordinate": 0.5000000000000001,
+      "camera_sha256": "a288e67d69dcb9f41b63568ebfc060509e5eaa36dfc35c2bd5c46996d948b370",
+      "target_sha256": "907058ea523d683ed929035f2e09281604f59782bb4b9db63cb0083c4bafbd50",
+      "latent_mean_square": 0.05023299157619476
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "group": 2,
+      "output_from_object": [
+        [
+          -0.2694444866091599,
+          0.9611566069028604,
+          0.0,
+          0.00191616299620938
+        ],
+        [
+          0.961135425642973,
+          0.26943853681705665,
+          0.006612505513181262,
+          0.002364103237443723
+        ],
+        [
+          0.006365135469250073,
+          0.0017843613610606312,
+          -0.9981876369698869,
+          -0.0016769346266742157
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.27041191351291977,
+          0.9645865747757671,
+          0.006389914889156066,
+          -0.0017515134722753875
+        ],
+        [
+          0.9646076343146984,
+          0.2704060218324147,
+          0.0017913078102150413,
+          -0.0024846093002792026
+        ],
+        [
+          1.2948104886132442e-10,
+          0.006634249946759588,
+          -1.0017717049883856,
+          -0.001695589712142743
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.0000001577742128,
+        "singular_values": [
+          1.0000010260489762,
+          1.0000001018400744,
+          0.9999990298861519
+        ],
+        "orthogonality_max_error": 1.9206396920656843e-06,
+        "max_singular_value_error": 1.0260489762270453e-06,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 8.885844789396367e-07,
+        "unit_cube_displacement_bound_in_voxels": 5.686940665213675e-05,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.0019196000925669476,
+        -0.0023683438216959007,
+        0.0016799426097678372
+      ],
+      "rotated_max_extent": 1.0017937390317875,
+      "naive_rotation_outside_cube_fraction": 0.06813880126182965,
+      "normalized_max_absolute_coordinate": 0.5000000000000001,
+      "camera_sha256": "1942e1862d9aa727f97848bf4ab5a748a9ca1063631f638a2add1afd920b757f",
+      "target_sha256": "7d3cd77a95c3504b2251d659abe35a56eb9c3808a50ac80f5d13536006df2809",
+      "latent_mean_square": 0.1744837462902069
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "group": 3,
+      "output_from_object": [
+        [
+          0.595698275130292,
+          -0.7522101058560882,
+          1.4297945446982672e-08,
+          0.03445479455964352
+        ],
+        [
+          -0.2806281487468731,
+          -0.2222380275551399,
+          0.8902440725711489,
+          -0.059944977773879214
+        ],
+        [
+          -0.697902448431941,
+          -0.5526903983764588,
+          -0.35796913858061874,
+          -0.0029077843720465525
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.6470223784241126,
+          -0.30480650042942625,
+          -0.7580323044419367,
+          -0.04276883650603329
+        ],
+        [
+          -0.8170189158820413,
+          -0.24138560664819303,
+          -0.6003090603181717,
+          0.011934794768606994
+        ],
+        [
+          2.236925183310696e-08,
+          0.9669456742021552,
+          -0.3888110176064029,
+          0.05683295757719345
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999999299672602,
+        "singular_values": [
+          1.0000000035387464,
+          0.9999999672302076,
+          0.9999999591983043
+        ],
+        "orthogonality_max_error": 6.668912155838314e-08,
+        "max_singular_value_error": 4.080169568876357e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 3.533530498395126e-08,
+        "unit_cube_displacement_bound_in_voxels": 2.2614595189728806e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.035908407228011974,
+        0.06247399529410666,
+        0.003030460831277032
+      ],
+      "rotated_max_extent": 1.0421889808645397,
+      "naive_rotation_outside_cube_fraction": 0.035311795642374154,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "20b1b362ddc8dbc36914fdf3c2c66231d1bc57e5ef64b1ed1afd201a5a54c11e",
+      "target_sha256": "dc0597598f7578e1287497402ea5ac764f5f0af1c1a069079f2e361c08c6a1eb",
+      "latent_mean_square": 0.29056912660598755
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "group": 3,
+      "output_from_object": [
+        [
+          0.7345780686198757,
+          -0.5709623291393204,
+          0.0,
+          -0.0
+        ],
+        [
+          -0.20898201455189894,
+          -0.2688681694603453,
+          0.8658171087823013,
+          0.046152391089309394
+        ],
+        [
+          -0.5313421738543322,
+          -0.6836043108664045,
+          -0.34053426366019623,
+          -0.018153101652620983
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.8486316883940299,
+          -0.24142943382251741,
+          -0.6138405343426626,
+          -5.639681741695648e-07
+        ],
+        [
+          -0.6596122969051288,
+          -0.3106137798489681,
+          -0.7897435104654658,
+          -7.255796591152487e-07
+        ],
+        [
+          1.0430318113407898e-08,
+          1.0002475388462757,
+          -0.39340701405361667,
+          -0.05330537311592191
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999999036697832,
+        "singular_values": [
+          0.9999999926844116,
+          0.9999999790117977,
+          0.9999999319735717
+        ],
+        "orthogonality_max_error": 1.2334137622360686e-07,
+        "max_singular_value_error": 6.802642826819749e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 5.891261500897888e-08,
+        "unit_cube_displacement_bound_in_voxels": 3.7704073605746483e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.0,
+        -0.049606072121405526,
+        0.019511536640963167
+      ],
+      "rotated_max_extent": 1.0748321148824753,
+      "naive_rotation_outside_cube_fraction": 0.03380588876772083,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "8d3717a5afa639e40eb51fc416e9f0bce51ecfbae3cdf7e306ef339a1b694d28",
+      "target_sha256": "28aef233dccc7c42aba73f6349cf9a07296ae06ad22d8fe9543a8944fd7e6b51",
+      "latent_mean_square": 0.21079856157302856
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "group": 3,
+      "output_from_object": [
+        [
+          -0.8918792483469348,
+          -0.8296474811580326,
+          0.0,
+          0.009591872134843304
+        ],
+        [
+          -0.24627849985736217,
+          0.2647518313892235,
+          1.1631923311605077,
+          -0.051221158797716784
+        ],
+        [
+          -0.7922509617943734,
+          0.8516776614965019,
+          -0.3615890267845364,
+          -0.054554649508596176
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.6010925904071996,
+          -0.16598236388669196,
+          -0.5339471014864041,
+          -0.03186550272759467
+        ],
+        [
+          -0.5591507270451783,
+          0.17843268292152156,
+          0.5739984154065166,
+          0.04581711343554003
+        ],
+        [
+          -2.0916869400727963e-09,
+          0.7839475110072847,
+          -0.2436972934371337,
+          0.0268598795407858
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.0000000341123678,
+        "singular_values": [
+          1.0000001236971574,
+          0.999999961135755,
+          0.9999999492794647
+        ],
+        "orthogonality_max_error": 1.6280208647856398e-07,
+        "max_singular_value_error": 1.2369715740589982e-07,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.0712488068943164e-07,
+        "unit_cube_displacement_bound_in_voxels": 6.855992364123625e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.00787446554424065,
+        0.04205010705089937,
+        0.0447867425456025
+      ],
+      "rotated_max_extent": 0.8209518885928403,
+      "naive_rotation_outside_cube_fraction": 0.0,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "cff96f7a3b1b25ddbd84df39adc60ee5ebe01b4923e5db7035ff6bb872b6a2b0",
+      "target_sha256": "49b2f82d999fb8df271545af6d5895560ed8debdd90e960f17c52dd58efa143e",
+      "latent_mean_square": 0.07130767405033112
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "group": 3,
+      "output_from_object": [
+        [
+          -0.7924745088429416,
+          0.4454442251200326,
+          0.0,
+          0.0010174514262922868
+        ],
+        [
+          0.18559198671798957,
+          0.33018031388728236,
+          0.8264218063119663,
+          0.04281915572504984
+        ],
+        [
+          0.404939724395667,
+          0.720414332730415,
+          -0.3787656660412581,
+          -0.1255643579549681
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.9589056105686059,
+          0.22456898074127377,
+          0.4899829085501769,
+          0.05288417504478719
+        ],
+        [
+          0.5389939608560557,
+          0.39952295411697203,
+          0.8717117495239805,
+          0.09180029038847808
+        ],
+        [
+          2.6156768514534515e-09,
+          0.9999823044377852,
+          -0.45831191485981726,
+          -0.100366039351162
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.0000000239093967,
+        "singular_values": [
+          1.0000000167383456,
+          1.0000000088266843,
+          0.9999999983443667
+        ],
+        "orthogonality_max_error": 3.2948727302084535e-08,
+        "max_singular_value_error": 1.6738345598454885e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.4495832505585372e-08,
+        "unit_cube_displacement_bound_in_voxels": 9.277332803574638e-07,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.0011192032564985854,
+        -0.04710135274234578,
+        0.13812161906880382
+      ],
+      "rotated_max_extent": 1.1000065728710946,
+      "naive_rotation_outside_cube_fraction": 0.0729758149316509,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "121b0047583cf49cd9113bf0acba2464f04013d90d2576db546a9d17ac500522",
+      "target_sha256": "d5dbd25bb804ab9bc5345f1e1f1f4b4bd7941bd757031a57a2609a1d76edd337",
+      "latent_mean_square": 0.19637848436832428
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "group": 4,
+      "output_from_object": [
+        [
+          -0.717499288826831,
+          -0.5682096589753393,
+          0.0,
+          -0.0415880359014951
+        ],
+        [
+          -0.35403528529555595,
+          0.4470534091044175,
+          0.7158700190592003,
+          -0.07421740941967539
+        ],
+        [
+          -0.44443368122719384,
+          0.5612028061161006,
+          -0.5702610572322864,
+          0.024965835269283462
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.8565443180309431,
+          -0.4226440855546224,
+          -0.5305609172221694,
+          -0.053743648526215604
+        ],
+        [
+          -0.678323669575042,
+          0.5336882716129067,
+          0.6699588343371322,
+          -0.005327270061608748
+        ],
+        [
+          -4.250256723133803e-09,
+          0.854599163368515,
+          -0.6807725614573575,
+          0.08042219144586585
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.0000000662347768,
+        "singular_values": [
+          1.0000000794995492,
+          1.0000000216934442,
+          0.9999999650417853
+        ],
+        "orthogonality_max_error": 1.0034112651879923e-07,
+        "max_singular_value_error": 7.949954916597335e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 6.88486291671429e-08,
+        "unit_cube_displacement_bound_in_voxels": 4.406312266697145e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.045439398742291276,
+        0.08109049603179927,
+        -0.027277858142239098
+      ],
+      "rotated_max_extent": 1.0926074712909852,
+      "naive_rotation_outside_cube_fraction": 0.11570247933884298,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "f300c3889860ffccb2ca65a09c46293ac278af82b0390ab38e36e0dd54410aad",
+      "target_sha256": "6a4c0d209d6390c50b249c5540317e6a438fa47e8eb3e37b15161bdb5eee3b17",
+      "latent_mean_square": 0.24591752886772156
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "group": 4,
+      "output_from_object": [
+        [
+          -0.5776533382467776,
+          -0.7431864062680151,
+          0.0,
+          -0.0
+        ],
+        [
+          -0.45781559075529216,
+          0.3558443592897125,
+          0.7414775690893823,
+          0.03952647526892509
+        ],
+        [
+          -0.5854323120354249,
+          0.4550364440731864,
+          -0.5798451247468915,
+          -0.030910218917697255
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.6519719797338278,
+          -0.5167164183768092,
+          -0.660751668773365,
+          3.7868439781524263e-19
+        ],
+        [
+          -0.8388019535957207,
+          0.401625973625035,
+          0.5135796403162631,
+          3.504318502901732e-18
+        ],
+        [
+          9.023184137096117e-09,
+          0.8368733678231516,
+          -0.6544457362756838,
+          -0.0533077154545188
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999997986278081,
+        "singular_values": [
+          1.0000000030682281,
+          0.9999999273889247,
+          0.9999998681706461
+        ],
+        "orthogonality_max_error": 2.0419664892301626e-07,
+        "max_singular_value_error": 1.3182935387767714e-07,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.1416756942255699e-07,
+        "unit_cube_displacement_bound_in_voxels": 7.306724443043647e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.0,
+        -0.04199222535719288,
+        0.032838467629633605
+      ],
+      "rotated_max_extent": 1.0623822405486865,
+      "naive_rotation_outside_cube_fraction": 0.07088331515812432,
+      "normalized_max_absolute_coordinate": 0.49999999999999994,
+      "camera_sha256": "ae94437958e6d32ff8f58bcb8aef53367822bf3fc88cf136f87b3a7fecc84595",
+      "target_sha256": "cfac27a3d8c8027b5f1fe4ce768206733580e5368b97db5aba9beb04d5e407e6",
+      "latent_mean_square": 0.23870697617530823
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "group": 4,
+      "output_from_object": [
+        [
+          0.9622904987648836,
+          0.35844067823292725,
+          0.0,
+          -0.008429716796090139
+        ],
+        [
+          0.19601227923748674,
+          -0.526225883473757,
+          0.8597372962766652,
+          0.04507116666381639
+        ],
+        [
+          0.3000981771960688,
+          -0.8056608193097367,
+          -0.561546568654336,
+          0.06985940885478974
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.9125711352203936,
+          0.18588478667195155,
+          0.2845927530022568,
+          -0.020566809463259932
+        ],
+        [
+          0.33992086983820147,
+          -0.49903700930706557,
+          -0.764034103443607,
+          0.07873258769517756
+        ],
+        [
+          1.3795941517213416e-08,
+          0.8153166219679447,
+          -0.5325326669459761,
+          0.0004551460725093836
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999998236748537,
+        "singular_values": [
+          0.9999999771830232,
+          0.9999999274605771,
+          0.999999919031244
+        ],
+        "orthogonality_max_error": 1.3532637388458113e-07,
+        "max_singular_value_error": 8.09687560332506e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 7.012099963761956e-08,
+        "unit_cube_displacement_bound_in_voxels": 4.4877439768076515e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.0082090560041711,
+        -0.043891359611061595,
+        -0.06803073146813736
+      ],
+      "rotated_max_extent": 0.9738234632008771,
+      "naive_rotation_outside_cube_fraction": 0.0,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "b326d8ea57269688657af4d84832f226724b4b5d66e52cf4d4a28a55c2de6a1c",
+      "target_sha256": "ea387498632e839da2e3aa420a2bab0e7485aa3fd0d88a7bf27b2e9bff7ae8a0",
+      "latent_mean_square": 0.05262928828597069
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "group": 4,
+      "output_from_object": [
+        [
+          0.4491990667506476,
+          0.7991545273396113,
+          0.0,
+          0.002491663019705198
+        ],
+        [
+          0.5327520900203903,
+          -0.29945615421485466,
+          0.6833218522874067,
+          0.09047411098053731
+        ],
+        [
+          0.595670207246608,
+          -0.33482198491581006,
+          -0.6111455534817101,
+          -0.1292640065449119
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.5344886147994365,
+          0.6339060921662019,
+          0.7087704109234662,
+          0.03293464738661795
+        ],
+        [
+          0.950890205894202,
+          -0.35631409854680035,
+          -0.3983947987971475,
+          -0.02163020454514646
+        ],
+        [
+          -3.6422865973424267e-09,
+          0.8130645215261753,
+          -0.7271839622978782,
+          -0.1675600022076492
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.0000000834235352,
+        "singular_values": [
+          1.0000000960856794,
+          1.000000042650674,
+          0.9999999446871858
+        ],
+        "orthogonality_max_error": 1.3047802571719558e-07,
+        "max_singular_value_error": 9.608567941299384e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 8.321263931154011e-08,
+        "unit_cube_displacement_bound_in_voxels": 5.325608915938567e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.002717935547357525,
+        -0.09869023234878135,
+        0.14100271007908596
+      ],
+      "rotated_max_extent": 1.0908118497015293,
+      "naive_rotation_outside_cube_fraction": 0.1320715036803365,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "398e62a530f4cdcdc6069408f65898b81bc5b55fa470a68464d183b82a91faf2",
+      "target_sha256": "b67d9e4a6afe3569f39daafd50f9ec8f3df712b6b0e87d2728bc7ae35955bb74",
+      "latent_mean_square": 0.1991972029209137
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "group": 5,
+      "output_from_object": [
+        [
+          -0.3102747593736068,
+          1.0909055366466287,
+          0.0,
+          -0.017462154282379766
+        ],
+        [
+          -0.6881274171711921,
+          -0.19571682115891134,
+          0.8800686723772109,
+          -0.0721881862206518
+        ],
+        [
+          0.846496015434985,
+          0.24075994829446665,
+          0.7154190466502999,
+          0.006870466243445815
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.24120643300964784,
+          -0.5349476735902683,
+          0.6580628389643499,
+          -0.047350084747726395
+        ],
+        [
+          0.8480658507632522,
+          -0.15214952635670465,
+          0.1871658747282674,
+          0.0025397415613782333
+        ],
+        [
+          -8.302981270491623e-09,
+          0.684162084516456,
+          0.5561640893568047,
+          0.04556731321545259
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.000000005261509,
+        "singular_values": [
+          1.000000013589781,
+          0.9999999993270692,
+          0.9999999923446585
+        ],
+        "orthogonality_max_error": 2.4296021416958524e-08,
+        "max_singular_value_error": 1.3589781078238161e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.1769095645623327e-08,
+        "unit_cube_displacement_bound_in_voxels": 7.532221213198929e-07,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.015396394889835185,
+        0.0636483794302295,
+        -0.006057695382299555
+      ],
+      "rotated_max_extent": 0.8817007707560436,
+      "naive_rotation_outside_cube_fraction": 0.01652892561983471,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "f1b0c5275bb61f3d9d75020344c492047723eaf7c1e108e58faf0c239510202f",
+      "target_sha256": "f316b35abe56711a3e431409c899f9ce4d7c8375c1505904f5837dc72d54390c",
+      "latent_mean_square": 0.4150717258453369
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "group": 5,
+      "output_from_object": [
+        [
+          0.4549681638732833,
+          -0.7994813707056649,
+          0.0,
+          -0.0
+        ],
+        [
+          0.7210909008181983,
+          0.41035777145379876,
+          0.3972413186385904,
+          0.021176024874440307
+        ],
+        [
+          -0.3452509545306044,
+          -0.19647511597345682,
+          0.8296778985613591,
+          0.04423146399836298
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.5376816038075489,
+          0.8521858021233325,
+          -0.4080178733789929,
+          1.320133642992982e-06
+        ],
+        [
+          -0.9448275039861224,
+          0.48496115591625816,
+          -0.23219445690757082,
+          7.512605066567693e-07
+        ],
+        [
+          -7.80119927552675e-09,
+          0.46946021057950615,
+          0.980514255365431,
+          -0.053310882082869354
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999995848667746,
+        "singular_values": [
+          0.9999999846075701,
+          0.9999998596240972,
+          0.9999997406350645
+        ],
+        "orthogonality_max_error": 5.177207418327612e-07,
+        "max_singular_value_error": 2.593649355286942e-07,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 2.246166230187623e-07,
+        "unit_cube_displacement_bound_in_voxels": 1.4375463873200787e-05,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.0,
+        -0.023020593701830128,
+        -0.048084310798692964
+      ],
+      "rotated_max_extent": 1.0871064724530162,
+      "naive_rotation_outside_cube_fraction": 0.07088331515812432,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "45c454cb4f9ee5f6c86b81a69f7b2ec800b0b996a4f1d7ec564586545279da7c",
+      "target_sha256": "bd6a6b61f6adbdf39f7649c32ee61bfb67dfffef451831348d28307ae8ab67b9",
+      "latent_mean_square": 0.21134327352046967
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "group": 5,
+      "output_from_object": [
+        [
+          -0.04294930953083597,
+          -1.1881139631015136,
+          2.2144800368676574e-09,
+          -0.003623373720616296
+        ],
+        [
+          1.0211344951731811,
+          -0.0369131411322158,
+          0.6077674137161451,
+          0.011697460389227754
+        ],
+        [
+          -0.6073705788462319,
+          0.021955932198163247,
+          1.021801532071483,
+          -0.03558961995411003
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.03038595054722169,
+          0.7224363975651183,
+          -0.4297050719479202,
+          -0.0238538110019231
+        ],
+        [
+          -0.8405716752941058,
+          -0.026115460693832967,
+          0.0155334743266125,
+          -0.002187390303691467
+        ],
+        [
+          2.2879148178726236e-09,
+          0.42998565617955375,
+          0.7229082230002346,
+          0.020698288745472908
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999998718188049,
+        "singular_values": [
+          1.0000000181146866,
+          0.9999999507463394,
+          0.9999999029577773
+        ],
+        "orthogonality_max_error": 1.7776735006247435e-07,
+        "max_singular_value_error": 9.704222270201512e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 8.404103009965206e-08,
+        "unit_cube_displacement_bound_in_voxels": 5.378625926377732e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.0030476945231589017,
+        -0.00983897569281203,
+        0.029935164898474503
+      ],
+      "rotated_max_extent": 0.8411206676855079,
+      "naive_rotation_outside_cube_fraction": 0.0,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "e42047baf0d5c2d23492b7d580d86d9f2d6d093a9f3d13eb803b281fb4f233ce",
+      "target_sha256": "881917899947a14a3031e710d11ea864d8f6648c5d40ef2ad6dedffa5d3ab950",
+      "latent_mean_square": 0.0652264729142189
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "group": 5,
+      "output_from_object": [
+        [
+          -0.5535709565552324,
+          0.7044754204695325,
+          0.0,
+          0.0027466449487761496
+        ],
+        [
+          -0.5284028655653698,
+          -0.4152145980626254,
+          0.5925483130999054,
+          0.1268379600155444
+        ],
+        [
+          0.4659140791779194,
+          0.3661114329491582,
+          0.6720213741272933,
+          0.07570501933557704
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.6896134753528369,
+          -0.6582603392594194,
+          0.5804146543929083,
+          0.041446219326023354
+        ],
+        [
+          0.8776033781043612,
+          -0.5172555281252258,
+          0.45608503305453885,
+          0.028669244862606302
+        ],
+        [
+          -4.406270106350563e-09,
+          0.7381698581721495,
+          0.8371738123500959,
+          -0.1570062185946195
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999997088280961,
+        "singular_values": [
+          0.9999999760724646,
+          0.9999998767173341,
+          0.9999998560382728
+        ],
+        "orthogonality_max_error": 2.8629982296024536e-07,
+        "max_singular_value_error": 1.4396172720587685e-07,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 1.246745129329747e-07,
+        "unit_cube_displacement_bound_in_voxels": 7.979168827710381e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.0030656229137938362,
+        -0.14156811812745493,
+        -0.08449692125943034
+      ],
+      "rotated_max_extent": 1.1161336725228417,
+      "naive_rotation_outside_cube_fraction": 0.11419558359621451,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "cd2078cf123e72d2b381617b2b13a03937ab9e0b4b2aee66f37828af843b4157",
+      "target_sha256": "f5a4d8a591c16c654edd4838142ca682a343f9ba1e7eda56c59d5195bdf259c3",
+      "latent_mean_square": 0.192292720079422
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "group": 6,
+      "output_from_object": [
+        [
+          -0.47326411788408873,
+          -0.8494776228409477,
+          0.0,
+          -0.027110913972014237
+        ],
+        [
+          -0.2461260688208804,
+          0.13712267646706902,
+          0.9307043353457712,
+          -0.039183576794068926
+        ],
+        [
+          -0.8130400857094269,
+          0.4529639023488939,
+          -0.28174575491687764,
+          -0.01688672780330834
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          -0.5004955012547627,
+          -0.26028803595094974,
+          -0.8598220177963474,
+          -0.038287487096977685
+        ],
+        [
+          -0.8983561397903891,
+          0.14501263413877213,
+          0.4790272254951392,
+          -0.010583939968890812
+        ],
+        [
+          8.72705913770549e-09,
+          0.9842565180437339,
+          -0.29795725436619425,
+          0.033535168044925054
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.0000000360223849,
+        "singular_values": [
+          1.0000000408081435,
+          1.00000000029572,
+          0.9999999949185217
+        ],
+        "orthogonality_max_error": 7.884828878701455e-08,
+        "max_singular_value_error": 4.080814353102369e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 3.534088897914811e-08,
+        "unit_cube_displacement_bound_in_voxels": 2.2618168946654792e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.027879980017371242,
+        0.04029511285216952,
+        0.017365760306016165
+      ],
+      "rotated_max_extent": 1.0283673964718005,
+      "naive_rotation_outside_cube_fraction": 0.037565740045078885,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "1d503af30d550e88f774a98a88eaa0deb8d96c77f8a6bd4e93c6ec92c7639727",
+      "target_sha256": "c6c3d336a9ac47ff7ac4fa0a7acb0abd76d5fca00a5ef5c908083c23ab37fa9a",
+      "latent_mean_square": 0.3023437559604645
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "group": 6,
+      "output_from_object": [
+        [
+          0.24498067697121267,
+          0.8920293995511823,
+          3.4461088051791232e-09,
+          1.837041759762749e-10
+        ],
+        [
+          0.17782650631347452,
+          -0.04883702372615509,
+          0.9064903197147907,
+          0.04098207452069607
+        ],
+        [
+          0.8741247966429937,
+          -0.2400634932392787,
+          -0.18441075207213153,
+          -0.009830514827553823
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.28628202792230656,
+          0.2078063210305129,
+          1.0214936887334052,
+          0.0015254746664110142
+        ],
+        [
+          1.0424168031488166,
+          -0.057070469741337455,
+          -0.28053583746343097,
+          -0.00041894565747018506
+        ],
+        [
+          1.4364865719275565e-09,
+          1.0593156431704573,
+          -0.21550057953230695,
+          -0.04553143427178956
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.000000135941404,
+        "singular_values": [
+          1.0000000663512285,
+          1.0000000428169034,
+          1.0000000267732663
+        ],
+        "orthogonality_max_error": 1.321333817916326e-07,
+        "max_singular_value_error": 6.635122851150754e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 5.7461849463271876e-08,
+        "unit_cube_displacement_bound_in_voxels": 3.6775583656494e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -1.9858670263772638e-10,
+        -0.044302177689034605,
+        0.010626919690096298
+      ],
+      "rotated_max_extent": 1.081013545731119,
+      "naive_rotation_outside_cube_fraction": 0.07088331515812432,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "8b69bc4c0f39893c4151cf79281ff976e17a3dd9cd60b55411dd78fdd65e59f0",
+      "target_sha256": "9f84de0d1b4e151891340172a15f60702bf07abcf8e84320be667746cddd02ab",
+      "latent_mean_square": 0.20893074572086334
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "group": 6,
+      "output_from_object": [
+        [
+          0.8918792396954384,
+          0.8296475355824451,
+          0.0,
+          -0.009591872009769974
+        ],
+        [
+          0.17714129133649073,
+          -0.19042860800156555,
+          1.1900091327886946,
+          0.035025608002378715
+        ],
+        [
+          0.8105159341517553,
+          -0.8713125412689458,
+          -0.2600809274301143,
+          0.06022472228726183
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.6010925279722671,
+          0.11938644273609555,
+          0.5462567308988229,
+          -0.031314140065662986
+        ],
+        [
+          0.5591507637515137,
+          -0.12834159713698176,
+          -0.5872313445619143,
+          0.045224389676405435
+        ],
+        [
+          -4.213001325796454e-09,
+          0.8020205840249095,
+          -0.17528459613050637,
+          -0.017534792503111296
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 1.0000000920099787,
+        "singular_values": [
+          1.0000000682822798,
+          1.0000000323465317,
+          0.9999999913811662
+        ],
+        "orthogonality_max_error": 1.3377759544574985e-07,
+        "max_singular_value_error": 6.828227983035617e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 5.913418896140623e-08,
+        "unit_cube_displacement_bound_in_voxels": 3.7845880935299987e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        0.00787446423588889,
+        -0.028754334636040366,
+        -0.049441591931620926
+      ],
+      "rotated_max_extent": 0.8209517628955236,
+      "naive_rotation_outside_cube_fraction": 0.0,
+      "normalized_max_absolute_coordinate": 0.5000000000000001,
+      "camera_sha256": "66dcc3666a7813121d00451cbce5b6625e5615de985f7fbadf08c8c07419d1b4",
+      "target_sha256": "d671cd84ba832a281bdf23d0337d13bd692eeab568e2d9a99b9c1b8e1e7c7705",
+      "latent_mean_square": 0.07155791670084
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "group": 6,
+      "output_from_object": [
+        [
+          0.10678728262159665,
+          0.8902543680946081,
+          0.0,
+          0.0006641461821894716
+        ],
+        [
+          0.2967319579951426,
+          -0.035593421599398746,
+          0.845363706664477,
+          0.03682920968010449
+        ],
+        [
+          0.8393467498055819,
+          -0.10068084099882872,
+          -0.29885901651078883,
+          -0.13629676036038402
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "object_from_output": [
+        [
+          0.1328272120102175,
+          0.36908953065185107,
+          1.0440203456656865,
+          0.12861509846370556
+        ],
+        [
+          1.1073416523427408,
+          -0.04427281621403188,
+          -0.12523173118927147,
+          -0.016173583154727666
+        ],
+        [
+          -4.831266633959381e-10,
+          1.0515042376122177,
+          -0.3717354136267798,
+          -0.08939240263477535
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "camera_validation": {
+        "determinant": 0.9999999204416307,
+        "singular_values": [
+          1.0000000595616598,
+          0.9999999474166321,
+          0.9999999134633419
+        ],
+        "orthogonality_max_error": 1.2830963092014258e-07,
+        "max_singular_value_error": 8.653665806157562e-08,
+        "singular_value_tolerance": 3.814697265625e-06,
+        "unit_cube_displacement_bound": 7.494294423993192e-08,
+        "unit_cube_displacement_bound_in_voxels": 4.796348431355643e-06,
+        "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+      },
+      "rotated_bbox_center": [
+        -0.000740708654552974,
+        -0.04107486436264274,
+        0.1520089894270713
+      ],
+      "rotated_max_extent": 1.1152795490160028,
+      "naive_rotation_outside_cube_fraction": 0.12891692954784437,
+      "normalized_max_absolute_coordinate": 0.5,
+      "camera_sha256": "3d048e13f089ca0429dcc5e425b314fb315737adc6b027cfb1d4ca578162b97c",
+      "target_sha256": "ade37c8d6ac8deb9f7d672a97209c4a61b4148d4cc9cb0935cd40309bf970ad2",
+      "latent_mean_square": 0.16509392857551575
+    }
+  ],
+  "input_batches": [
+    {
+      "group": 0,
+      "split": "fit",
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ],
+      "image_sha256": "2a501446481f05e8ca0edc04de414932cc3b8554488f80e1884970eacfdd47b4",
+      "pointmap_sha256": "cf30c7b30f0570bde0e54e801816a242ab3703ac279545fd646119930bfbb689",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375",
+      "features_sha256": "3701d6fdd9b0a63e6b60efc85e36a8237dbe8e563a1dd6770254774901d4042d",
+      "shared_target_sha256": "7c825dbb1e095e96de70a4e72594d9ba7d530d0a572d8dc49ae7c4b0bd48f12e"
+    },
+    {
+      "group": 1,
+      "split": "fit",
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ],
+      "image_sha256": "a9eb89864d6bbab10a7408a59afd4d00a0b6eacd1e51c2068272b2c47d83f70d",
+      "pointmap_sha256": "820fff86df593c86320cc2fa7be8f03c29486578fd146c032366a1d6ea77577c",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375",
+      "features_sha256": "6c1db93b5790970a790183bc5ca30e1c8e078ae9d23b3ade20078b07f8766c9a",
+      "shared_target_sha256": "7983332a9522ac89371ddd78cd2d40d10e3c514e2a60fbd3323b2481221a1e6f"
+    },
+    {
+      "group": 2,
+      "split": "fit",
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ],
+      "image_sha256": "1f7ee5a8748f2a668e0f1c5b602153cba70457ed95584e2b797320296109e42b",
+      "pointmap_sha256": "832af816f78beb811fe8e3e059af383bb0ff62cd4b7480d63cc814ae88626a33",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375",
+      "features_sha256": "bb5d4dccbd14d08bec2b379e132cfc0dbf1e15bc63c5d2edc69153170b6baa8f",
+      "shared_target_sha256": "d036264e9ac0accbccdf123ca0991599680b8c9376568f36873b71c0e2419ed5"
+    },
+    {
+      "group": 3,
+      "split": "fit",
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ],
+      "image_sha256": "7880572bd75d87536f03c4c1406429af44398db4399003c3684a1df175352dd2",
+      "pointmap_sha256": "3696143b5479920d4261799d8b2e2efd2736f3080f6cd6ac6a7a9bd6ab04f88f",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375",
+      "features_sha256": "ed55a1ceca590017fc5c0aa0b8e0cdba3dba638f77bce7bf8150933b83aa4203",
+      "shared_target_sha256": "96254d2dcb24f1b28441a290d398fdc5601e2cbf00fe468d80218be9d975c2bf"
+    },
+    {
+      "group": 4,
+      "split": "reserved_view",
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ],
+      "image_sha256": "1ba10a14893162386f2f1f264b9957c5f94aa769435f8f293bf9fcbbb56ac067",
+      "pointmap_sha256": "990e45cb5e776852312f98ba5fad506a2b9f113c72bb056e496b599aaae2857d",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375",
+      "features_sha256": "45599ca90d11b24500fe52ce7e8891e93c9037075cb8db98f45cfd0cc2338887",
+      "shared_target_sha256": "75a691eedbf2f51004f1c477ce21cd3f78854eef52de196e217aa821a0ed8bc5"
+    },
+    {
+      "group": 5,
+      "split": "reserved_view",
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ],
+      "image_sha256": "dea399f5290eeb668d687f2044c8dccd3a8f70c92eb509bfcf9e9cb71bb9e70a",
+      "pointmap_sha256": "69006890c56bc37b3e63a8be6b0b85eb9b6fa248a5c1d4b98277ab9c0e11b32b",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375",
+      "features_sha256": "bbad535703af3aa7fbe02f811464eb0d842219485af5f430f2c4a27378ebb8c3",
+      "shared_target_sha256": "8a2738f421ae506bf61afd92ae8b51b1510b4a7524aedb943aedd8352d2ba434"
+    },
+    {
+      "group": 6,
+      "split": "reserved_view",
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ],
+      "image_sha256": "f81000b44918d257b6ec84060cf013f549d2456863e5732e381226863566cfb6",
+      "pointmap_sha256": "24fbdcd3ce79c82aae3dad628405ab630f1210f91ddec967ccb10a42a320a44a",
+      "target_sha256": "10b01f2d67bb800fc3d67352f32acd45e61c3073332fc90309e45c92d838d375",
+      "features_sha256": "076e9478651413dc02ea03559a23577040e731894686b5c7684efa359424df64",
+      "shared_target_sha256": "8150a7b3888f39a8473f94a31a945ac530c55d80472ef187affbab2404cbd68c"
+    }
+  ],
+  "original_loss_replay": [
+    0.8351254463195801,
+    0.4197135269641876,
+    0.649456262588501,
+    0.3173469305038452,
+    0.37100669741630554,
+    0.3315196633338928,
+    0.5438651442527771,
+    0.3060096502304077
+  ],
+  "assessments": [],
+  "training": [],
+  "rows": [],
+  "artifacts": [],
+  "interface_checks": {},
+  "complete": false,
+  "runtime": {
+    "torch": "2.5.1+cu121",
+    "gpu": "NVIDIA H100 80GB HBM3"
+  },
+  "scope": "Only labels change. Same camera VecSetX features/visuals/initialization/update budget as camera dropout. Four fitted identities; no new-object or production-frame commitment. GT transforms only label construction and diagnostic scoring.",
+  "initial_all_parameters_sha256": "689042cb78bacfa24aa7021aa114690850a2bd48a5813d327c6ef83dd08472b3",
+  "original_loss_replay_check": {
+    "expected": [
+      0.8351606130599976,
+      0.4197024405002594,
+      0.6494545340538025,
+      0.31735020875930786,
+      0.37100574374198914,
+      0.33155107498168945,
+      0.543891191482544,
+      0.3060265779495239
+    ],
+    "max_absolute_error": 3.516674041748047e-05,
+    "max_relative_error": 9.474150490498523e-05,
+    "bitwise_equal": false,
+    "rtol": 0.001,
+    "atol": 1e-06,
+    "policy": "Numerical BF16 replay within 0.1%; source, initialization and recorded input hashes remain exact. A small discrepancy does not establish its specific numerical cause."
+  },
+  "target_quality": [
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "roundtrip": {
+        "voxel_iou": 0.9999408529011652,
+        "predicted_occupied": 16907,
+        "target_occupied": 16906,
+        "unaligned_voxel_center_chamfer": 4.620867096468918e-07
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.007904698256944672,
+        "rms_distance": 0.008411473602283328,
+        "p95_distance": 0.014844029630233414,
+        "precision_1v": 0.9681197137280416,
+        "recall_1v": 0.9994943536153716,
+        "fscore_1v": 0.9835568911146887,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 9408,
+        "target_occupied": 9408,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008983702600173095,
+        "rms_distance": 0.009591285995266487,
+        "p95_distance": 0.017090771714663493,
+        "precision_1v": 0.9157100340136054,
+        "recall_1v": 0.9990920440358643,
+        "fscore_1v": 0.9555855616772184,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 1430,
+        "target_occupied": 1430,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.00798500686620934,
+        "rms_distance": 0.008416284331841762,
+        "p95_distance": 0.012630481944189684,
+        "precision_1v": 0.9937062937062937,
+        "recall_1v": 0.994619523443505,
+        "fscore_1v": 0.9941626988535988,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 8418,
+        "target_occupied": 8418,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008834151371991365,
+        "rms_distance": 0.00935888930164477,
+        "p95_distance": 0.015611208684687353,
+        "precision_1v": 0.9504632929436921,
+        "recall_1v": 0.9974522292993631,
+        "fscore_1v": 0.9733910116617526,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 12003,
+        "target_occupied": 12003,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.00835582997066834,
+        "rms_distance": 0.008814142354183313,
+        "p95_distance": 0.014045186469743225,
+        "precision_1v": 0.9827543114221444,
+        "recall_1v": 0.9989044328333052,
+        "fscore_1v": 0.9907635620021542,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 10017,
+        "target_occupied": 10017,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.009114969266393075,
+        "rms_distance": 0.009771519702839647,
+        "p95_distance": 0.018183961977911535,
+        "precision_1v": 0.8942797244684038,
+        "recall_1v": 0.9995460220179321,
+        "fscore_1v": 0.9439873154350261,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 1333,
+        "target_occupied": 1333,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.006624520477448085,
+        "rms_distance": 0.007190666794003138,
+        "p95_distance": 0.01194924258519413,
+        "precision_1v": 0.9962490622655664,
+        "recall_1v": 0.9992313604919293,
+        "fscore_1v": 0.9977379828169916,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 8950,
+        "target_occupied": 8950,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.006632812728514938,
+        "rms_distance": 0.007232796253174522,
+        "p95_distance": 0.013074763485627996,
+        "precision_1v": 0.9911731843575419,
+        "recall_1v": 0.999235668789809,
+        "fscore_1v": 0.9951880973518882,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 14833,
+        "target_occupied": 14833,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008390434893548106,
+        "rms_distance": 0.008775108564503777,
+        "p95_distance": 0.013829406053006766,
+        "precision_1v": 0.9841569473471314,
+        "recall_1v": 0.9998314512051238,
+        "fscore_1v": 0.9919322810533766,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 9728,
+        "target_occupied": 9728,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008884076874820911,
+        "rms_distance": 0.009461972509875485,
+        "p95_distance": 0.0164175096506293,
+        "precision_1v": 0.928453947368421,
+        "recall_1v": 0.9958007036658723,
+        "fscore_1v": 0.960948795019286,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 1488,
+        "target_occupied": 1488,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.007963631916269006,
+        "rms_distance": 0.008418980259434635,
+        "p95_distance": 0.012648068727800188,
+        "precision_1v": 0.9926075268817204,
+        "recall_1v": 0.9961568024596464,
+        "fscore_1v": 0.9943789975389771,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 8383,
+        "target_occupied": 8383,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.007144421107173098,
+        "rms_distance": 0.007599998688463645,
+        "p95_distance": 0.012113261816394608,
+        "precision_1v": 0.9973756411785757,
+        "recall_1v": 0.9998726114649682,
+        "fscore_1v": 0.9986225654590694,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 14525,
+        "target_occupied": 14525,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008528342492386282,
+        "rms_distance": 0.009041421638362452,
+        "p95_distance": 0.015560495111447362,
+        "precision_1v": 0.952013769363167,
+        "recall_1v": 0.9992415304230575,
+        "fscore_1v": 0.9750561046383794,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 10415,
+        "target_occupied": 10415,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.00904222174037361,
+        "rms_distance": 0.009693901690223463,
+        "p95_distance": 0.018186684443096353,
+        "precision_1v": 0.8959193470955353,
+        "recall_1v": 0.999886505504483,
+        "fscore_1v": 0.9450521148593738,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 2128,
+        "target_occupied": 2128,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.0074084382172492445,
+        "rms_distance": 0.007824505919856943,
+        "p95_distance": 0.012256142861350653,
+        "precision_1v": 0.9948308270676691,
+        "recall_1v": 0.9992313604919293,
+        "fscore_1v": 0.997026238190405,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 8363,
+        "target_occupied": 8363,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008975579441067187,
+        "rms_distance": 0.009530547654594448,
+        "p95_distance": 0.016416552100341035,
+        "precision_1v": 0.9327992347243812,
+        "recall_1v": 0.9974522292993631,
+        "fscore_1v": 0.9640429690181844,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 13232,
+        "target_occupied": 13232,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008804939479004278,
+        "rms_distance": 0.009324792372302137,
+        "p95_distance": 0.01601728778624548,
+        "precision_1v": 0.938180169286578,
+        "recall_1v": 0.9987358840384292,
+        "fscore_1v": 0.9675114201787551,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 11222,
+        "target_occupied": 11222,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.009074507814802225,
+        "rms_distance": 0.009751224845098258,
+        "p95_distance": 0.018588403484244263,
+        "precision_1v": 0.8899483158082339,
+        "recall_1v": 0.9987515605493134,
+        "fscore_1v": 0.9412159976797098,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 1421,
+        "target_occupied": 1421,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008020363545331022,
+        "rms_distance": 0.00847318499703617,
+        "p95_distance": 0.01278078544666311,
+        "precision_1v": 0.9915552427867699,
+        "recall_1v": 0.9938508839354343,
+        "fscore_1v": 0.9927017361847092,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 8595,
+        "target_occupied": 8595,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008976418508208472,
+        "rms_distance": 0.009544151477061343,
+        "p95_distance": 0.016557145890342666,
+        "precision_1v": 0.9285631180919139,
+        "recall_1v": 0.9975796178343949,
+        "fscore_1v": 0.961834887107437,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 20845,
+        "target_occupied": 20845,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.00772614134531707,
+        "rms_distance": 0.008216531122541617,
+        "p95_distance": 0.014404453850715699,
+        "precision_1v": 0.9760614056128568,
+        "recall_1v": 0.9998314512051238,
+        "fscore_1v": 0.9878034512567858,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 10317,
+        "target_occupied": 10317,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.009112053119849705,
+        "rms_distance": 0.00976306672209507,
+        "p95_distance": 0.01830514171269832,
+        "precision_1v": 0.892313657070854,
+        "recall_1v": 0.9996595165134491,
+        "fscore_1v": 0.9429413180482932,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 1923,
+        "target_occupied": 1923,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.0074073896299077496,
+        "rms_distance": 0.007816366038755984,
+        "p95_distance": 0.01198205179536588,
+        "precision_1v": 0.998959958398336,
+        "recall_1v": 0.9984627209838586,
+        "fscore_1v": 0.9987112778000792,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 8337,
+        "target_occupied": 8337,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.009137180487774784,
+        "rms_distance": 0.009713129938102584,
+        "p95_distance": 0.01692125387259465,
+        "precision_1v": 0.9191555715485187,
+        "recall_1v": 0.9980891719745223,
+        "fscore_1v": 0.956997510538857,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 14492,
+        "target_occupied": 14492,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008404917371651756,
+        "rms_distance": 0.008900592591771195,
+        "p95_distance": 0.015221480731488117,
+        "precision_1v": 0.960874965498206,
+        "recall_1v": 0.9995786280128097,
+        "fscore_1v": 0.9798447490760823,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 9151,
+        "target_occupied": 9151,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008984679650397068,
+        "rms_distance": 0.009571947305901597,
+        "p95_distance": 0.0170083800351574,
+        "precision_1v": 0.9208829636105343,
+        "recall_1v": 0.9994325275224152,
+        "fscore_1v": 0.9585512298613116,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 2078,
+        "target_occupied": 2078,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.0074550331235356026,
+        "rms_distance": 0.007853828519787125,
+        "p95_distance": 0.012265025443173583,
+        "precision_1v": 0.9985563041385948,
+        "recall_1v": 1.0,
+        "fscore_1v": 0.9992776306284613,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "roundtrip": {
+        "voxel_iou": 1.0,
+        "predicted_occupied": 7058,
+        "target_occupied": 7058,
+        "unaligned_voxel_center_chamfer": 0.0
+      },
+      "common_object_units": {
+        "empty": false,
+        "mean_distance": 0.008913430828353462,
+        "rms_distance": 0.009435843376009884,
+        "p95_distance": 0.015304140635159032,
+        "precision_1v": 0.955794842731652,
+        "recall_1v": 0.9937579617834394,
+        "fscore_1v": 0.9744067794381991,
+        "precision_2v": 1.0,
+        "recall_2v": 1.0,
+        "fscore_2v": 1.0
+      }
+    }
+  ]
+}
