@@ -2,6 +2,8 @@
 
 Status: implemented, local coordinate/source checks passed; GPU execution pending. The user paused overnight implementation and requested continuation of the short coordinate branch. No overnight trainer or production source was changed. This is an experimental target contract, not a commitment that the final product abandons asset-frame output.
 
+**Returned preflight failure:** the first cluster attempt completed target preparation groups 0 and 1, then stopped within group 2 with `Expected proper rigid camera transform`. No flow-model training occurred. The exception omitted the sample/matrix/residual; the failing camera is not locally available. Acceptance tolerances are unchanged pending the CPU-only `audit_shared_orientation_cameras.py`, which records the exact 28 selected matrices, individual check outcomes, singular values, determinants, homogeneous rows and file hashes. Existing five local cameras pass with orthogonality residuals about 5e-8–3.5e-7. Those do not establish the failing matrix's validity. Do not infer a new coordinate bug or relax the gate from this traceback alone.
+
 ## Starting evidence and question
 
 F1: inspected bookkeeping is consistent and the target is spatial/orientation-dependent. F3: input rotation adds a finite-budget learning burden. F9: exact oracle alignment plus dropout permits accurate reserved-view reconstruction on four fitted identities. F11: output pose correction is not a general rescue, and sub-5° precision is not universally required. F12: with dropout policy matched, camera inputs still fail badly; a bathtub view even produces the fitted shield. Stop repeating that comparison.
