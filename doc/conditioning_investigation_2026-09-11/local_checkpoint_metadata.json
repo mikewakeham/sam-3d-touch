@@ -1,0 +1,183 @@
+{
+  "method": "Read ZIP data.pkl only with a restricted metadata unpickler; only OrderedDict, FloatStorage marker, and a tensor-metadata stub allowed. No tensor storage read, torch import, model inference, or checkpoint mutation. Metadata hash is not weight hash. Cross-check against torch inventory when returned.",
+  "runs": {
+    "stage1_full_surface_full_cross_attention": {
+      "best.pt": {
+        "path": "/Users/michaelwakeham/project/visuotactile-objects/sam-3d-touch/outputs/stage1_full_surface_full_cross_attention/best.pt",
+        "size_bytes": 1246701422,
+        "metadata_sha256": "7a79ba14fd9d557798487671032b1e5d7274aaef377aef1fb2e3e0a0d9a5ed62",
+        "metadata": {
+          "epoch": 9,
+          "step": 6597,
+          "best_loss": 0.08885870724817051,
+          "mode": "image_touch",
+          "conditioning_config": null,
+          "cross_attention_scope": "full",
+          "touch_config": {
+            "encoder_name": "vecsetx",
+            "output_dim": 1024,
+            "trainable": false,
+            "use_position": false
+          }
+        },
+        "optimizer_groups": [
+          {
+            "lr": 0.0001,
+            "name": "touch_encoder",
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "eps": 1e-08,
+            "weight_decay": 0,
+            "amsgrad": false,
+            "foreach": null,
+            "maximize": false,
+            "capturable": false,
+            "differentiable": false,
+            "fused": null
+          },
+          {
+            "lr": 1e-05,
+            "name": "cross_attention",
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "eps": 1e-08,
+            "weight_decay": 0,
+            "amsgrad": false,
+            "foreach": null,
+            "maximize": false,
+            "capturable": false,
+            "differentiable": false,
+            "fused": null
+          }
+        ],
+        "model_parameter_tensors": 198
+      },
+      "last.pt": {
+        "path": "/Users/michaelwakeham/project/visuotactile-objects/sam-3d-touch/outputs/stage1_full_surface_full_cross_attention/last.pt",
+        "size_bytes": 1246701422,
+        "metadata_sha256": "dbf349bf36c321b1f58fe1c4494e7085df2c07351ad14ba85053d8137b1c6561",
+        "metadata": {
+          "epoch": 20,
+          "step": 14660,
+          "best_loss": 0.08885870724817051,
+          "mode": "image_touch",
+          "conditioning_config": null,
+          "cross_attention_scope": "full",
+          "touch_config": {
+            "encoder_name": "vecsetx",
+            "output_dim": 1024,
+            "trainable": false,
+            "use_position": false
+          }
+        },
+        "optimizer_groups": [
+          {
+            "lr": 0.0001,
+            "name": "touch_encoder",
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "eps": 1e-08,
+            "weight_decay": 0,
+            "amsgrad": false,
+            "foreach": null,
+            "maximize": false,
+            "capturable": false,
+            "differentiable": false,
+            "fused": null
+          },
+          {
+            "lr": 1e-05,
+            "name": "cross_attention",
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "eps": 1e-08,
+            "weight_decay": 0,
+            "amsgrad": false,
+            "foreach": null,
+            "maximize": false,
+            "capturable": false,
+            "differentiable": false,
+            "fused": null
+          }
+        ],
+        "model_parameter_tensors": 198
+      }
+    },
+    "stage1_image_full_cross_attention": {
+      "best.pt": {
+        "path": "/Users/michaelwakeham/project/visuotactile-objects/sam-3d-touch/outputs/stage1_image_full_cross_attention/best.pt",
+        "size_bytes": 1209916710,
+        "metadata_sha256": "9c8839678deefb580e929d2c86399ea295edd1591c42bd224a41cd1355208c84",
+        "metadata": {
+          "epoch": 12,
+          "step": 8796,
+          "best_loss": 0.0885780492374702,
+          "mode": "image",
+          "conditioning_config": null,
+          "cross_attention_scope": "full",
+          "touch_config": null
+        },
+        "optimizer_groups": [
+          {
+            "lr": 1e-05,
+            "name": "cross_attention",
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "eps": 1e-08,
+            "weight_decay": 0,
+            "amsgrad": false,
+            "foreach": null,
+            "maximize": false,
+            "capturable": false,
+            "differentiable": false,
+            "fused": null
+          }
+        ],
+        "model_parameter_tensors": 192
+      },
+      "last.pt": {
+        "path": "/Users/michaelwakeham/project/visuotactile-objects/sam-3d-touch/outputs/stage1_image_full_cross_attention/last.pt",
+        "size_bytes": 1209916710,
+        "metadata_sha256": "465a55a1180cd2a70bff1d1db3143619e6aeff2981e3c2fd80860406d7dc5c3e",
+        "metadata": {
+          "epoch": 20,
+          "step": 14660,
+          "best_loss": 0.0885780492374702,
+          "mode": "image",
+          "conditioning_config": null,
+          "cross_attention_scope": "full",
+          "touch_config": null
+        },
+        "optimizer_groups": [
+          {
+            "lr": 1e-05,
+            "name": "cross_attention",
+            "betas": [
+              0.9,
+              0.999
+            ],
+            "eps": 1e-08,
+            "weight_decay": 0,
+            "amsgrad": false,
+            "foreach": null,
+            "maximize": false,
+            "capturable": false,
+            "differentiable": false,
+            "fused": null
+          }
+        ],
+        "model_parameter_tensors": 192
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "reports_complete": true,
+  "sources_and_reference_hashes_match": true,
+  "analysis_recomputed_exactly": true,
+  "initial_image_replay_and_separate_zero_residual_exact": true,
+  "separate_final_image_fallback_exact": true,
+  "frozen_parameter_hashes_unchanged": true,
+  "cuda_module_checks_and_context_checks_pass": true,
+  "complete_training_and_native_scalar_checks_pass": true,
+  "constant_swap_invariance_pass": true,
+  "report_sha256": {
+    "separate_oracle": "4774bec4b420448a763c8698de71d54393b51a185e93c677f6ea5e1f1c9373ff",
+    "separate_constant": "e0287c3d2ad867e1cf0f0c0ca8d8f8dbcd17d4c43b872fd89e5bd4bbdd5185fe",
+    "separate_camera": "6135f3ef92285455bbe7a870021b742e9d0af63fd9290c13d5bf21c749f6fe21",
+    "joint_oracle": "b291a5400935e05939e36042d8ffabb0d2dd5fcdd1d91d81aa918e6c66a364e8"
+  },
+  "attachment_folders": {
+    "analysis": "2a920a51-a2bd-489c-96ff-029d1ab74126",
+    "separate_oracle": "550a4890-a001-4455-a661-2394864bc02e",
+    "separate_constant": "43f0521d-b860-4196-ad69-5ae83e90cb87",
+    "separate_camera": "9bf35701-978d-47c8-983a-431677f51fa2",
+    "joint_oracle": "2c7f93dd-7256-42ba-ad60-5bd44a885c38"
+  }
+}

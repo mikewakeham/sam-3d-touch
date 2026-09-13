@@ -1,4 +1,6 @@
-# Visual dropout repairs oracle view transfer in the controlled four-object task
+# Visual dropout nearly closes the oracle native-loss view gap on four fitted objects
+
+**Claim boundary:** the reference is fitted-view native flow loss under the same assessment protocol, not a ground-truth reconstruction floor. The measured gap nearly closes without worsening fitted loss. No prespecified equivalence margin or decoded-target reconstruction endpoint established complete resolution for these dropout checkpoints. Subsequent unseen-object results reject a general conditioning fix. See F5–F6 in `PIVOTAL_FINDINGS.md` before promoting or extending this finding.
 
 ## Validation
 

@@ -1,5 +1,7 @@
 # Constructive pilot: separate surface attention around a frozen image model
 
+**Completed:** all four logging-fix reports returned and passed validation. The candidate failed its held-object criterion. See `SEPARATE_SURFACE_RETURNED_FINDINGS.md`. Do not rerun or extend this command; the next action is the no-training probe in `FULL_DATASET_CONDITIONING_HANDOFF.md`.
+
 **First attempt / logging fix:** the first sequential arm passed CUDA module checks, exact initial image replay, zero-residual replay and its first backward pass. The legacy gradient logger then raised `AttributeError` because the wrapper has `.surface.to_kv` and `.visual.to_kv`, not a direct `.to_kv`. No optimizer update was reached. `fit_separate_surface_gpu.py` now uses an experiment-local logger that handles both separate and joint modules and records frozen visual gradients separately. Production `train.py`, the model interface and optimization policy are unchanged. Local logger regression checks cover both module layouts and absent gradients. The terminal and failure record are in `separate_surface_first_attempt/`. Sync the updated driver and retry using the new output directory below; preserve the failed attempt. GPU training remains pending.
 
 ## Why this intervention now

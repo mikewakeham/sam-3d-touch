@@ -1,0 +1,1334 @@
+{
+  "summary": {
+    "fit": {
+      "cells": {
+        "image_anchor": {
+          "mean_loss": 0.061607495207681495,
+          "median_loss": 0.04750757192960009
+        },
+        "separate_oracle": {
+          "mean_loss": 0.02896793767285999,
+          "median_loss": 0.018106266703398433,
+          "mean_wrong_minus_correct": 0.025928185254997516,
+          "objects_preferring_correct": 16,
+          "mean_removed_loss": 0.061607495207681495
+        },
+        "separate_constant": {
+          "mean_loss": 0.021440361336317437,
+          "median_loss": 0.014155570082948543,
+          "mean_wrong_minus_correct": 0.0,
+          "objects_preferring_correct": 0,
+          "mean_removed_loss": 0.061607495207681495
+        },
+        "separate_camera": {
+          "mean_loss": 0.028290173711866373,
+          "median_loss": 0.016745625209296122,
+          "mean_wrong_minus_correct": 0.01728153829162693,
+          "objects_preferring_correct": 16,
+          "mean_removed_loss": 0.061607495207681495
+        },
+        "joint_oracle": {
+          "mean_loss": 0.04568661017492559,
+          "median_loss": 0.03273079320206307,
+          "mean_wrong_minus_correct": 0.0007597015301143983,
+          "objects_preferring_correct": 13,
+          "mean_removed_loss": 0.04684648945112713
+        }
+      },
+      "paired_comparisons": {
+        "separate_oracle_minus_image_anchor": {
+          "mean_delta": -0.032639557534821506,
+          "median_delta": -0.023956031451234594,
+          "objects_improved": 16,
+          "objects": 16
+        },
+        "separate_constant_minus_image_anchor": {
+          "mean_delta": -0.04016713387136406,
+          "median_delta": -0.03192899403802585,
+          "objects_improved": 16,
+          "objects": 16
+        },
+        "separate_camera_minus_image_anchor": {
+          "mean_delta": -0.03331732149581512,
+          "median_delta": -0.026870389861869626,
+          "objects_improved": 16,
+          "objects": 16
+        },
+        "joint_oracle_minus_image_anchor": {
+          "mean_delta": -0.015920885032755905,
+          "median_delta": -0.012866821780335158,
+          "objects_improved": 16,
+          "objects": 16
+        },
+        "separate_oracle_minus_separate_constant": {
+          "mean_delta": 0.007527576336542552,
+          "median_delta": 0.00483332196745323,
+          "objects_improved": 1,
+          "objects": 16
+        },
+        "separate_oracle_minus_joint_oracle": {
+          "mean_delta": -0.0167186725020656,
+          "median_delta": -0.014658915752079338,
+          "objects_improved": 15,
+          "objects": 16
+        },
+        "separate_camera_minus_separate_oracle": {
+          "mean_delta": -0.0006777639609936159,
+          "median_delta": -0.001488882495323196,
+          "objects_improved": 13,
+          "objects": 16
+        },
+        "separate_camera_minus_separate_constant": {
+          "mean_delta": 0.006849812375548936,
+          "median_delta": 0.0032140594557859004,
+          "objects_improved": 1,
+          "objects": 16
+        }
+      }
+    },
+    "held_view": {
+      "cells": {
+        "image_anchor": {
+          "mean_loss": 0.06294144527055323,
+          "median_loss": 0.04843664891086519
+        },
+        "separate_oracle": {
+          "mean_loss": 0.03645805095402466,
+          "median_loss": 0.024243943946203217,
+          "mean_wrong_minus_correct": 0.024168886558982194,
+          "objects_preferring_correct": 16,
+          "mean_removed_loss": 0.06294144527055323
+        },
+        "separate_constant": {
+          "mean_loss": 0.02882557414341136,
+          "median_loss": 0.018323843163670972,
+          "mean_wrong_minus_correct": 0.0,
+          "objects_preferring_correct": 0,
+          "mean_removed_loss": 0.06294144527055323
+        },
+        "separate_camera": {
+          "mean_loss": 0.03599278131878236,
+          "median_loss": 0.023791919724317268,
+          "mean_wrong_minus_correct": 0.01456024693834479,
+          "objects_preferring_correct": 13,
+          "mean_removed_loss": 0.06294144527055323
+        },
+        "joint_oracle": {
+          "mean_loss": 0.05187327390194696,
+          "median_loss": 0.03599349653813988,
+          "mean_wrong_minus_correct": 0.0010545488403295167,
+          "objects_preferring_correct": 13,
+          "mean_removed_loss": 0.05238715582345321
+        }
+      },
+      "paired_comparisons": {
+        "separate_oracle_minus_image_anchor": {
+          "mean_delta": -0.026483394316528575,
+          "median_delta": -0.017913958203280345,
+          "objects_improved": 16,
+          "objects": 16
+        },
+        "separate_constant_minus_image_anchor": {
+          "mean_delta": -0.03411587112714187,
+          "median_delta": -0.02780620605335571,
+          "objects_improved": 16,
+          "objects": 16
+        },
+        "separate_camera_minus_image_anchor": {
+          "mean_delta": -0.026948663951770868,
+          "median_delta": -0.021098004915984347,
+          "objects_improved": 16,
+          "objects": 16
+        },
+        "joint_oracle_minus_image_anchor": {
+          "mean_delta": -0.011068171368606272,
+          "median_delta": -0.0068564800603780895,
+          "objects_improved": 16,
+          "objects": 16
+        },
+        "separate_oracle_minus_separate_constant": {
+          "mean_delta": 0.007632476810613298,
+          "median_delta": 0.005026385188102722,
+          "objects_improved": 1,
+          "objects": 16
+        },
+        "separate_oracle_minus_joint_oracle": {
+          "mean_delta": -0.015415222947922302,
+          "median_delta": -0.011666724749375135,
+          "objects_improved": 15,
+          "objects": 16
+        },
+        "separate_camera_minus_separate_oracle": {
+          "mean_delta": -0.0004652696352422936,
+          "median_delta": -0.0012455157557269558,
+          "objects_improved": 10,
+          "objects": 16
+        },
+        "separate_camera_minus_separate_constant": {
+          "mean_delta": 0.007167207175371004,
+          "median_delta": 0.0040193679596995935,
+          "objects_improved": 0,
+          "objects": 16
+        }
+      }
+    },
+    "held_object": {
+      "cells": {
+        "image_anchor": {
+          "mean_loss": 0.1193027218264433,
+          "median_loss": 0.08060184982605278
+        },
+        "separate_oracle": {
+          "mean_loss": 0.13854031253094945,
+          "median_loss": 0.10683722980320454,
+          "mean_wrong_minus_correct": -0.004342457787515741,
+          "objects_preferring_correct": 7,
+          "mean_removed_loss": 0.1193027218264433
+        },
+        "separate_constant": {
+          "mean_loss": 0.14993631911465855,
+          "median_loss": 0.11994462762959301,
+          "mean_wrong_minus_correct": 0.0,
+          "objects_preferring_correct": 0,
+          "mean_removed_loss": 0.1193027218264433
+        },
+        "separate_camera": {
+          "mean_loss": 0.14071911249584446,
+          "median_loss": 0.1107587933074683,
+          "mean_wrong_minus_correct": -0.0037511034215640393,
+          "objects_preferring_correct": 6,
+          "mean_removed_loss": 0.1193027218264433
+        },
+        "joint_oracle": {
+          "mean_loss": 0.12257106800871043,
+          "median_loss": 0.08605554385576397,
+          "mean_wrong_minus_correct": -0.00010211287280981196,
+          "objects_preferring_correct": 7,
+          "mean_removed_loss": 0.12005817489125548
+        }
+      },
+      "paired_comparisons": {
+        "separate_oracle_minus_image_anchor": {
+          "mean_delta": 0.019237590704506147,
+          "median_delta": 0.016363997652661055,
+          "objects_improved": 0,
+          "objects": 16
+        },
+        "separate_constant_minus_image_anchor": {
+          "mean_delta": 0.030633597288215242,
+          "median_delta": 0.03161199518945068,
+          "objects_improved": 1,
+          "objects": 16
+        },
+        "separate_camera_minus_image_anchor": {
+          "mean_delta": 0.021416390669401153,
+          "median_delta": 0.0174774632032495,
+          "objects_improved": 1,
+          "objects": 16
+        },
+        "joint_oracle_minus_image_anchor": {
+          "mean_delta": 0.0032683461822671234,
+          "median_delta": 0.004658733960241079,
+          "objects_improved": 4,
+          "objects": 16
+        },
+        "separate_oracle_minus_separate_constant": {
+          "mean_delta": -0.011396006583709095,
+          "median_delta": -0.011162044669617899,
+          "objects_improved": 12,
+          "objects": 16
+        },
+        "separate_oracle_minus_joint_oracle": {
+          "mean_delta": 0.015969244522239023,
+          "median_delta": 0.012798368494259194,
+          "objects_improved": 0,
+          "objects": 16
+        },
+        "separate_camera_minus_separate_oracle": {
+          "mean_delta": 0.0021787999648950063,
+          "median_delta": 0.0016436426667496562,
+          "objects_improved": 7,
+          "objects": 16
+        },
+        "separate_camera_minus_separate_constant": {
+          "mean_delta": -0.009217206618814089,
+          "median_delta": -0.006990020745433867,
+          "objects_improved": 14,
+          "objects": 16
+        }
+      }
+    }
+  },
+  "curves": {
+    "separate_oracle": [
+      {
+        "step": 0,
+        "fit": 0.06263152740211808,
+        "held_view": 0.06468918214523,
+        "held_object": 0.11641517802127055
+      },
+      {
+        "step": 256,
+        "fit": 0.05890244573311065,
+        "held_view": 0.06147060156945372,
+        "held_object": 0.11558127516491368
+      },
+      {
+        "step": 512,
+        "fit": 0.052824429447355215,
+        "held_view": 0.056165956128097605,
+        "held_object": 0.11886354390753695
+      },
+      {
+        "step": 1024,
+        "fit": 0.028753300928656245,
+        "held_view": 0.035353832183318445,
+        "held_object": 0.13466467051148356
+      }
+    ],
+    "separate_constant": [
+      {
+        "step": 0,
+        "fit": 0.06263152740211808,
+        "held_view": 0.06468918214523,
+        "held_object": 0.11641517802127055
+      },
+      {
+        "step": 256,
+        "fit": 0.058981503381801303,
+        "held_view": 0.06141280921292491,
+        "held_object": 0.11661815391926211
+      },
+      {
+        "step": 512,
+        "fit": 0.04976754770541447,
+        "held_view": 0.05430060496291844,
+        "held_object": 0.11932309698113386
+      },
+      {
+        "step": 1024,
+        "fit": 0.022516465157423227,
+        "held_view": 0.02895717824503663,
+        "held_object": 0.1483843421738129
+      }
+    ],
+    "separate_camera": [
+      {
+        "step": 0,
+        "fit": 0.06263152740211808,
+        "held_view": 0.06468918214523,
+        "held_object": 0.11641517802127055
+      },
+      {
+        "step": 256,
+        "fit": 0.05925672853481956,
+        "held_view": 0.06192169147107052,
+        "held_object": 0.11572390664423438
+      },
+      {
+        "step": 512,
+        "fit": 0.05515116585957003,
+        "held_view": 0.05900657879828941,
+        "held_object": 0.11751960065521416
+      },
+      {
+        "step": 1024,
+        "fit": 0.028707641002256423,
+        "held_view": 0.03574348605980049,
+        "held_object": 0.13744464841965964
+      }
+    ],
+    "joint_oracle": [
+      {
+        "step": 0,
+        "fit": 0.0639605210708396,
+        "held_view": 0.06575827357301023,
+        "held_object": 0.11679994551013806
+      },
+      {
+        "step": 256,
+        "fit": 0.05815187534244615,
+        "held_view": 0.0615238128011697,
+        "held_object": 0.11614996933076327
+      },
+      {
+        "step": 512,
+        "fit": 0.0543455726801767,
+        "held_view": 0.05925383659632644,
+        "held_object": 0.11725869060046534
+      },
+      {
+        "step": 1024,
+        "fit": 0.04720003627335245,
+        "held_view": 0.053418653369590174,
+        "held_object": 0.117789612474553
+      }
+    ]
+  },
+  "per_object": {
+    "image_anchor": {
+      "fit": {
+        "07569a25210449ab8b54606974e6c767": {
+          "correct": 0.1263702278956771
+        },
+        "0afbd2427ca84114b659e1d8cfcb647a": {
+          "correct": 0.08345816563814878
+        },
+        "199b2202bc4543acb5a7a557212b605d": {
+          "correct": 0.028097299102228135
+        },
+        "1bf2bf7383d34e45aa5ac504c85e572c": {
+          "correct": 0.019300454237964004
+        },
+        "1fb985a5d5974bdcb412e91293d817f7": {
+          "correct": 0.08092050743289292
+        },
+        "6a836cf7662f4cfaa7e1244a24d6e73a": {
+          "correct": 0.035113038669805974
+        },
+        "7bd547dc65b04894b6f37b33088f1a9e": {
+          "correct": 0.1365958214737475
+        },
+        "7c3286c7a4934e48860badc106f63ab3": {
+          "correct": 0.013452604456688277
+        },
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4": {
+          "correct": 0.03667954547563568
+        },
+        "949af5011ce84b0098c5a0688420e569": {
+          "correct": 0.10231556952930987
+        },
+        "9e134caf65e04f5abaf742ac24df647d": {
+          "correct": 0.03183970769168809
+        },
+        "b38765d87b644fdeb6c4c9ffe1ca98ba": {
+          "correct": 0.044273961102589965
+        },
+        "c057e4593f9e42f5a353718f6c3c9150": {
+          "correct": 0.050741182756610215
+        },
+        "d3eae95d30064e4baafe4427d7c9038a": {
+          "correct": 0.10682520002592355
+        },
+        "d7167aa45e6e43b4a91fdbf5eb70b661": {
+          "correct": 0.061149831977672875
+        },
+        "e697fbdea7d04aa2b09122e36efadf16": {
+          "correct": 0.028586805856321007
+        }
+      },
+      "held_view": {
+        "07569a25210449ab8b54606974e6c767": {
+          "correct": 0.12567971320822835
+        },
+        "0afbd2427ca84114b659e1d8cfcb647a": {
+          "correct": 0.08927282737568021
+        },
+        "199b2202bc4543acb5a7a557212b605d": {
+          "correct": 0.0319744823500514
+        },
+        "1bf2bf7383d34e45aa5ac504c85e572c": {
+          "correct": 0.02117424551397562
+        },
+        "1fb985a5d5974bdcb412e91293d817f7": {
+          "correct": 0.08167125936597586
+        },
+        "6a836cf7662f4cfaa7e1244a24d6e73a": {
+          "correct": 0.03572492231614888
+        },
+        "7bd547dc65b04894b6f37b33088f1a9e": {
+          "correct": 0.13893801486119628
+        },
+        "7c3286c7a4934e48860badc106f63ab3": {
+          "correct": 0.01396252412814647
+        },
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4": {
+          "correct": 0.02922101621516049
+        },
+        "949af5011ce84b0098c5a0688420e569": {
+          "correct": 0.10728725511580706
+        },
+        "9e134caf65e04f5abaf742ac24df647d": {
+          "correct": 0.03519206796772778
+        },
+        "b38765d87b644fdeb6c4c9ffe1ca98ba": {
+          "correct": 0.04536825628019869
+        },
+        "c057e4593f9e42f5a353718f6c3c9150": {
+          "correct": 0.05150504154153168
+        },
+        "d3eae95d30064e4baafe4427d7c9038a": {
+          "correct": 0.10076727904379368
+        },
+        "d7167aa45e6e43b4a91fdbf5eb70b661": {
+          "correct": 0.06252981349825859
+        },
+        "e697fbdea7d04aa2b09122e36efadf16": {
+          "correct": 0.036794405546970665
+        }
+      },
+      "held_object": {
+        "0838b73f246f4768aa0671e7b2ba7c30": {
+          "correct": 0.0753850715700537
+        },
+        "0c15a58c6a0c4ec9bff9336312f675d2": {
+          "correct": 0.1148583060130477
+        },
+        "1cf32d0ef332402c81cdf8ea6d6030b3": {
+          "correct": 0.21941518690437078
+        },
+        "1f51096857cb46c5a2bd1ef8bc2c1803": {
+          "correct": 0.25295931193977594
+        },
+        "49853261fbbe48929211cfb4f5b13866": {
+          "correct": 0.03680050210095942
+        },
+        "548362a5ab6f4c8e8fda42143172614e": {
+          "correct": 0.0748684664722532
+        },
+        "68a31a8eb07d4b84aeb3b13484d4c9e8": {
+          "correct": 0.2535472698509693
+        },
+        "72b8b1136e124387a8a8b5dc10f9c58f": {
+          "correct": 0.02232818879565457
+        },
+        "8262743abb7f4f759aa0b3bda08551e5": {
+          "correct": 0.0697268332587555
+        },
+        "a807e2119b24443da16a2e28529cfa26": {
+          "correct": 0.16742729768157005
+        },
+        "d87e82071e24487481bf90c8f2682fb6": {
+          "correct": 0.22778228856623173
+        },
+        "dbba322581594949944949744937c788": {
+          "correct": 0.2088131532073021
+        },
+        "e2759dc44b4b40fb9cf9544afc650282": {
+          "correct": 0.020635616267099977
+        },
+        "f240fc675fe649acafb6da700d299d55": {
+          "correct": 0.005203186286962591
+        },
+        "f4e66b252b324dad84ba036a92b99f43": {
+          "correct": 0.08581862808205187
+        },
+        "fe725496195f49bfbabb52407c58edf8": {
+          "correct": 0.0732742422260344
+        }
+      }
+    },
+    "separate_oracle": {
+      "fit": {
+        "07569a25210449ab8b54606974e6c767": {
+          "correct": 0.07278383942320943,
+          "wrong": 0.11257540551014245
+        },
+        "0afbd2427ca84114b659e1d8cfcb647a": {
+          "correct": 0.02766128914663568,
+          "wrong": 0.059867828036658466
+        },
+        "199b2202bc4543acb5a7a557212b605d": {
+          "correct": 0.009878211698378436,
+          "wrong": 0.01155668195860926
+        },
+        "1bf2bf7383d34e45aa5ac504c85e572c": {
+          "correct": 0.010307859614840709,
+          "wrong": 0.01638128809281625
+        },
+        "1fb985a5d5974bdcb412e91293d817f7": {
+          "correct": 0.03237576485844329,
+          "wrong": 0.07345688436180353
+        },
+        "6a836cf7662f4cfaa7e1244a24d6e73a": {
+          "correct": 0.016582572628976777,
+          "wrong": 0.032390823878813535
+        },
+        "7bd547dc65b04894b6f37b33088f1a9e": {
+          "correct": 0.046741441066842526,
+          "wrong": 0.15387094113975763
+        },
+        "7c3286c7a4934e48860badc106f63ab3": {
+          "correct": 0.008065235597314313,
+          "wrong": 0.016511421155883
+        },
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4": {
+          "correct": 0.017973459136555903,
+          "wrong": 0.044078919861931354
+        },
+        "949af5011ce84b0098c5a0688420e569": {
+          "correct": 0.07330171472858638,
+          "wrong": 0.08794514811597764
+        },
+        "9e134caf65e04f5abaf742ac24df647d": {
+          "correct": 0.015455536544322968,
+          "wrong": 0.017052250885171816
+        },
+        "b38765d87b644fdeb6c4c9ffe1ca98ba": {
+          "correct": 0.0179046806297265,
+          "wrong": 0.01920737006003037
+        },
+        "c057e4593f9e42f5a353718f6c3c9150": {
+          "correct": 0.018239074270240963,
+          "wrong": 0.0490243760868907
+        },
+        "d3eae95d30064e4baafe4427d7c9038a": {
+          "correct": 0.04223027697298676,
+          "wrong": 0.08666261727921665
+        },
+        "d7167aa45e6e43b4a91fdbf5eb70b661": {
+          "correct": 0.03960704954806715,
+          "wrong": 0.05517614958807826
+        },
+        "e697fbdea7d04aa2b09122e36efadf16": {
+          "correct": 0.014378996900632046,
+          "wrong": 0.042579860833939165
+        }
+      },
+      "held_view": {
+        "07569a25210449ab8b54606974e6c767": {
+          "correct": 0.0911181231494993,
+          "wrong": 0.12106938846409321
+        },
+        "0afbd2427ca84114b659e1d8cfcb647a": {
+          "correct": 0.0322420772863552,
+          "wrong": 0.06751180486753583
+        },
+        "199b2202bc4543acb5a7a557212b605d": {
+          "correct": 0.014119466475676745,
+          "wrong": 0.015848996699787676
+        },
+        "1bf2bf7383d34e45aa5ac504c85e572c": {
+          "correct": 0.01015285321045667,
+          "wrong": 0.017744388722348958
+        },
+        "1fb985a5d5974bdcb412e91293d817f7": {
+          "correct": 0.0335392146371305,
+          "wrong": 0.07365378877148032
+        },
+        "6a836cf7662f4cfaa7e1244a24d6e73a": {
+          "correct": 0.023866127943620086,
+          "wrong": 0.03345194016583264
+        },
+        "7bd547dc65b04894b6f37b33088f1a9e": {
+          "correct": 0.06657155090942979,
+          "wrong": 0.1697369203902781
+        },
+        "7c3286c7a4934e48860badc106f63ab3": {
+          "correct": 0.010049206524854526,
+          "wrong": 0.01846129901241511
+        },
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4": {
+          "correct": 0.017600167717318982,
+          "wrong": 0.03448400413617492
+        },
+        "949af5011ce84b0098c5a0688420e569": {
+          "correct": 0.09283935604617,
+          "wrong": 0.09614948695525527
+        },
+        "9e134caf65e04f5abaf742ac24df647d": {
+          "correct": 0.017958230222575366,
+          "wrong": 0.021066269255243242
+        },
+        "b38765d87b644fdeb6c4c9ffe1ca98ba": {
+          "correct": 0.020975059655029327,
+          "wrong": 0.02243950543925166
+        },
+        "c057e4593f9e42f5a353718f6c3c9150": {
+          "correct": 0.021137261064723134,
+          "wrong": 0.04996046423912048
+        },
+        "d3eae95d30064e4baafe4427d7c9038a": {
+          "correct": 0.061981447506695986,
+          "wrong": 0.11540248920209706
+        },
+        "d7167aa45e6e43b4a91fdbf5eb70b661": {
+          "correct": 0.04455691296607256,
+          "wrong": 0.05781516386196017
+        },
+        "e697fbdea7d04aa2b09122e36efadf16": {
+          "correct": 0.024621759948786348,
+          "wrong": 0.05523509002523497
+        }
+      },
+      "held_object": {
+        "0838b73f246f4768aa0671e7b2ba7c30": {
+          "correct": 0.09578232420608401,
+          "wrong": 0.09211356798186898
+        },
+        "0c15a58c6a0c4ec9bff9336312f675d2": {
+          "correct": 0.12105070566758513,
+          "wrong": 0.1288418248295784
+        },
+        "1cf32d0ef332402c81cdf8ea6d6030b3": {
+          "correct": 0.2201803456991911,
+          "wrong": 0.2331419074907899
+        },
+        "1f51096857cb46c5a2bd1ef8bc2c1803": {
+          "correct": 0.3089329581707716,
+          "wrong": 0.26988453045487404
+        },
+        "49853261fbbe48929211cfb4f5b13866": {
+          "correct": 0.052721519488841295,
+          "wrong": 0.0398318984080106
+        },
+        "548362a5ab6f4c8e8fda42143172614e": {
+          "correct": 0.09162381873466074,
+          "wrong": 0.11178022436797619
+        },
+        "68a31a8eb07d4b84aeb3b13484d4c9e8": {
+          "correct": 0.2973583796992898,
+          "wrong": 0.2649690406396985
+        },
+        "72b8b1136e124387a8a8b5dc10f9c58f": {
+          "correct": 0.025117824545304757,
+          "wrong": 0.030082663884968497
+        },
+        "8262743abb7f4f759aa0b3bda08551e5": {
+          "correct": 0.08283926849253476,
+          "wrong": 0.08426693617366254
+        },
+        "a807e2119b24443da16a2e28529cfa26": {
+          "correct": 0.16868983022868633,
+          "wrong": 0.19208677858114243
+        },
+        "d87e82071e24487481bf90c8f2682fb6": {
+          "correct": 0.25697086472064257,
+          "wrong": 0.23271538596600294
+        },
+        "dbba322581594949944949744937c788": {
+          "correct": 0.24368215166032314,
+          "wrong": 0.23869386687874794
+        },
+        "e2759dc44b4b40fb9cf9544afc650282": {
+          "correct": 0.036608259310014546,
+          "wrong": 0.02463809441542253
+        },
+        "f240fc675fe649acafb6da700d299d55": {
+          "correct": 0.0060401930240914226,
+          "wrong": 0.0062771099037490785
+        },
+        "f4e66b252b324dad84ba036a92b99f43": {
+          "correct": 0.11789213540032506,
+          "wrong": 0.10774970054626465
+        },
+        "fe725496195f49bfbabb52407c58edf8": {
+          "correct": 0.09115442144684494,
+          "wrong": 0.09009214537218213
+        }
+      }
+    },
+    "separate_constant": {
+      "fit": {
+        "07569a25210449ab8b54606974e6c767": {
+          "correct": 0.04413116630166769,
+          "wrong": 0.04413116630166769
+        },
+        "0afbd2427ca84114b659e1d8cfcb647a": {
+          "correct": 0.02821231062989682,
+          "wrong": 0.02821231062989682
+        },
+        "199b2202bc4543acb5a7a557212b605d": {
+          "correct": 0.00925949560769368,
+          "wrong": 0.00925949560769368
+        },
+        "1bf2bf7383d34e45aa5ac504c85e572c": {
+          "correct": 0.006482491007773206,
+          "wrong": 0.006482491007773206
+        },
+        "1fb985a5d5974bdcb412e91293d817f7": {
+          "correct": 0.030433988547883928,
+          "wrong": 0.030433988547883928
+        },
+        "6a836cf7662f4cfaa7e1244a24d6e73a": {
+          "correct": 0.012028017663396895,
+          "wrong": 0.012028017663396895
+        },
+        "7bd547dc65b04894b6f37b33088f1a9e": {
+          "correct": 0.03940311138285324,
+          "wrong": 0.03940311138285324
+        },
+        "7c3286c7a4934e48860badc106f63ab3": {
+          "correct": 0.004611198150087148,
+          "wrong": 0.004611198150087148
+        },
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4": {
+          "correct": 0.012325794668868184,
+          "wrong": 0.012325794668868184
+        },
+        "949af5011ce84b0098c5a0688420e569": {
+          "correct": 0.05367450893390924,
+          "wrong": 0.05367450893390924
+        },
+        "9e134caf65e04f5abaf742ac24df647d": {
+          "correct": 0.009635522088501602,
+          "wrong": 0.009635522088501602
+        },
+        "b38765d87b644fdeb6c4c9ffe1ca98ba": {
+          "correct": 0.014046466298168525,
+          "wrong": 0.014046466298168525
+        },
+        "c057e4593f9e42f5a353718f6c3c9150": {
+          "correct": 0.014264673867728561,
+          "wrong": 0.014264673867728561
+        },
+        "d3eae95d30064e4baafe4427d7c9038a": {
+          "correct": 0.027750789595302194,
+          "wrong": 0.027750789595302194
+        },
+        "d7167aa45e6e43b4a91fdbf5eb70b661": {
+          "correct": 0.027519338706042618,
+          "wrong": 0.027519338706042618
+        },
+        "e697fbdea7d04aa2b09122e36efadf16": {
+          "correct": 0.009266907931305468,
+          "wrong": 0.009266907931305468
+        }
+      },
+      "held_view": {
+        "07569a25210449ab8b54606974e6c767": {
+          "correct": 0.06878761551342905,
+          "wrong": 0.06878761551342905
+        },
+        "0afbd2427ca84114b659e1d8cfcb647a": {
+          "correct": 0.0328010031953454,
+          "wrong": 0.0328010031953454
+        },
+        "199b2202bc4543acb5a7a557212b605d": {
+          "correct": 0.013488584285369143,
+          "wrong": 0.013488584285369143
+        },
+        "1bf2bf7383d34e45aa5ac504c85e572c": {
+          "correct": 0.007524810207542032,
+          "wrong": 0.007524810207542032
+        },
+        "1fb985a5d5974bdcb412e91293d817f7": {
+          "correct": 0.03170829999726266,
+          "wrong": 0.03170829999726266
+        },
+        "6a836cf7662f4cfaa7e1244a24d6e73a": {
+          "correct": 0.017953427624888718,
+          "wrong": 0.017953427624888718
+        },
+        "7bd547dc65b04894b6f37b33088f1a9e": {
+          "correct": 0.060864263447001576,
+          "wrong": 0.060864263447001576
+        },
+        "7c3286c7a4934e48860badc106f63ab3": {
+          "correct": 0.00688137041288428,
+          "wrong": 0.00688137041288428
+        },
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4": {
+          "correct": 0.012073521793354303,
+          "wrong": 0.012073521793354303
+        },
+        "949af5011ce84b0098c5a0688420e569": {
+          "correct": 0.08024877263233066,
+          "wrong": 0.08024877263233066
+        },
+        "9e134caf65e04f5abaf742ac24df647d": {
+          "correct": 0.013432105770334601,
+          "wrong": 0.013432105770334601
+        },
+        "b38765d87b644fdeb6c4c9ffe1ca98ba": {
+          "correct": 0.016794326656963676,
+          "wrong": 0.016794326656963676
+        },
+        "c057e4593f9e42f5a353718f6c3c9150": {
+          "correct": 0.016946140094660223,
+          "wrong": 0.016946140094660223
+        },
+        "d3eae95d30064e4baafe4427d7c9038a": {
+          "correct": 0.0293843240942806,
+          "wrong": 0.0293843240942806
+        },
+        "d7167aa45e6e43b4a91fdbf5eb70b661": {
+          "correct": 0.0336263618664816,
+          "wrong": 0.0336263618664816
+        },
+        "e697fbdea7d04aa2b09122e36efadf16": {
+          "correct": 0.018694258702453226,
+          "wrong": 0.018694258702453226
+        }
+      },
+      "held_object": {
+        "0838b73f246f4768aa0671e7b2ba7c30": {
+          "correct": 0.1046936921775341,
+          "wrong": 0.1046936921775341
+        },
+        "0c15a58c6a0c4ec9bff9336312f675d2": {
+          "correct": 0.13269312493503094,
+          "wrong": 0.13269312493503094
+        },
+        "1cf32d0ef332402c81cdf8ea6d6030b3": {
+          "correct": 0.25718022231012583,
+          "wrong": 0.25718022231012583
+        },
+        "1f51096857cb46c5a2bd1ef8bc2c1803": {
+          "correct": 0.3210144639015198,
+          "wrong": 0.3210144639015198
+        },
+        "49853261fbbe48929211cfb4f5b13866": {
+          "correct": 0.04929867619648576,
+          "wrong": 0.04929867619648576
+        },
+        "548362a5ab6f4c8e8fda42143172614e": {
+          "correct": 0.10358572006225586,
+          "wrong": 0.10358572006225586
+        },
+        "68a31a8eb07d4b84aeb3b13484d4c9e8": {
+          "correct": 0.29930812027305365,
+          "wrong": 0.29930812027305365
+        },
+        "72b8b1136e124387a8a8b5dc10f9c58f": {
+          "correct": 0.03579949461709475,
+          "wrong": 0.03579949461709475
+        },
+        "8262743abb7f4f759aa0b3bda08551e5": {
+          "correct": 0.08908227668143809,
+          "wrong": 0.08908227668143809
+        },
+        "a807e2119b24443da16a2e28529cfa26": {
+          "correct": 0.2110851751640439,
+          "wrong": 0.2110851751640439
+        },
+        "d87e82071e24487481bf90c8f2682fb6": {
+          "correct": 0.2734217243269086,
+          "wrong": 0.2734217243269086
+        },
+        "dbba322581594949944949744937c788": {
+          "correct": 0.24272852297872305,
+          "wrong": 0.24272852297872305
+        },
+        "e2759dc44b4b40fb9cf9544afc650282": {
+          "correct": 0.0345969473128207,
+          "wrong": 0.0345969473128207
+        },
+        "f240fc675fe649acafb6da700d299d55": {
+          "correct": 0.0046036896383157,
+          "wrong": 0.0046036896383157
+        },
+        "f4e66b252b324dad84ba036a92b99f43": {
+          "correct": 0.13045082800090313,
+          "wrong": 0.13045082800090313
+        },
+        "fe725496195f49bfbabb52407c58edf8": {
+          "correct": 0.1094384272582829,
+          "wrong": 0.1094384272582829
+        }
+      }
+    },
+    "separate_camera": {
+      "fit": {
+        "07569a25210449ab8b54606974e6c767": {
+          "correct": 0.06996787118259817,
+          "wrong": 0.08874574536457658
+        },
+        "0afbd2427ca84114b659e1d8cfcb647a": {
+          "correct": 0.02717059018323198,
+          "wrong": 0.049410055740736425
+        },
+        "199b2202bc4543acb5a7a557212b605d": {
+          "correct": 0.009261002167477272,
+          "wrong": 0.00964613464748254
+        },
+        "1bf2bf7383d34e45aa5ac504c85e572c": {
+          "correct": 0.007723082846496254,
+          "wrong": 0.008096478006336838
+        },
+        "1fb985a5d5974bdcb412e91293d817f7": {
+          "correct": 0.03683341306168586,
+          "wrong": 0.044251729967072606
+        },
+        "6a836cf7662f4cfaa7e1244a24d6e73a": {
+          "correct": 0.013881004473660141,
+          "wrong": 0.03750469075748697
+        },
+        "7bd547dc65b04894b6f37b33088f1a9e": {
+          "correct": 0.055648404522798955,
+          "wrong": 0.12676434591412544
+        },
+        "7c3286c7a4934e48860badc106f63ab3": {
+          "correct": 0.007923177792690694,
+          "wrong": 0.010123345826286823
+        },
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4": {
+          "correct": 0.015255855789291672,
+          "wrong": 0.03884927311446518
+        },
+        "949af5011ce84b0098c5a0688420e569": {
+          "correct": 0.06954033800866455,
+          "wrong": 0.08741099596954882
+        },
+        "9e134caf65e04f5abaf742ac24df647d": {
+          "correct": 0.012751661357469857,
+          "wrong": 0.01389653841033578
+        },
+        "b38765d87b644fdeb6c4c9ffe1ca98ba": {
+          "correct": 0.016785100247943774,
+          "wrong": 0.01711102609988302
+        },
+        "c057e4593f9e42f5a353718f6c3c9150": {
+          "correct": 0.016380889661377296,
+          "wrong": 0.04074928682530299
+        },
+        "d3eae95d30064e4baafe4427d7c9038a": {
+          "correct": 0.04191632481524721,
+          "wrong": 0.0728237257571891
+        },
+        "d7167aa45e6e43b4a91fdbf5eb70b661": {
+          "correct": 0.034897913108579814,
+          "wrong": 0.05027165787760168
+        },
+        "e697fbdea7d04aa2b09122e36efadf16": {
+          "correct": 0.01670615017064847,
+          "wrong": 0.033492361777462065
+        }
+      },
+      "held_view": {
+        "07569a25210449ab8b54606974e6c767": {
+          "correct": 0.09240226889960468,
+          "wrong": 0.11024505738168955
+        },
+        "0afbd2427ca84114b659e1d8cfcb647a": {
+          "correct": 0.03370876319240779,
+          "wrong": 0.054793502669781446
+        },
+        "199b2202bc4543acb5a7a557212b605d": {
+          "correct": 0.013603383471490815,
+          "wrong": 0.013405491568846628
+        },
+        "1bf2bf7383d34e45aa5ac504c85e572c": {
+          "correct": 0.00886702528805472,
+          "wrong": 0.008756549883401021
+        },
+        "1fb985a5d5974bdcb412e91293d817f7": {
+          "correct": 0.03820608975365758,
+          "wrong": 0.04563608323223889
+        },
+        "6a836cf7662f4cfaa7e1244a24d6e73a": {
+          "correct": 0.02032527164556086,
+          "wrong": 0.038180096074938774
+        },
+        "7bd547dc65b04894b6f37b33088f1a9e": {
+          "correct": 0.07220052951015532,
+          "wrong": 0.1453825132921338
+        },
+        "7c3286c7a4934e48860badc106f63ab3": {
+          "correct": 0.01059866399737075,
+          "wrong": 0.010609993478283286
+        },
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4": {
+          "correct": 0.01639496412826702,
+          "wrong": 0.0328887747018598
+        },
+        "949af5011ce84b0098c5a0688420e569": {
+          "correct": 0.091091045178473,
+          "wrong": 0.09660090040415525
+        },
+        "9e134caf65e04f5abaf742ac24df647d": {
+          "correct": 0.016240546654444188,
+          "wrong": 0.01742496801307425
+        },
+        "b38765d87b644fdeb6c4c9ffe1ca98ba": {
+          "correct": 0.01956788683310151,
+          "wrong": 0.019504214345943183
+        },
+        "c057e4593f9e42f5a353718f6c3c9150": {
+          "correct": 0.01778194581856951,
+          "wrong": 0.03917073458433151
+        },
+        "d3eae95d30064e4baafe4427d7c9038a": {
+          "correct": 0.05835222394671291,
+          "wrong": 0.07783873635344207
+        },
+        "d7167aa45e6e43b4a91fdbf5eb70b661": {
+          "correct": 0.03928532497957349,
+          "wrong": 0.05153528833761811
+        },
+        "e697fbdea7d04aa2b09122e36efadf16": {
+          "correct": 0.027258567803073674,
+          "wrong": 0.04687554779229686
+        }
+      },
+      "held_object": {
+        "0838b73f246f4768aa0671e7b2ba7c30": {
+          "correct": 0.09665917861275375,
+          "wrong": 0.09450625185854733
+        },
+        "0c15a58c6a0c4ec9bff9336312f675d2": {
+          "correct": 0.12346113659441471,
+          "wrong": 0.13216177746653557
+        },
+        "1cf32d0ef332402c81cdf8ea6d6030b3": {
+          "correct": 0.23058864660561085,
+          "wrong": 0.22695205081254244
+        },
+        "1f51096857cb46c5a2bd1ef8bc2c1803": {
+          "correct": 0.3150689359754324,
+          "wrong": 0.2904462665319443
+        },
+        "49853261fbbe48929211cfb4f5b13866": {
+          "correct": 0.04577418835833669,
+          "wrong": 0.04199010762386024
+        },
+        "548362a5ab6f4c8e8fda42143172614e": {
+          "correct": 0.09829625114798546,
+          "wrong": 0.09809008054435253
+        },
+        "68a31a8eb07d4b84aeb3b13484d4c9e8": {
+          "correct": 0.30547285079956055,
+          "wrong": 0.2968219928443432
+        },
+        "72b8b1136e124387a8a8b5dc10f9c58f": {
+          "correct": 0.024005147570278496,
+          "wrong": 0.027866486423590686
+        },
+        "8262743abb7f4f759aa0b3bda08551e5": {
+          "correct": 0.07889967761002481,
+          "wrong": 0.08422852982766926
+        },
+        "a807e2119b24443da16a2e28529cfa26": {
+          "correct": 0.17513872310519218,
+          "wrong": 0.18517593294382095
+        },
+        "d87e82071e24487481bf90c8f2682fb6": {
+          "correct": 0.24950334057211876,
+          "wrong": 0.23588685877621174
+        },
+        "dbba322581594949944949744937c788": {
+          "correct": 0.2497186241671443,
+          "wrong": 0.23810000251978636
+        },
+        "e2759dc44b4b40fb9cf9544afc650282": {
+          "correct": 0.03431643563089892,
+          "wrong": 0.03501755913021043
+        },
+        "f240fc675fe649acafb6da700d299d55": {
+          "correct": 0.003085076568822842,
+          "wrong": 0.0027273844607407227
+        },
+        "f4e66b252b324dad84ba036a92b99f43": {
+          "correct": 0.11415974516421556,
+          "wrong": 0.11589186266064644
+        },
+        "fe725496195f49bfbabb52407c58edf8": {
+          "correct": 0.10735784145072103,
+          "wrong": 0.08562500076368451
+        }
+      }
+    },
+    "joint_oracle": {
+      "fit": {
+        "07569a25210449ab8b54606974e6c767": {
+          "correct": 0.10536848334595561,
+          "wrong": 0.10595013038255274
+        },
+        "0afbd2427ca84114b659e1d8cfcb647a": {
+          "correct": 0.049223337904550135,
+          "wrong": 0.048764745239168406
+        },
+        "199b2202bc4543acb5a7a557212b605d": {
+          "correct": 0.01899835464428179,
+          "wrong": 0.019099219207419083
+        },
+        "1bf2bf7383d34e45aa5ac504c85e572c": {
+          "correct": 0.014890416379785165,
+          "wrong": 0.014935749873984605
+        },
+        "1fb985a5d5974bdcb412e91293d817f7": {
+          "correct": 0.06752207479439676,
+          "wrong": 0.07151403441093862
+        },
+        "6a836cf7662f4cfaa7e1244a24d6e73a": {
+          "correct": 0.023291017452720553,
+          "wrong": 0.023634967918042094
+        },
+        "7bd547dc65b04894b6f37b33088f1a9e": {
+          "correct": 0.10681149852462113,
+          "wrong": 0.10810412932187319
+        },
+        "7c3286c7a4934e48860badc106f63ab3": {
+          "correct": 0.0058084312186110765,
+          "wrong": 0.007802966851158999
+        },
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4": {
+          "correct": 0.020755373290739954,
+          "wrong": 0.020812887087231502
+        },
+        "949af5011ce84b0098c5a0688420e569": {
+          "correct": 0.08931505167856812,
+          "wrong": 0.08896568743512034
+        },
+        "9e134caf65e04f5abaf742ac24df647d": {
+          "correct": 0.024151286896085367,
+          "wrong": 0.02418512146687135
+        },
+        "b38765d87b644fdeb6c4c9ffe1ca98ba": {
+          "correct": 0.03154083539266139,
+          "wrong": 0.03171393705997616
+        },
+        "c057e4593f9e42f5a353718f6c3c9150": {
+          "correct": 0.033920751011464745,
+          "wrong": 0.0345305479131639
+        },
+        "d3eae95d30064e4baafe4427d7c9038a": {
+          "correct": 0.06335112312808633,
+          "wrong": 0.06584673468023539
+        },
+        "d7167aa45e6e43b4a91fdbf5eb70b661": {
+          "correct": 0.055594190722331405,
+          "wrong": 0.055564913200214505
+        },
+        "e697fbdea7d04aa2b09122e36efadf16": {
+          "correct": 0.020443536413949914,
+          "wrong": 0.021715215232688934
+        }
+      },
+      "held_view": {
+        "07569a25210449ab8b54606974e6c767": {
+          "correct": 0.12070550303906202,
+          "wrong": 0.12178195733577013
+        },
+        "0afbd2427ca84114b659e1d8cfcb647a": {
+          "correct": 0.05770215857774019,
+          "wrong": 0.057664650958031416
+        },
+        "199b2202bc4543acb5a7a557212b605d": {
+          "correct": 0.0246153706102632,
+          "wrong": 0.024617933901026845
+        },
+        "1bf2bf7383d34e45aa5ac504c85e572c": {
+          "correct": 0.016579242539592087,
+          "wrong": 0.01702667394420132
+        },
+        "1fb985a5d5974bdcb412e91293d817f7": {
+          "correct": 0.0689985048957169,
+          "wrong": 0.0726861220318824
+        },
+        "6a836cf7662f4cfaa7e1244a24d6e73a": {
+          "correct": 0.033038743189536035,
+          "wrong": 0.03252867888659239
+        },
+        "7bd547dc65b04894b6f37b33088f1a9e": {
+          "correct": 0.11824642727151513,
+          "wrong": 0.11959919845685363
+        },
+        "7c3286c7a4934e48860badc106f63ab3": {
+          "correct": 0.009138362802332267,
+          "wrong": 0.010682332009309903
+        },
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4": {
+          "correct": 0.018335547647438943,
+          "wrong": 0.019366255088243634
+        },
+        "949af5011ce84b0098c5a0688420e569": {
+          "correct": 0.10529281618073583,
+          "wrong": 0.10483049461618066
+        },
+        "9e134caf65e04f5abaf742ac24df647d": {
+          "correct": 0.028838219586759806,
+          "wrong": 0.02905322308652103
+        },
+        "b38765d87b644fdeb6c4c9ffe1ca98ba": {
+          "correct": 0.03381491685286164,
+          "wrong": 0.03394745371770114
+        },
+        "c057e4593f9e42f5a353718f6c3c9150": {
+          "correct": 0.03817207622341812,
+          "wrong": 0.03827666235156357
+        },
+        "d3eae95d30064e4baafe4427d7c9038a": {
+          "correct": 0.06766531546600163,
+          "wrong": 0.07452800776809454
+        },
+        "d7167aa45e6e43b4a91fdbf5eb70b661": {
+          "correct": 0.05832617310807109,
+          "wrong": 0.05841889861039817
+        },
+        "e697fbdea7d04aa2b09122e36efadf16": {
+          "correct": 0.03050300444010645,
+          "wrong": 0.03183662111405283
+        }
+      },
+      "held_object": {
+        "0838b73f246f4768aa0671e7b2ba7c30": {
+          "correct": 0.08054890134371817,
+          "wrong": 0.08235265593975782
+        },
+        "0c15a58c6a0c4ec9bff9336312f675d2": {
+          "correct": 0.11996045801788568,
+          "wrong": 0.11912873457185924
+        },
+        "1cf32d0ef332402c81cdf8ea6d6030b3": {
+          "correct": 0.21588167734444141,
+          "wrong": 0.21546612959355116
+        },
+        "1f51096857cb46c5a2bd1ef8bc2c1803": {
+          "correct": 0.2612359458580613,
+          "wrong": 0.2604399509727955
+        },
+        "49853261fbbe48929211cfb4f5b13866": {
+          "correct": 0.037320673116482794,
+          "wrong": 0.036084053688682616
+        },
+        "548362a5ab6f4c8e8fda42143172614e": {
+          "correct": 0.0811401626560837,
+          "wrong": 0.08238365245051682
+        },
+        "68a31a8eb07d4b84aeb3b13484d4c9e8": {
+          "correct": 0.25792514346539974,
+          "wrong": 0.258136342279613
+        },
+        "72b8b1136e124387a8a8b5dc10f9c58f": {
+          "correct": 0.02360215422231704,
+          "wrong": 0.024295355164213106
+        },
+        "8262743abb7f4f759aa0b3bda08551e5": {
+          "correct": 0.06925309356302023,
+          "wrong": 0.07036747480742633
+        },
+        "a807e2119b24443da16a2e28529cfa26": {
+          "correct": 0.16599038802087307,
+          "wrong": 0.16401772387325764
+        },
+        "d87e82071e24487481bf90c8f2682fb6": {
+          "correct": 0.23541591595858335,
+          "wrong": 0.23535720352083445
+        },
+        "dbba322581594949944949744937c788": {
+          "correct": 0.21375274751335382,
+          "wrong": 0.213960075750947
+        },
+        "e2759dc44b4b40fb9cf9544afc650282": {
+          "correct": 0.024597697251010686,
+          "wrong": 0.023791118408553302
+        },
+        "f240fc675fe649acafb6da700d299d55": {
+          "correct": 0.004267632793926168,
+          "wrong": 0.004367933484900277
+        },
+        "f4e66b252b324dad84ba036a92b99f43": {
+          "correct": 0.09097092505544424,
+          "wrong": 0.09071195893920958
+        },
+        "fe725496195f49bfbabb52407c58edf8": {
+          "correct": 0.07927357195876539,
+          "wrong": 0.07864291872829199
+        }
+      }
+    }
+  },
+  "anchor_monitor": {
+    "fit": 0.06263152740211808,
+    "held_view": 0.06468918214523,
+    "held_object": 0.11641517802127055
+  },
+  "limits": "16 fitted/16 previously inspected held identities; one seed. All arms start from the same completed image-1024 anchor and receive 1024 additional surface-adaptation updates. Separate versus joint changes freezing, attention normalization, output initialization and the location of trainable parameters together; it is a constructive bundle, not a one-factor mechanism attribution. Constant is an oracle-frame fixed training bank; camera-versus-constant alone does not isolate frame from content. Frozen fallback does not guarantee helpful predictions with surfaces present. Require held-object benefit over both image and constant, plus correct-surface utility; fit or fallback preservation alone is not success. No broad-training or impossibility conclusion.",
+  "report_sha256": {
+    "separate_oracle": "4774bec4b420448a763c8698de71d54393b51a185e93c677f6ea5e1f1c9373ff",
+    "separate_constant": "e0287c3d2ad867e1cf0f0c0ca8d8f8dbcd17d4c43b872fd89e5bd4bbdd5185fe",
+    "separate_camera": "6135f3ef92285455bbe7a870021b742e9d0af63fd9290c13d5bf21c749f6fe21",
+    "joint_oracle": "b291a5400935e05939e36042d8ffabb0d2dd5fcdd1d91d81aa918e6c66a364e8"
+  }
+}

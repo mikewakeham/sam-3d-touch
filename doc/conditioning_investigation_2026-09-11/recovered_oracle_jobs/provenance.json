@@ -1,0 +1,18 @@
+{
+  "status": "Historical job definitions; not evidence of job completion or current checkpoint existence",
+  "removed_in_commit": "47ce9d4f60e24346d606876f016574b0e8e3e7a4",
+  "files": [
+    {
+      "git_commit": "8828d933ca4b11fbfb34a6f78631c716e72190be",
+      "git_path": "jobs/stage1_full_surface_oracle_full_cross_attention.sh",
+      "archive": "stage1_full_surface_oracle_full_cross_attention.sh.txt",
+      "sha256": "844e0c53b6828a2eef60364c71ae1ec6fae16ba951344247f66cf2bf980ee8cb"
+    },
+    {
+      "git_commit": "8828d933ca4b11fbfb34a6f78631c716e72190be",
+      "git_path": "jobs/stage1_full_surface_oracle_no_pointmap_full_cross_attention.sh",
+      "archive": "stage1_full_surface_oracle_no_pointmap_full_cross_attention.sh.txt",
+      "sha256": "fedfdd54f3a2ec53cf382359b873ffed73ff07ffcee432b2557c53e0d33a4a20"
+    }
+  ]
+}

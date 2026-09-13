@@ -1,6 +1,6 @@
 # Coordinate diagnosis: reconciled state and next decision
 
-12 September 2026. This records the coordinate diagnosis resynchronization and the original factorial plan. That experiment and the subsequent view/identity transfer screens have completed. The latest evidence and next decision are in `CONSTANT_SURFACE_RETURNED_FINDINGS.md`; the only current GPU dependency is `SEPARATE_SURFACE_HANDOFF.md`. The coordinate contracts and user constraints below remain applicable; its next-experiment sections are historical, not queued jobs.
+12 September 2026. This records the original coordinate-factor plan, now completed. Read `PIVOTAL_FINDINGS.md` before designing the next experiment; it is the governing living evidence ledger. `CONTEXT_AND_COORDINATE_NEXT_STEP.md` reconciles the paper, upstream/local code and completed history, but its inventory proposal is now optional, not a prerequisite. Continue from established coordinate controls. The contracts below remain applicable; historical next-experiment sections are not queued jobs.
 
 ## User objective and constraints
 
