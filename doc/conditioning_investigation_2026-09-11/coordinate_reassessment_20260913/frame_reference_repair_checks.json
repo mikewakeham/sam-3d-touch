@@ -1,0 +1,23 @@
+{
+  "frame_tests_passed": 8,
+  "returned_artifact_hashes_verified": 96,
+  "returned_objects": 32,
+  "returned_observations": 64,
+  "driver_import_and_help": "passed",
+  "python_syntax": "passed",
+  "shell_syntax": "passed",
+  "git_diff_whitespace": "passed",
+  "actual_repaired_source_triangle_checks": "pending cluster",
+  "camera_cuda_inference": "pending cluster",
+  "source_sha256": {
+    "frame_probe_gpu.py": "b74f55506d265ea550d57ee3f066efd5f2ee407e3a552c7623b9928593fcc944",
+    "frame_probe_core.py": "f717be752915800041b41d65ad21849c4e0489ea3ac97026eec3181a9371eea0",
+    "analyze_frame_probe.py": "3d5ac5f33c11fb5fdc0c5c1ea85102006363ec4f41cba9d341e258d0ed1b5ede",
+    "run_frame_probe.sh": "05f12576fdebf4d5aa8b114da9fc6d3e9d714a8f5403e28aa255b823ee9a38c6",
+    "FRAME_PROBE_HANDOFF.md": "8563827b1b22333df92af8f66c7ba306a2fb32fbbe90a840a8f6dade95686979",
+    "FRAME_REFERENCE_RETURNED_FINDINGS.md": "4a770c3b9fe8b489af9b6863d67fb758511630189b9f876846abe37e02a68760",
+    "audit_returned_frame_reference.py": "fb1758d9392a9c0d739d4666b8f74ab19d09c0fb8bf2e1655c59574d8cac1426",
+    "test_frame_mesh_reference.py": "9d993b35f357e483604fb6528662316db8546f44c51803824904118d694ce375",
+    "test_frame_probe.py": "1daa393c9094587407a0b18df4fbc833740e0df3bc603e2ff11134b4fcccd837"
+  }
+}

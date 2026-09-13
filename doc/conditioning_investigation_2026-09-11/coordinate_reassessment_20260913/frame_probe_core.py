@@ -2,6 +2,52 @@
 import numpy as np
 
 
+def triangle_witness(points, triangles):
+    """Float64 witnesses on supplied triangles, not a global nearest-face query.
+
+    Every candidate is a convex combination of triangle vertices. Clamping
+    barycentrics can overestimate distance but cannot create an off-mesh witness.
+    Edge candidates also handle collapsed and very thin triangles.
+    """
+    p = np.asarray(points, dtype=np.float64)
+    t = np.asarray(triangles, dtype=np.float64)
+    assert p.ndim == 2 and p.shape[1] == 3 and t.shape == (len(p), 3, 3)
+    assert np.isfinite(p).all() and np.isfinite(t).all()
+    a, b, c = t[:, 0], t[:, 1], t[:, 2]
+    u, v = b-a, c-a
+    n = np.cross(u, v); nn = np.sum(n*n, axis=1)
+    s = np.divide(np.sum(np.cross(p-a, v)*n, axis=1), nn,
+                  out=np.zeros(len(p)), where=nn > 0)
+    w = np.divide(np.sum(np.cross(u, p-a)*n, axis=1), nn,
+                  out=np.zeros(len(p)), where=nn > 0)
+    weights = np.maximum(np.stack([1-s-w, s, w], axis=1), 0)
+    weights /= weights.sum(axis=1, keepdims=True)
+    candidates = [np.sum(weights[:, :, None]*t, axis=1)]
+    for x, y in ((a, b), (b, c), (c, a)):
+        e = y-x; ee = np.sum(e*e, axis=1)
+        alpha = np.divide(np.sum((p-x)*e, axis=1), ee,
+                          out=np.zeros(len(p)), where=ee > 0).clip(0, 1)
+        candidates.append(x+alpha[:, None]*e)
+    candidates = np.stack(candidates, axis=1)
+    distances = np.linalg.norm(p[:, None]-candidates, axis=2)
+    best = distances.argmin(axis=1)
+    return candidates[np.arange(len(p)), best]
+
+
+def sampled_mesh_check(points, sampled, triangles, limit=5e-5):
+    """Require both exact seeded correspondence and a source-triangle witness."""
+    p = np.asarray(points, dtype=np.float64)
+    sampled = np.asarray(sampled, dtype=np.float64)
+    assert p.shape == sampled.shape and np.isfinite(sampled).all()
+    witness = triangle_witness(p, triangles)
+    distance = np.linalg.norm(p-witness, axis=1)
+    replay = float(np.abs(p-sampled).max())
+    return {'point_to_mesh_max_distance': float(distance.max()),
+            'point_to_mesh_passed': bool(distance.max() < limit and replay < limit),
+            'distance_limit': limit, 'seed_replay_max_error': replay,
+            'mesh_reference_method': 'seeded_source_triangle_float64'}, witness
+
+
 def check_observation(actual, reference):
     # Point frames and learned surface tokens are the intended differences.
     keys = ('split', 'group', 'sample_ids', 'object_ids', 'image_sha256',
