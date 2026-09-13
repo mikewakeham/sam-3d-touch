@@ -1,0 +1,30 @@
+{
+  "arms": {
+    "current": {
+      "bundle_sha256": "d40f10adbee2a2de74395115fe92ec1a90cd7c51723632fd235c2717b51d0272",
+      "report_sha256": "41e88e0f529c9d05d8f651f24294859741a80fbfe33083223e86f7f043237d4e",
+      "payload_members": 87,
+      "rows": 112,
+      "target_arrays_match_parent": true,
+      "native_ious_reproduced": true,
+      "replay_max_relative": 0.0005398982084824876
+    },
+    "shape_path": {
+      "bundle_sha256": "5baff73f26c3d00c0bd3b13ed113e8a28dd69c9974daa3127dea965f19f9300e",
+      "report_sha256": "1c9781efd904a280876fef59b2b75f772345ee38c54fda82d871ac328df6ace5",
+      "payload_members": 87,
+      "rows": 112,
+      "target_arrays_match_parent": true,
+      "native_ious_reproduced": true,
+      "replay_max_relative": 0.0005398982084824876
+    }
+  },
+  "matched_start_and_exposure": true,
+  "first_update_loss_identical": true,
+  "scope": "Weight/Adam content digests matched from independently returned reports; full checkpoint tensors remain on cluster. CPU independently verifies returned arrays. One training seed/four fitted identities.",
+  "source_sha256": {
+    "analyze_shared_orientation_scope.py": "b46053635d3b463adc8517d7e16215a237369885d97a3a5201cef1c132725699",
+    "analyze_shared_orientation_geometry.py": "89992b1576d2d1a20c5fdc2f90de469de027ac95d07cfe5cc5417b518ed3751e",
+    "pose_shape_geometry.py": "b7654cb415c08496ece2e743ed0a7b96becd2470d64e8d342a9e1f2a36243200"
+  }
+}

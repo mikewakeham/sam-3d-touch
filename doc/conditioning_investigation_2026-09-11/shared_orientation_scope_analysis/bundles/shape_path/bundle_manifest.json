@@ -1,0 +1,1148 @@
+{
+  "format_version": 4,
+  "scope": "Matched 1000 additional updates from the same checkpoint. Shared optimizer moments retained. Only trainable generator scope changes; unchanged VecSetX, inputs, targets and layout attention protection.",
+  "cases": [
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g0_d0",
+      "file": "correct_surface_g0_d0.npz",
+      "condition": "correct_surface",
+      "group": 0,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g0_d1",
+      "file": "correct_surface_g0_d1.npz",
+      "condition": "correct_surface",
+      "group": 0,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g0_d0",
+      "file": "wrong_surface_g0_d0.npz",
+      "condition": "wrong_surface",
+      "group": 0,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g0_d1",
+      "file": "wrong_surface_g0_d1.npz",
+      "condition": "wrong_surface",
+      "group": 0,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g1_d0",
+      "file": "correct_surface_g1_d0.npz",
+      "condition": "correct_surface",
+      "group": 1,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g1_d1",
+      "file": "correct_surface_g1_d1.npz",
+      "condition": "correct_surface",
+      "group": 1,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g1_d0",
+      "file": "wrong_surface_g1_d0.npz",
+      "condition": "wrong_surface",
+      "group": 1,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g1_d1",
+      "file": "wrong_surface_g1_d1.npz",
+      "condition": "wrong_surface",
+      "group": 1,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g2_d0",
+      "file": "correct_surface_g2_d0.npz",
+      "condition": "correct_surface",
+      "group": 2,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g2_d1",
+      "file": "correct_surface_g2_d1.npz",
+      "condition": "correct_surface",
+      "group": 2,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g2_d0",
+      "file": "wrong_surface_g2_d0.npz",
+      "condition": "wrong_surface",
+      "group": 2,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g2_d1",
+      "file": "wrong_surface_g2_d1.npz",
+      "condition": "wrong_surface",
+      "group": 2,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g3_d0",
+      "file": "correct_surface_g3_d0.npz",
+      "condition": "correct_surface",
+      "group": 3,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g3_d1",
+      "file": "correct_surface_g3_d1.npz",
+      "condition": "correct_surface",
+      "group": 3,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g3_d0",
+      "file": "wrong_surface_g3_d0.npz",
+      "condition": "wrong_surface",
+      "group": 3,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g3_d1",
+      "file": "wrong_surface_g3_d1.npz",
+      "condition": "wrong_surface",
+      "group": 3,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g4_d0",
+      "file": "correct_surface_g4_d0.npz",
+      "condition": "correct_surface",
+      "group": 4,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g4_d1",
+      "file": "correct_surface_g4_d1.npz",
+      "condition": "correct_surface",
+      "group": 4,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g4_d0",
+      "file": "wrong_surface_g4_d0.npz",
+      "condition": "wrong_surface",
+      "group": 4,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g4_d1",
+      "file": "wrong_surface_g4_d1.npz",
+      "condition": "wrong_surface",
+      "group": 4,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g5_d0",
+      "file": "correct_surface_g5_d0.npz",
+      "condition": "correct_surface",
+      "group": 5,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g5_d1",
+      "file": "correct_surface_g5_d1.npz",
+      "condition": "correct_surface",
+      "group": 5,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g5_d0",
+      "file": "wrong_surface_g5_d0.npz",
+      "condition": "wrong_surface",
+      "group": 5,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g5_d1",
+      "file": "wrong_surface_g5_d1.npz",
+      "condition": "wrong_surface",
+      "group": 5,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g6_d0",
+      "file": "correct_surface_g6_d0.npz",
+      "condition": "correct_surface",
+      "group": 6,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/correct_surface_g6_d1",
+      "file": "correct_surface_g6_d1.npz",
+      "condition": "correct_surface",
+      "group": 6,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g6_d0",
+      "file": "wrong_surface_g6_d0.npz",
+      "condition": "wrong_surface",
+      "group": 6,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    },
+    {
+      "kind": "scope_shape_path",
+      "prefix": "scope_shape_path/wrong_surface_g6_d1",
+      "file": "wrong_surface_g6_d1.npz",
+      "condition": "wrong_surface",
+      "group": 6,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "archive_path": "scope_shape_path/results.json",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/results.json",
+      "bytes": 507999,
+      "sha256": "1c9781efd904a280876fef59b2b75f772345ee38c54fda82d871ac328df6ace5"
+    },
+    {
+      "archive_path": "reference/parent_results.json",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/results.json",
+      "bytes": 442926,
+      "sha256": "4c7dba47c274ec1d3e777033045371fcdb5e45b02a3b4fa176fada35e004e9f6"
+    },
+    {
+      "archive_path": "reference/original_target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/original_target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_000.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_000.npy",
+      "bytes": 262272,
+      "sha256": "b1da42d44dfc07ae4e7970ca71d21975906f75bd83979d2cec52bad5a4bd4dd7"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_007.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_007.npy",
+      "bytes": 262272,
+      "sha256": "26598d14f10f3dabe00f7a2027c5dd20058afab8b696ff1136939174daed9b7e"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_011.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_011.npy",
+      "bytes": 262272,
+      "sha256": "ff8659d3a12becda764430fbf76b37f6ec3f125f681c8de06497bb37f0b39203"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_002.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_002.npy",
+      "bytes": 262272,
+      "sha256": "76335dde40485365a4ee3ab1a0a71bfbe2122ba3da03d9ed7380de8f0e2dc383"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_003.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_003.npy",
+      "bytes": 262272,
+      "sha256": "f2a019896480bca9d7198b88f6381257bd91c5918a3807379fa15e22448d9bc5"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_002.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_002.npy",
+      "bytes": 262272,
+      "sha256": "a1a5c64edc6d5d3614cd3a148b1b829a2e9ba956931b95df58897b080984ad7d"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_002.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_002.npy",
+      "bytes": 262272,
+      "sha256": "ca6ad10c99911b7596d641de4a636a22f4bacf1943c87e33acf46579b2470116"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_003.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_003.npy",
+      "bytes": 262272,
+      "sha256": "31723997d0b7a25780c41592aaf6af04e9d07b4b5a1d1523c46a1fbf8a310e4f"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_015.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_015.npy",
+      "bytes": 262272,
+      "sha256": "8dd3c885926c0f64102199fcba4e05b48de41a050f7e61b195e20cd4e2181f16"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_015.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_015.npy",
+      "bytes": 262272,
+      "sha256": "c6173e88aafd57cff48ed7d3ea0aa52afaecd051902c503d5d488d1399a94759"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_015.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_015.npy",
+      "bytes": 262272,
+      "sha256": "16bbe1bc918c808add13d5b2a622b5d481b7ae829d900babe296d1c27b01c34d"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_015.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_015.npy",
+      "bytes": 262272,
+      "sha256": "78d2ac39edac45d0f4900be537fbac8a936b4c5a76299ee04f3b226bdb5e4797"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_008.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_008.npy",
+      "bytes": 262272,
+      "sha256": "2add2d505f9ff07585d77f7b03410dbb16934b110421cd5de9d4c0ee39c7d0c9"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_008.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_008.npy",
+      "bytes": 262272,
+      "sha256": "888756ec7c71528a1f98050a985b57254d0cf95cdbc23e1f828c57e13d38b994"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_007.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_007.npy",
+      "bytes": 262272,
+      "sha256": "0eb1980b8ad4ca0a38ea122bb2004baf8350f1538a221fc57f1bb95e8fc4d32f"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_008.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_008.npy",
+      "bytes": 262272,
+      "sha256": "894fb863256ac52a6a03bf22493fc53623379780f02eac9cf858a60e19c8099e"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_011.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_011.npy",
+      "bytes": 262272,
+      "sha256": "bdf2bbcf81a01c6c2d7f0f1df58f90024265377960b9874cc40b2cd53bcef8f2"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_011.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_011.npy",
+      "bytes": 262272,
+      "sha256": "9dc752c0ba08e5dc204a0f97ffbb084a82edd692f8cc0b54c87fe1f2bf8a8545"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_010.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_010.npy",
+      "bytes": 262272,
+      "sha256": "2cb9604eb9e155539517192ff39d5d9dfc9e0c4683ca04f13058b93429361785"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_011.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_011.npy",
+      "bytes": 262272,
+      "sha256": "05406d96185ae7ad5bf25e8d048305897832d67f1ab0cd7e9dbd9b34303fefe5"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_001.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_001.npy",
+      "bytes": 262272,
+      "sha256": "db392a4dcbf677157f5b810159a1849e45c24824aa75fc3ab79e41a99442f398"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_000.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_000.npy",
+      "bytes": 262272,
+      "sha256": "26be41a4ce95dca7dca2e6f9204ad005e7d8dea54636a4d7a05a9792fcb12d6e"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_000.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_000.npy",
+      "bytes": 262272,
+      "sha256": "e77884aea1c0d61d884153309b78c4c870b4ecdd00bc626203ae6c01f629460c"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_000.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_000.npy",
+      "bytes": 262272,
+      "sha256": "192f0822c565bbe47dd607975a487a1f5af7826cb421f487146ed8e74d7fa218"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_007.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_007.npy",
+      "bytes": 262272,
+      "sha256": "c1cf6bd3fd780f216d75dd8615c891189610e0598ea16638832d705e5388489d"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_006.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_006.npy",
+      "bytes": 262272,
+      "sha256": "5b33af942743f0a2fc0024785b44c5ae7f95ac5b3e4ded4231a0d5a8abe2929c"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_006.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_006.npy",
+      "bytes": 262272,
+      "sha256": "04b29e00d8118b0a507556f11ba6b276a288b79571381da680344d6e155d5a82"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_007.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_007.npy",
+      "bytes": 262272,
+      "sha256": "856e32e8a2f361c7b3b6318912a7ec203fb7be75ef241ac0aab26c21290cf61a"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g0_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g0_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "19d6f3408e18613a0be2c057797b1a87ca6b6626580c8cf779d61de0d1a68143"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g0_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g0_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "57743d48bd42f76bfaed9f3d4002865bf2603bdedfcfe9a3b475a095cb813f54"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g0_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g0_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "0c3aa8ea45a0bacdb49487134bc3ec8d9420790425d3e0101587d6962c34ece9"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g0_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g0_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "57743d48bd42f76bfaed9f3d4002865bf2603bdedfcfe9a3b475a095cb813f54"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g0_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g0_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "3d57f0bb5bd2c801c53259e926edc7d9cd8a52436a5ee788a08d1db4a66713f5"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g0_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g0_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "57743d48bd42f76bfaed9f3d4002865bf2603bdedfcfe9a3b475a095cb813f54"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g0_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g0_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "b7d12b155baf0c4737d4fea6b002ea215ca4281acdf6aebda96ee96310546454"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g0_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g0_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "57743d48bd42f76bfaed9f3d4002865bf2603bdedfcfe9a3b475a095cb813f54"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g1_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g1_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "35092ccc822acadd1a30df72c98b082175bf83525b804b99090d5d67d1ad42d0"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g1_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g1_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "4777ffc0e1a7bdade0b0d0db060e960e7a0ac1c7dde1bef925173f1a3ddb582b"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g1_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g1_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "368e68ae32a903c69c9bc274ea4334c09b841bb89366e97ce05809e73af2a0d9"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g1_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g1_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "4777ffc0e1a7bdade0b0d0db060e960e7a0ac1c7dde1bef925173f1a3ddb582b"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g1_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g1_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "47f8a1c50c5829eea1dfc56e80358bb5f1279936cc60ba956b4a1b6e0405f2a9"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g1_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g1_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "4777ffc0e1a7bdade0b0d0db060e960e7a0ac1c7dde1bef925173f1a3ddb582b"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g1_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g1_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "426d6de2223d3ea8bea4a68c197967e4aa8e4408c4ea038b32c156e59cc18c34"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g1_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g1_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "4777ffc0e1a7bdade0b0d0db060e960e7a0ac1c7dde1bef925173f1a3ddb582b"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g2_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g2_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "9091a4abde1b9daaa1bbc314562ec77e851189e646f035fd796d9738d5fbedce"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g2_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g2_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d97c6bd2ea520ce7465d0f528b91d5e1380e4616e4a9b898e17ba3ba27d1852e"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g2_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g2_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "7935cc74736570666b14a9932915472c90d3e427e43a50644978889768544dab"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g2_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g2_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d97c6bd2ea520ce7465d0f528b91d5e1380e4616e4a9b898e17ba3ba27d1852e"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g2_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g2_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "8837c3c9a5339b49419d818f6d56ef1ae8cdf4e96da8af4dd76a97980e98670f"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g2_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g2_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d97c6bd2ea520ce7465d0f528b91d5e1380e4616e4a9b898e17ba3ba27d1852e"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g2_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g2_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "b04416dc34fa524973a2e66e423d91e9c042fbea270fd0c28c886cd172cf6b0b"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g2_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g2_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d97c6bd2ea520ce7465d0f528b91d5e1380e4616e4a9b898e17ba3ba27d1852e"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g3_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g3_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "cf9e636c5bbe713cd8f17e479755f83f3381eadc34049860a1eefa214b717227"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g3_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g3_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "7ac70f18be79c868e484fa66926a3378b6a94a42b8a9f28f51937665a91affc8"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g3_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g3_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "db5a3cfe11b74b799e7fba24619955fd02a8d8a3ae7bf9d686c5a53d7cd6ec18"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g3_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g3_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "7ac70f18be79c868e484fa66926a3378b6a94a42b8a9f28f51937665a91affc8"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g3_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g3_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "bcbf257c1ae8b49df2360fcb80496a49d4acbbe76bdb6b53e26f5ae70c9dd5de"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g3_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g3_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "7ac70f18be79c868e484fa66926a3378b6a94a42b8a9f28f51937665a91affc8"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g3_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g3_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "2e7ec219d86dcacc55fffd6505a257246c8d745571413cd87d5e1ee91e01957d"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g3_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g3_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "7ac70f18be79c868e484fa66926a3378b6a94a42b8a9f28f51937665a91affc8"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g4_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g4_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "e9e6c905deb8dd701cb2b69a7d10b55da7e69e946afcf63cb7fb5aa001f83b4b"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g4_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g4_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "652a3dc1323d7fe36fbe285ae7c71361195b6a5b21a630327d0a0cfeea6f293e"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g4_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g4_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "6fe1e253ca8dbdd613b01758b62186be880ca55af5f762a8f2e91d0255b1badc"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g4_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g4_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "652a3dc1323d7fe36fbe285ae7c71361195b6a5b21a630327d0a0cfeea6f293e"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g4_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g4_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "34d11a5b3107fea3bf3074b6a01cb0845a20940ca678ffc4018d50a1d8eb0c34"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g4_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g4_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "652a3dc1323d7fe36fbe285ae7c71361195b6a5b21a630327d0a0cfeea6f293e"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g4_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g4_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "f0abcf28266d021a772f589103e5806272b17fb2030e994cd3046ea89d9d0350"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g4_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g4_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "652a3dc1323d7fe36fbe285ae7c71361195b6a5b21a630327d0a0cfeea6f293e"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g5_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g5_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "afc3bac6c209eadc0149c5b3d845cbb5df51976f426111d4e40e460f9258bd1f"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g5_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g5_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "782c81240a8cbf4a240865e9e0f82827e7fcb7895656d913e2836fab4cf0bb1b"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g5_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g5_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d0397aae3b94966df2d17c59629d2ffbc9b22a1809bace3c69e0d79a4446e5fb"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g5_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g5_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "782c81240a8cbf4a240865e9e0f82827e7fcb7895656d913e2836fab4cf0bb1b"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g5_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g5_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "2b9fe7707d7499d38c46e0c10016bba616e3fd8404ebf979d9386eee50428597"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g5_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g5_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "782c81240a8cbf4a240865e9e0f82827e7fcb7895656d913e2836fab4cf0bb1b"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g5_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g5_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d046a41b8fd7affe0b72a91d92e0bb8864bf96cfa671e1dbb8f16db727d31c25"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g5_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g5_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "782c81240a8cbf4a240865e9e0f82827e7fcb7895656d913e2836fab4cf0bb1b"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g6_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g6_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "8fbec14c24e4f2c97775eb0f4f4236724bd87b271b7af79bf90638ba2b1c9d01"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g6_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g6_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "70b67e33f416cf4b5511776cfd2b3622b4c0134069a61fa3a5d61f31d5fa11ec"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g6_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g6_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "14f7885fe33d5fcece1c5e204d8c0f4e008a84666565b0bd00192c8e992f44b9"
+    },
+    {
+      "archive_path": "scope_shape_path/correct_surface_g6_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g6_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "70b67e33f416cf4b5511776cfd2b3622b4c0134069a61fa3a5d61f31d5fa11ec"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g6_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g6_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "950acaa8f485f1e5178268846231557f4cb822108295919ecddac20cf6c1ac8e"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g6_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g6_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "70b67e33f416cf4b5511776cfd2b3622b4c0134069a61fa3a5d61f31d5fa11ec"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g6_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g6_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "81e00a511eed53a4857419772f01c14c0f523b3fdbd86de049f921523dba7df5"
+    },
+    {
+      "archive_path": "scope_shape_path/wrong_surface_g6_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g6_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "70b67e33f416cf4b5511776cfd2b3622b4c0134069a61fa3a5d61f31d5fa11ec"
+    }
+  ],
+  "source_npz": [
+    {
+      "prefix": "scope_shape_path/correct_surface_g0_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g0_d0.npz",
+      "bytes": 1001279,
+      "sha256": "52c74782413508dffdcd4bef898a6fba715229619f1e5b0525ef93e57d12cee0"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g0_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g0_d1.npz",
+      "bytes": 1001612,
+      "sha256": "37ca3c82786132def118cc5e5ca6ef99fb29f3403e4fd65a09193bec1783a5ef"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g0_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g0_d0.npz",
+      "bytes": 991463,
+      "sha256": "694a9251f539857703f68bb7bed5619554b03bbbff6a55866cf2f51d0e4e0f76"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g0_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g0_d1.npz",
+      "bytes": 997948,
+      "sha256": "930ae36b245ddb6cf6d0faea95fbd8e78a7c768289d5925e5f35dfc12da18553"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g1_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g1_d0.npz",
+      "bytes": 991427,
+      "sha256": "03ae9e14ff9f72ee16dc26b141347dacfbbdf8ef7b8f6a1e0831daec7627e650"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g1_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g1_d1.npz",
+      "bytes": 991509,
+      "sha256": "7fea4e927b11416b9ac98a05aedda05dbd9631c13e8c55c9e8fb9eba63369426"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g1_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g1_d0.npz",
+      "bytes": 986723,
+      "sha256": "0e88ab0b55e8a27d719c991989d6a71c51f2d1c33cf9a01f28ef1f3b9a2c6ffa"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g1_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g1_d1.npz",
+      "bytes": 986734,
+      "sha256": "87052b17d6392d184a7f8b1649c0f567a1709dd82db4179045f0213a2417569b"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g2_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g2_d0.npz",
+      "bytes": 994516,
+      "sha256": "b5cc6641d6fdf1d49a89226f63c6eeb644557a07814ced2995c67464636d4a10"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g2_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g2_d1.npz",
+      "bytes": 994735,
+      "sha256": "60dfd23054ff93f79fe48e3d377abe4b2e11024f602269a1be3b5b6347b3ff1c"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g2_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g2_d0.npz",
+      "bytes": 995137,
+      "sha256": "8def6e74fa7398c95e58d03503d0ad2a53364c8946e66202b5a0479585f73e79"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g2_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g2_d1.npz",
+      "bytes": 995335,
+      "sha256": "2c75cdb8806cf5bccb7a7e228620d4e30df81128e43eb70af58d79c9fb1842f7"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g3_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g3_d0.npz",
+      "bytes": 1002705,
+      "sha256": "e69c1b89074ffd079dfe86bfb38e1c17ac30ac84e84096ad2a09840e4d53c6a4"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g3_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g3_d1.npz",
+      "bytes": 1002158,
+      "sha256": "7297f56b9be585fac61af178787ff6a497f885157122350b2ef4822c776c3c15"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g3_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g3_d0.npz",
+      "bytes": 1002379,
+      "sha256": "53f769fc6230481adc88d066281c06093722d1e05a8d906a43bb927425ac1240"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g3_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g3_d1.npz",
+      "bytes": 1000971,
+      "sha256": "55b357a5aef971e3a9d137a3fd8f2f2fe9fac37e01de71b78ad780b0fcc9c03f"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g4_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g4_d0.npz",
+      "bytes": 999077,
+      "sha256": "33672f68a146be383a508eb0709e5d5f3a628166fb4a965d7c5ce5506a61f7d8"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g4_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g4_d1.npz",
+      "bytes": 999467,
+      "sha256": "55eb48cefe4dfbab849e20ae5e526e325abf058559fe989af7a9c2ed33a735d1"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g4_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g4_d0.npz",
+      "bytes": 997182,
+      "sha256": "a78deec48022cea0fff80c8c26659b6a64be581a004ddb4a9c6aa59446613008"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g4_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g4_d1.npz",
+      "bytes": 997569,
+      "sha256": "f3ef05d6e44fc0c211ca4b0d4e43424627623a4ec086ef5bb92a0274ada11eac"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g5_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g5_d0.npz",
+      "bytes": 997059,
+      "sha256": "fcfa0622ee034b5fbb1df45d190780f65f9a21a2dbb59bada1487b8e38571c9d"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g5_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g5_d1.npz",
+      "bytes": 996577,
+      "sha256": "c84087004b2520e278fc859fcb44d21794a8830b36e5e745e9754bd8e2b58c7d"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g5_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g5_d0.npz",
+      "bytes": 993604,
+      "sha256": "4644149c03a2978b0078b02f9cac7aefd7ce6fe75e267b1e96106b92f121980c"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g5_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g5_d1.npz",
+      "bytes": 992869,
+      "sha256": "c8eea7d9421fb123f33b82377b3d461811d8243a2fb0c6dd6582eb0ee520f3f9"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g6_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g6_d0.npz",
+      "bytes": 998056,
+      "sha256": "3ba96a9330037e14ef345e98b662f502475badf074a469eb0af67ee613781cf5"
+    },
+    {
+      "prefix": "scope_shape_path/correct_surface_g6_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/correct_surface_g6_d1.npz",
+      "bytes": 998428,
+      "sha256": "e1bb32097038222a9c28fe2943322c160970bbacec36c4ccf84d3070a4352c71"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g6_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g6_d0.npz",
+      "bytes": 995072,
+      "sha256": "f9d942216eba97b46819d7807e902d2cffb38877405b5b7397f9eb0bb555eaaf"
+    },
+    {
+      "prefix": "scope_shape_path/wrong_surface_g6_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation_scope/manual/shape_path/wrong_surface_g6_d1.npz",
+      "bytes": 994562,
+      "sha256": "d2f15d1a0e68c58b250ff79b2d4ab92710f1abae4879a39608e8a366d9b52e9f"
+    }
+  ]
+}

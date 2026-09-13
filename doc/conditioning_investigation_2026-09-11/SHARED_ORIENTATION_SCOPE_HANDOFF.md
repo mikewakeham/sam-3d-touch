@@ -1,6 +1,6 @@
 # Matched continuation: can the generator adapt to the shared camera frame?
 
-Status: implemented; CPU protocol/source checks pass, no local PyTorch/CUDA execution. GPU result required. This is one short two-arm comparison, not a full-dataset run. Production `train.py`, encoders and prior diagnostic scripts are unchanged.
+Status: both GPU arms completed and their returned arrays were verified. See [SHARED_ORIENTATION_SCOPE_RETURNED_FINDINGS.md](SHARED_ORIENTATION_SCOPE_RETURNED_FINDINGS.md). Do not rerun or automatically extend these jobs. This is one short two-arm comparison, not a full-dataset run. Production `train.py`, encoders and prior diagnostic scripts are unchanged.
 
 ## Evidence and question
 
