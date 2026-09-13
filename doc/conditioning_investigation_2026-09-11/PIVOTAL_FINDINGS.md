@@ -360,6 +360,20 @@ Source and reproducible numerical audit: [full-run returned findings](oracle_upp
 
 **Execution status after F17 (not new evidence):** the [completed-run checkpoint probe](oracle_upper_bound/CHECKPOINT_PROBE_HANDOFF.md) is ready for the user's GPU node. It restores oracle/constant production last checkpoints at14,660; checks actual input/noise/time pairing; crosses visual-present/zero with correct/three wrong surfaces on16 train and16 validation identities, two views each; and reports native plus three fixed-time losses. Four local CPU pairing/completeness tests pass and GPU-module imports/CLI succeed locally. Full SAM3D execution is untested and pending. No new training or production-source edits. This probe does not itself establish sampled geometry fidelity; use its result to choose that verification or the relevant aligned-fitting/transfer/fusion branch. GPU results are now required before further causal conclusions.
 
+## F18 — Aligned surfaces have held-object utility at high noise; pooled loss hides its limited scope
+
+The completed oracle/constant checkpoint probe verifies: archive CRCs, exact raw-report summary reproduction, matching pasted JSON, all nine local/runtime source hashes, matching observation/target/time/noise hashes across arms, epoch20 / step14,660, and unchanged restored adapted weights.16 training and16 disjoint validation objects, two views each; no training or decoding.
+
+At t=.05, oracle versus constant reduces loss by4.44%/16.02% on train objects with visuals present/zero, and1.23%/7.06% on validation objects. Oracle beats constant for11/16 held objects with visuals and13/16 without. Correct surfaces beat the mean of three wrong-object surface controls for **all16 held identities in both visual states**. This establishes some useful sample-specific conditioning beyond fitted identities at this measured noise level; it does not establish dense shape readout or successful generation.
+
+Native held-object oracle loss remains0.76% worse with visuals, and only0.42% better without (only6/16 object means improve). At fixed t=.5 and.95 it is worse than constant. Actual native-bank time disaggregation confirms that gains near noise are offset by costs elsewhere; t=.95 itself was not sampled natively and must not be used to explain the whole W&B plateau. Visual-zero increases the relative value of surfaces but **worsens absolute oracle loss**: it is not a demonstrated rescue of harmful visual interaction.
+
+**Next consequence:** use the positive dependence branch to test free-running Stage-1 fidelity on these same checkpoints/identities with paired noise and correct/wrong/constant surfaces. Do not declare oracle solved, discard VecSetX, prescribe timestep reweighting or move to non-oracle pose recovery. The current evidence rules against complete surface neglect, while accurate generated geometry remains unresolved. No new camera-frame cost is identified by an oracle/constant-only comparison.
+
+Source: [checkpoint probe returned findings](oracle_upper_bound/CHECKPOINT_PROBE_RETURNED_FINDINGS.md), `oracle_upper_bound/returned_20260913_133239/{verification,summary,time_disaggregation}.json`.
+
+**Execution status after F18 (not new evidence):** [Stage-1 checkpoint rollouts](oracle_upper_bound/CHECKPOINT_ROLLOUT_HANDOFF.md) are ready. Exact prior checkpoints/observations/tokens replay, pure-noise25-step CFG0 generation, correct/one fixed wrong oracle surface versus saved constant bank, visual-present/zero, two draws. Save latents/supports for independent fidelity and pose analysis. Four CPU sampling/metric/completeness tests and module import/CLI checks pass; SAM3D GPU execution is pending. No training, source integration or Stage2. Do not repeat the loss-only probe or infer full-data oracle success before these fidelity results.
+
 
 ### Implementation status — approved production integration (not a new experimental finding)
 

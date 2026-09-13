@@ -1,0 +1,24 @@
+{
+  "status": "CPU checks passed; SAM3D GPU execution pending",
+  "tests_passed": 4,
+  "checks": [
+    "synthetic pure-noise sampling bank preserved",
+    "identity, empty and translated support metrics",
+    "object-level endpoint and comparison directions",
+    "missing, duplicate, unpaired records rejected",
+    "GPU entrypoint imports and --help",
+    "Python compilation",
+    "bash -n"
+  ],
+  "source_sha256": {
+    "checkpoint_rollout_gpu.py": "588e636a35295b642251780e8165828cf16fd3b083a3098607d9f894c9bc096e",
+    "checkpoint_rollout_core.py": "effd77072e7aeab09aa978f83c861b8c86c49e6b76ebf3850a9becbda2e04cf6",
+    "analyze_checkpoint_rollouts.py": "f2b23a902c1877ad7ac53acec7e4c7bf7ac7498d51f98caf011ffd4d6ddbe279",
+    "run_checkpoint_rollouts.sh": "f7ac979d14dfae7dec1f658b2a0571f86343fc8629ed38f09f83c09ca7e402f8",
+    "test_checkpoint_rollout.py": "557e45e32526a4d7fb91247ce40b710901caa9abc4a3a3e8a22e5821dcd740d2"
+  },
+  "limitations": [
+    "No GPU checkpoint or decoder execution locally",
+    "No empirical shape results yet"
+  ]
+}
