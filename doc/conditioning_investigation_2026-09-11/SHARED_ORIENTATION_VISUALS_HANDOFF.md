@@ -1,6 +1,6 @@
 # Existing broader checkpoint: does visual input obstruct orientation transfer?
 
-Status: ready for GPU execution; no new training. F14 and its completed scope comparison remain the starting point. This is not another representation or target-convention change.
+Status: completed and verified. Do not rerun. See [SHARED_ORIENTATION_VISUALS_RETURNED_FINDINGS.md](SHARED_ORIENTATION_VISUALS_RETURNED_FINDINGS.md): visual removal worsens reserved reconstruction; point-only fitted geometry is strong for3/4 objects but does not transfer reliably. The command below is historical. F14 and its completed scope comparison remain the starting point. This is not another representation or target-convention change.
 
 ## Why this branch
 

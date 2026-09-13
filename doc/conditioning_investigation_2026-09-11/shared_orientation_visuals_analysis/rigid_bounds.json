@@ -1,0 +1,2409 @@
+{
+  "rows": [
+    {
+      "visual_mode": "present",
+      "group": 0,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "split": "fit",
+      "occupied": 16555,
+      "recall": {
+        "source_diameter_upper_bound": 1.186762114990113,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 0,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "split": "fit",
+      "occupied": 9392,
+      "recall": {
+        "source_diameter_upper_bound": 1.1329458845745077,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 0,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "split": "fit",
+      "occupied": 1431,
+      "recall": {
+        "source_diameter_upper_bound": 1.0439324218323693,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 0,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "split": "fit",
+      "occupied": 8478,
+      "recall": {
+        "source_diameter_upper_bound": 1.1281074818625316,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 0,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "split": "fit",
+      "occupied": 16990,
+      "recall": {
+        "source_diameter_upper_bound": 1.172850162855824,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 0,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "split": "fit",
+      "occupied": 9407,
+      "recall": {
+        "source_diameter_upper_bound": 1.1329458845745077,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 0,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "split": "fit",
+      "occupied": 1444,
+      "recall": {
+        "source_diameter_upper_bound": 1.0490210295174902,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 0,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "split": "fit",
+      "occupied": 8415,
+      "recall": {
+        "source_diameter_upper_bound": 1.1404437016905653,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 0,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "split": "fit",
+      "occupied": 18066,
+      "recall": {
+        "source_diameter_upper_bound": 1.2242509508963335,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 0,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "split": "fit",
+      "occupied": 9458,
+      "recall": {
+        "source_diameter_upper_bound": 1.1329458845745077,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 0,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "split": "fit",
+      "occupied": 1451,
+      "recall": {
+        "source_diameter_upper_bound": 1.0439324218323693,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 0,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "split": "fit",
+      "occupied": 7156,
+      "recall": {
+        "source_diameter_upper_bound": 1.1125901373583396,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 0,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "split": "fit",
+      "occupied": 17969,
+      "recall": {
+        "source_diameter_upper_bound": 1.1993885890359632,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 0,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "split": "fit",
+      "occupied": 9387,
+      "recall": {
+        "source_diameter_upper_bound": 1.1329458845745077,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 0,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "split": "fit",
+      "occupied": 1456,
+      "recall": {
+        "source_diameter_upper_bound": 1.0439324218323693,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 0,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "split": "fit",
+      "occupied": 7977,
+      "recall": {
+        "source_diameter_upper_bound": 1.1512982685552633,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 1,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "split": "fit",
+      "occupied": 12012,
+      "recall": {
+        "source_diameter_upper_bound": 1.204058673828723,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 1,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "split": "fit",
+      "occupied": 9890,
+      "recall": {
+        "source_diameter_upper_bound": 1.1488755432487936,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 1,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "split": "fit",
+      "occupied": 1339,
+      "recall": {
+        "source_diameter_upper_bound": 1.0483189818216718,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 1,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "split": "fit",
+      "occupied": 9101,
+      "recall": {
+        "source_diameter_upper_bound": 1.14683278584472,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 1,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "split": "fit",
+      "occupied": 12004,
+      "recall": {
+        "source_diameter_upper_bound": 1.204058673828723,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 1,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "split": "fit",
+      "occupied": 10270,
+      "recall": {
+        "source_diameter_upper_bound": 1.14152955505457,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 1,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "split": "fit",
+      "occupied": 1334,
+      "recall": {
+        "source_diameter_upper_bound": 1.0483189818216718,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 1,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "split": "fit",
+      "occupied": 8884,
+      "recall": {
+        "source_diameter_upper_bound": 1.1484283433194795,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 1,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "split": "fit",
+      "occupied": 12090,
+      "recall": {
+        "source_diameter_upper_bound": 1.204058673828723,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 1,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "split": "fit",
+      "occupied": 9505,
+      "recall": {
+        "source_diameter_upper_bound": 1.1444482696880418,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 1,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "split": "fit",
+      "occupied": 1540,
+      "recall": {
+        "source_diameter_upper_bound": 1.053168590585627,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 1,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "split": "fit",
+      "occupied": 8863,
+      "recall": {
+        "source_diameter_upper_bound": 1.1152085289536453,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 1,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "split": "fit",
+      "occupied": 12027,
+      "recall": {
+        "source_diameter_upper_bound": 1.1997308835386185,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 1,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "split": "fit",
+      "occupied": 10073,
+      "recall": {
+        "source_diameter_upper_bound": 1.1444482696880418,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 1,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "split": "fit",
+      "occupied": 1444,
+      "recall": {
+        "source_diameter_upper_bound": 1.059027549508625,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 1,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "split": "fit",
+      "occupied": 8893,
+      "recall": {
+        "source_diameter_upper_bound": 1.0925382270655413,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 2,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "split": "fit",
+      "occupied": 14836,
+      "recall": {
+        "source_diameter_upper_bound": 1.2005403813820328,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 2,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "split": "fit",
+      "occupied": 9741,
+      "recall": {
+        "source_diameter_upper_bound": 1.1309759616707866,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 2,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "split": "fit",
+      "occupied": 1505,
+      "recall": {
+        "source_diameter_upper_bound": 1.0452897644443886,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 2,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "split": "fit",
+      "occupied": 8151,
+      "recall": {
+        "source_diameter_upper_bound": 1.1426699664110656,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 2,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "split": "fit",
+      "occupied": 14849,
+      "recall": {
+        "source_diameter_upper_bound": 1.2005403813820328,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 2,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "split": "fit",
+      "occupied": 9757,
+      "recall": {
+        "source_diameter_upper_bound": 1.1309759616707866,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 2,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "split": "fit",
+      "occupied": 1490,
+      "recall": {
+        "source_diameter_upper_bound": 1.0452897644443886,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 2,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "split": "fit",
+      "occupied": 8164,
+      "recall": {
+        "source_diameter_upper_bound": 1.1426699664110656,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 2,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "split": "fit",
+      "occupied": 14832,
+      "recall": {
+        "source_diameter_upper_bound": 1.2005403813820328,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 2,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "split": "fit",
+      "occupied": 9768,
+      "recall": {
+        "source_diameter_upper_bound": 1.1309759616707866,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 2,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "split": "fit",
+      "occupied": 1504,
+      "recall": {
+        "source_diameter_upper_bound": 1.0452897644443886,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 2,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "split": "fit",
+      "occupied": 8183,
+      "recall": {
+        "source_diameter_upper_bound": 1.1426699664110656,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 2,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "split": "fit",
+      "occupied": 14870,
+      "recall": {
+        "source_diameter_upper_bound": 1.2005403813820328,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 2,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "split": "fit",
+      "occupied": 9777,
+      "recall": {
+        "source_diameter_upper_bound": 1.1309759616707866,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 2,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "split": "fit",
+      "occupied": 1507,
+      "recall": {
+        "source_diameter_upper_bound": 1.0452897644443886,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 2,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "split": "fit",
+      "occupied": 8416,
+      "recall": {
+        "source_diameter_upper_bound": 1.1426699664110656,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 3,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "split": "fit",
+      "occupied": 14585,
+      "recall": {
+        "source_diameter_upper_bound": 1.2100817515634932,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 3,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "split": "fit",
+      "occupied": 10402,
+      "recall": {
+        "source_diameter_upper_bound": 1.1314640544522523,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 3,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "split": "fit",
+      "occupied": 2151,
+      "recall": {
+        "source_diameter_upper_bound": 1.0519227803135753,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 3,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "split": "fit",
+      "occupied": 8822,
+      "recall": {
+        "source_diameter_upper_bound": 1.1490011876014377,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 3,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "split": "fit",
+      "occupied": 14649,
+      "recall": {
+        "source_diameter_upper_bound": 1.2187069748908217,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 3,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "split": "fit",
+      "occupied": 10004,
+      "recall": {
+        "source_diameter_upper_bound": 1.1298425855425809,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 3,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "split": "fit",
+      "occupied": 2110,
+      "recall": {
+        "source_diameter_upper_bound": 1.0491818603106446,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 3,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "split": "fit",
+      "occupied": 8565,
+      "recall": {
+        "source_diameter_upper_bound": 1.1490011869915888,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 3,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "split": "fit",
+      "occupied": 15023,
+      "recall": {
+        "source_diameter_upper_bound": 1.2411297883736645,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 3,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "split": "fit",
+      "occupied": 9798,
+      "recall": {
+        "source_diameter_upper_bound": 1.1314640544522523,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 3,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "split": "fit",
+      "occupied": 2150,
+      "recall": {
+        "source_diameter_upper_bound": 1.0519227803135753,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 3,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "split": "fit",
+      "occupied": 9073,
+      "recall": {
+        "source_diameter_upper_bound": 1.1631829840207084,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 3,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "split": "fit",
+      "occupied": 15446,
+      "recall": {
+        "source_diameter_upper_bound": 1.271732663016603,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 3,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "split": "fit",
+      "occupied": 9857,
+      "recall": {
+        "source_diameter_upper_bound": 1.12646748804578,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 3,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "split": "fit",
+      "occupied": 2113,
+      "recall": {
+        "source_diameter_upper_bound": 1.0491818603106446,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 3,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "split": "fit",
+      "occupied": 8615,
+      "recall": {
+        "source_diameter_upper_bound": 1.1672394300810665,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 4,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "split": "reserved_view",
+      "occupied": 14264,
+      "recall": {
+        "source_diameter_upper_bound": 1.2160723098747663,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 4,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "split": "reserved_view",
+      "occupied": 9609,
+      "recall": {
+        "source_diameter_upper_bound": 1.0801306460781306,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 4,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "split": "reserved_view",
+      "occupied": 1598,
+      "recall": {
+        "source_diameter_upper_bound": 1.012635449989989,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 4,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "split": "reserved_view",
+      "occupied": 8277,
+      "recall": {
+        "source_diameter_upper_bound": 1.1083801352559868,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 4,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "split": "reserved_view",
+      "occupied": 14568,
+      "recall": {
+        "source_diameter_upper_bound": 1.22181079283778,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 4,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "split": "reserved_view",
+      "occupied": 9972,
+      "recall": {
+        "source_diameter_upper_bound": 1.1037255610788257,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 4,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "split": "reserved_view",
+      "occupied": 1521,
+      "recall": {
+        "source_diameter_upper_bound": 1.0200391039974708,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 4,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "split": "reserved_view",
+      "occupied": 8521,
+      "recall": {
+        "source_diameter_upper_bound": 1.136077640832469,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 4,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "split": "reserved_view",
+      "occupied": 12177,
+      "recall": {
+        "source_diameter_upper_bound": 1.2578941072662873,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 4,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "split": "reserved_view",
+      "occupied": 9344,
+      "recall": {
+        "source_diameter_upper_bound": 1.1084588883797193,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 4,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "split": "reserved_view",
+      "occupied": 19,
+      "recall": {
+        "source_diameter_upper_bound": 1.012292445927331,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 4,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "split": "reserved_view",
+      "occupied": 7743,
+      "recall": {
+        "source_diameter_upper_bound": 1.1647381474797969,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 4,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "split": "reserved_view",
+      "occupied": 15864,
+      "recall": {
+        "source_diameter_upper_bound": 1.3357674426397348,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 4,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "split": "reserved_view",
+      "occupied": 9332,
+      "recall": {
+        "source_diameter_upper_bound": 1.123397872855611,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 4,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "split": "reserved_view",
+      "occupied": 4,
+      "recall": {
+        "source_diameter_upper_bound": 0.030431984030010368,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 0.2644119907763259
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 4,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "split": "reserved_view",
+      "occupied": 10945,
+      "recall": {
+        "source_diameter_upper_bound": 1.353035102432093,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 0.9914116034719049
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 5,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "split": "reserved_view",
+      "occupied": 11780,
+      "recall": {
+        "source_diameter_upper_bound": 1.0793310881403098,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 5,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "split": "reserved_view",
+      "occupied": 6809,
+      "recall": {
+        "source_diameter_upper_bound": 1.1274944228056456,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 5,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "split": "reserved_view",
+      "occupied": 3120,
+      "recall": {
+        "source_diameter_upper_bound": 0.9118668174595177,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 0.9838585703305149
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 5,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "split": "reserved_view",
+      "occupied": 8292,
+      "recall": {
+        "source_diameter_upper_bound": 1.1824248395815051,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 5,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "split": "reserved_view",
+      "occupied": 7612,
+      "recall": {
+        "source_diameter_upper_bound": 0.9923916030343922,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 5,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "split": "reserved_view",
+      "occupied": 7604,
+      "recall": {
+        "source_diameter_upper_bound": 1.101476285069604,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 5,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "split": "reserved_view",
+      "occupied": 1995,
+      "recall": {
+        "source_diameter_upper_bound": 0.8560810303260508,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 0.9692544196771714
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 5,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "split": "reserved_view",
+      "occupied": 8420,
+      "recall": {
+        "source_diameter_upper_bound": 1.1927966223225173,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 5,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "split": "reserved_view",
+      "occupied": 10013,
+      "recall": {
+        "source_diameter_upper_bound": 0.9798815630176454,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 5,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "split": "reserved_view",
+      "occupied": 10995,
+      "recall": {
+        "source_diameter_upper_bound": 1.1918101634403717,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 0.9998180991359709
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 5,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "split": "reserved_view",
+      "occupied": 11956,
+      "recall": {
+        "source_diameter_upper_bound": 0.9288511348295005,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 0.9877017678708686
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 5,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "split": "reserved_view",
+      "occupied": 10711,
+      "recall": {
+        "source_diameter_upper_bound": 1.2401743445612408,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 5,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "split": "reserved_view",
+      "occupied": 9621,
+      "recall": {
+        "source_diameter_upper_bound": 0.9603171619396242,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 5,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "split": "reserved_view",
+      "occupied": 13206,
+      "recall": {
+        "source_diameter_upper_bound": 1.2099499902625452,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 0.9987884295017416
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 5,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "split": "reserved_view",
+      "occupied": 11428,
+      "recall": {
+        "source_diameter_upper_bound": 0.9600332587532427,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 0.9953881629515757
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 5,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "split": "reserved_view",
+      "occupied": 12220,
+      "recall": {
+        "source_diameter_upper_bound": 1.3708671989811727,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 0.9988543371522095
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 6,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "split": "reserved_view",
+      "occupied": 14867,
+      "recall": {
+        "source_diameter_upper_bound": 1.1634781921223958,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 6,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "split": "reserved_view",
+      "occupied": 9400,
+      "recall": {
+        "source_diameter_upper_bound": 1.1329458172602327,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 6,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "split": "reserved_view",
+      "occupied": 2263,
+      "recall": {
+        "source_diameter_upper_bound": 0.9385043326558806,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 0.9900076863950807
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 6,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "split": "reserved_view",
+      "occupied": 5825,
+      "recall": {
+        "source_diameter_upper_bound": 1.1145985668603111,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 6,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "split": "reserved_view",
+      "occupied": 15841,
+      "recall": {
+        "source_diameter_upper_bound": 1.2308733419723639,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 6,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "split": "reserved_view",
+      "occupied": 9372,
+      "recall": {
+        "source_diameter_upper_bound": 1.1329458172602327,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 6,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "split": "reserved_view",
+      "occupied": 2089,
+      "recall": {
+        "source_diameter_upper_bound": 0.9212517583754235,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 0.9861644888547272
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "present",
+      "group": 6,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "split": "reserved_view",
+      "occupied": 7260,
+      "recall": {
+        "source_diameter_upper_bound": 1.1271963693904694,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 6,
+      "draw": 0,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "split": "reserved_view",
+      "occupied": 13011,
+      "recall": {
+        "source_diameter_upper_bound": 1.1230539129322987,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 6,
+      "draw": 0,
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "split": "reserved_view",
+      "occupied": 9478,
+      "recall": {
+        "source_diameter_upper_bound": 1.1329458172602327,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 6,
+      "draw": 0,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "split": "reserved_view",
+      "occupied": 4915,
+      "recall": {
+        "source_diameter_upper_bound": 1.0072549639685822,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 6,
+      "draw": 0,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "split": "reserved_view",
+      "occupied": 8902,
+      "recall": {
+        "source_diameter_upper_bound": 1.14854672845593,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 6,
+      "draw": 1,
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "split": "reserved_view",
+      "occupied": 15800,
+      "recall": {
+        "source_diameter_upper_bound": 1.2485756928967917,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 6,
+      "draw": 1,
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "split": "reserved_view",
+      "occupied": 9400,
+      "recall": {
+        "source_diameter_upper_bound": 1.1329458172602327,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 6,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "split": "reserved_view",
+      "occupied": 5248,
+      "recall": {
+        "source_diameter_upper_bound": 1.0156329653064204,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "visual_mode": "zero",
+      "group": 6,
+      "draw": 1,
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "split": "reserved_view",
+      "occupied": 8426,
+      "recall": {
+        "source_diameter_upper_bound": 1.2333299605288348,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    }
+  ],
+  "certified_below_95_percent": [
+    {
+      "visual_mode": "zero",
+      "group": 4,
+      "draw": 1,
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "split": "reserved_view",
+      "occupied": 4,
+      "recall": {
+        "source_diameter_upper_bound": 0.030431984030010368,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 0.2644119907763259
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    }
+  ],
+  "positive_controls": [
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "recall": {
+        "source_diameter_upper_bound": 1.2090044012810088,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "recall": {
+        "source_diameter_upper_bound": 1.1329458845745077,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "recall": {
+        "source_diameter_upper_bound": 1.0439324218323693,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "recall": {
+        "source_diameter_upper_bound": 1.1548529891444124,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "recall": {
+        "source_diameter_upper_bound": 1.204058673828723,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "recall": {
+        "source_diameter_upper_bound": 1.1309342337882295,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "recall": {
+        "source_diameter_upper_bound": 1.0483189818216718,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "recall": {
+        "source_diameter_upper_bound": 1.14683278584472,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "recall": {
+        "source_diameter_upper_bound": 1.2005403813820328,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "recall": {
+        "source_diameter_upper_bound": 1.1309759616707866,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "recall": {
+        "source_diameter_upper_bound": 1.0452897644443886,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "recall": {
+        "source_diameter_upper_bound": 1.1426699664110656,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "recall": {
+        "source_diameter_upper_bound": 1.2100817515634932,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "recall": {
+        "source_diameter_upper_bound": 1.1314640544522523,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "recall": {
+        "source_diameter_upper_bound": 1.0491818603106446,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "recall": {
+        "source_diameter_upper_bound": 1.144751098169669,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "recall": {
+        "source_diameter_upper_bound": 1.2049972259058785,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "recall": {
+        "source_diameter_upper_bound": 1.1369296068664694,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "recall": {
+        "source_diameter_upper_bound": 1.042489834120668,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "recall": {
+        "source_diameter_upper_bound": 1.156352795709767,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "recall": {
+        "source_diameter_upper_bound": 1.2114772082335088,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "recall": {
+        "source_diameter_upper_bound": 1.1342554900805577,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "recall": {
+        "source_diameter_upper_bound": 1.0514830730475215,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "recall": {
+        "source_diameter_upper_bound": 1.146910036822094,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "recall": {
+        "source_diameter_upper_bound": 1.2095020354219108,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.2056588577412766,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "recall": {
+        "source_diameter_upper_bound": 1.131307792355839,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.1121224780796404,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "recall": {
+        "source_diameter_upper_bound": 1.0510619761760382,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.0471081829854068,
+        "diameter_method": "exact_all_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "recall": {
+        "source_diameter_upper_bound": 1.1531643703983405,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      },
+      "precision": {
+        "source_diameter_upper_bound": 1.146283055684764,
+        "diameter_method": "exact_hull_pairs",
+        "coverage_upper_bound": 1.0
+      }
+    }
+  ],
+  "tolerance": 0.03125,
+  "source_sha256": "64e565ec157e0dbf473566aabf093174801f8f78da54e1c047b1950f328da36a",
+  "scope": "Same conservative diameter/projection-interval argument over every rigid transform. Exact small-support diameter handles collapsed planar predictions. No fitted scale. Non-rejection inconclusive."
+}
