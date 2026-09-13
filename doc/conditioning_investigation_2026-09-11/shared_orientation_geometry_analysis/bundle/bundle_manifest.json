@@ -1,0 +1,1142 @@
+{
+  "format_version": 3,
+  "scope": "Only labels change. Same camera VecSetX features/visuals/initialization/update budget as camera dropout. Four fitted identities; no new-object or production-frame commitment. GT transforms only label construction and diagnostic scoring.",
+  "cases": [
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g0_d0",
+      "file": "correct_surface_g0_d0.npz",
+      "condition": "correct_surface",
+      "group": 0,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g0_d1",
+      "file": "correct_surface_g0_d1.npz",
+      "condition": "correct_surface",
+      "group": 0,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g1_d0",
+      "file": "correct_surface_g1_d0.npz",
+      "condition": "correct_surface",
+      "group": 1,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g1_d1",
+      "file": "correct_surface_g1_d1.npz",
+      "condition": "correct_surface",
+      "group": 1,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g2_d0",
+      "file": "correct_surface_g2_d0.npz",
+      "condition": "correct_surface",
+      "group": 2,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g2_d1",
+      "file": "correct_surface_g2_d1.npz",
+      "condition": "correct_surface",
+      "group": 2,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g3_d0",
+      "file": "correct_surface_g3_d0.npz",
+      "condition": "correct_surface",
+      "group": 3,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g3_d1",
+      "file": "correct_surface_g3_d1.npz",
+      "condition": "correct_surface",
+      "group": 3,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g4_d0",
+      "file": "correct_surface_g4_d0.npz",
+      "condition": "correct_surface",
+      "group": 4,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g4_d1",
+      "file": "correct_surface_g4_d1.npz",
+      "condition": "correct_surface",
+      "group": 4,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g5_d0",
+      "file": "correct_surface_g5_d0.npz",
+      "condition": "correct_surface",
+      "group": 5,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g5_d1",
+      "file": "correct_surface_g5_d1.npz",
+      "condition": "correct_surface",
+      "group": 5,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g6_d0",
+      "file": "correct_surface_g6_d0.npz",
+      "condition": "correct_surface",
+      "group": 6,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/correct_surface_g6_d1",
+      "file": "correct_surface_g6_d1.npz",
+      "condition": "correct_surface",
+      "group": 6,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g0_d0",
+      "file": "wrong_surface_g0_d0.npz",
+      "condition": "wrong_surface",
+      "group": 0,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g0_d1",
+      "file": "wrong_surface_g0_d1.npz",
+      "condition": "wrong_surface",
+      "group": 0,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g1_d0",
+      "file": "wrong_surface_g1_d0.npz",
+      "condition": "wrong_surface",
+      "group": 1,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g1_d1",
+      "file": "wrong_surface_g1_d1.npz",
+      "condition": "wrong_surface",
+      "group": 1,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g2_d0",
+      "file": "wrong_surface_g2_d0.npz",
+      "condition": "wrong_surface",
+      "group": 2,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g2_d1",
+      "file": "wrong_surface_g2_d1.npz",
+      "condition": "wrong_surface",
+      "group": 2,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g3_d0",
+      "file": "wrong_surface_g3_d0.npz",
+      "condition": "wrong_surface",
+      "group": 3,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g3_d1",
+      "file": "wrong_surface_g3_d1.npz",
+      "condition": "wrong_surface",
+      "group": 3,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g4_d0",
+      "file": "wrong_surface_g4_d0.npz",
+      "condition": "wrong_surface",
+      "group": 4,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g4_d1",
+      "file": "wrong_surface_g4_d1.npz",
+      "condition": "wrong_surface",
+      "group": 4,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g5_d0",
+      "file": "wrong_surface_g5_d0.npz",
+      "condition": "wrong_surface",
+      "group": 5,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g5_d1",
+      "file": "wrong_surface_g5_d1.npz",
+      "condition": "wrong_surface",
+      "group": 5,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g6_d0",
+      "file": "wrong_surface_g6_d0.npz",
+      "condition": "wrong_surface",
+      "group": 6,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    },
+    {
+      "kind": "shared_orientation",
+      "prefix": "shared_orientation/wrong_surface_g6_d1",
+      "file": "wrong_surface_g6_d1.npz",
+      "condition": "wrong_surface",
+      "group": 6,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "archive_path": "shared_orientation/results.json",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/results.json",
+      "bytes": 442926,
+      "sha256": "4c7dba47c274ec1d3e777033045371fcdb5e45b02a3b4fa176fada35e004e9f6"
+    },
+    {
+      "archive_path": "reference/original_target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/original_target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_000.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_000.npy",
+      "bytes": 262272,
+      "sha256": "b1da42d44dfc07ae4e7970ca71d21975906f75bd83979d2cec52bad5a4bd4dd7"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_007.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_007.npy",
+      "bytes": 262272,
+      "sha256": "26598d14f10f3dabe00f7a2027c5dd20058afab8b696ff1136939174daed9b7e"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_011.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_011.npy",
+      "bytes": 262272,
+      "sha256": "ff8659d3a12becda764430fbf76b37f6ec3f125f681c8de06497bb37f0b39203"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_002.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_002.npy",
+      "bytes": 262272,
+      "sha256": "76335dde40485365a4ee3ab1a0a71bfbe2122ba3da03d9ed7380de8f0e2dc383"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_003.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_003.npy",
+      "bytes": 262272,
+      "sha256": "f2a019896480bca9d7198b88f6381257bd91c5918a3807379fa15e22448d9bc5"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_002.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_002.npy",
+      "bytes": 262272,
+      "sha256": "a1a5c64edc6d5d3614cd3a148b1b829a2e9ba956931b95df58897b080984ad7d"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_002.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_002.npy",
+      "bytes": 262272,
+      "sha256": "ca6ad10c99911b7596d641de4a636a22f4bacf1943c87e33acf46579b2470116"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_003.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_003.npy",
+      "bytes": 262272,
+      "sha256": "31723997d0b7a25780c41592aaf6af04e9d07b4b5a1d1523c46a1fbf8a310e4f"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_015.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_015.npy",
+      "bytes": 262272,
+      "sha256": "8dd3c885926c0f64102199fcba4e05b48de41a050f7e61b195e20cd4e2181f16"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_015.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_015.npy",
+      "bytes": 262272,
+      "sha256": "c6173e88aafd57cff48ed7d3ea0aa52afaecd051902c503d5d488d1399a94759"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_015.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_015.npy",
+      "bytes": 262272,
+      "sha256": "16bbe1bc918c808add13d5b2a622b5d481b7ae829d900babe296d1c27b01c34d"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_015.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_015.npy",
+      "bytes": 262272,
+      "sha256": "78d2ac39edac45d0f4900be537fbac8a936b4c5a76299ee04f3b226bdb5e4797"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_008.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_008.npy",
+      "bytes": 262272,
+      "sha256": "2add2d505f9ff07585d77f7b03410dbb16934b110421cd5de9d4c0ee39c7d0c9"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_008.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_008.npy",
+      "bytes": 262272,
+      "sha256": "888756ec7c71528a1f98050a985b57254d0cf95cdbc23e1f828c57e13d38b994"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_007.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_007.npy",
+      "bytes": 262272,
+      "sha256": "0eb1980b8ad4ca0a38ea122bb2004baf8350f1538a221fc57f1bb95e8fc4d32f"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_008.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_008.npy",
+      "bytes": 262272,
+      "sha256": "894fb863256ac52a6a03bf22493fc53623379780f02eac9cf858a60e19c8099e"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_011.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_011.npy",
+      "bytes": 262272,
+      "sha256": "bdf2bbcf81a01c6c2d7f0f1df58f90024265377960b9874cc40b2cd53bcef8f2"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_011.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_011.npy",
+      "bytes": 262272,
+      "sha256": "9dc752c0ba08e5dc204a0f97ffbb084a82edd692f8cc0b54c87fe1f2bf8a8545"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_010.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_010.npy",
+      "bytes": 262272,
+      "sha256": "2cb9604eb9e155539517192ff39d5d9dfc9e0c4683ca04f13058b93429361785"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_011.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_011.npy",
+      "bytes": 262272,
+      "sha256": "05406d96185ae7ad5bf25e8d048305897832d67f1ab0cd7e9dbd9b34303fefe5"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_001.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_001.npy",
+      "bytes": 262272,
+      "sha256": "db392a4dcbf677157f5b810159a1849e45c24824aa75fc3ab79e41a99442f398"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_000.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_000.npy",
+      "bytes": 262272,
+      "sha256": "26be41a4ce95dca7dca2e6f9204ad005e7d8dea54636a4d7a05a9792fcb12d6e"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_000.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_000.npy",
+      "bytes": 262272,
+      "sha256": "e77884aea1c0d61d884153309b78c4c870b4ecdd00bc626203ae6c01f629460c"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_000.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_000.npy",
+      "bytes": 262272,
+      "sha256": "192f0822c565bbe47dd607975a487a1f5af7826cb421f487146ed8e74d7fa218"
+    },
+    {
+      "archive_path": "physical/479bbf9062de4b3196f08e52d1c12821_007.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_479bbf9062de4b3196f08e52d1c12821_007.npy",
+      "bytes": 262272,
+      "sha256": "c1cf6bd3fd780f216d75dd8615c891189610e0598ea16638832d705e5388489d"
+    },
+    {
+      "archive_path": "physical/e846574df9334973955c80286af47ba7_006.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_e846574df9334973955c80286af47ba7_006.npy",
+      "bytes": 262272,
+      "sha256": "5b33af942743f0a2fc0024785b44c5ae7f95ac5b3e4ded4231a0d5a8abe2929c"
+    },
+    {
+      "archive_path": "physical/fe200ce00a5d4c298eee89de0fc15f01_006.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_fe200ce00a5d4c298eee89de0fc15f01_006.npy",
+      "bytes": 262272,
+      "sha256": "04b29e00d8118b0a507556f11ba6b276a288b79571381da680344d6e155d5a82"
+    },
+    {
+      "archive_path": "physical/146b6c1f10bd445da977424c64dbb051_007.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/physical_146b6c1f10bd445da977424c64dbb051_007.npy",
+      "bytes": 262272,
+      "sha256": "856e32e8a2f361c7b3b6318912a7ec203fb7be75ef241ac0aab26c21290cf61a"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g0_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g0_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "123929f386adb6adaa4afc67c83bbbe85663dc00d1815c5bfd0fa3ef90e39a21"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g0_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g0_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "57743d48bd42f76bfaed9f3d4002865bf2603bdedfcfe9a3b475a095cb813f54"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g0_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g0_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "732f160981a19d66081d7542d877b52aac8feaafc39f1dba4544a93827c53bfa"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g0_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g0_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "57743d48bd42f76bfaed9f3d4002865bf2603bdedfcfe9a3b475a095cb813f54"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g1_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g1_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "e6f6a7c19731f4038d19b9b4430c001d711e377276fc84ce49b561446a496821"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g1_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g1_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "4777ffc0e1a7bdade0b0d0db060e960e7a0ac1c7dde1bef925173f1a3ddb582b"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g1_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g1_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "49b51b7a1a78f15d1259ae12b6f4a1f64af710eba666ded0c1cdf0a7211bb286"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g1_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g1_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "4777ffc0e1a7bdade0b0d0db060e960e7a0ac1c7dde1bef925173f1a3ddb582b"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g2_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g2_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "58e40b259257f6bf1a34ce4a448282c9f2af290e6b1cd50c2c744a55537292d3"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g2_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g2_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d97c6bd2ea520ce7465d0f528b91d5e1380e4616e4a9b898e17ba3ba27d1852e"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g2_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g2_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a5acab85da33ee5506366d42c2d782ad8eaf0974ee2a80462263b48467ef2b27"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g2_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g2_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d97c6bd2ea520ce7465d0f528b91d5e1380e4616e4a9b898e17ba3ba27d1852e"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g3_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g3_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a495f12fa4a2c5ecb388b79463991dc250cc2f3012ab5c996915043efa15c8ad"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g3_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g3_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "7ac70f18be79c868e484fa66926a3378b6a94a42b8a9f28f51937665a91affc8"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g3_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g3_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "1bd402f1e77d839e00347a8cf09b31d158c91dc6f8236b68cf1d31bd181fa70f"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g3_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g3_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "7ac70f18be79c868e484fa66926a3378b6a94a42b8a9f28f51937665a91affc8"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g4_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g4_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "1b68ae0d7de7ce66e71e6626810c00f1af228dd9d5e02f8d2252a81216260ab6"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g4_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g4_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "652a3dc1323d7fe36fbe285ae7c71361195b6a5b21a630327d0a0cfeea6f293e"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g4_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g4_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "1dec5df95e8ff25b2b1a66c00c2a6e012028854df93f3d627aaa76a200612f7a"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g4_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g4_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "652a3dc1323d7fe36fbe285ae7c71361195b6a5b21a630327d0a0cfeea6f293e"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g5_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g5_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "ba29949244ac2f418a8b59f6358e581017ec69298ccdc85bf4ce73cb5a0ad79e"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g5_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g5_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "782c81240a8cbf4a240865e9e0f82827e7fcb7895656d913e2836fab4cf0bb1b"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g5_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g5_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "ac46b67ace98935e2b7c83bc1f00f4b7f8411fb246c64672b79de3c69670777c"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g5_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g5_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "782c81240a8cbf4a240865e9e0f82827e7fcb7895656d913e2836fab4cf0bb1b"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g6_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g6_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "2caba2d67156cb2a9e38e604204c7ff944d93a147217060da1f0bfac01b00392"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g6_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g6_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "70b67e33f416cf4b5511776cfd2b3622b4c0134069a61fa3a5d61f31d5fa11ec"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g6_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g6_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "25c4f8d4a78bf4a3d8e3c06e267a7860c6cb5b939e71e6bc4e7fa32be30eb2ab"
+    },
+    {
+      "archive_path": "shared_orientation/correct_surface_g6_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g6_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "70b67e33f416cf4b5511776cfd2b3622b4c0134069a61fa3a5d61f31d5fa11ec"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g0_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g0_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "5825a6abd3537eb04b883000c106ff8790637f77ce4d5448c00b3979635ff788"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g0_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g0_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "57743d48bd42f76bfaed9f3d4002865bf2603bdedfcfe9a3b475a095cb813f54"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g0_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g0_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "07fe46a1b7d97a7738f403f847ffa2aa5a6e3a81569839b0c5a8f43ee9ffd9ec"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g0_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g0_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "57743d48bd42f76bfaed9f3d4002865bf2603bdedfcfe9a3b475a095cb813f54"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g1_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g1_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "98806d18637d9bfba451fe8d9410d870ad9548cab66105bd92a31b63a4ecdad8"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g1_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g1_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "4777ffc0e1a7bdade0b0d0db060e960e7a0ac1c7dde1bef925173f1a3ddb582b"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g1_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g1_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "5af21d59173cfa691d5acbd35f94026f99cb02f286345cb7e7887d87ba387141"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g1_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g1_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "4777ffc0e1a7bdade0b0d0db060e960e7a0ac1c7dde1bef925173f1a3ddb582b"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g2_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g2_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "2d0604a41bf5b561e169cf6eb37c43324d3c0708b52cc0fa2ea1d36d8feaa73f"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g2_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g2_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d97c6bd2ea520ce7465d0f528b91d5e1380e4616e4a9b898e17ba3ba27d1852e"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g2_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g2_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d7571ef587b7204394e0f79f02f81bdb82cd0af6004c830efc0c72ad32704f01"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g2_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g2_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d97c6bd2ea520ce7465d0f528b91d5e1380e4616e4a9b898e17ba3ba27d1852e"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g3_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g3_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "b11f6e7f76a4bdf3be8bf52898a0f9e566ebf31d7e1ac99de4aa1b1612f9f137"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g3_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g3_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "7ac70f18be79c868e484fa66926a3378b6a94a42b8a9f28f51937665a91affc8"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g3_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g3_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "9b74088008440f01927660e52195b2dd730fe0f4deb13b7e21db65f4544ff742"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g3_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g3_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "7ac70f18be79c868e484fa66926a3378b6a94a42b8a9f28f51937665a91affc8"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g4_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g4_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a3c6f525e69db5f79d5f0eb716aeab7dece223e4233893977e17971fd7e12523"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g4_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g4_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "652a3dc1323d7fe36fbe285ae7c71361195b6a5b21a630327d0a0cfeea6f293e"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g4_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g4_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "198f7a9d1fcc278b0eaa0efe3c693bfa3be9f5bfdb30f78a8d7f22e69c1b4a98"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g4_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g4_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "652a3dc1323d7fe36fbe285ae7c71361195b6a5b21a630327d0a0cfeea6f293e"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g5_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g5_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "c3d0e2b8d7c7b4d447971e9be0a89799e0652c5ec719fd45606c0891af3cde92"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g5_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g5_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "782c81240a8cbf4a240865e9e0f82827e7fcb7895656d913e2836fab4cf0bb1b"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g5_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g5_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "8fc66f1fc6940df8e4243365958ac4aec95e53189e9182cba1a649d4a4f0d312"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g5_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g5_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "782c81240a8cbf4a240865e9e0f82827e7fcb7895656d913e2836fab4cf0bb1b"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g6_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g6_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d0e720ddfd10f8b406f2a160e3c9b1ce0c21a6543af4940037114b7a1b084b64"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g6_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g6_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "70b67e33f416cf4b5511776cfd2b3622b4c0134069a61fa3a5d61f31d5fa11ec"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g6_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g6_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "2d126c8ef0003da37cc1603b538382eb17ed01af987746a15e33d8899261fd59"
+    },
+    {
+      "archive_path": "shared_orientation/wrong_surface_g6_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g6_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "70b67e33f416cf4b5511776cfd2b3622b4c0134069a61fa3a5d61f31d5fa11ec"
+    }
+  ],
+  "source_npz": [
+    {
+      "prefix": "shared_orientation/correct_surface_g0_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g0_d0.npz",
+      "bytes": 1003617,
+      "sha256": "30674aa918a2abe5d89cb375db546c56f728a8d240ae21fd45d28a470d32386d"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g0_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g0_d1.npz",
+      "bytes": 1003195,
+      "sha256": "529ca10081970dbed1207e53fef7b2d1e6d8c21806ddba797a1bd060a771b590"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g1_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g1_d0.npz",
+      "bytes": 994918,
+      "sha256": "9b6c9b2bc7a8d3e13eb70f5339b1dc8839b3ce2c6aaaa9fc19b69d6275f45e62"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g1_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g1_d1.npz",
+      "bytes": 999348,
+      "sha256": "cb27f0622c04236cc38eee271aeb1b38184e665f1676ab569f958382346078e7"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g2_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g2_d0.npz",
+      "bytes": 996755,
+      "sha256": "c8e3bdecd78b86255216c7e16fedf830c85ab43c100ec9f1e70f3ea7a8f51705"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g2_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g2_d1.npz",
+      "bytes": 998456,
+      "sha256": "cc30510c187189f663dd780abc15ee66ad6c08c08468722a8aa5265e4386559d"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g3_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g3_d0.npz",
+      "bytes": 1003837,
+      "sha256": "71eb4941e2a1e884579a1d81de1a4f130f7f54aa73815568520edd8554980af0"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g3_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g3_d1.npz",
+      "bytes": 1004075,
+      "sha256": "af01a937fa8d091481d5a1193f8e99d7f3cdd777ef1bb742e4ce1a980b3478b0"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g4_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g4_d0.npz",
+      "bytes": 1003889,
+      "sha256": "98242deab063f36dd377d626f625fbec0078326b9aa7ef8ad01295889d201326"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g4_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g4_d1.npz",
+      "bytes": 1002521,
+      "sha256": "4e8854f805efe263710ad2f34db4c10db4ddc3706a34708f736ec66e8c92257f"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g5_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g5_d0.npz",
+      "bytes": 999479,
+      "sha256": "92b769e98c11629c086122eb8d9974ca453b2b18a6802830f26c6abd4138177c"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g5_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g5_d1.npz",
+      "bytes": 1001252,
+      "sha256": "1162cb8ffd41281bd7cfe5522348a18b20eeee550d415a3efb76252b75b970bf"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g6_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g6_d0.npz",
+      "bytes": 999353,
+      "sha256": "82bf1d283072b29ed48c9eee5cf6f370d860e6de2db1acfdc38af26db604e789"
+    },
+    {
+      "prefix": "shared_orientation/correct_surface_g6_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/correct_surface_g6_d1.npz",
+      "bytes": 1001082,
+      "sha256": "467d719a684e8cf3cca17597bf7e0457e3117f22fff8f19c876e7982d45de26b"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g0_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g0_d0.npz",
+      "bytes": 1001915,
+      "sha256": "49f6e3ed85d8389553d7b033bf7c09812706d338fcf033e0961708cec79e3282"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g0_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g0_d1.npz",
+      "bytes": 1002906,
+      "sha256": "dcce55e554f32f521921f6245265cdaf4a0f931e7ff916ca5be71e8a80327e06"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g1_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g1_d0.npz",
+      "bytes": 989690,
+      "sha256": "f06c3465f5345a1404bbaffa17e8cdd4d2b7547c2086898167dee3a23e80f9f3"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g1_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g1_d1.npz",
+      "bytes": 992254,
+      "sha256": "781f58d832bece4c25f3c3c90aa1d82df2ec3c3a48c2c8cf2adc6c12faec97c3"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g2_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g2_d0.npz",
+      "bytes": 995748,
+      "sha256": "400dd0fcce5d980683aa849c735ab2bfdf7f69a47511643d2cb14ac781baa27d"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g2_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g2_d1.npz",
+      "bytes": 996344,
+      "sha256": "78b8f9ea16ae6ade8e91d2bd6f6de5fef1a254dba38ff02c9ede0d659ed299b9"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g3_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g3_d0.npz",
+      "bytes": 1004309,
+      "sha256": "74f928042dc5f8303a0a077dd096c711f4628050d3c2f4ca9becfb7c73d1172f"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g3_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g3_d1.npz",
+      "bytes": 1004993,
+      "sha256": "f1aba085fdb30fbb9d4066f83f9e1a516a6c71d1fc78e8cc2ef0bd663b4a3f7b"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g4_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g4_d0.npz",
+      "bytes": 1000110,
+      "sha256": "0ecef5871d31579f399909b95849674e8323951a063dec2bc1a3273d2df76357"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g4_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g4_d1.npz",
+      "bytes": 1000344,
+      "sha256": "27377a46b28e828dfec8ecbbc4fa0dcbb43e961b74c9203558dd7d9c468c3c19"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g5_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g5_d0.npz",
+      "bytes": 998112,
+      "sha256": "645d700beb9c7bd364e21e015c4a8981b3f15c47671f0679a1eb5fff49e89df0"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g5_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g5_d1.npz",
+      "bytes": 997061,
+      "sha256": "98a6804f1c251b5f4019a166534d5fc95a7bc55e237081c2b3fcf49c8db3c84d"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g6_d0",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g6_d0.npz",
+      "bytes": 998914,
+      "sha256": "b13d1a77e1e7427e3df6e8743e46a225437af1b9b937e3e770cb9628a05e52ef"
+    },
+    {
+      "prefix": "shared_orientation/wrong_surface_g6_d1",
+      "source_path": "outputs/conditioning_investigation/shared_orientation/manual_target_grid_fix/wrong_surface_g6_d1.npz",
+      "bytes": 1000808,
+      "sha256": "a4aa2a3f401667aa5d78145da908b6dee9222f25526e716cbc469480fde0080e"
+    }
+  ]
+}

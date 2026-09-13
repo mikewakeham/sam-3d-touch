@@ -1,0 +1,1860 @@
+{
+  "rows": [
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "group": 0,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1923380478261005,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "group": 0,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1282775844916213,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "group": 0,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.043710609724347,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "group": 0,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1200602505541233,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "group": 0,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1670848736075619,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "group": 0,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.141350732123583,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "group": 0,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.0569366247184944,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "group": 0,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.122455292147312,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "group": 1,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.2656230473270809,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "group": 1,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1593069369487956,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "group": 1,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.0586838064733535,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "group": 1,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1424602269741908,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "group": 1,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.2181545603132193,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "group": 1,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.296899706162194,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 0.9866389149993285,
+        "axis_upper_bounds": [
+          1.0,
+          0.993084463542366,
+          1.0,
+          1.0,
+          1.0,
+          0.9866389149993285
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "group": 1,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.0255025501465376,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "group": 1,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1444886123031457,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "group": 2,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.168993729371025,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "group": 2,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1101960309477543,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "group": 2,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 0.9213185411967018,
+        "coverage_upper_bound": 0.9861644888547272,
+        "axis_upper_bounds": [
+          0.9969254419677172,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9861644888547272
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "group": 2,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1124656555498251,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "group": 2,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1810555610697198,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "group": 2,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1900185557721572,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "group": 2,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.0096437743267206,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "group": 2,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.174184639425463,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "group": 3,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.3046685712185213,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "group": 3,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1767966328886945,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "group": 3,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.0646719334577592,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "group": 3,
+      "draw": 0,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1598766712336046,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "group": 3,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.2820126053119012,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "group": 3,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.2329772107544774,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 0.9979913628602993,
+        "axis_upper_bounds": [
+          1.0,
+          0.9979913628602993,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "group": 3,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.0442300796315347,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "group": 3,
+      "draw": 1,
+      "split": "fit",
+      "recall": {
+        "source_diameter": 1.1931464781548284,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "group": 4,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.2335621013827722,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "group": 4,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.1616248422532995,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "group": 4,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.1945280844715889,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 0.9796860572483841,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9796860572483841
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "group": 4,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.1475264790324002,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "group": 4,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.2477745297170375,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "group": 4,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.1195895055239984,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "group": 4,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.1142013658089505,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 0.9994753410283316,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9994753410283316
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "group": 4,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.192953668570263,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "group": 5,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.0118047531457193,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "group": 5,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.1423664507196827,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "group": 5,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 0.6473270652172414,
+        "coverage_upper_bound": 0.8270561106840891,
+        "axis_upper_bounds": [
+          0.9085318985395849,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.8270561106840891
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "group": 5,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.0956449812327484,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "group": 5,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.1010060399573554,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "group": 5,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.14122933219389,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "group": 5,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 0.8744462610242181,
+        "coverage_upper_bound": 0.9754035357417371,
+        "axis_upper_bounds": [
+          0.9846272098385856,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9754035357417371
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "group": 5,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.2631369197022302,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 0.9991519434628975,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9991519434628975
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "group": 6,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.1924106624630695,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "group": 6,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.1282775012053616,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "group": 6,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.0662161414865092,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "group": 6,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.130693223092711,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "group": 6,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.2436028955470937,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.2056588577412766,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "group": 6,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.1329458172602327,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.1121224780796404,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "group": 6,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.0931148042987175,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "group": 6,
+      "draw": 1,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 1.2461896568179964,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.146283055684764,
+        "coverage_upper_bound": 0.9993634627625716,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.9993634627625716
+        ]
+      }
+    }
+  ],
+  "positive_controls": [
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "recall_upper": 1.0,
+      "precision_upper": 1.0
+    }
+  ],
+  "certified_below_95_percent": [
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "group": 5,
+      "draw": 0,
+      "split": "reserved_view",
+      "recall": {
+        "source_diameter": 0.6473270652172414,
+        "coverage_upper_bound": 0.8270561106840891,
+        "axis_upper_bounds": [
+          0.9085318985395849,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          0.8270561106840891
+        ]
+      },
+      "precision": {
+        "source_diameter": 1.0471081829854068,
+        "coverage_upper_bound": 1.0,
+        "axis_upper_bounds": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    }
+  ],
+  "tolerance": 0.03125,
+  "scope": "Finite returned voxel centers, every proper rigid transform (also valid for reflections); no fitted scale. 1e-10 numerical slack. A non-rejection proves nothing. All 28 faithful-target controls pass."
+}

@@ -1,0 +1,39 @@
+{
+  "report_sha256": "4c7dba47c274ec1d3e777033045371fcdb5e45b02a3b4fa176fada35e004e9f6",
+  "source_matches": {
+    "train.py": true,
+    "dataloader.py": true,
+    "sam3d_objects/model/backbone/dit/embedder/touch.py": true,
+    "doc/conditioning_investigation_2026-09-11/fit_visual_dropout_gpu.py": true,
+    "doc/conditioning_investigation_2026-09-11/visual_dropout_protocol.py": true,
+    "doc/conditioning_investigation_2026-09-11/probe_oracle_visual_streams_gpu.py": true,
+    "doc/conditioning_investigation_2026-09-11/probe_tiny_fit_views.py": true,
+    "doc/conditioning_investigation_2026-09-11/fit_shared_orientation_gpu.py": true,
+    "doc/conditioning_investigation_2026-09-11/shared_orientation_protocol.py": true,
+    "data_generation/objaverse-dexonomy/generate_target_latents.py": true,
+    "doc/conditioning_investigation_2026-09-11/pose_shape_geometry.py": true,
+    "doc/conditioning_investigation_2026-09-11/rollout_gpu.py": true,
+    "doc/conditioning_investigation_2026-09-11/bundle_alignment_geometry.py": true
+  },
+  "reference_matches": {
+    "tiny_fit_returned_46083371/camera/results.json": true,
+    "multiple_view_returned_46083371/camera.json": true,
+    "visual_dropout_returned_manual/camera/results.json": true,
+    "camera_dropout_sampling_reference.json": true
+  },
+  "historical_analysis_sha256": {
+    "camera_dropout_geometry_analysis/predictions.jsonl": "70bdbec23ba567e52e5f67f2a3a7d154a1db4a86d47f49a7289bc2b728ad6ff3",
+    "pose_shape_analysis/predictions.jsonl": "f2e3df7eff6ab1b753407c98f7ab3fa5f547bc697ccd6d0e32a567d8fe19b1da"
+  },
+  "complete": true,
+  "training_steps": 1000,
+  "sampled_rows": 112,
+  "exact_initialization_match": true,
+  "exact_original_inputs_all_seven_groups": true,
+  "exact_dropout_schedule": true,
+  "exact_sampling_noise_all_112_rows": true,
+  "parameters_unchanged_during_sampling": true,
+  "target_roundtrip_iou_min": 0.9999408529011652,
+  "all_target_common_two_voxel_precision_recall_one": true,
+  "raw_geometry_bundle_received": false
+}

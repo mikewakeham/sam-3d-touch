@@ -1,0 +1,16 @@
+{
+  "validation": {
+    "bundle_sha256": "8dbce7a49c70f3e602e5ba74bf33fda4cc231bd9ba11c20a15d566dd571189f1",
+    "members": 86,
+    "samples": 112,
+    "target_labels": 28,
+    "report_matches": true,
+    "target_quality_arrays_reproduced": true,
+    "all_native_iou_counts_reproduced": true,
+    "registration_source_matches_prior_controls": true,
+    "source_sha256": "89992b1576d2d1a20c5fdc2f90de469de027ac95d07cfe5cc5417b518ed3751e"
+  },
+  "rows": 112,
+  "predictions_sha256": "0b753f0e9a793e4d065a5bebc44c5853960ebe1632726d312b33aeca2e390d55",
+  "summary_sha256": "9ad6dad5ffed84395fa8ea45912c571c90f0e524f91594caccc7b54f62c76c80"
+}

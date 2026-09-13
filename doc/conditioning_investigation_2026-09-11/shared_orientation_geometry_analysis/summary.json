@@ -1,0 +1,2095 @@
+{
+  "cells": {
+    "fit": {
+      "camera_dropout/correct_surface": {
+        "n": 32,
+        "iou": 0.8831943385135181,
+        "raw": {
+          "precision_1v": 0.9978050922021976,
+          "recall_1v": 0.9948310717760055,
+          "fscore_1v": 0.9962878025659175,
+          "precision_2v": 1.0,
+          "recall_2v": 0.9994475403535742,
+          "fscore_2v": 0.9997216996244747,
+          "p95_distance": 0.007038190216002488,
+          "individual_passes_2v": 32
+        },
+        "rigid": {
+          "precision_1v": 0.9932204567013554,
+          "recall_1v": 0.9879613561726235,
+          "fscore_1v": 0.9905451247151029,
+          "precision_2v": 0.9999740232751455,
+          "recall_2v": 0.9996877401998463,
+          "fscore_2v": 0.999830407064178,
+          "p95_distance": 0.0068735042519019905,
+          "individual_passes_2v": 32
+        },
+        "witness": {
+          "precision_1v": 0.9965582094091802,
+          "recall_1v": 0.9937021324985267,
+          "fscore_1v": 0.9951023272380655,
+          "precision_2v": 0.9999740232751455,
+          "recall_2v": 0.9996877401998463,
+          "fscore_2v": 0.999830407064178,
+          "p95_distance": 0.006929101381882189,
+          "individual_passes_2v": 32
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 8,
+            "iou": 0.9088980149248588,
+            "raw": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.01171875,
+              "individual_passes_2v": 8
+            },
+            "rigid": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.01171875,
+              "individual_passes_2v": 8
+            },
+            "witness": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.01171875,
+              "individual_passes_2v": 8
+            }
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 8,
+            "iou": 0.9645022730171253,
+            "raw": {
+              "precision_1v": 0.9999575010624735,
+              "recall_1v": 0.9997893140064049,
+              "fscore_1v": 0.9998733928833243,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "rigid": {
+              "precision_1v": 0.9999575010624735,
+              "recall_1v": 0.9997893140064049,
+              "fscore_1v": 0.9998733928833243,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "witness": {
+              "precision_1v": 0.9999575010624735,
+              "recall_1v": 0.9997893140064049,
+              "fscore_1v": 0.9998733928833243,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            }
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 8,
+            "iou": 0.9951739413257932,
+            "raw": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "rigid": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "witness": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            }
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 8,
+            "iou": 0.664203124786295,
+            "raw": {
+              "precision_1v": 0.9912628677463169,
+              "recall_1v": 0.9795349730976173,
+              "fscore_1v": 0.9852778173803457,
+              "precision_2v": 1.0,
+              "recall_2v": 0.9977901614142967,
+              "fscore_2v": 0.9988867984978989,
+              "p95_distance": 0.016434010864009953,
+              "individual_passes_2v": 8
+            },
+            "rigid": {
+              "precision_1v": 0.972924325742948,
+              "recall_1v": 0.9520561106840891,
+              "fscore_1v": 0.9623071059770871,
+              "precision_2v": 0.9998960931005819,
+              "recall_2v": 0.9987509607993851,
+              "fscore_2v": 0.9993216282567119,
+              "p95_distance": 0.015775267007607962,
+              "individual_passes_2v": 8
+            },
+            "witness": {
+              "precision_1v": 0.986275336574247,
+              "recall_1v": 0.9750192159877018,
+              "fscore_1v": 0.9805359160689373,
+              "precision_2v": 0.9998960931005819,
+              "recall_2v": 0.9987509607993851,
+              "fscore_2v": 0.9993216282567119,
+              "p95_distance": 0.015997655527528756,
+              "individual_passes_2v": 8
+            }
+          }
+        }
+      },
+      "camera_dropout/wrong_surface": {
+        "n": 32,
+        "iou": 0.5750207311512222,
+        "raw": {
+          "precision_1v": 0.8417615947933978,
+          "recall_1v": 0.8042446200312239,
+          "fscore_1v": 0.8154757502170922,
+          "precision_2v": 0.8903390256940585,
+          "recall_2v": 0.8507938231963408,
+          "fscore_2v": 0.8621799261135463,
+          "p95_distance": 0.0641073116439242,
+          "individual_passes_2v": 22
+        },
+        "rigid": {
+          "precision_1v": 0.8430701891914891,
+          "recall_1v": 0.8052575584884498,
+          "fscore_1v": 0.8184080086186234,
+          "precision_2v": 0.9261516596753492,
+          "recall_2v": 0.8801762608398738,
+          "fscore_2v": 0.8941884694328074,
+          "p95_distance": 0.03922071880686557,
+          "individual_passes_2v": 22
+        },
+        "witness": {
+          "precision_1v": 0.8538046540423796,
+          "recall_1v": 0.8151744432218984,
+          "fscore_1v": 0.8285647698683157,
+          "precision_2v": 0.9290615545545511,
+          "recall_2v": 0.8815897466690007,
+          "fscore_2v": 0.8961818066645189,
+          "p95_distance": 0.039998243148532404,
+          "individual_passes_2v": 22
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 8,
+            "iou": 0.2810309140169445,
+            "raw": {
+              "precision_1v": 0.7021375843114365,
+              "recall_1v": 0.5764968152866242,
+              "fscore_1v": 0.611697277671829,
+              "precision_2v": 0.8011538155969186,
+              "recall_2v": 0.6597611464968153,
+              "fscore_2v": 0.6986188676815314,
+              "p95_distance": 0.13360711171309364,
+              "individual_passes_2v": 2
+            },
+            "rigid": {
+              "precision_1v": 0.6295869599692613,
+              "recall_1v": 0.5410987261146497,
+              "fscore_1v": 0.5696211566396319,
+              "precision_2v": 0.8043856118870811,
+              "recall_2v": 0.6666401273885351,
+              "fscore_2v": 0.7045389240846279,
+              "p95_distance": 0.09189747650208521,
+              "individual_passes_2v": 2
+            },
+            "witness": {
+              "precision_1v": 0.6606540043507533,
+              "recall_1v": 0.563375796178344,
+              "fscore_1v": 0.5955691229971569,
+              "precision_2v": 0.815717056646288,
+              "recall_2v": 0.6721019108280255,
+              "fscore_2v": 0.7122626757963304,
+              "p95_distance": 0.09390930934308649,
+              "individual_passes_2v": 2
+            }
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 8,
+            "iou": 0.7120712461171437,
+            "raw": {
+              "precision_1v": 0.8027149923328781,
+              "recall_1v": 0.787238749367942,
+              "fscore_1v": 0.793720259374229,
+              "precision_2v": 0.817317867598802,
+              "recall_2v": 0.8101403168717344,
+              "fscore_2v": 0.8132589226831951,
+              "p95_distance": 0.0802831507315289,
+              "individual_passes_2v": 6
+            },
+            "rigid": {
+              "precision_1v": 0.85647350569893,
+              "recall_1v": 0.813237400977583,
+              "fscore_1v": 0.8291929527330921,
+              "precision_2v": 0.9256395011877298,
+              "recall_2v": 0.8787080734872745,
+              "fscore_2v": 0.8974683035301633,
+              "p95_distance": 0.029096540594294097,
+              "individual_passes_2v": 6
+            },
+            "witness": {
+              "precision_1v": 0.85647350569893,
+              "recall_1v": 0.813237400977583,
+              "fscore_1v": 0.8291929527330921,
+              "precision_2v": 0.9256395011877298,
+              "recall_2v": 0.8787080734872745,
+              "fscore_2v": 0.8974683035301633,
+              "p95_distance": 0.029096540594294097,
+              "individual_passes_2v": 6
+            }
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 8,
+            "iou": 0.859136946664689,
+            "raw": {
+              "precision_1v": 0.9844273187091873,
+              "recall_1v": 0.98727442969016,
+              "fscore_1v": 0.9858353808868484,
+              "precision_2v": 0.9911804866896994,
+              "recall_2v": 0.9926512314152763,
+              "fscore_2v": 0.9919046505843014,
+              "p95_distance": 0.012527760864009951,
+              "individual_passes_2v": 8
+            },
+            "rigid": {
+              "precision_1v": 0.9844273187091873,
+              "recall_1v": 0.98727442969016,
+              "fscore_1v": 0.9858353808868484,
+              "precision_2v": 0.9911804866896994,
+              "recall_2v": 0.9926512314152763,
+              "fscore_2v": 0.9919046505843014,
+              "p95_distance": 0.012527760864009951,
+              "individual_passes_2v": 8
+            },
+            "witness": {
+              "precision_1v": 0.9844273187091873,
+              "recall_1v": 0.98727442969016,
+              "fscore_1v": 0.9858353808868484,
+              "precision_2v": 0.9911804866896994,
+              "recall_2v": 0.9926512314152763,
+              "fscore_2v": 0.9919046505843014,
+              "p95_distance": 0.012527760864009951,
+              "individual_passes_2v": 8
+            }
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 8,
+            "iou": 0.44784381780611165,
+            "raw": {
+              "precision_1v": 0.8777664838200894,
+              "recall_1v": 0.865968485780169,
+              "fscore_1v": 0.8706500829354621,
+              "precision_2v": 0.9517039328908142,
+              "recall_2v": 0.9406225980015372,
+              "fscore_2v": 0.9449372635051574,
+              "p95_distance": 0.030011223267064346,
+              "individual_passes_2v": 6
+            },
+            "rigid": {
+              "precision_1v": 0.9017929723885779,
+              "recall_1v": 0.8794196771714066,
+              "fscore_1v": 0.8889825442149214,
+              "precision_2v": 0.9834010389368865,
+              "recall_2v": 0.9827056110684089,
+              "fscore_2v": 0.982841999532137,
+              "p95_distance": 0.023361097267073007,
+              "individual_passes_2v": 6
+            },
+            "witness": {
+              "precision_1v": 0.9136637874106477,
+              "recall_1v": 0.8968101460415066,
+              "fscore_1v": 0.9036616228561655,
+              "precision_2v": 0.9837091736944872,
+              "recall_2v": 0.9828977709454266,
+              "fscore_2v": 0.9830915967472801,
+              "p95_distance": 0.02445936179273909,
+              "individual_passes_2v": 6
+            }
+          }
+        }
+      },
+      "dropout/aligned": {
+        "n": 32,
+        "iou": 0.9780334240987378,
+        "raw": {
+          "precision_1v": 1.0,
+          "recall_1v": 1.0,
+          "fscore_1v": 1.0,
+          "precision_2v": 1.0,
+          "recall_2v": 1.0,
+          "fscore_2v": 1.0,
+          "p95_distance": 0.0,
+          "individual_passes_2v": 32
+        },
+        "rigid": {
+          "precision_1v": 0.9999753937007874,
+          "recall_1v": 0.9993034204458109,
+          "fscore_1v": 0.9996387234248513,
+          "precision_2v": 1.0,
+          "recall_2v": 1.0,
+          "fscore_2v": 1.0,
+          "p95_distance": 0.00011668651265919559,
+          "individual_passes_2v": 32
+        },
+        "witness": {
+          "precision_1v": 1.0,
+          "recall_1v": 1.0,
+          "fscore_1v": 1.0,
+          "precision_2v": 1.0,
+          "recall_2v": 1.0,
+          "fscore_2v": 1.0,
+          "p95_distance": 0.0,
+          "individual_passes_2v": 32
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 8,
+            "iou": 0.9813986975469137,
+            "raw": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "rigid": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "witness": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            }
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 8,
+            "iou": 0.9934094111056706,
+            "raw": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "rigid": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "witness": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            }
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 8,
+            "iou": 0.9954532300222809,
+            "raw": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "rigid": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "witness": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            }
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 8,
+            "iou": 0.9418723577200862,
+            "raw": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            },
+            "rigid": {
+              "precision_1v": 0.9999015748031496,
+              "recall_1v": 0.9972136817832437,
+              "fscore_1v": 0.9985548936994051,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.00046674605063678234,
+              "individual_passes_2v": 8
+            },
+            "witness": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 8
+            }
+          }
+        }
+      },
+      "dropout/wrong_surface": {
+        "n": 32,
+        "iou": 0.025510160396629025,
+        "raw": {
+          "precision_1v": 0.16018441174342724,
+          "recall_1v": 0.15428749155943175,
+          "fscore_1v": 0.10787473065345185,
+          "precision_2v": 0.23112540311856455,
+          "recall_2v": 0.2246559321837776,
+          "fscore_2v": 0.16004294865119775,
+          "p95_distance": 0.39046666367961935,
+          "individual_passes_2v": 0
+        },
+        "rigid": {
+          "precision_1v": 0.22127107348934227,
+          "recall_1v": 0.2543853009118654,
+          "fscore_1v": 0.1878352117470343,
+          "precision_2v": 0.41349029906008405,
+          "recall_2v": 0.45440717662798025,
+          "fscore_2v": 0.3400450070516658,
+          "p95_distance": 0.1776534246956783,
+          "individual_passes_2v": 0
+        },
+        "witness": {
+          "precision_1v": 0.24290779270566923,
+          "recall_1v": 0.2574028168354323,
+          "fscore_1v": 0.1931368410759818,
+          "precision_2v": 0.4205238406584884,
+          "recall_2v": 0.45535064796555985,
+          "fscore_2v": 0.3417179542235841,
+          "p95_distance": 0.20051280816627495,
+          "individual_passes_2v": 0
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 8,
+            "iou": 0.0192202735552466,
+            "raw": {
+              "precision_1v": 0.2951788629364632,
+              "recall_1v": 0.04464968152866242,
+              "fscore_1v": 0.0775540110345993,
+              "precision_2v": 0.42551982163234997,
+              "recall_2v": 0.06906050955414013,
+              "fscore_2v": 0.11882400097632755,
+              "p95_distance": 0.37830791491250787,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.18432572212577084,
+              "recall_1v": 0.029028662420382163,
+              "fscore_1v": 0.05014768059136306,
+              "precision_2v": 0.4157832441593583,
+              "recall_2v": 0.0697611464968153,
+              "fscore_2v": 0.11944418288295891,
+              "p95_distance": 0.2317112164034143,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.2708725989910787,
+              "recall_1v": 0.04109872611464968,
+              "fscore_1v": 0.07135419790715315,
+              "precision_2v": 0.4439174105529757,
+              "recall_2v": 0.07353503184713375,
+              "fscore_2v": 0.12613597157063197,
+              "p95_distance": 0.3231487502858009,
+              "individual_passes_2v": 0
+            }
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 8,
+            "iou": 0.04614274093333427,
+            "raw": {
+              "precision_1v": 0.2011276494359656,
+              "recall_1v": 0.1757858587561099,
+              "fscore_1v": 0.1872830243138749,
+              "precision_2v": 0.2664954203757055,
+              "recall_2v": 0.27299637620091016,
+              "fscore_2v": 0.2692449348162785,
+              "p95_distance": 0.30381370288520354,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.33221640062245406,
+              "recall_1v": 0.2366846452047868,
+              "fscore_1v": 0.2758491580781059,
+              "precision_2v": 0.5485327273772986,
+              "recall_2v": 0.4677545086802629,
+              "fscore_2v": 0.5039558651506422,
+              "p95_distance": 0.13429661739066293,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.33221640062245406,
+              "recall_1v": 0.2366846452047868,
+              "fscore_1v": 0.2758491580781059,
+              "precision_2v": 0.5485327273772986,
+              "recall_2v": 0.4677545086802629,
+              "fscore_2v": 0.5039558651506422,
+              "p95_distance": 0.13429661739066293,
+              "individual_passes_2v": 0
+            }
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 8,
+            "iou": 0.022438468304794294,
+            "raw": {
+              "precision_1v": 0.10948474205282605,
+              "recall_1v": 0.09925093632958801,
+              "fscore_1v": 0.1041169610330417,
+              "precision_2v": 0.17484751522394726,
+              "recall_2v": 0.13227783452502553,
+              "fscore_2v": 0.15061243120030104,
+              "p95_distance": 0.3727143888086426,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.30874711366188134,
+              "recall_1v": 0.3336880036318239,
+              "fscore_1v": 0.32071733096768257,
+              "precision_2v": 0.5911457723109865,
+              "recall_2v": 0.537126886845988,
+              "fscore_2v": 0.5628411051392658,
+              "p95_distance": 0.1298050565264083,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.30874711366188134,
+              "recall_1v": 0.3336880036318239,
+              "fscore_1v": 0.32071733096768257,
+              "precision_2v": 0.5911457723109865,
+              "recall_2v": 0.537126886845988,
+              "fscore_2v": 0.5628411051392658,
+              "p95_distance": 0.1298050565264083,
+              "individual_passes_2v": 0
+            }
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 8,
+            "iou": 0.014239158793140933,
+            "raw": {
+              "precision_1v": 0.03494639254845407,
+              "recall_1v": 0.29746348962336666,
+              "fscore_1v": 0.0625449262322915,
+              "precision_2v": 0.057638855242255406,
+              "recall_2v": 0.4242890084550346,
+              "fscore_2v": 0.10149042761188393,
+              "p95_distance": 0.5070306481121235,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.05979505754726286,
+              "recall_1v": 0.4181398923904689,
+              "fscore_1v": 0.10462667735098562,
+              "precision_2v": 0.09849945239269284,
+              "recall_2v": 0.7429861644888548,
+              "fscore_2v": 0.1739388750337964,
+              "p95_distance": 0.21480080846222757,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.05979505754726286,
+              "recall_1v": 0.4181398923904689,
+              "fscore_1v": 0.10462667735098562,
+              "precision_2v": 0.09849945239269284,
+              "recall_2v": 0.7429861644888548,
+              "fscore_2v": 0.1739388750337964,
+              "p95_distance": 0.21480080846222757,
+              "individual_passes_2v": 0
+            }
+          }
+        }
+      },
+      "shared_orientation/correct_surface": {
+        "n": 32,
+        "iou": 0.2781066339206545,
+        "raw": {
+          "precision_1v": 0.5317969678602059,
+          "recall_1v": 0.5875103156007054,
+          "fscore_1v": 0.5557873994316881,
+          "precision_2v": 0.7728656100560023,
+          "recall_2v": 0.8035698478224106,
+          "fscore_2v": 0.7859651156963186,
+          "p95_distance": 0.0712162252638641,
+          "individual_passes_2v": 5
+        },
+        "rigid": {
+          "precision_1v": 0.6905412498243017,
+          "recall_1v": 0.7514102070737798,
+          "fscore_1v": 0.7161373737407919,
+          "precision_2v": 0.9082137665946431,
+          "recall_2v": 0.9269342826284109,
+          "fscore_2v": 0.9156990953820557,
+          "p95_distance": 0.03994482363861835,
+          "individual_passes_2v": 18
+        },
+        "witness": {
+          "precision_1v": 0.6892701618265892,
+          "recall_1v": 0.7506201345977981,
+          "fscore_1v": 0.7151050692538481,
+          "precision_2v": 0.9082271699830198,
+          "recall_2v": 0.9269711526772901,
+          "fscore_2v": 0.9157242553366342,
+          "p95_distance": 0.04001885744413628,
+          "individual_passes_2v": 18
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 8,
+            "iou": 0.23851309837785228,
+            "raw": {
+              "precision_1v": 0.4723754173511714,
+              "recall_1v": 0.5379617834394904,
+              "fscore_1v": 0.5022076773846588,
+              "precision_2v": 0.7222903741764054,
+              "recall_2v": 0.765891719745223,
+              "fscore_2v": 0.7425837622422261,
+              "p95_distance": 0.06731231893510413,
+              "individual_passes_2v": 2
+            },
+            "rigid": {
+              "precision_1v": 0.6106010529247532,
+              "recall_1v": 0.7038216560509555,
+              "fscore_1v": 0.6529111113014006,
+              "precision_2v": 0.878012468170627,
+              "recall_2v": 0.912468152866242,
+              "fscore_2v": 0.8943160342300839,
+              "p95_distance": 0.03950778754959355,
+              "individual_passes_2v": 3
+            },
+            "witness": {
+              "precision_1v": 0.6106010529247532,
+              "recall_1v": 0.7038216560509555,
+              "fscore_1v": 0.6529111113014006,
+              "precision_2v": 0.878012468170627,
+              "recall_2v": 0.912468152866242,
+              "fscore_2v": 0.8943160342300839,
+              "p95_distance": 0.03950778754959355,
+              "individual_passes_2v": 3
+            },
+            "meets_common_geometry_reference": false,
+            "surface_advantage_2v": 0.1938983064852552
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 8,
+            "iou": 0.3757358301561833,
+            "raw": {
+              "precision_1v": 0.6234110696051517,
+              "recall_1v": 0.6913660879824709,
+              "fscore_1v": 0.6546886275516712,
+              "precision_2v": 0.8039651243660231,
+              "recall_2v": 0.841711613011967,
+              "fscore_2v": 0.8218676095321815,
+              "p95_distance": 0.08936613389470881,
+              "individual_passes_2v": 2
+            },
+            "rigid": {
+              "precision_1v": 0.8244768597344049,
+              "recall_1v": 0.8849970503960897,
+              "fscore_1v": 0.8527324678616138,
+              "precision_2v": 0.9590193815425507,
+              "recall_2v": 0.9685867183549638,
+              "fscore_2v": 0.963627048762659,
+              "p95_distance": 0.03444511993510962,
+              "individual_passes_2v": 7
+            },
+            "witness": {
+              "precision_1v": 0.819392507743555,
+              "recall_1v": 0.8818367604921624,
+              "fscore_1v": 0.8486032499138385,
+              "precision_2v": 0.959072995096057,
+              "recall_2v": 0.9687341985504804,
+              "fscore_2v": 0.9637276885809726,
+              "p95_distance": 0.03474125515718132,
+              "individual_passes_2v": 7
+            },
+            "meets_common_geometry_reference": false,
+            "surface_advantage_2v": 0.028435891013442238
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 8,
+            "iou": 0.2677135799660361,
+            "raw": {
+              "precision_1v": 0.5010927551929873,
+              "recall_1v": 0.595732606968562,
+              "fscore_1v": 0.5409251054216511,
+              "precision_2v": 0.8289776846538046,
+              "recall_2v": 0.8817529224832595,
+              "fscore_2v": 0.8507520972176263,
+              "p95_distance": 0.054587978825824245,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.5533751814187989,
+              "recall_1v": 0.6680711610486891,
+              "fscore_1v": 0.6015964780211607,
+              "precision_2v": 0.8734535691259332,
+              "recall_2v": 0.9327545114061968,
+              "fscore_2v": 0.8993326776324339,
+              "p95_distance": 0.04242539499153407,
+              "individual_passes_2v": 3
+            },
+            "witness": {
+              "precision_1v": 0.5533751814187989,
+              "recall_1v": 0.6680711610486891,
+              "fscore_1v": 0.6015964780211607,
+              "precision_2v": 0.8734535691259332,
+              "recall_2v": 0.9327545114061968,
+              "fscore_2v": 0.8993326776324339,
+              "p95_distance": 0.04242539499153407,
+              "individual_passes_2v": 3
+            },
+            "meets_common_geometry_reference": false,
+            "surface_advantage_2v": 0.12712206992450859
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 8,
+            "iou": 0.23046402718254627,
+            "raw": {
+              "precision_1v": 0.5303086292915132,
+              "recall_1v": 0.5249807840122982,
+              "fscore_1v": 0.5253281873687713,
+              "precision_2v": 0.736229257027776,
+              "recall_2v": 0.7249231360491929,
+              "fscore_2v": 0.72865699379324,
+              "p95_distance": 0.07359846939981922,
+              "individual_passes_2v": 1
+            },
+            "rigid": {
+              "precision_1v": 0.7737119052192498,
+              "recall_1v": 0.7487509607993851,
+              "fscore_1v": 0.7573094377789924,
+              "precision_2v": 0.9223696475394618,
+              "recall_2v": 0.8939277478862413,
+              "fscore_2v": 0.9055206209030461,
+              "p95_distance": 0.04340099207823618,
+              "individual_passes_2v": 5
+            },
+            "witness": {
+              "precision_1v": 0.7737119052192498,
+              "recall_1v": 0.7487509607993851,
+              "fscore_1v": 0.7573094377789924,
+              "precision_2v": 0.9223696475394618,
+              "recall_2v": 0.8939277478862413,
+              "fscore_2v": 0.9055206209030461,
+              "p95_distance": 0.04340099207823618,
+              "individual_passes_2v": 5
+            },
+            "meets_common_geometry_reference": false,
+            "surface_advantage_2v": 0.11152951489709462
+          }
+        },
+        "native_endpoint": false,
+        "common_geometry_endpoint": false,
+        "dependence_endpoint": false
+      },
+      "shared_orientation/wrong_surface": {
+        "n": 32,
+        "iou": 0.17643779596767653,
+        "raw": {
+          "precision_1v": 0.3833864041407321,
+          "recall_1v": 0.40688686914997435,
+          "fscore_1v": 0.3909934022408395,
+          "precision_2v": 0.6183000220259636,
+          "recall_2v": 0.6055874511530154,
+          "fscore_2v": 0.6071934112565196,
+          "p95_distance": 0.1295402949646534,
+          "individual_passes_2v": 0
+        },
+        "rigid": {
+          "precision_1v": 0.5694072438677161,
+          "recall_1v": 0.5860680274340164,
+          "fscore_1v": 0.571433637652003,
+          "precision_2v": 0.8317544149517561,
+          "recall_2v": 0.7809595677389389,
+          "fscore_2v": 0.8004778097565589,
+          "p95_distance": 0.06654921931772204,
+          "individual_passes_2v": 3
+        },
+        "witness": {
+          "precision_1v": 0.5694072438677161,
+          "recall_1v": 0.5860680274340164,
+          "fscore_1v": 0.571433637652003,
+          "precision_2v": 0.8317544149517561,
+          "recall_2v": 0.7809595677389389,
+          "fscore_2v": 0.8004778097565589,
+          "p95_distance": 0.06654921931772204,
+          "individual_passes_2v": 3
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 8,
+            "iou": 0.09691628132831788,
+            "raw": {
+              "precision_1v": 0.25072808438830696,
+              "recall_1v": 0.2384076433121019,
+              "fscore_1v": 0.24275025041444415,
+              "precision_2v": 0.45456984221745794,
+              "recall_2v": 0.4110509554140127,
+              "fscore_2v": 0.42910453272173255,
+              "p95_distance": 0.19808151315765668,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.41725122142581716,
+              "recall_1v": 0.41242038216560506,
+              "fscore_1v": 0.4114305036778361,
+              "precision_2v": 0.7330772471499725,
+              "recall_2v": 0.678343949044586,
+              "fscore_2v": 0.7004177277448287,
+              "p95_distance": 0.08293684258089075,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.41725122142581716,
+              "recall_1v": 0.41242038216560506,
+              "fscore_1v": 0.4114305036778361,
+              "precision_2v": 0.7330772471499725,
+              "recall_2v": 0.678343949044586,
+              "fscore_2v": 0.7004177277448287,
+              "p95_distance": 0.08293684258089075,
+              "individual_passes_2v": 0
+            }
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 8,
+            "iou": 0.3054978878006042,
+            "raw": {
+              "precision_1v": 0.5898820478369082,
+              "recall_1v": 0.6218081071970336,
+              "fscore_1v": 0.5983442291131567,
+              "precision_2v": 0.8047951978417407,
+              "recall_2v": 0.8111937468397101,
+              "fscore_2v": 0.8031435507852721,
+              "p95_distance": 0.0790911531849388,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.7937836708785692,
+              "recall_1v": 0.8047994269340975,
+              "fscore_1v": 0.7903531080809933,
+              "precision_2v": 0.9599053152107606,
+              "recall_2v": 0.9177692566998146,
+              "fscore_2v": 0.9352917975675303,
+              "p95_distance": 0.05011160708271653,
+              "individual_passes_2v": 2
+            },
+            "witness": {
+              "precision_1v": 0.7937836708785692,
+              "recall_1v": 0.8047994269340975,
+              "fscore_1v": 0.7903531080809933,
+              "precision_2v": 0.9599053152107606,
+              "recall_2v": 0.9177692566998146,
+              "fscore_2v": 0.9352917975675303,
+              "p95_distance": 0.05011160708271653,
+              "individual_passes_2v": 2
+            }
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 8,
+            "iou": 0.18497420506214118,
+            "raw": {
+              "precision_1v": 0.3795732996907213,
+              "recall_1v": 0.42682442401543524,
+              "fscore_1v": 0.3982544499929286,
+              "precision_2v": 0.6908463244525986,
+              "recall_2v": 0.6498552945182159,
+              "fscore_2v": 0.6639609807819921,
+              "p95_distance": 0.11172509987813335,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.4754032128845443,
+              "recall_1v": 0.5302037226194529,
+              "fscore_1v": 0.4964193181112346,
+              "precision_2v": 0.8153490024892568,
+              "recall_2v": 0.746595165134491,
+              "fscore_2v": 0.7722106077079253,
+              "p95_distance": 0.06652264841361993,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.4754032128845443,
+              "recall_1v": 0.5302037226194529,
+              "fscore_1v": 0.4964193181112346,
+              "precision_2v": 0.8153490024892568,
+              "recall_2v": 0.746595165134491,
+              "fscore_2v": 0.7722106077079253,
+              "p95_distance": 0.06652264841361993,
+              "individual_passes_2v": 0
+            }
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 8,
+            "iou": 0.11836280967964288,
+            "raw": {
+              "precision_1v": 0.313362184646992,
+              "recall_1v": 0.3405073020753267,
+              "fscore_1v": 0.32462467944282875,
+              "precision_2v": 0.5229887235920572,
+              "recall_2v": 0.550249807840123,
+              "fscore_2v": 0.5325645807370815,
+              "p95_distance": 0.12926341363788482,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.5911908702819338,
+              "recall_1v": 0.59684857801691,
+              "fscore_1v": 0.5875316207379476,
+              "precision_2v": 0.8186860949570345,
+              "recall_2v": 0.781129900076864,
+              "fscore_2v": 0.7939911060059515,
+              "p95_distance": 0.06662577919366092,
+              "individual_passes_2v": 1
+            },
+            "witness": {
+              "precision_1v": 0.5911908702819338,
+              "recall_1v": 0.59684857801691,
+              "fscore_1v": 0.5875316207379476,
+              "precision_2v": 0.8186860949570345,
+              "recall_2v": 0.781129900076864,
+              "fscore_2v": 0.7939911060059515,
+              "p95_distance": 0.06662577919366092,
+              "individual_passes_2v": 1
+            }
+          }
+        }
+      }
+    },
+    "reserved_view": {
+      "camera_dropout/correct_surface": {
+        "n": 24,
+        "iou": 0.5616719744711177,
+        "raw": {
+          "precision_1v": 0.6698632307448201,
+          "recall_1v": 0.6762020255675482,
+          "fscore_1v": 0.6712821002922706,
+          "precision_2v": 0.6947307750929901,
+          "recall_2v": 0.7051531176320411,
+          "fscore_2v": 0.6983456004212318,
+          "p95_distance": 0.1551410647110884,
+          "individual_passes_2v": 14
+        },
+        "rigid": {
+          "precision_1v": 0.7950906777778303,
+          "recall_1v": 0.8012706959498077,
+          "fscore_1v": 0.7925904069155619,
+          "precision_2v": 0.8977051450358835,
+          "recall_2v": 0.8937898433803241,
+          "fscore_2v": 0.89190997627007,
+          "p95_distance": 0.03523447586310865,
+          "individual_passes_2v": 16
+        },
+        "witness": {
+          "precision_1v": 0.7950906777778303,
+          "recall_1v": 0.8012706959498077,
+          "fscore_1v": 0.7925904069155619,
+          "precision_2v": 0.8977051450358835,
+          "recall_2v": 0.8937898433803241,
+          "fscore_2v": 0.89190997627007,
+          "p95_distance": 0.03523447586310865,
+          "individual_passes_2v": 16
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 6,
+            "iou": 0.845265205008504,
+            "raw": {
+              "precision_1v": 0.9983152265157367,
+              "recall_1v": 0.9973460721868366,
+              "fscore_1v": 0.9978300593507479,
+              "precision_2v": 0.9999569114098587,
+              "recall_2v": 0.9998301486199576,
+              "fscore_2v": 0.9998935166447481,
+              "p95_distance": 0.015625,
+              "individual_passes_2v": 6
+            },
+            "rigid": {
+              "precision_1v": 0.9983152265157367,
+              "recall_1v": 0.9973460721868366,
+              "fscore_1v": 0.9978300593507479,
+              "precision_2v": 0.9999569114098587,
+              "recall_2v": 0.9998301486199576,
+              "fscore_2v": 0.9998935166447481,
+              "p95_distance": 0.015625,
+              "individual_passes_2v": 6
+            },
+            "witness": {
+              "precision_1v": 0.9983152265157367,
+              "recall_1v": 0.9973460721868366,
+              "fscore_1v": 0.9978300593507479,
+              "precision_2v": 0.9999569114098587,
+              "recall_2v": 0.9998301486199576,
+              "fscore_2v": 0.9998935166447481,
+              "p95_distance": 0.015625,
+              "individual_passes_2v": 6
+            }
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 6,
+            "iou": 0.6458650626575276,
+            "raw": {
+              "precision_1v": 0.7390002358802318,
+              "recall_1v": 0.7218242597898759,
+              "fscore_1v": 0.7291440016542066,
+              "precision_2v": 0.7576936282252301,
+              "recall_2v": 0.7514045732906343,
+              "fscore_2v": 0.7542646942591016,
+              "p95_distance": 0.10433169412327109,
+              "individual_passes_2v": 4
+            },
+            "rigid": {
+              "precision_1v": 0.8219413743208042,
+              "recall_1v": 0.7567279060621384,
+              "fscore_1v": 0.7805635535713464,
+              "precision_2v": 0.9167194756737709,
+              "recall_2v": 0.8368166750941064,
+              "fscore_2v": 0.8690769984834146,
+              "p95_distance": 0.02548964804825916,
+              "individual_passes_2v": 4
+            },
+            "witness": {
+              "precision_1v": 0.8219413743208042,
+              "recall_1v": 0.7567279060621384,
+              "fscore_1v": 0.7805635535713464,
+              "precision_2v": 0.9167194756737709,
+              "recall_2v": 0.8368166750941064,
+              "fscore_2v": 0.8690769984834146,
+              "p95_distance": 0.02548964804825916,
+              "individual_passes_2v": 4
+            }
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 6,
+            "iou": 0.671284248123877,
+            "raw": {
+              "precision_1v": 0.7027171039130854,
+              "recall_1v": 0.6994476601218175,
+              "fscore_1v": 0.7010063686955023,
+              "precision_2v": 0.7247378040026792,
+              "recall_2v": 0.7105512049332274,
+              "fscore_2v": 0.716657257519026,
+              "p95_distance": 0.12423812960288087,
+              "individual_passes_2v": 4
+            },
+            "rigid": {
+              "precision_1v": 0.7684013504790385,
+              "recall_1v": 0.7770400635569175,
+              "fscore_1v": 0.772543250877365,
+              "precision_2v": 0.8634504597802481,
+              "recall_2v": 0.8456096545984186,
+              "fscore_2v": 0.8541062785071898,
+              "p95_distance": 0.04312576064005334,
+              "individual_passes_2v": 4
+            },
+            "witness": {
+              "precision_1v": 0.7684013504790385,
+              "recall_1v": 0.7770400635569175,
+              "fscore_1v": 0.772543250877365,
+              "precision_2v": 0.8634504597802481,
+              "recall_2v": 0.8456096545984186,
+              "fscore_2v": 0.8541062785071898,
+              "p95_distance": 0.04312576064005334,
+              "individual_passes_2v": 4
+            }
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 6,
+            "iou": 0.08427338209456213,
+            "raw": {
+              "precision_1v": 0.23942035667022693,
+              "recall_1v": 0.28619011017166285,
+              "fscore_1v": 0.25714797146862606,
+              "precision_2v": 0.2965347567341924,
+              "recall_2v": 0.35882654368434536,
+              "fscore_2v": 0.32256693326205177,
+              "p95_distance": 0.3763694351182017,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.5917047597957421,
+              "recall_1v": 0.6739687419933384,
+              "fscore_1v": 0.6194247638627882,
+              "precision_2v": 0.8106937332796564,
+              "recall_2v": 0.8929028952088137,
+              "fscore_2v": 0.8445631114449271,
+              "p95_distance": 0.056697494764122086,
+              "individual_passes_2v": 2
+            },
+            "witness": {
+              "precision_1v": 0.5917047597957421,
+              "recall_1v": 0.6739687419933384,
+              "fscore_1v": 0.6194247638627882,
+              "precision_2v": 0.8106937332796564,
+              "recall_2v": 0.8929028952088137,
+              "fscore_2v": 0.8445631114449271,
+              "p95_distance": 0.056697494764122086,
+              "individual_passes_2v": 2
+            }
+          }
+        }
+      },
+      "camera_dropout/wrong_surface": {
+        "n": 24,
+        "iou": 0.6151558015192548,
+        "raw": {
+          "precision_1v": 0.7893976251132765,
+          "recall_1v": 0.7900991882645602,
+          "fscore_1v": 0.788402190400834,
+          "precision_2v": 0.8199587589582251,
+          "recall_2v": 0.8233764194705062,
+          "fscore_2v": 0.8207491236695877,
+          "p95_distance": 0.09693571866930639,
+          "individual_passes_2v": 14
+        },
+        "rigid": {
+          "precision_1v": 0.8804484278404855,
+          "recall_1v": 0.880591933515233,
+          "fscore_1v": 0.8781624583187004,
+          "precision_2v": 0.9456964833438288,
+          "recall_2v": 0.9617676088381493,
+          "fscore_2v": 0.9514831472714147,
+          "p95_distance": 0.026575552357817642,
+          "individual_passes_2v": 18
+        },
+        "witness": {
+          "precision_1v": 0.8828015749816949,
+          "recall_1v": 0.8830388549589697,
+          "fscore_1v": 0.8805615767075354,
+          "precision_2v": 0.9457376762915961,
+          "recall_2v": 0.9613058253986588,
+          "fscore_2v": 0.9512848269449969,
+          "p95_distance": 0.02677768722929647,
+          "individual_passes_2v": 18
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 6,
+            "iou": 0.5661377550341472,
+            "raw": {
+              "precision_1v": 0.8933334023800737,
+              "recall_1v": 0.882208067940552,
+              "fscore_1v": 0.8861955375997871,
+              "precision_2v": 0.938417070289671,
+              "recall_2v": 0.9357112526539277,
+              "fscore_2v": 0.9354883400686181,
+              "p95_distance": 0.04707485645277738,
+              "individual_passes_2v": 2
+            },
+            "rigid": {
+              "precision_1v": 0.8505606719432308,
+              "recall_1v": 0.831932059447983,
+              "fscore_1v": 0.8400618618444736,
+              "precision_2v": 0.9435691857073873,
+              "recall_2v": 0.936624203821656,
+              "fscore_2v": 0.9389060380431333,
+              "p95_distance": 0.04254198002190642,
+              "individual_passes_2v": 2
+            },
+            "witness": {
+              "precision_1v": 0.8599732605080685,
+              "recall_1v": 0.8417197452229299,
+              "fscore_1v": 0.849658335399814,
+              "precision_2v": 0.9437339574984567,
+              "recall_2v": 0.9347770700636943,
+              "fscore_2v": 0.9381127567374619,
+              "p95_distance": 0.043350519507821726,
+              "individual_passes_2v": 2
+            }
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 6,
+            "iou": 0.9026986367235976,
+            "raw": {
+              "precision_1v": 0.9994420009665942,
+              "recall_1v": 0.9953929996067195,
+              "fscore_1v": 0.9974052031183728,
+              "precision_2v": 1.0,
+              "recall_2v": 0.9994803078824653,
+              "fscore_2v": 0.9997397481887881,
+              "p95_distance": 0.005208333333333333,
+              "individual_passes_2v": 6
+            },
+            "rigid": {
+              "precision_1v": 0.9994420009665942,
+              "recall_1v": 0.9953929996067195,
+              "fscore_1v": 0.9974052031183728,
+              "precision_2v": 1.0,
+              "recall_2v": 0.9994803078824653,
+              "fscore_2v": 0.9997397481887881,
+              "p95_distance": 0.005208333333333333,
+              "individual_passes_2v": 6
+            },
+            "witness": {
+              "precision_1v": 0.9994420009665942,
+              "recall_1v": 0.9953929996067195,
+              "fscore_1v": 0.9974052031183728,
+              "precision_2v": 1.0,
+              "recall_2v": 0.9994803078824653,
+              "fscore_2v": 0.9997397481887881,
+              "p95_distance": 0.005208333333333333,
+              "individual_passes_2v": 6
+            }
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 6,
+            "iou": 0.9114477244592016,
+            "raw": {
+              "precision_1v": 0.9987712007086953,
+              "recall_1v": 0.9991677070328756,
+              "fscore_1v": 0.9989689319460002,
+              "precision_2v": 0.9996771830619832,
+              "recall_2v": 1.0,
+              "fscore_2v": 0.9998384826086228,
+              "p95_distance": 0.0078125,
+              "individual_passes_2v": 6
+            },
+            "rigid": {
+              "precision_1v": 0.9987712007086953,
+              "recall_1v": 0.9991677070328756,
+              "fscore_1v": 0.9989689319460002,
+              "precision_2v": 0.9996771830619832,
+              "recall_2v": 1.0,
+              "fscore_2v": 0.9998384826086228,
+              "p95_distance": 0.0078125,
+              "individual_passes_2v": 6
+            },
+            "witness": {
+              "precision_1v": 0.9987712007086953,
+              "recall_1v": 0.9991677070328756,
+              "fscore_1v": 0.9989689319460002,
+              "precision_2v": 0.9996771830619832,
+              "recall_2v": 1.0,
+              "fscore_2v": 0.9998384826086228,
+              "p95_distance": 0.0078125,
+              "individual_passes_2v": 6
+            }
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 6,
+            "iou": 0.08033908986007252,
+            "raw": {
+              "precision_1v": 0.2660438963977429,
+              "recall_1v": 0.2836279784780938,
+              "fscore_1v": 0.27103908893917594,
+              "precision_2v": 0.3417407824812462,
+              "recall_2v": 0.35831411734563157,
+              "fscore_2v": 0.3479299238123219,
+              "p95_distance": 0.3276471848911149,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.6730198377434216,
+              "recall_1v": 0.6958749679733538,
+              "fscore_1v": 0.676213836365955,
+              "precision_2v": 0.8395395646059448,
+              "recall_2v": 0.9109659236484755,
+              "fscore_2v": 0.8674483202451149,
+              "p95_distance": 0.05073939607603082,
+              "individual_passes_2v": 4
+            },
+            "witness": {
+              "precision_1v": 0.6730198377434216,
+              "recall_1v": 0.6958749679733538,
+              "fscore_1v": 0.676213836365955,
+              "precision_2v": 0.8395395646059448,
+              "recall_2v": 0.9109659236484755,
+              "fscore_2v": 0.8674483202451149,
+              "p95_distance": 0.05073939607603082,
+              "individual_passes_2v": 4
+            }
+          }
+        }
+      },
+      "dropout/aligned": {
+        "n": 24,
+        "iou": 0.9716623551983723,
+        "raw": {
+          "precision_1v": 0.9999342278347804,
+          "recall_1v": 1.0,
+          "fscore_1v": 0.9999670879410216,
+          "precision_2v": 1.0,
+          "recall_2v": 1.0,
+          "fscore_2v": 1.0,
+          "p95_distance": 0.001953125,
+          "individual_passes_2v": 24
+        },
+        "rigid": {
+          "precision_1v": 0.9999014194358302,
+          "recall_1v": 0.9991032539072509,
+          "fscore_1v": 0.9995012462177141,
+          "precision_2v": 1.0,
+          "recall_2v": 1.0,
+          "fscore_2v": 1.0,
+          "p95_distance": 0.0019119197792108484,
+          "individual_passes_2v": 24
+        },
+        "witness": {
+          "precision_1v": 0.9999342278347804,
+          "recall_1v": 1.0,
+          "fscore_1v": 0.9999670879410216,
+          "precision_2v": 1.0,
+          "recall_2v": 1.0,
+          "fscore_2v": 1.0,
+          "p95_distance": 0.001953125,
+          "individual_passes_2v": 24
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 6,
+            "iou": 0.9794081406293981,
+            "raw": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 6
+            },
+            "rigid": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 6
+            },
+            "witness": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 6
+            }
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 6,
+            "iou": 0.9935485630387585,
+            "raw": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 6
+            },
+            "rigid": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 6
+            },
+            "witness": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 6
+            }
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 6,
+            "iou": 0.9940940834901352,
+            "raw": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 6
+            },
+            "rigid": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 6
+            },
+            "witness": {
+              "precision_1v": 1.0,
+              "recall_1v": 1.0,
+              "fscore_1v": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0,
+              "individual_passes_2v": 6
+            }
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 6,
+            "iou": 0.9195986336351976,
+            "raw": {
+              "precision_1v": 0.9997369113391212,
+              "recall_1v": 1.0,
+              "fscore_1v": 0.9998683517640864,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0078125,
+              "individual_passes_2v": 6
+            },
+            "rigid": {
+              "precision_1v": 0.9996056777433208,
+              "recall_1v": 0.9964130156290033,
+              "fscore_1v": 0.9980049848708563,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.007647679116843394,
+              "individual_passes_2v": 6
+            },
+            "witness": {
+              "precision_1v": 0.9997369113391212,
+              "recall_1v": 1.0,
+              "fscore_1v": 0.9998683517640864,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0,
+              "p95_distance": 0.0078125,
+              "individual_passes_2v": 6
+            }
+          }
+        }
+      },
+      "dropout/wrong_surface": {
+        "n": 24,
+        "iou": 0.024873847098381707,
+        "raw": {
+          "precision_1v": 0.14996361145194861,
+          "recall_1v": 0.15450448482250914,
+          "fscore_1v": 0.10507619798047314,
+          "precision_2v": 0.22042232615303703,
+          "recall_2v": 0.22529712188651252,
+          "fscore_2v": 0.1565209675503377,
+          "p95_distance": 0.39482416235713425,
+          "individual_passes_2v": 0
+        },
+        "rigid": {
+          "precision_1v": 0.22002671037732136,
+          "recall_1v": 0.24706709406715935,
+          "fscore_1v": 0.18534172502829,
+          "precision_2v": 0.4153085958642566,
+          "recall_2v": 0.4492790073670477,
+          "fscore_2v": 0.34040331836984183,
+          "p95_distance": 0.18129088936179827,
+          "individual_passes_2v": 0
+        },
+        "witness": {
+          "precision_1v": 0.22002671037732136,
+          "recall_1v": 0.24706709406715935,
+          "fscore_1v": 0.18534172502829,
+          "precision_2v": 0.4153085958642566,
+          "recall_2v": 0.4492790073670477,
+          "fscore_2v": 0.34040331836984183,
+          "p95_distance": 0.18129088936179827,
+          "individual_passes_2v": 0
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 6,
+            "iou": 0.017578379560522026,
+            "raw": {
+              "precision_1v": 0.26519741849069944,
+              "recall_1v": 0.04104033970276008,
+              "fscore_1v": 0.07107992398201537,
+              "precision_2v": 0.3961421293015093,
+              "recall_2v": 0.06450106157112526,
+              "fscore_2v": 0.11093787819384872,
+              "p95_distance": 0.3921052791713713,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.20198915635637574,
+              "recall_1v": 0.03231422505307856,
+              "fscore_1v": 0.055709116057598235,
+              "precision_2v": 0.453233959365308,
+              "recall_2v": 0.08123142250530785,
+              "fscore_2v": 0.1377668703936195,
+              "p95_distance": 0.24237182279593347,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.20198915635637574,
+              "recall_1v": 0.03231422505307856,
+              "fscore_1v": 0.055709116057598235,
+              "precision_2v": 0.453233959365308,
+              "recall_2v": 0.08123142250530785,
+              "fscore_2v": 0.1377668703936195,
+              "p95_distance": 0.24237182279593347,
+              "individual_passes_2v": 0
+            }
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 6,
+            "iou": 0.04546291376331283,
+            "raw": {
+              "precision_1v": 0.1909868319719689,
+              "recall_1v": 0.17706050901736053,
+              "fscore_1v": 0.18363581872245574,
+              "precision_2v": 0.2537890895538953,
+              "recall_2v": 0.2753806393617619,
+              "fscore_2v": 0.26397020802243365,
+              "p95_distance": 0.3066078496458476,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.31615103111779214,
+              "recall_1v": 0.23551884937356032,
+              "fscore_1v": 0.269909841216011,
+              "precision_2v": 0.5235773443601897,
+              "recall_2v": 0.4685516040226979,
+              "fscore_2v": 0.49449882334400874,
+              "p95_distance": 0.13468126079466644,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.31615103111779214,
+              "recall_1v": 0.23551884937356032,
+              "fscore_1v": 0.269909841216011,
+              "precision_2v": 0.5235773443601897,
+              "recall_2v": 0.4685516040226979,
+              "fscore_2v": 0.49449882334400874,
+              "p95_distance": 0.13468126079466644,
+              "individual_passes_2v": 0
+            }
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 6,
+            "iou": 0.022483877431880493,
+            "raw": {
+              "precision_1v": 0.10939292203290023,
+              "recall_1v": 0.09925093632958801,
+              "fscore_1v": 0.10407532430277162,
+              "precision_2v": 0.17476515811357618,
+              "recall_2v": 0.13227783452502553,
+              "fscore_2v": 0.1505818096642282,
+              "p95_distance": 0.3727143888086426,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.30686962683892266,
+              "recall_1v": 0.33278477660500133,
+              "fscore_1v": 0.31927120562998507,
+              "precision_2v": 0.5893739162435622,
+              "recall_2v": 0.5364695645594522,
+              "fscore_2v": 0.5616771777059928,
+              "p95_distance": 0.13049068835585315,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.30686962683892266,
+              "recall_1v": 0.33278477660500133,
+              "fscore_1v": 0.31927120562998507,
+              "precision_2v": 0.5893739162435622,
+              "recall_2v": 0.5364695645594522,
+              "fscore_2v": 0.5616771777059928,
+              "p95_distance": 0.13049068835585315,
+              "individual_passes_2v": 0
+            }
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 6,
+            "iou": 0.013970217637811477,
+            "raw": {
+              "precision_1v": 0.034277273312225916,
+              "recall_1v": 0.30066615424032794,
+              "fscore_1v": 0.061513724914649855,
+              "precision_2v": 0.05699292764316731,
+              "recall_2v": 0.42902895208813735,
+              "fscore_2v": 0.10059397432084027,
+              "p95_distance": 0.5078691318026756,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.055097027196194935,
+              "recall_1v": 0.38765052523699717,
+              "fscore_1v": 0.0964767372095657,
+              "precision_2v": 0.09504916348796674,
+              "recall_2v": 0.7108634383807327,
+              "fscore_2v": 0.16767040203574626,
+              "p95_distance": 0.21761978550074004,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.055097027196194935,
+              "recall_1v": 0.38765052523699717,
+              "fscore_1v": 0.0964767372095657,
+              "precision_2v": 0.09504916348796674,
+              "recall_2v": 0.7108634383807327,
+              "fscore_2v": 0.16767040203574626,
+              "p95_distance": 0.21761978550074004,
+              "individual_passes_2v": 0
+            }
+          }
+        }
+      },
+      "shared_orientation/correct_surface": {
+        "n": 24,
+        "iou": 0.1589981322969808,
+        "raw": {
+          "precision_1v": 0.3324743413460886,
+          "recall_1v": 0.3726758611567925,
+          "fscore_1v": 0.34727740619431974,
+          "precision_2v": 0.5427582337340229,
+          "recall_2v": 0.5568400947121773,
+          "fscore_2v": 0.5448468946905785,
+          "p95_distance": 0.13024853201734676,
+          "individual_passes_2v": 0
+        },
+        "rigid": {
+          "precision_1v": 0.5396670102400919,
+          "recall_1v": 0.5924905871617848,
+          "fscore_1v": 0.5569265749320276,
+          "precision_2v": 0.7684150848042234,
+          "recall_2v": 0.7925107095954259,
+          "fscore_2v": 0.7752793794468692,
+          "p95_distance": 0.07264480104577958,
+          "individual_passes_2v": 4
+        },
+        "witness": {
+          "precision_1v": 0.5396670102400919,
+          "recall_1v": 0.5924905871617848,
+          "fscore_1v": 0.5569265749320276,
+          "precision_2v": 0.7684150848042234,
+          "recall_2v": 0.7925107095954259,
+          "fscore_2v": 0.7752793794468692,
+          "p95_distance": 0.07264480104577958,
+          "individual_passes_2v": 4
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 6,
+            "iou": 0.10176803255390522,
+            "raw": {
+              "precision_1v": 0.24776616419010075,
+              "recall_1v": 0.2786836518046709,
+              "fscore_1v": 0.26063529817886744,
+              "precision_2v": 0.4715333126396861,
+              "recall_2v": 0.4949469214437367,
+              "fscore_2v": 0.4799072015961312,
+              "p95_distance": 0.15000136123498295,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.46306881863324806,
+              "recall_1v": 0.5278556263269639,
+              "fscore_1v": 0.49080388648229306,
+              "precision_2v": 0.7349390070834954,
+              "recall_2v": 0.7661146496815286,
+              "fscore_2v": 0.747050819889294,
+              "p95_distance": 0.09250866923095377,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.46306881863324806,
+              "recall_1v": 0.5278556263269639,
+              "fscore_1v": 0.49080388648229306,
+              "precision_2v": 0.7349390070834954,
+              "recall_2v": 0.7661146496815286,
+              "fscore_2v": 0.747050819889294,
+              "p95_distance": 0.09250866923095377,
+              "individual_passes_2v": 0
+            },
+            "meets_common_geometry_reference": false,
+            "surface_advantage_2v": 0.19786319150340936
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 6,
+            "iou": 0.27940583459174156,
+            "raw": {
+              "precision_1v": 0.503265275629388,
+              "recall_1v": 0.5491038822405753,
+              "fscore_1v": 0.5121301171547414,
+              "precision_2v": 0.7203812593283039,
+              "recall_2v": 0.718186414967133,
+              "fscore_2v": 0.7055630947069886,
+              "p95_distance": 0.08866290480398119,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.7993124502385996,
+              "recall_1v": 0.7939912354626665,
+              "fscore_1v": 0.7784391761170804,
+              "precision_2v": 0.9444366591857595,
+              "recall_2v": 0.8960896679588741,
+              "fscore_2v": 0.9115823984302203,
+              "p95_distance": 0.04840153295970343,
+              "individual_passes_2v": 2
+            },
+            "witness": {
+              "precision_1v": 0.7993124502385996,
+              "recall_1v": 0.7939912354626665,
+              "fscore_1v": 0.7784391761170804,
+              "precision_2v": 0.9444366591857595,
+              "recall_2v": 0.8960896679588741,
+              "fscore_2v": 0.9115823984302203,
+              "p95_distance": 0.04840153295970343,
+              "individual_passes_2v": 2
+            },
+            "meets_common_geometry_reference": false,
+            "surface_advantage_2v": -0.0279559484477927
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 6,
+            "iou": 0.18865372952634019,
+            "raw": {
+              "precision_1v": 0.3924138516340699,
+              "recall_1v": 0.44090719933416567,
+              "fscore_1v": 0.41437064567044724,
+              "precision_2v": 0.6758841136681253,
+              "recall_2v": 0.6758975523020467,
+              "fscore_2v": 0.6751025838426337,
+              "p95_distance": 0.10030380945059268,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.5080697577349493,
+              "recall_1v": 0.5912874058941475,
+              "fscore_1v": 0.5455519350269191,
+              "precision_2v": 0.8102939643920127,
+              "recall_2v": 0.8318200733931072,
+              "fscore_2v": 0.8203047279440671,
+              "p95_distance": 0.05261960310313357,
+              "individual_passes_2v": 2
+            },
+            "witness": {
+              "precision_1v": 0.5080697577349493,
+              "recall_1v": 0.5912874058941475,
+              "fscore_1v": 0.5455519350269191,
+              "precision_2v": 0.8102939643920127,
+              "recall_2v": 0.8318200733931072,
+              "fscore_2v": 0.8203047279440671,
+              "p95_distance": 0.05261960310313357,
+              "individual_passes_2v": 2
+            },
+            "meets_common_geometry_reference": false,
+            "surface_advantage_2v": 0.07881362549780446
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 6,
+            "iou": 0.06616493251593619,
+            "raw": {
+              "precision_1v": 0.18645207393079577,
+              "recall_1v": 0.22200871124775814,
+              "fscore_1v": 0.20197356377322276,
+              "precision_2v": 0.3032342492999762,
+              "recall_2v": 0.338329490135793,
+              "fscore_2v": 0.3188146986165603,
+              "p95_distance": 0.18202605257983023,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.38821701435357026,
+              "recall_1v": 0.4568280809633615,
+              "fscore_1v": 0.41291130210181753,
+              "precision_2v": 0.5839907085556261,
+              "recall_2v": 0.6760184473481937,
+              "fscore_2v": 0.6221795715238952,
+              "p95_distance": 0.09704939888932755,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.38821701435357026,
+              "recall_1v": 0.4568280809633615,
+              "fscore_1v": 0.41291130210181753,
+              "precision_2v": 0.5839907085556261,
+              "recall_2v": 0.6760184473481937,
+              "fscore_2v": 0.6221795715238952,
+              "p95_distance": 0.09704939888932755,
+              "individual_passes_2v": 0
+            },
+            "meets_common_geometry_reference": false,
+            "surface_advantage_2v": -0.12256633837646458
+          }
+        },
+        "native_endpoint": false,
+        "common_geometry_endpoint": false,
+        "dependence_endpoint": false
+      },
+      "shared_orientation/wrong_surface": {
+        "n": 24,
+        "iou": 0.13406643988707298,
+        "raw": {
+          "precision_1v": 0.3124972091138135,
+          "recall_1v": 0.32446022057679,
+          "fscore_1v": 0.31296799761222005,
+          "precision_2v": 0.5259170497580206,
+          "recall_2v": 0.4947391830371694,
+          "fscore_2v": 0.5003778534041559,
+          "p95_distance": 0.1661914928694447,
+          "individual_passes_2v": 0
+        },
+        "rigid": {
+          "precision_1v": 0.5154909398667926,
+          "recall_1v": 0.5241783060024411,
+          "fscore_1v": 0.5125104225580716,
+          "precision_2v": 0.7775143078322944,
+          "recall_2v": 0.7279857241256376,
+          "fscore_2v": 0.742579707152875,
+          "p95_distance": 0.07918975448501332,
+          "individual_passes_2v": 3
+        },
+        "witness": {
+          "precision_1v": 0.5183855515818071,
+          "recall_1v": 0.5262022845459573,
+          "fscore_1v": 0.5148473953052535,
+          "precision_2v": 0.7780731003329187,
+          "recall_2v": 0.7297563629550684,
+          "fscore_2v": 0.74374074690263,
+          "p95_distance": 0.08251703925840534,
+          "individual_passes_2v": 3
+        },
+        "objects": {
+          "146b6c1f10bd445da977424c64dbb051": {
+            "n": 6,
+            "iou": 0.07586324275287924,
+            "raw": {
+              "precision_1v": 0.23656365323244802,
+              "recall_1v": 0.17154989384288746,
+              "fscore_1v": 0.19434812823017097,
+              "precision_2v": 0.45444836021002993,
+              "recall_2v": 0.2914649681528662,
+              "fscore_2v": 0.34734226346310515,
+              "p95_distance": 0.272547075812081,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.35235359898764235,
+              "recall_1v": 0.27445859872611467,
+              "fscore_1v": 0.3028108513629348,
+              "precision_2v": 0.6668110371937908,
+              "recall_2v": 0.47823779193205945,
+              "fscore_2v": 0.5467462266261243,
+              "p95_distance": 0.11947756448042475,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.35530345149501696,
+              "recall_1v": 0.27549893842887474,
+              "fscore_1v": 0.30435289041227936,
+              "precision_2v": 0.6716205793253798,
+              "recall_2v": 0.4798726114649682,
+              "fscore_2v": 0.5491876283858846,
+              "p95_distance": 0.12634382259760005,
+              "individual_passes_2v": 0
+            }
+          },
+          "479bbf9062de4b3196f08e52d1c12821": {
+            "n": 6,
+            "iou": 0.22151055625179877,
+            "raw": {
+              "precision_1v": 0.42923562903471296,
+              "recall_1v": 0.4770914096297545,
+              "fscore_1v": 0.446935515421792,
+              "precision_2v": 0.6334155426161574,
+              "recall_2v": 0.6613854710938817,
+              "fscore_2v": 0.6422167726296331,
+              "p95_distance": 0.09693246948566346,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.7862267265900569,
+              "recall_1v": 0.8048766784650823,
+              "fscore_1v": 0.787574581818779,
+              "precision_2v": 0.9607619991422613,
+              "recall_2v": 0.9232822068655543,
+              "fscore_2v": 0.939538346878013,
+              "p95_distance": 0.0399069550808804,
+              "individual_passes_2v": 3
+            },
+            "witness": {
+              "precision_1v": 0.7862267265900569,
+              "recall_1v": 0.8048766784650823,
+              "fscore_1v": 0.787574581818779,
+              "precision_2v": 0.9607619991422613,
+              "recall_2v": 0.9232822068655543,
+              "fscore_2v": 0.939538346878013,
+              "p95_distance": 0.0399069550808804,
+              "individual_passes_2v": 3
+            }
+          },
+          "e846574df9334973955c80286af47ba7": {
+            "n": 6,
+            "iou": 0.17198458101356626,
+            "raw": {
+              "precision_1v": 0.38447585089400876,
+              "recall_1v": 0.40797487988499226,
+              "fscore_1v": 0.3944426751382832,
+              "precision_2v": 0.6783859181416172,
+              "recall_2v": 0.6207770589793061,
+              "fscore_2v": 0.6472826149553453,
+              "p95_distance": 0.12650401390185803,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.44914716453847714,
+              "recall_1v": 0.4806113570158514,
+              "fscore_1v": 0.4627612593941617,
+              "precision_2v": 0.7746728050751621,
+              "recall_2v": 0.7097567434646086,
+              "fscore_2v": 0.7392883452070032,
+              "p95_distance": 0.0736738571760033,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.45777575889116034,
+              "recall_1v": 0.48766693148715623,
+              "fscore_1v": 0.47056711133354473,
+              "precision_2v": 0.7720984329460703,
+              "recall_2v": 0.7152044792494231,
+              "fscore_2v": 0.7414911024462626,
+              "p95_distance": 0.08011673815239609,
+              "individual_passes_2v": 0
+            }
+          },
+          "fe200ce00a5d4c298eee89de0fc15f01": {
+            "n": 6,
+            "iou": 0.06690737953004765,
+            "raw": {
+              "precision_1v": 0.19971370329408428,
+              "recall_1v": 0.241224698949526,
+              "fscore_1v": 0.216145671658634,
+              "precision_2v": 0.33741837806427744,
+              "recall_2v": 0.4053292339226236,
+              "fscore_2v": 0.3646697625685397,
+              "p95_distance": 0.16878241227817634,
+              "individual_passes_2v": 0
+            },
+            "rigid": {
+              "precision_1v": 0.4742362693509941,
+              "recall_1v": 0.5367665898027159,
+              "fscore_1v": 0.4968949976564108,
+              "precision_2v": 0.7078113899179632,
+              "recall_2v": 0.8006661542403279,
+              "fscore_2v": 0.7447459099003598,
+              "p95_distance": 0.08370064120274485,
+              "individual_passes_2v": 0
+            },
+            "witness": {
+              "precision_1v": 0.4742362693509941,
+              "recall_1v": 0.5367665898027159,
+              "fscore_1v": 0.4968949976564108,
+              "precision_2v": 0.7078113899179632,
+              "recall_2v": 0.8006661542403279,
+              "fscore_2v": 0.7447459099003598,
+              "p95_distance": 0.08370064120274485,
+              "individual_passes_2v": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "scope": "Four fitted identities. Two-voxel witness maximizes min(P,R) between raw and fixed RMS proper-rigid candidate. Known label inverse first; no fitted scale/reflection/warping. Registration not globally certified."
+}

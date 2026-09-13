@@ -1,0 +1,17 @@
+{
+  "status": "CPU protocol and source checks only; CUDA run pending",
+  "unit_tests": 4,
+  "source_sha256": {
+    "continue_shared_orientation_gpu.py": "0c86ae952c8181bbcbd7ef11f8625c1a1a5ba155b145015324ef27e26677b252",
+    "shared_orientation_scope_protocol.py": "5dbd79a1342061eb371c6e21f9ef60496f82b63fba958bafebcb9f2b57ade52b",
+    "run_shared_orientation_scope_pair.py": "436f50dc89bf44755afee204746bcb29fe03c416bff1db239654f6c95bd4b5b7",
+    "test_shared_orientation_scope_protocol.py": "090f3f2652ced7500eeb26418ce51c6ab9ca1d211877ef4f98b25e3779fcd9f8"
+  },
+  "runtime_not_tested": [
+    "PyTorch model construction",
+    "Adam state restoration",
+    "GPU gradients",
+    "CUDA memory use",
+    "sampled endpoint"
+  ]
+}

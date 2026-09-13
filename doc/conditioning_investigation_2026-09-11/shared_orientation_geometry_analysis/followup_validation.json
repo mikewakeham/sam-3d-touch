@@ -1,0 +1,10 @@
+{
+  "camera_dropout_geometry_analysis": "70bdbec23ba567e52e5f67f2a3a7d154a1db4a86d47f49a7289bc2b728ad6ff3",
+  "pose_shape_analysis": "f2e3df7eff6ab1b753407c98f7ab3fa5f547bc697ccd6d0e32a567d8fe19b1da",
+  "ancillary_sha256": {
+    "check_shared_orientation_rigid_bound.py": "cf6498972bb57aec399daca9670b8f40641452f788dc4cb8a07aebc3851684df",
+    "plot_shared_orientation_failures.py": "13dac4d47c1e11fcdbb46d9bbe94d588b7ae04e68eb4ae1137f2e1eca318b4d3",
+    "shared_orientation_geometry_analysis/rigid_bounds.json": "ebc22fbe3bf8163f294ac3b00e5f8dd0a924d9e5e5e2377eb98b14cb1791d885",
+    "shared_orientation_geometry_analysis/drill_failures.png": "09c43c0afab263d74572d1bbed6c49d72ba35bfb5414ae117a9c7b6495f7c68c"
+  }
+}
