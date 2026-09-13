@@ -1,0 +1,1837 @@
+{
+  "summary": {
+    "radius": {
+      "min": 0.49839943996736963,
+      "median": 0.5219428309129399,
+      "max": 0.8608451132208758
+    },
+    "surface_max_extent": {
+      "min": 0.9861221611499786,
+      "median": 0.9992617517709732,
+      "max": 1.000000238418579
+    },
+    "normalization_float32_vs_independent_float64_max": {
+      "min": 2.984805180794581e-08,
+      "median": 6.707486521762007e-08,
+      "max": 1.6633567301305163e-07
+    },
+    "inverse_normalization_max_error": {
+      "min": 1.4866534170376866e-08,
+      "median": 1.9905653042551208e-08,
+      "max": 3.832465333974966e-08
+    },
+    "canonicalization_rms_displacement_voxels": {
+      "min": 4.280400145805977e-07,
+      "median": 0.03319558316078533,
+      "max": 0.7177352925344445
+    },
+    "canonicalization_max_displacement_voxels": {
+      "min": 1.0123109024858104e-06,
+      "median": 0.048177916044843144,
+      "max": 0.8437651822527215
+    },
+    "strict_target_q_over_2_scale_relative_to_current": {
+      "min": 0.5808245784531856,
+      "median": 0.9579669157911435,
+      "max": 1.003211400142695
+    },
+    "samples": 64,
+    "objects": 32,
+    "latest_probe_objects_overlap": 3,
+    "rows_with_latest_support": 6
+  },
+  "rows": [
+    {
+      "sample_id": "07569a25210449ab8b54606974e6c767_007",
+      "object_id": "07569a25210449ab8b54606974e6c767",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/07569a25210449ab8b54606974e6c767/views/007/full_surface.npz": "8f8a2594290ac41cd28e98a3654cf6d699bdd709b569dfce3162c52cada5b9c2",
+        "generated_data/07569a25210449ab8b54606974e6c767/views/007/camera.npz": "849edcdc3a3d4cbe0c88a406b2a730267f9e430b2227a82f5a5bcee7304d46ac",
+        "generated_data/07569a25210449ab8b54606974e6c767/target_latent.npz": "a97e47f55fc3bd008b27cb295cc6e8a3b3b589d9cbdba9b6d2515139ad48a126"
+      },
+      "center": [
+        1.3530254364013672e-05,
+        -6.555020809173584e-05,
+        0.0
+      ],
+      "radius": 0.6759319133468923,
+      "surface_max_extent": 0.9999710321426392,
+      "normalization_float32_vs_independent_float64_max": 7.579959337977726e-08,
+      "inverse_normalization_max_error": 3.50437832641326e-08,
+      "canonicalization_rms_displacement_voxels": 0.00459398604878236,
+      "canonicalization_max_displacement_voxels": 0.005292507066720589,
+      "strict_target_q_over_2_scale_relative_to_current": 0.7397194748865142
+    },
+    {
+      "sample_id": "07569a25210449ab8b54606974e6c767_012",
+      "object_id": "07569a25210449ab8b54606974e6c767",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/07569a25210449ab8b54606974e6c767/views/012/full_surface.npz": "60cb6fb56be25267978db0413d8a764c832bf80caf4982247314013f9b3e796f",
+        "generated_data/07569a25210449ab8b54606974e6c767/views/012/camera.npz": "2fa32eac705ba08305877290a4679e1f6d213e12316d300d7235b1d41c34f7f1",
+        "generated_data/07569a25210449ab8b54606974e6c767/target_latent.npz": "a97e47f55fc3bd008b27cb295cc6e8a3b3b589d9cbdba9b6d2515139ad48a126"
+      },
+      "center": [
+        1.3515353202819824e-05,
+        -6.556510925292969e-05,
+        0.0
+      ],
+      "radius": 0.6759319318991487,
+      "surface_max_extent": 0.9999711215496063,
+      "normalization_float32_vs_independent_float64_max": 5.5454531744381086e-08,
+      "inverse_normalization_max_error": 3.5043250135036175e-08,
+      "canonicalization_rms_displacement_voxels": 0.004592324378818464,
+      "canonicalization_max_displacement_voxels": 0.00528686882316598,
+      "strict_target_q_over_2_scale_relative_to_current": 0.7397194545834856
+    },
+    {
+      "sample_id": "0838b73f246f4768aa0671e7b2ba7c30_002",
+      "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/0838b73f246f4768aa0671e7b2ba7c30/views/002/full_surface.npz": "7d1c6c53d8ecb56080b9692139f923559472cb930a6747e3b3cf12d0002e9b7c",
+        "generated_data/0838b73f246f4768aa0671e7b2ba7c30/views/002/camera.npz": "2063df3db6b66117314e7889f5e1a9129ba5cd68213d8ec155b9f53ed2e579f2",
+        "generated_data/0838b73f246f4768aa0671e7b2ba7c30/target_latent.npz": "a8749f881f3afe5ab2ec6c749e9d36328c1813ff9d1ea1a896ea3e68e15b5d7e"
+      },
+      "center": [
+        -2.1457672119140625e-06,
+        4.194676876068115e-05,
+        1.4632940292358398e-05
+      ],
+      "radius": 0.591726799907718,
+      "surface_max_extent": 0.9994125068187714,
+      "normalization_float32_vs_independent_float64_max": 1.2610710542482195e-07,
+      "inverse_normalization_max_error": 3.252290281530179e-08,
+      "canonicalization_rms_displacement_voxels": 0.014452979052708188,
+      "canonicalization_max_displacement_voxels": 0.02461832735040112,
+      "strict_target_q_over_2_scale_relative_to_current": 0.8449845436745079,
+      "latest_target_support_reference": {
+        "file": "val_g1_targets.npz",
+        "index": 0
+      },
+      "latest_and_local_target_latents_equal": true,
+      "original_oracle_point_precision_1voxel": 1.0,
+      "original_oracle_point_precision_2voxels": 1.0,
+      "canonicalized_point_precision_1voxel": 1.0,
+      "canonicalized_point_precision_2voxels": 1.0
+    },
+    {
+      "sample_id": "0838b73f246f4768aa0671e7b2ba7c30_012",
+      "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/0838b73f246f4768aa0671e7b2ba7c30/views/012/full_surface.npz": "80405e034f1abaaecc2f63301783f4543f57fa68cc6d611387bfec221a121f83",
+        "generated_data/0838b73f246f4768aa0671e7b2ba7c30/views/012/camera.npz": "dc0f0f696862c4c1a7fddfcf2949a9166ee02c1be5443ef4e9e79ccc9e8eb92a",
+        "generated_data/0838b73f246f4768aa0671e7b2ba7c30/target_latent.npz": "a8749f881f3afe5ab2ec6c749e9d36328c1813ff9d1ea1a896ea3e68e15b5d7e"
+      },
+      "center": [
+        -2.2649765014648438e-06,
+        4.197657108306885e-05,
+        1.4662742614746094e-05
+      ],
+      "radius": 0.5917267447902143,
+      "surface_max_extent": 0.9994124472141266,
+      "normalization_float32_vs_independent_float64_max": 8.163231224322942e-08,
+      "inverse_normalization_max_error": 3.252800334641037e-08,
+      "canonicalization_rms_displacement_voxels": 0.01445676360705481,
+      "canonicalization_max_displacement_voxels": 0.024628384460264757,
+      "strict_target_q_over_2_scale_relative_to_current": 0.8449846223821871,
+      "latest_target_support_reference": {
+        "file": "val_g1_targets.npz",
+        "index": 0
+      },
+      "latest_and_local_target_latents_equal": true,
+      "original_oracle_point_precision_1voxel": 1.0,
+      "original_oracle_point_precision_2voxels": 1.0,
+      "canonicalized_point_precision_1voxel": 1.0,
+      "canonicalized_point_precision_2voxels": 1.0
+    },
+    {
+      "sample_id": "0afbd2427ca84114b659e1d8cfcb647a_001",
+      "object_id": "0afbd2427ca84114b659e1d8cfcb647a",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/0afbd2427ca84114b659e1d8cfcb647a/views/001/full_surface.npz": "7324f3a96c2711394e5ce26ee2f3981bf6535a36f21312587915d1f22d2bd050",
+        "generated_data/0afbd2427ca84114b659e1d8cfcb647a/views/001/camera.npz": "d12721503d54e9fc2dbfb2e3c4a7907bd103af429864c723d636971cc5646dca",
+        "generated_data/0afbd2427ca84114b659e1d8cfcb647a/target_latent.npz": "d91bc98ec5bbc06ab6281621f58d844c83a90937a43d4f944f03950921ebdf42"
+      },
+      "center": [
+        -9.79006290435791e-06,
+        -0.002149224281311035,
+        0.0006524920463562012
+      ],
+      "radius": 0.5113275962208611,
+      "surface_max_extent": 0.9986950159072876,
+      "normalization_float32_vs_independent_float64_max": 1.010490527919572e-07,
+      "inverse_normalization_max_error": 3.010392896074521e-08,
+      "canonicalization_rms_displacement_voxels": 0.14771069720946328,
+      "canonicalization_max_displacement_voxels": 0.17464199472329872,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9778466949474632
+    },
+    {
+      "sample_id": "0afbd2427ca84114b659e1d8cfcb647a_011",
+      "object_id": "0afbd2427ca84114b659e1d8cfcb647a",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/0afbd2427ca84114b659e1d8cfcb647a/views/011/full_surface.npz": "0df561c6e4c17303f6aa320bbf00fcb79cc149075ba5abf5e22d3bf1526db500",
+        "generated_data/0afbd2427ca84114b659e1d8cfcb647a/views/011/camera.npz": "94ac23add920d3f6be83d9e0e458b16737f24222728e7398a0b804084b30b47b",
+        "generated_data/0afbd2427ca84114b659e1d8cfcb647a/target_latent.npz": "d91bc98ec5bbc06ab6281621f58d844c83a90937a43d4f944f03950921ebdf42"
+      },
+      "center": [
+        -9.775161743164062e-06,
+        -0.002149224281311035,
+        0.0006525218486785889
+      ],
+      "radius": 0.5113276762107706,
+      "surface_max_extent": 0.9986950755119324,
+      "normalization_float32_vs_independent_float64_max": 6.815824615813426e-08,
+      "inverse_normalization_max_error": 1.523793535795903e-08,
+      "canonicalization_rms_displacement_voxels": 0.14771095277709287,
+      "canonicalization_max_displacement_voxels": 0.1746408475078472,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9778465419773185
+    },
+    {
+      "sample_id": "0c15a58c6a0c4ec9bff9336312f675d2_010",
+      "object_id": "0c15a58c6a0c4ec9bff9336312f675d2",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/0c15a58c6a0c4ec9bff9336312f675d2/views/010/full_surface.npz": "a46335974cb57ba5a1ecd0ccec845ce4830d4254a16be73f3618ae7bd8dd37d3",
+        "generated_data/0c15a58c6a0c4ec9bff9336312f675d2/views/010/camera.npz": "bd8ec8319048bc47f5ed232f918f72271b96405fe538e0fef738ed0ad9498476",
+        "generated_data/0c15a58c6a0c4ec9bff9336312f675d2/target_latent.npz": "f7b241f1b924cfb16ad5eeb5f957ca8c6c1f9945e490dd594150bb05c69e4570"
+      },
+      "center": [
+        0.0016946792602539062,
+        -0.0013578832149505615,
+        0.0
+      ],
+      "radius": 0.5376526206808283,
+      "surface_max_extent": 0.9931178092956543,
+      "normalization_float32_vs_independent_float64_max": 6.461945467606256e-08,
+      "inverse_normalization_max_error": 1.6023202487058796e-08,
+      "canonicalization_rms_displacement_voxels": 0.19432808081863798,
+      "canonicalization_max_displacement_voxels": 0.3402401132384124,
+      "strict_target_q_over_2_scale_relative_to_current": 0.929968497813423
+    },
+    {
+      "sample_id": "0c15a58c6a0c4ec9bff9336312f675d2_013",
+      "object_id": "0c15a58c6a0c4ec9bff9336312f675d2",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/0c15a58c6a0c4ec9bff9336312f675d2/views/013/full_surface.npz": "e72feb308895617aebbbd1e92c621b7def9adfa50a7b9e548516ed99ec2f46e5",
+        "generated_data/0c15a58c6a0c4ec9bff9336312f675d2/views/013/camera.npz": "cc41c0549d5e4a3a0e0dd7efe40048a18858c0c1902bcf36633c7f108aff656d",
+        "generated_data/0c15a58c6a0c4ec9bff9336312f675d2/target_latent.npz": "f7b241f1b924cfb16ad5eeb5f957ca8c6c1f9945e490dd594150bb05c69e4570"
+      },
+      "center": [
+        0.0016946941614151,
+        -0.0013579726219177246,
+        0.0
+      ],
+      "radius": 0.5376525170942059,
+      "surface_max_extent": 0.9931178987026215,
+      "normalization_float32_vs_independent_float64_max": 9.302342374173378e-08,
+      "inverse_normalization_max_error": 3.089438116443688e-08,
+      "canonicalization_rms_displacement_voxels": 0.19432898052245215,
+      "canonicalization_max_displacement_voxels": 0.3402397552914065,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9299686769854579
+    },
+    {
+      "sample_id": "199b2202bc4543acb5a7a557212b605d_005",
+      "object_id": "199b2202bc4543acb5a7a557212b605d",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/199b2202bc4543acb5a7a557212b605d/views/005/full_surface.npz": "812ffe52b7c920034bff9260e3cd269fef478bd89a510f4633de5b04eb7a0976",
+        "generated_data/199b2202bc4543acb5a7a557212b605d/views/005/camera.npz": "c792c869f99d2cb49d47b0c68da1b3870044c7c88541004096f4fbe28c8d03ca",
+        "generated_data/199b2202bc4543acb5a7a557212b605d/target_latent.npz": "0050d38c0969790454ec7f8b40669eb2c11351b7469873044f2c24091ea1713e"
+      },
+      "center": [
+        0.0,
+        -2.9802322387695312e-08,
+        0.0
+      ],
+      "radius": 0.5357452292812712,
+      "surface_max_extent": 1.0000001788139343,
+      "normalization_float32_vs_independent_float64_max": 8.640139648186107e-08,
+      "inverse_normalization_max_error": 3.832465333974966e-08,
+      "canonicalization_rms_displacement_voxels": 6.132406952572374e-06,
+      "canonicalization_max_displacement_voxels": 1.1403918890750122e-05,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9332794258770625
+    },
+    {
+      "sample_id": "199b2202bc4543acb5a7a557212b605d_015",
+      "object_id": "199b2202bc4543acb5a7a557212b605d",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/199b2202bc4543acb5a7a557212b605d/views/015/full_surface.npz": "40183178e7aabf3c9321ed692921145d4fa7999b5038aee8bf5598cb9fed9c5a",
+        "generated_data/199b2202bc4543acb5a7a557212b605d/views/015/camera.npz": "92aff474f136d1d0fd9fc7547e49525bd6801d6af043e3f933c8a79596f32052",
+        "generated_data/199b2202bc4543acb5a7a557212b605d/target_latent.npz": "0050d38c0969790454ec7f8b40669eb2c11351b7469873044f2c24091ea1713e"
+      },
+      "center": [
+        -1.4901161193847656e-08,
+        2.9802322387695312e-08,
+        0.0
+      ],
+      "radius": 0.5357451793916913,
+      "surface_max_extent": 1.0000000596046448,
+      "normalization_float32_vs_independent_float64_max": 8.971252130063334e-08,
+      "inverse_normalization_max_error": 2.9802322387695312e-08,
+      "canonicalization_rms_displacement_voxels": 2.1407860721655083e-06,
+      "canonicalization_max_displacement_voxels": 3.967788180967247e-06,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9332795127857652
+    },
+    {
+      "sample_id": "1bf2bf7383d34e45aa5ac504c85e572c_013",
+      "object_id": "1bf2bf7383d34e45aa5ac504c85e572c",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/1bf2bf7383d34e45aa5ac504c85e572c/views/013/full_surface.npz": "c54ff651ab767bb9992bc1d732d115e6faf40a0a6a0491797e4788953d341946",
+        "generated_data/1bf2bf7383d34e45aa5ac504c85e572c/views/013/camera.npz": "c51d02c50f39b26618ac56fb1318e53f272793fc11129133bb0bc9c3be4b019b",
+        "generated_data/1bf2bf7383d34e45aa5ac504c85e572c/target_latent.npz": "4c0652f27c48967bc94cb97abb6cc17dc969889f57d70ac045e211a2f8921022"
+      },
+      "center": [
+        -3.546476364135742e-06,
+        -0.0006408393383026123,
+        -6.377696990966797e-06
+      ],
+      "radius": 0.4997981225463014,
+      "surface_max_extent": 0.9967846274375916,
+      "normalization_float32_vs_independent_float64_max": 6.598354940212658e-08,
+      "inverse_normalization_max_error": 1.4893028754681126e-08,
+      "canonicalization_rms_displacement_voxels": 0.07197727327802765,
+      "canonicalization_max_displacement_voxels": 0.14413310568076226,
+      "strict_target_q_over_2_scale_relative_to_current": 1.0004039179912683
+    },
+    {
+      "sample_id": "1bf2bf7383d34e45aa5ac504c85e572c_015",
+      "object_id": "1bf2bf7383d34e45aa5ac504c85e572c",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/1bf2bf7383d34e45aa5ac504c85e572c/views/015/full_surface.npz": "f011d575c562201ca301d4b7e31d7521c173d2d4eeda21d3e8827d8acf9daa93",
+        "generated_data/1bf2bf7383d34e45aa5ac504c85e572c/views/015/camera.npz": "438d38e99b2b7d357bd86cdbeb7d183f05e9c5b7d052db1bda8ccd79dae4e21a",
+        "generated_data/1bf2bf7383d34e45aa5ac504c85e572c/target_latent.npz": "4c0652f27c48967bc94cb97abb6cc17dc969889f57d70ac045e211a2f8921022"
+      },
+      "center": [
+        -3.546476364135742e-06,
+        -0.0006407797336578369,
+        -6.377696990966797e-06
+      ],
+      "radius": 0.4997981522640011,
+      "surface_max_extent": 0.9967846870422363,
+      "normalization_float32_vs_independent_float64_max": 5.1851584470519185e-08,
+      "inverse_normalization_max_error": 1.4889236010784401e-08,
+      "canonicalization_rms_displacement_voxels": 0.07197419190548462,
+      "canonicalization_max_displacement_voxels": 0.14412738466281128,
+      "strict_target_q_over_2_scale_relative_to_current": 1.0004038585078487
+    },
+    {
+      "sample_id": "1cf32d0ef332402c81cdf8ea6d6030b3_007",
+      "object_id": "1cf32d0ef332402c81cdf8ea6d6030b3",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/1cf32d0ef332402c81cdf8ea6d6030b3/views/007/full_surface.npz": "cca04fff56a12e45d56b242539215db566b05095bf1c0b3e3687a8ee0e5b9da3",
+        "generated_data/1cf32d0ef332402c81cdf8ea6d6030b3/views/007/camera.npz": "e98c1f72aa57dcf3ffffa05ef2aa0a2558dd50b0d3bf6169d4039042c8497e36",
+        "generated_data/1cf32d0ef332402c81cdf8ea6d6030b3/target_latent.npz": "848b03bd5f3dd28943ed20826233b68cb9e74337a751590c07b666bc606a5dd9"
+      },
+      "center": [
+        -0.00022622942924499512,
+        0.0011858344078063965,
+        -0.011678516864776611
+      ],
+      "radius": 0.6546583198474303,
+      "surface_max_extent": 0.9968816637992859,
+      "normalization_float32_vs_independent_float64_max": 5.084748810890716e-08,
+      "inverse_normalization_max_error": 1.9509515558624457e-08,
+      "canonicalization_rms_displacement_voxels": 0.7177341774612833,
+      "canonicalization_max_displacement_voxels": 0.8437651822527215,
+      "strict_target_q_over_2_scale_relative_to_current": 0.7637571918684639
+    },
+    {
+      "sample_id": "1cf32d0ef332402c81cdf8ea6d6030b3_013",
+      "object_id": "1cf32d0ef332402c81cdf8ea6d6030b3",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/1cf32d0ef332402c81cdf8ea6d6030b3/views/013/full_surface.npz": "8886e1cbff1358100a40051dfe866a8e325e8f133b51f27f8efca7df01d275d8",
+        "generated_data/1cf32d0ef332402c81cdf8ea6d6030b3/views/013/camera.npz": "e94b7ed31ad3bd1b140ea4662189efe8aab4d9c20aaa1c3cb4a2664761309230",
+        "generated_data/1cf32d0ef332402c81cdf8ea6d6030b3/target_latent.npz": "848b03bd5f3dd28943ed20826233b68cb9e74337a751590c07b666bc606a5dd9"
+      },
+      "center": [
+        -0.00022622942924499512,
+        0.0011859908699989319,
+        -0.011678516864776611
+      ],
+      "radius": 0.6546583902832659,
+      "surface_max_extent": 0.9968816637992859,
+      "normalization_float32_vs_independent_float64_max": 2.984805180794581e-08,
+      "inverse_normalization_max_error": 1.9509628690350667e-08,
+      "canonicalization_rms_displacement_voxels": 0.7177352925344445,
+      "canonicalization_max_displacement_voxels": 0.843764801907416,
+      "strict_target_q_over_2_scale_relative_to_current": 0.7637571096944983
+    },
+    {
+      "sample_id": "1f51096857cb46c5a2bd1ef8bc2c1803_009",
+      "object_id": "1f51096857cb46c5a2bd1ef8bc2c1803",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/1f51096857cb46c5a2bd1ef8bc2c1803/views/009/full_surface.npz": "d1862bca0d2bda85e7650b845ee95b6509d1526c5db94f7d20faeec247e54e32",
+        "generated_data/1f51096857cb46c5a2bd1ef8bc2c1803/views/009/camera.npz": "3eafb4ef424a37a2a1fbf84875011bd5b57b6115502687909a3097932da1d474",
+        "generated_data/1f51096857cb46c5a2bd1ef8bc2c1803/target_latent.npz": "e89af313309490a745ae4e696fa7e6eb0ad8a8b5c8f2b8aa300ec240141a23d9"
+      },
+      "center": [
+        0.0005025863647460938,
+        -0.00017132610082626343,
+        0.002448931336402893
+      ],
+      "radius": 0.49839957655070416,
+      "surface_max_extent": 0.9861221611499786,
+      "normalization_float32_vs_independent_float64_max": 7.180547523244485e-08,
+      "inverse_normalization_max_error": 2.975424334694665e-08,
+      "canonicalization_rms_displacement_voxels": 0.31668089301996366,
+      "canonicalization_max_displacement_voxels": 0.6041222881275649,
+      "strict_target_q_over_2_scale_relative_to_current": 1.0032111252187892
+    },
+    {
+      "sample_id": "1fb985a5d5974bdcb412e91293d817f7_006",
+      "object_id": "1fb985a5d5974bdcb412e91293d817f7",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/1fb985a5d5974bdcb412e91293d817f7/views/006/full_surface.npz": "01e90bfdad0c2cfdf4d25bbd2e3282c3f9d8aaf4db3fa27afd95f4f60878d2f7",
+        "generated_data/1fb985a5d5974bdcb412e91293d817f7/views/006/camera.npz": "33ee7fadcc533d70d6fcda7deb693f82785760460245c4d47abff52789e7f796",
+        "generated_data/1fb985a5d5974bdcb412e91293d817f7/target_latent.npz": "4f592e38669601e25355461fe7d86fe0c2f85394065b1fec2c6da20d0b7569e8"
+      },
+      "center": [
+        -3.0994415283203125e-06,
+        -0.0005013942718505859,
+        2.9802322387695312e-08
+      ],
+      "radius": 0.6477961416565231,
+      "surface_max_extent": 1.0000000596046448,
+      "normalization_float32_vs_independent_float64_max": 7.974161564394677e-08,
+      "inverse_normalization_max_error": 2.9802322387695312e-08,
+      "canonicalization_rms_displacement_voxels": 0.03208985153848919,
+      "canonicalization_max_displacement_voxels": 0.03209108059825244,
+      "strict_target_q_over_2_scale_relative_to_current": 0.771847758650455
+    },
+    {
+      "sample_id": "1f51096857cb46c5a2bd1ef8bc2c1803_014",
+      "object_id": "1f51096857cb46c5a2bd1ef8bc2c1803",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/1f51096857cb46c5a2bd1ef8bc2c1803/views/014/full_surface.npz": "1e00970fe4b8e2da1f0fea2c57497e3fa63f8577fc6f513c2f6e77f3dbb41016",
+        "generated_data/1f51096857cb46c5a2bd1ef8bc2c1803/views/014/camera.npz": "0908252ab8b690009be927b354777f16bbfdb7d15f2e952e86888717c55db27e",
+        "generated_data/1f51096857cb46c5a2bd1ef8bc2c1803/target_latent.npz": "e89af313309490a745ae4e696fa7e6eb0ad8a8b5c8f2b8aa300ec240141a23d9"
+      },
+      "center": [
+        0.000502660870552063,
+        -0.00017130374908447266,
+        0.002448856830596924
+      ],
+      "radius": 0.49839943996736963,
+      "surface_max_extent": 0.9861222505569458,
+      "normalization_float32_vs_independent_float64_max": 7.900525089699073e-08,
+      "inverse_normalization_max_error": 2.9752426689011457e-08,
+      "canonicalization_rms_displacement_voxels": 0.31667704630537974,
+      "canonicalization_max_displacement_voxels": 0.604115784272588,
+      "strict_target_q_over_2_scale_relative_to_current": 1.003211400142695
+    },
+    {
+      "sample_id": "1fb985a5d5974bdcb412e91293d817f7_007",
+      "object_id": "1fb985a5d5974bdcb412e91293d817f7",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/1fb985a5d5974bdcb412e91293d817f7/views/007/full_surface.npz": "745afd52fc621521b9523696c6b2f15687375476fef7eed8d6b102edba807c5a",
+        "generated_data/1fb985a5d5974bdcb412e91293d817f7/views/007/camera.npz": "599f19b5efc98fbeafbf6121b27bf1cc4f9e9ee04a4f32c280587ff28899d1b9",
+        "generated_data/1fb985a5d5974bdcb412e91293d817f7/target_latent.npz": "4f592e38669601e25355461fe7d86fe0c2f85394065b1fec2c6da20d0b7569e8"
+      },
+      "center": [
+        -3.0994415283203125e-06,
+        -0.0005015134811401367,
+        -2.9802322387695312e-08
+      ],
+      "radius": 0.6477960841987036,
+      "surface_max_extent": 1.0000000596046448,
+      "normalization_float32_vs_independent_float64_max": 4.669487574382458e-08,
+      "inverse_normalization_max_error": 2.9802322387695312e-08,
+      "canonicalization_rms_displacement_voxels": 0.032097470835372406,
+      "canonicalization_max_displacement_voxels": 0.032098709678297546,
+      "strict_target_q_over_2_scale_relative_to_current": 0.7718478271113338
+    },
+    {
+      "sample_id": "49853261fbbe48929211cfb4f5b13866_004",
+      "object_id": "49853261fbbe48929211cfb4f5b13866",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/49853261fbbe48929211cfb4f5b13866/views/004/full_surface.npz": "1275cac9f8ebefa8c797879907ad1d47ae1662f96f62bccbdf6f172ce1345dbc",
+        "generated_data/49853261fbbe48929211cfb4f5b13866/views/004/camera.npz": "6b7765e6dafa79037ed61fd8329eda47cb5b9bddce8b9ffe8d11637fc61103f5",
+        "generated_data/49853261fbbe48929211cfb4f5b13866/target_latent.npz": "974addc76905e3e4befff3c56094d63a99937f901cde9c7ffd1563f1f4a447c7"
+      },
+      "center": [
+        -0.00020587444305419922,
+        -0.0005195140838623047,
+        -0.00037670135498046875
+      ],
+      "radius": 0.503128019007985,
+      "surface_max_extent": 0.9975690841674805,
+      "normalization_float32_vs_independent_float64_max": 1.0976834530218582e-07,
+      "inverse_normalization_max_error": 1.499364038481943e-08,
+      "canonicalization_rms_displacement_voxels": 0.0610568334475833,
+      "canonicalization_max_displacement_voxels": 0.11163228575977732,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9937828566690591
+    },
+    {
+      "sample_id": "49853261fbbe48929211cfb4f5b13866_005",
+      "object_id": "49853261fbbe48929211cfb4f5b13866",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/49853261fbbe48929211cfb4f5b13866/views/005/full_surface.npz": "239841db5981270eb34fa2b980e00ef9377a542033dd276873e3acb53df3fade",
+        "generated_data/49853261fbbe48929211cfb4f5b13866/views/005/camera.npz": "2517dd4ab59dba7f799bf5c51199cc1431ada1643983cfd073dddc5f4be232bf",
+        "generated_data/49853261fbbe48929211cfb4f5b13866/target_latent.npz": "974addc76905e3e4befff3c56094d63a99937f901cde9c7ffd1563f1f4a447c7"
+      },
+      "center": [
+        -0.00020575523376464844,
+        -0.0005195140838623047,
+        -0.0003767162561416626
+      ],
+      "radius": 0.5031280337805053,
+      "surface_max_extent": 0.9975691139698029,
+      "normalization_float32_vs_independent_float64_max": 1.6633567301305163e-07,
+      "inverse_normalization_max_error": 2.987812985910665e-08,
+      "canonicalization_rms_displacement_voxels": 0.06105534330183526,
+      "canonicalization_max_displacement_voxels": 0.11163310337330522,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9937828274902488
+    },
+    {
+      "sample_id": "548362a5ab6f4c8e8fda42143172614e_006",
+      "object_id": "548362a5ab6f4c8e8fda42143172614e",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/548362a5ab6f4c8e8fda42143172614e/views/006/full_surface.npz": "b05806ae3181ee51104b860583821c595eba777b8da586aa6ea0ded5b9dc3e66",
+        "generated_data/548362a5ab6f4c8e8fda42143172614e/views/006/camera.npz": "aaa14a0357cc6f309053c6fa6968a503d412dd7a5f73eabcf6bb89e867a7df0c",
+        "generated_data/548362a5ab6f4c8e8fda42143172614e/target_latent.npz": "c8b738fabad1184eb0c76e5434f060c5979f6f2de52088ba748b1f45c5e94496"
+      },
+      "center": [
+        0.0003529191017150879,
+        -0.0002484917640686035,
+        -5.874037742614746e-05
+      ],
+      "radius": 0.49900846249883324,
+      "surface_max_extent": 0.9958792328834534,
+      "normalization_float32_vs_independent_float64_max": 6.277652142561152e-08,
+      "inverse_normalization_max_error": 1.4867186592937287e-08,
+      "canonicalization_rms_displacement_voxels": 0.08270421073212286,
+      "canonicalization_max_displacement_voxels": 0.14148005382467782,
+      "strict_target_q_over_2_scale_relative_to_current": 1.0019870154029082
+    },
+    {
+      "sample_id": "548362a5ab6f4c8e8fda42143172614e_010",
+      "object_id": "548362a5ab6f4c8e8fda42143172614e",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/548362a5ab6f4c8e8fda42143172614e/views/010/full_surface.npz": "c3e7322466ca9a1f65cc1cf3349919d62fa1b0bda0af3355038291770360613a",
+        "generated_data/548362a5ab6f4c8e8fda42143172614e/views/010/camera.npz": "bbb4a1a30bd6884507dd2b2968d3199a915fe7ae4d17474757eec78e3bc1abe4",
+        "generated_data/548362a5ab6f4c8e8fda42143172614e/target_latent.npz": "c8b738fabad1184eb0c76e5434f060c5979f6f2de52088ba748b1f45c5e94496"
+      },
+      "center": [
+        0.0003528594970703125,
+        -0.0002485215663909912,
+        -5.8710575103759766e-05
+      ],
+      "radius": 0.49900849003113124,
+      "surface_max_extent": 0.9958792924880981,
+      "normalization_float32_vs_independent_float64_max": 4.9381965072647915e-08,
+      "inverse_normalization_max_error": 1.4866534170376866e-08,
+      "canonicalization_rms_displacement_voxels": 0.08270204620087515,
+      "canonicalization_max_displacement_voxels": 0.14147460865810654,
+      "strict_target_q_over_2_scale_relative_to_current": 1.0019869601192695
+    },
+    {
+      "sample_id": "68a31a8eb07d4b84aeb3b13484d4c9e8_000",
+      "object_id": "68a31a8eb07d4b84aeb3b13484d4c9e8",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/68a31a8eb07d4b84aeb3b13484d4c9e8/views/000/full_surface.npz": "e3b68752a45ce4e6d011f293c2b0e76c01b5970e8d7fc1907022d9ff9431d234",
+        "generated_data/68a31a8eb07d4b84aeb3b13484d4c9e8/views/000/camera.npz": "77960ed5f8b14c5de978a05c655544d29a04a9f63af36556dd3fab0d335412c0",
+        "generated_data/68a31a8eb07d4b84aeb3b13484d4c9e8/target_latent.npz": "9b381e265a301c80b34f005eb1e0adb2b48b1a05a40ac22e0b821f450ac87837"
+      },
+      "center": [
+        0.00018890202045440674,
+        0.0,
+        -5.960464477539063e-08
+      ],
+      "radius": 0.5586352758341174,
+      "surface_max_extent": 0.999297171831131,
+      "normalization_float32_vs_independent_float64_max": 1.2080650912960067e-07,
+      "inverse_normalization_max_error": 3.152363053926521e-08,
+      "canonicalization_rms_displacement_voxels": 0.019713966835292546,
+      "canonicalization_max_displacement_voxels": 0.035755503029121394,
+      "strict_target_q_over_2_scale_relative_to_current": 0.8950383579938322
+    },
+    {
+      "sample_id": "68a31a8eb07d4b84aeb3b13484d4c9e8_008",
+      "object_id": "68a31a8eb07d4b84aeb3b13484d4c9e8",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/68a31a8eb07d4b84aeb3b13484d4c9e8/views/008/full_surface.npz": "1149f02cb7d8af8e40611ad01c4282730cff591cace06f50ae1460ea8188e8b6",
+        "generated_data/68a31a8eb07d4b84aeb3b13484d4c9e8/views/008/camera.npz": "be69f807404ad86619dcbf24ff80e995c657e3c8d7ef13835adbd7281fb43a15",
+        "generated_data/68a31a8eb07d4b84aeb3b13484d4c9e8/target_latent.npz": "9b381e265a301c80b34f005eb1e0adb2b48b1a05a40ac22e0b821f450ac87837"
+      },
+      "center": [
+        0.00018890202045440674,
+        0.0,
+        -5.960464477539063e-08
+      ],
+      "radius": 0.5586352262726709,
+      "surface_max_extent": 0.999297171831131,
+      "normalization_float32_vs_independent_float64_max": 6.69084264659503e-08,
+      "inverse_normalization_max_error": 3.153620148355074e-08,
+      "canonicalization_rms_displacement_voxels": 0.01971409646725078,
+      "canonicalization_max_displacement_voxels": 0.035757869841537976,
+      "strict_target_q_over_2_scale_relative_to_current": 0.8950384374005607
+    },
+    {
+      "sample_id": "6a836cf7662f4cfaa7e1244a24d6e73a_003",
+      "object_id": "6a836cf7662f4cfaa7e1244a24d6e73a",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/6a836cf7662f4cfaa7e1244a24d6e73a/views/003/full_surface.npz": "cd9a485f9fad2fd3ae5ca75d898cac48b4bf249c0a93245776fd25d216ffff34",
+        "generated_data/6a836cf7662f4cfaa7e1244a24d6e73a/views/003/camera.npz": "0a5142e9d4aadf734e895ee9cba6ce3517a4cedbb6fe5b4e237db5998ce3438e",
+        "generated_data/6a836cf7662f4cfaa7e1244a24d6e73a/target_latent.npz": "6d3cbaac558bfae088c0b3d07445b8138119da66f6ff47bac6ad90934bba93e2"
+      },
+      "center": [
+        -2.0869076251983643e-05,
+        0.0004686713218688965,
+        7.957220077514648e-05
+      ],
+      "radius": 0.5234125133793945,
+      "surface_max_extent": 0.9998408555984497,
+      "normalization_float32_vs_independent_float64_max": 5.438245198607916e-08,
+      "inverse_normalization_max_error": 1.5593159208293628e-08,
+      "canonicalization_rms_displacement_voxels": 0.03032897793732276,
+      "canonicalization_max_displacement_voxels": 0.03198724442022068,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9552694809907534
+    },
+    {
+      "sample_id": "6a836cf7662f4cfaa7e1244a24d6e73a_005",
+      "object_id": "6a836cf7662f4cfaa7e1244a24d6e73a",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/6a836cf7662f4cfaa7e1244a24d6e73a/views/005/full_surface.npz": "9fe0d365db48161df0e15d2fdbfb05c488db6938668904d2cc42287a5b90fd53",
+        "generated_data/6a836cf7662f4cfaa7e1244a24d6e73a/views/005/camera.npz": "ef99ff7576c09b4e429e52a653b045c44fbb9dd39819053d26e19d2dc64c3493",
+        "generated_data/6a836cf7662f4cfaa7e1244a24d6e73a/target_latent.npz": "6d3cbaac558bfae088c0b3d07445b8138119da66f6ff47bac6ad90934bba93e2"
+      },
+      "center": [
+        -2.092123031616211e-05,
+        0.0004686713218688965,
+        7.960200309753418e-05
+      ],
+      "radius": 0.5234124346254232,
+      "surface_max_extent": 0.9998407959938049,
+      "normalization_float32_vs_independent_float64_max": 7.865682460916901e-08,
+      "inverse_normalization_max_error": 1.5596102742598816e-08,
+      "canonicalization_rms_displacement_voxels": 0.03032942282766144,
+      "canonicalization_max_displacement_voxels": 0.03198887422904291,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9552696247230387
+    },
+    {
+      "sample_id": "72b8b1136e124387a8a8b5dc10f9c58f_000",
+      "object_id": "72b8b1136e124387a8a8b5dc10f9c58f",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/72b8b1136e124387a8a8b5dc10f9c58f/views/000/full_surface.npz": "8a70be1b7b5c51c5cae1e7bf3860b7e254fcc598e7f30a110076b1e032422c52",
+        "generated_data/72b8b1136e124387a8a8b5dc10f9c58f/views/000/camera.npz": "ebd3c6baf443abca8f1208e19907f0ee042c1086c00ccef296c2b74341a53300",
+        "generated_data/72b8b1136e124387a8a8b5dc10f9c58f/target_latent.npz": "4241e991210da58fc4dd237d6cc75aa5d8b35ae05da289b564c15941025e04da"
+      },
+      "center": [
+        0.0,
+        2.9802322387695312e-08,
+        0.0
+      ],
+      "radius": 0.8608451132208758,
+      "surface_max_extent": 1.000000238418579,
+      "normalization_float32_vs_independent_float64_max": 6.470724323026644e-08,
+      "inverse_normalization_max_error": 2.9802322387695312e-08,
+      "canonicalization_rms_displacement_voxels": 9.1407532033203e-06,
+      "canonicalization_max_displacement_voxels": 1.4804672886824078e-05,
+      "strict_target_q_over_2_scale_relative_to_current": 0.5808245784531856
+    },
+    {
+      "sample_id": "72b8b1136e124387a8a8b5dc10f9c58f_006",
+      "object_id": "72b8b1136e124387a8a8b5dc10f9c58f",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/72b8b1136e124387a8a8b5dc10f9c58f/views/006/full_surface.npz": "eb1bd6e951c2301ccb1135130e01ed47976388fb62700ac000256daaa4cc9155",
+        "generated_data/72b8b1136e124387a8a8b5dc10f9c58f/views/006/camera.npz": "c6b4bda604e3ecd2231cb0cb1cc07968cb0d8f3ade43f2d4e3ff2fadfde8c4a0",
+        "generated_data/72b8b1136e124387a8a8b5dc10f9c58f/target_latent.npz": "4241e991210da58fc4dd237d6cc75aa5d8b35ae05da289b564c15941025e04da"
+      },
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "radius": 0.8608450099839212,
+      "surface_max_extent": 1.000000238418579,
+      "normalization_float32_vs_independent_float64_max": 6.380885342327502e-08,
+      "inverse_normalization_max_error": 2.5643853984735898e-08,
+      "canonicalization_rms_displacement_voxels": 8.783911876228102e-06,
+      "canonicalization_max_displacement_voxels": 1.2783483921188257e-05,
+      "strict_target_q_over_2_scale_relative_to_current": 0.580824648108652
+    },
+    {
+      "sample_id": "7bd547dc65b04894b6f37b33088f1a9e_012",
+      "object_id": "7bd547dc65b04894b6f37b33088f1a9e",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/7bd547dc65b04894b6f37b33088f1a9e/views/012/full_surface.npz": "9c919569060017828792246e05079649b4c9d6aa8f2d0828fe2c2f249e5db018",
+        "generated_data/7bd547dc65b04894b6f37b33088f1a9e/views/012/camera.npz": "799af2d7fd72f8343ccac50bfdb70218741c3da08a750e2881f1b0a8e2a44671",
+        "generated_data/7bd547dc65b04894b6f37b33088f1a9e/target_latent.npz": "1ff24ba964addcac7316586a86cab5d89309e80d1f0b154f55ebb81088b62220"
+      },
+      "center": [
+        -5.3688883781433105e-05,
+        5.8084726333618164e-05,
+        9.927153587341309e-05
+      ],
+      "radius": 0.6184188028070625,
+      "surface_max_extent": 0.999431312084198,
+      "normalization_float32_vs_independent_float64_max": 5.537219238682667e-08,
+      "inverse_normalization_max_error": 3.328594133655827e-08,
+      "canonicalization_rms_displacement_voxels": 0.017115655173835103,
+      "canonicalization_max_displacement_voxels": 0.030321724113236078,
+      "strict_target_q_over_2_scale_relative_to_current": 0.8085135796816847
+    },
+    {
+      "sample_id": "7bd547dc65b04894b6f37b33088f1a9e_013",
+      "object_id": "7bd547dc65b04894b6f37b33088f1a9e",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/7bd547dc65b04894b6f37b33088f1a9e/views/013/full_surface.npz": "6007ceae2a06cd075858a590e5082cdc918bbebff3a8610b821ebf995c11b738",
+        "generated_data/7bd547dc65b04894b6f37b33088f1a9e/views/013/camera.npz": "59a68e85d2f827bdaa400164e0dacb24364109c8a2a4ece044cdb71e8c159423",
+        "generated_data/7bd547dc65b04894b6f37b33088f1a9e/target_latent.npz": "1ff24ba964addcac7316586a86cab5d89309e80d1f0b154f55ebb81088b62220"
+      },
+      "center": [
+        -5.364418029785156e-05,
+        5.799531936645508e-05,
+        9.930133819580078e-05
+      ],
+      "radius": 0.6184189147958794,
+      "surface_max_extent": 0.9994313716888428,
+      "normalization_float32_vs_independent_float64_max": 5.8190653851042384e-08,
+      "inverse_normalization_max_error": 1.8425065195781798e-08,
+      "canonicalization_rms_displacement_voxels": 0.01711360419159522,
+      "canonicalization_max_displacement_voxels": 0.03031655187979144,
+      "strict_target_q_over_2_scale_relative_to_current": 0.8085134332688292
+    },
+    {
+      "sample_id": "7c3286c7a4934e48860badc106f63ab3_010",
+      "object_id": "7c3286c7a4934e48860badc106f63ab3",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/7c3286c7a4934e48860badc106f63ab3/views/010/full_surface.npz": "0fc334e93353beda1ef4b06e0aa4c14307df784a5ef41b7db6d613af298c2a6a",
+        "generated_data/7c3286c7a4934e48860badc106f63ab3/views/010/camera.npz": "f1212d80f71b005e9de71c95ac250fef35a791554d2f0900591105a4c8c11429",
+        "generated_data/7c3286c7a4934e48860badc106f63ab3/target_latent.npz": "47be95c98e4ac2702cca063b783ee4653636535f33207520994e88e74ab0dc31"
+      },
+      "center": [
+        9.98377799987793e-05,
+        -0.0002701282501220703,
+        -0.0004755258560180664
+      ],
+      "radius": 0.5643750148457696,
+      "surface_max_extent": 0.9990494251251221,
+      "normalization_float32_vs_independent_float64_max": 6.582440414959478e-08,
+      "inverse_normalization_max_error": 2.030167739475175e-08,
+      "canonicalization_rms_displacement_voxels": 0.050680098465393605,
+      "canonicalization_max_displacement_voxels": 0.06734430449478772,
+      "strict_target_q_over_2_scale_relative_to_current": 0.8859357463523403
+    },
+    {
+      "sample_id": "7c3286c7a4934e48860badc106f63ab3_013",
+      "object_id": "7c3286c7a4934e48860badc106f63ab3",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/7c3286c7a4934e48860badc106f63ab3/views/013/full_surface.npz": "87b50cde4a33aafe53fdfbbdb776866d4311e701b0dbfe2e112a9e3c9f938881",
+        "generated_data/7c3286c7a4934e48860badc106f63ab3/views/013/camera.npz": "0934772b961002c69bd595f77a8241d7a3ab16e46d4ee5691c8606520674be9a",
+        "generated_data/7c3286c7a4934e48860badc106f63ab3/target_latent.npz": "47be95c98e4ac2702cca063b783ee4653636535f33207520994e88e74ab0dc31"
+      },
+      "center": [
+        9.992718696594238e-05,
+        -0.0002701282501220703,
+        -0.00047534704208374023
+      ],
+      "radius": 0.5643750689940895,
+      "surface_max_extent": 0.9990493059158325,
+      "normalization_float32_vs_independent_float64_max": 8.590298472554991e-08,
+      "inverse_normalization_max_error": 1.6818553938424685e-08,
+      "canonicalization_rms_displacement_voxels": 0.050675233937575684,
+      "canonicalization_max_displacement_voxels": 0.06734001477000451,
+      "strict_target_q_over_2_scale_relative_to_current": 0.8859356613522492
+    },
+    {
+      "sample_id": "8262743abb7f4f759aa0b3bda08551e5_013",
+      "object_id": "8262743abb7f4f759aa0b3bda08551e5",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/8262743abb7f4f759aa0b3bda08551e5/views/013/full_surface.npz": "1a1a9aa2139d9df0a9607ad27ec75ec141ba656855eb7e00ff391fed0f6d14c4",
+        "generated_data/8262743abb7f4f759aa0b3bda08551e5/views/013/camera.npz": "4a96006a51be315d45267a54b20693a2a798e2eee1db4c3fda1933a14552c02e",
+        "generated_data/8262743abb7f4f759aa0b3bda08551e5/target_latent.npz": "04b3047b95c4bf93776f5ae738fe8c6c3c186812010691a8c99e8a0880aee466"
+      },
+      "center": [
+        -0.00010734796524047852,
+        -0.00040283799171447754,
+        -3.7550926208496094e-06
+      ],
+      "radius": 0.5023893788529453,
+      "surface_max_extent": 0.997815728187561,
+      "normalization_float32_vs_independent_float64_max": 3.3223388706815626e-08,
+      "inverse_normalization_max_error": 1.4971167305866118e-08,
+      "canonicalization_rms_displacement_voxels": 0.06614808569098295,
+      "canonicalization_max_displacement_voxels": 0.09681300991471004,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9952439702081267
+    },
+    {
+      "sample_id": "8262743abb7f4f759aa0b3bda08551e5_014",
+      "object_id": "8262743abb7f4f759aa0b3bda08551e5",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/8262743abb7f4f759aa0b3bda08551e5/views/014/full_surface.npz": "b4465461f9a5a116f4b887c3f54deb65274eff179b4a94a540162f89f5ab7ade",
+        "generated_data/8262743abb7f4f759aa0b3bda08551e5/views/014/camera.npz": "8e079072d057a71677ac4e3dd8de9a7f9327ecbd0d43d13379cb7e7d2c16e37d",
+        "generated_data/8262743abb7f4f759aa0b3bda08551e5/target_latent.npz": "04b3047b95c4bf93776f5ae738fe8c6c3c186812010691a8c99e8a0880aee466"
+      },
+      "center": [
+        -0.00010734796524047852,
+        -0.00040283799171447754,
+        -3.814697265625e-06
+      ],
+      "radius": 0.5023893812384558,
+      "surface_max_extent": 0.9978157877922058,
+      "normalization_float32_vs_independent_float64_max": 3.085171995653724e-08,
+      "inverse_normalization_max_error": 1.496941992584766e-08,
+      "canonicalization_rms_displacement_voxels": 0.066146541401814,
+      "canonicalization_max_displacement_voxels": 0.09681080813640727,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9952439654823801
+    },
+    {
+      "sample_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_006",
+      "object_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/8ea6a2ff878b4ab7aab5a7ecd8ccc4a4/views/006/full_surface.npz": "0fedb0905c7bd4da5eb7483e93e8e11f6c14c989d11cd7d9c75705edba8268ef",
+        "generated_data/8ea6a2ff878b4ab7aab5a7ecd8ccc4a4/views/006/camera.npz": "f5aabb29c2f0b80c60f71c8d77ad16aacb7eb8473e0123513336f11389e62791",
+        "generated_data/8ea6a2ff878b4ab7aab5a7ecd8ccc4a4/target_latent.npz": "ba4c5ca6a535b40a09e7c245f370a9fc2ed9c65a7b9a73100819be2806f7c335"
+      },
+      "center": [
+        2.7954578399658203e-05,
+        -1.6689300537109375e-06,
+        2.9802322387695312e-08
+      ],
+      "radius": 0.5075763349745623,
+      "surface_max_extent": 1.0000000596046448,
+      "normalization_float32_vs_independent_float64_max": 1.4658298652658885e-07,
+      "inverse_normalization_max_error": 2.9802322387695312e-08,
+      "canonicalization_rms_displacement_voxels": 0.001792282373963445,
+      "canonicalization_max_displacement_voxels": 0.0017927910848396435,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9850735062836568
+    },
+    {
+      "sample_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_008",
+      "object_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/8ea6a2ff878b4ab7aab5a7ecd8ccc4a4/views/008/full_surface.npz": "4d8afef383c33d0feb91933cf75e583128e4e79f4416abb43b012293e5f2277f",
+        "generated_data/8ea6a2ff878b4ab7aab5a7ecd8ccc4a4/views/008/camera.npz": "f1ce94403d0f450e40ff4cb36acf6e5f0becd812ddf14ab6910a3d4ff61ed8d7",
+        "generated_data/8ea6a2ff878b4ab7aab5a7ecd8ccc4a4/target_latent.npz": "ba4c5ca6a535b40a09e7c245f370a9fc2ed9c65a7b9a73100819be2806f7c335"
+      },
+      "center": [
+        2.7835369110107422e-05,
+        -1.6689300537109375e-06,
+        0.0
+      ],
+      "radius": 0.5075763727451275,
+      "surface_max_extent": 1.0000001192092896,
+      "normalization_float32_vs_independent_float64_max": 1.031091447778465e-07,
+      "inverse_normalization_max_error": 1.512377617585159e-08,
+      "canonicalization_rms_displacement_voxels": 0.0017846586967129436,
+      "canonicalization_max_displacement_voxels": 0.0017868505281257903,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9850734329808298
+    },
+    {
+      "sample_id": "949af5011ce84b0098c5a0688420e569_004",
+      "object_id": "949af5011ce84b0098c5a0688420e569",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/949af5011ce84b0098c5a0688420e569/views/004/full_surface.npz": "96e89f28eb69208a94cfa015bcb8060f2de08c2aeeadf0b770cde4f74f77268a",
+        "generated_data/949af5011ce84b0098c5a0688420e569/views/004/camera.npz": "9b880dbf4af3f09f681a006e7b06cb269878a3fab3a0d757a19f69d0dce38ea9",
+        "generated_data/949af5011ce84b0098c5a0688420e569/target_latent.npz": "16e9bc56d2036cd46634ca0e575923906386fd771915af3aeaeee39178142ff2"
+      },
+      "center": [
+        0.0012303590774536133,
+        -0.00023106485605239868,
+        -0.0005104094743728638
+      ],
+      "radius": 0.520473154071389,
+      "surface_max_extent": 0.9972538650035858,
+      "normalization_float32_vs_independent_float64_max": 1.2528149162527313e-07,
+      "inverse_normalization_max_error": 3.040318119484908e-08,
+      "canonicalization_rms_displacement_voxels": 0.10198647177905051,
+      "canonicalization_max_displacement_voxels": 0.15851202353801405,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9606643418373488
+    },
+    {
+      "sample_id": "949af5011ce84b0098c5a0688420e569_013",
+      "object_id": "949af5011ce84b0098c5a0688420e569",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/949af5011ce84b0098c5a0688420e569/views/013/full_surface.npz": "e512a5263bd7d2ab0c7141bfc424ebe92e85886f336975f8c829b412081cd2b4",
+        "generated_data/949af5011ce84b0098c5a0688420e569/views/013/camera.npz": "a1cec263749fba54a33af3a1ccf97219c9a4ce605681ee87d3f5b1c8f74f3470",
+        "generated_data/949af5011ce84b0098c5a0688420e569/target_latent.npz": "16e9bc56d2036cd46634ca0e575923906386fd771915af3aeaeee39178142ff2"
+      },
+      "center": [
+        0.0012304484844207764,
+        -0.0002310425043106079,
+        -0.0005104541778564453
+      ],
+      "radius": 0.5204732272004566,
+      "surface_max_extent": 0.9972538948059082,
+      "normalization_float32_vs_independent_float64_max": 8.231306136696759e-08,
+      "inverse_normalization_max_error": 1.5508323625290643e-08,
+      "canonicalization_rms_displacement_voxels": 0.10199183755886246,
+      "canonicalization_max_displacement_voxels": 0.15851970060156123,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9606642068592482
+    },
+    {
+      "sample_id": "9e134caf65e04f5abaf742ac24df647d_008",
+      "object_id": "9e134caf65e04f5abaf742ac24df647d",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/9e134caf65e04f5abaf742ac24df647d/views/008/full_surface.npz": "14f8d010d07c2417f2fa13d718c2742e316dfba1d83828c558908a3378582b69",
+        "generated_data/9e134caf65e04f5abaf742ac24df647d/views/008/camera.npz": "2418178a37af998ee8b3877bd31b362256e9333377f8425fecd579aed5205e84",
+        "generated_data/9e134caf65e04f5abaf742ac24df647d/target_latent.npz": "6b1c52aba37963bb86ce5bb644cff217b88cb44cfbc1fa691bfe84e14fb2cfdd"
+      },
+      "center": [
+        -0.00060291588306427,
+        -1.150369644165039e-05,
+        0.00038689374923706055
+      ],
+      "radius": 0.5468100445920443,
+      "surface_max_extent": 0.9992260932922363,
+      "normalization_float32_vs_independent_float64_max": 4.364518746413637e-08,
+      "inverse_normalization_max_error": 2.3032648344134543e-08,
+      "canonicalization_rms_displacement_voxels": 0.04877874449207534,
+      "canonicalization_max_displacement_voxels": 0.06935721418511209,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9143943220228011
+    },
+    {
+      "sample_id": "9e134caf65e04f5abaf742ac24df647d_015",
+      "object_id": "9e134caf65e04f5abaf742ac24df647d",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/9e134caf65e04f5abaf742ac24df647d/views/015/full_surface.npz": "dae481726364e6cdd7091d1f949957dfd0b09bd8451f7ee8e80709aafa8ee6cc",
+        "generated_data/9e134caf65e04f5abaf742ac24df647d/views/015/camera.npz": "28e5b031b0c82726315fa78bf7f74e38dbc14b0ef2dd2f4cbc9a66e3349fa333",
+        "generated_data/9e134caf65e04f5abaf742ac24df647d/target_latent.npz": "6b1c52aba37963bb86ce5bb644cff217b88cb44cfbc1fa691bfe84e14fb2cfdd"
+      },
+      "center": [
+        -0.0006028860807418823,
+        -1.1488795280456543e-05,
+        0.00038683414459228516
+      ],
+      "radius": 0.5468099243542033,
+      "surface_max_extent": 0.9992263317108154,
+      "normalization_float32_vs_independent_float64_max": 6.370316640857965e-08,
+      "inverse_normalization_max_error": 2.297910262072378e-08,
+      "canonicalization_rms_displacement_voxels": 0.048773861895221295,
+      "canonicalization_max_displacement_voxels": 0.06934554712270877,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9143945230886454
+    },
+    {
+      "sample_id": "a807e2119b24443da16a2e28529cfa26_004",
+      "object_id": "a807e2119b24443da16a2e28529cfa26",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/a807e2119b24443da16a2e28529cfa26/views/004/full_surface.npz": "d93033bb5dfad9271a49694c6d81cece43d7bdd1fafaa6e9fa51845e4bde4b51",
+        "generated_data/a807e2119b24443da16a2e28529cfa26/views/004/camera.npz": "e1ea161009de1d0b13435af89d680d2c7e93ec771d04f975a5d66b9efefb533b",
+        "generated_data/a807e2119b24443da16a2e28529cfa26/target_latent.npz": "c1715ac6c8d9260ba526603352b218141c27b274679476bb2db91f4c312f4f69"
+      },
+      "center": [
+        -8.940696716308594e-07,
+        7.66068696975708e-05,
+        6.556510925292969e-07
+      ],
+      "radius": 0.5119261369829157,
+      "surface_max_extent": 0.9999988079071045,
+      "normalization_float32_vs_independent_float64_max": 9.172492887454808e-08,
+      "inverse_normalization_max_error": 1.5254728036318e-08,
+      "canonicalization_rms_displacement_voxels": 0.004903482724658084,
+      "canonicalization_max_displacement_voxels": 0.004917180624737818,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9767034028518187,
+      "latest_target_support_reference": {
+        "file": "val_g1_targets.npz",
+        "index": 2
+      },
+      "latest_and_local_target_latents_equal": true,
+      "original_oracle_point_precision_1voxel": 1.0,
+      "original_oracle_point_precision_2voxels": 1.0,
+      "canonicalized_point_precision_1voxel": 1.0,
+      "canonicalized_point_precision_2voxels": 1.0
+    },
+    {
+      "sample_id": "a807e2119b24443da16a2e28529cfa26_006",
+      "object_id": "a807e2119b24443da16a2e28529cfa26",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/a807e2119b24443da16a2e28529cfa26/views/006/full_surface.npz": "147dedbe99bb1ce1cad5152b2e3562a7af93d47cf1d047e266b638a9eb4b6f0c",
+        "generated_data/a807e2119b24443da16a2e28529cfa26/views/006/camera.npz": "db734afdf64ba87ab70373544e66abc4ca5ad0a2fde85037fb42f7dbf8656bca",
+        "generated_data/a807e2119b24443da16a2e28529cfa26/target_latent.npz": "c1715ac6c8d9260ba526603352b218141c27b274679476bb2db91f4c312f4f69"
+      },
+      "center": [
+        -8.791685104370117e-07,
+        7.653236389160156e-05,
+        6.258487701416016e-07
+      ],
+      "radius": 0.5119261122400854,
+      "surface_max_extent": 0.9999987483024597,
+      "normalization_float32_vs_independent_float64_max": 7.182010508532954e-08,
+      "inverse_normalization_max_error": 3.015247007631672e-08,
+      "canonicalization_rms_displacement_voxels": 0.004898695691534497,
+      "canonicalization_max_displacement_voxels": 0.004913078184872008,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9767034500586439,
+      "latest_target_support_reference": {
+        "file": "val_g1_targets.npz",
+        "index": 2
+      },
+      "latest_and_local_target_latents_equal": true,
+      "original_oracle_point_precision_1voxel": 1.0,
+      "original_oracle_point_precision_2voxels": 1.0,
+      "canonicalized_point_precision_1voxel": 1.0,
+      "canonicalized_point_precision_2voxels": 1.0
+    },
+    {
+      "sample_id": "b38765d87b644fdeb6c4c9ffe1ca98ba_007",
+      "object_id": "b38765d87b644fdeb6c4c9ffe1ca98ba",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/b38765d87b644fdeb6c4c9ffe1ca98ba/views/007/full_surface.npz": "170178f46a3219140e33a76470ed5b5dcd45f9dc350deed1eaae3fb82c6da3ff",
+        "generated_data/b38765d87b644fdeb6c4c9ffe1ca98ba/views/007/camera.npz": "0a79f4bc9a357831dd99926824964a006be9cac63beb97cce65605c53bf3695f",
+        "generated_data/b38765d87b644fdeb6c4c9ffe1ca98ba/target_latent.npz": "d99c018c221514b0b3c03d2b6d4602b0d072ce88b9a2c1e759812101714b746d"
+      },
+      "center": [
+        0.000815272331237793,
+        0.00036644935607910156,
+        -5.911290645599365e-05
+      ],
+      "radius": 0.5472759552849666,
+      "surface_max_extent": 0.9998740255832672,
+      "normalization_float32_vs_independent_float64_max": 6.511949368626091e-08,
+      "inverse_normalization_max_error": 3.12074990849176e-08,
+      "canonicalization_rms_displacement_voxels": 0.05728799223901759,
+      "canonicalization_max_displacement_voxels": 0.05914399689747866,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9136158736220193
+    },
+    {
+      "sample_id": "b38765d87b644fdeb6c4c9ffe1ca98ba_013",
+      "object_id": "b38765d87b644fdeb6c4c9ffe1ca98ba",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/b38765d87b644fdeb6c4c9ffe1ca98ba/views/013/full_surface.npz": "7057227cb1b789d87fb787a275c7bf708df25ea56bdee4ec99aa18ce3c2f6873",
+        "generated_data/b38765d87b644fdeb6c4c9ffe1ca98ba/views/013/camera.npz": "ea1e277584f447f5adcf40523b1962f3b0928fbb49afae2202806b8f5aecd1da",
+        "generated_data/b38765d87b644fdeb6c4c9ffe1ca98ba/target_latent.npz": "d99c018c221514b0b3c03d2b6d4602b0d072ce88b9a2c1e759812101714b746d"
+      },
+      "center": [
+        0.000815272331237793,
+        0.00036650896072387695,
+        -5.91278076171875e-05
+      ],
+      "radius": 0.5472760148035009,
+      "surface_max_extent": 0.9998741149902344,
+      "normalization_float32_vs_independent_float64_max": 4.073904136259188e-08,
+      "inverse_normalization_max_error": 1.630969198584964e-08,
+      "canonicalization_rms_displacement_voxels": 0.05728955887148608,
+      "canonicalization_max_displacement_voxels": 0.059144336601207985,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9136157742625076
+    },
+    {
+      "sample_id": "c057e4593f9e42f5a353718f6c3c9150_012",
+      "object_id": "c057e4593f9e42f5a353718f6c3c9150",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/c057e4593f9e42f5a353718f6c3c9150/views/012/full_surface.npz": "6697d358d665d0c14debf8c2a3c214d7281160a984f0fb0a9cafc33c227b97fd",
+        "generated_data/c057e4593f9e42f5a353718f6c3c9150/views/012/camera.npz": "40d1c463e311077b0ffa65c97d45485e9ab510013e0b0684697329d74746beff",
+        "generated_data/c057e4593f9e42f5a353718f6c3c9150/target_latent.npz": "4b07c2a613dff4a90cdc38a35f5ab819c6ca47139204184bd85fdb332255a51f"
+      },
+      "center": [
+        0.0002664029598236084,
+        6.428360939025879e-05,
+        -0.00047129392623901367
+      ],
+      "radius": 0.5141173778199435,
+      "surface_max_extent": 0.9989103078842163,
+      "normalization_float32_vs_independent_float64_max": 9.07824880824748e-08,
+      "inverse_normalization_max_error": 1.530171156449711e-08,
+      "canonicalization_rms_displacement_voxels": 0.041911945959168605,
+      "canonicalization_max_displacement_voxels": 0.06795775087551223,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9725405550775066
+    },
+    {
+      "sample_id": "c057e4593f9e42f5a353718f6c3c9150_013",
+      "object_id": "c057e4593f9e42f5a353718f6c3c9150",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/c057e4593f9e42f5a353718f6c3c9150/views/013/full_surface.npz": "89afb20c11d5121884e539d298729e0b3d50ea419bd4e92b7dc0daa24b0bef6c",
+        "generated_data/c057e4593f9e42f5a353718f6c3c9150/views/013/camera.npz": "c907effb4da115d25c58abd54b548e0d28e2d7634fd56b484eff478cf6dc8407",
+        "generated_data/c057e4593f9e42f5a353718f6c3c9150/target_latent.npz": "4b07c2a613dff4a90cdc38a35f5ab819c6ca47139204184bd85fdb332255a51f"
+      },
+      "center": [
+        0.0002664029598236084,
+        6.428360939025879e-05,
+        -0.00047141313552856445
+      ],
+      "radius": 0.5141171542488503,
+      "surface_max_extent": 0.9989105463027954,
+      "normalization_float32_vs_independent_float64_max": 8.440018772759572e-08,
+      "inverse_normalization_max_error": 1.5319206625452608e-08,
+      "canonicalization_rms_displacement_voxels": 0.04191534875455001,
+      "canonicalization_max_displacement_voxels": 0.06795771173918902,
+      "strict_target_q_over_2_scale_relative_to_current": 0.972540978000479
+    },
+    {
+      "sample_id": "d3eae95d30064e4baafe4427d7c9038a_008",
+      "object_id": "d3eae95d30064e4baafe4427d7c9038a",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/d3eae95d30064e4baafe4427d7c9038a/views/008/full_surface.npz": "530b0e3b64a48e504123e768228c86dffa351bf74ea08feeb9644e4b622f86b5",
+        "generated_data/d3eae95d30064e4baafe4427d7c9038a/views/008/camera.npz": "7a92b0b06bb93a894dd4baf3a32e9246bc0b13c61629d360ec9da36c001112eb",
+        "generated_data/d3eae95d30064e4baafe4427d7c9038a/target_latent.npz": "5a026ccdeadc8841f3014ab594d2d02a9ab2e99f00f69ea427ef360157e16da3"
+      },
+      "center": [
+        -0.00013828277587890625,
+        0.0001302957534790039,
+        -0.00026345252990722656
+      ],
+      "radius": 0.5079938172372729,
+      "surface_max_extent": 0.9990718364715576,
+      "normalization_float32_vs_independent_float64_max": 3.766619138811933e-08,
+      "inverse_normalization_max_error": 1.513772779349054e-08,
+      "canonicalization_rms_displacement_voxels": 0.03429369548619825,
+      "canonicalization_max_displacement_voxels": 0.04828318942238259,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9842639477764763
+    },
+    {
+      "sample_id": "d3eae95d30064e4baafe4427d7c9038a_015",
+      "object_id": "d3eae95d30064e4baafe4427d7c9038a",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/d3eae95d30064e4baafe4427d7c9038a/views/015/full_surface.npz": "3f906a4f056a0148bae36b761fcc631ea9470ed6ec7b8fce70247c74a25b4478",
+        "generated_data/d3eae95d30064e4baafe4427d7c9038a/views/015/camera.npz": "dbe395ccd85bf758437fe80a6cb290fd6792b4313994b7f064f21cab3706905f",
+        "generated_data/d3eae95d30064e4baafe4427d7c9038a/target_latent.npz": "5a026ccdeadc8841f3014ab594d2d02a9ab2e99f00f69ea427ef360157e16da3"
+      },
+      "center": [
+        -0.00013825297355651855,
+        0.00013034045696258545,
+        -0.00026345252990722656
+      ],
+      "radius": 0.507993817243868,
+      "surface_max_extent": 0.9990717768669128,
+      "normalization_float32_vs_independent_float64_max": 6.555879195069281e-08,
+      "inverse_normalization_max_error": 3.0035218090418425e-08,
+      "canonicalization_rms_displacement_voxels": 0.03429535756409529,
+      "canonicalization_max_displacement_voxels": 0.0482846538602516,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9842639477636979
+    },
+    {
+      "sample_id": "d7167aa45e6e43b4a91fdbf5eb70b661_004",
+      "object_id": "d7167aa45e6e43b4a91fdbf5eb70b661",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/d7167aa45e6e43b4a91fdbf5eb70b661/views/004/full_surface.npz": "0751e8f1343941e6ccf1737935cd143ecb471fa56514993fd2233532c31859da",
+        "generated_data/d7167aa45e6e43b4a91fdbf5eb70b661/views/004/camera.npz": "7188b44fd88106aa031f954354fd03cd8adce2029dbdd2cfaa828ec015df5bf6",
+        "generated_data/d7167aa45e6e43b4a91fdbf5eb70b661/target_latent.npz": "608fa4ea5bf8278f2411f6fec1f58059c78f75682087fcfdbb5d829cb3d1d8f4"
+      },
+      "center": [
+        0.00015819072723388672,
+        -0.0002636909484863281,
+        -0.0008331909775733948
+      ],
+      "radius": 0.5135687954549735,
+      "surface_max_extent": 0.9990513324737549,
+      "normalization_float32_vs_independent_float64_max": 8.090114800296533e-08,
+      "inverse_normalization_max_error": 1.5305448797242605e-08,
+      "canonicalization_rms_displacement_voxels": 0.060021520847694666,
+      "canonicalization_max_displacement_voxels": 0.07759466377978218,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9735794005105921
+    },
+    {
+      "sample_id": "d7167aa45e6e43b4a91fdbf5eb70b661_012",
+      "object_id": "d7167aa45e6e43b4a91fdbf5eb70b661",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/d7167aa45e6e43b4a91fdbf5eb70b661/views/012/full_surface.npz": "a9279960513e180e31467c95b1327727491fdbff7f011e258c27c3caf783d0b3",
+        "generated_data/d7167aa45e6e43b4a91fdbf5eb70b661/views/012/camera.npz": "19868bead18614006b8de5513f4b8781f5d33a1c307aff916b1b8306685cdd33",
+        "generated_data/d7167aa45e6e43b4a91fdbf5eb70b661/target_latent.npz": "608fa4ea5bf8278f2411f6fec1f58059c78f75682087fcfdbb5d829cb3d1d8f4"
+      },
+      "center": [
+        0.00015819072723388672,
+        -0.00026370584964752197,
+        -0.0008331537246704102
+      ],
+      "radius": 0.5135688666286301,
+      "surface_max_extent": 0.9990512430667877,
+      "normalization_float32_vs_independent_float64_max": 9.576667381328008e-08,
+      "inverse_normalization_max_error": 3.019386546343483e-08,
+      "canonicalization_rms_displacement_voxels": 0.06002027385100965,
+      "canonicalization_max_displacement_voxels": 0.0775962446468246,
+      "strict_target_q_over_2_scale_relative_to_current": 0.973579265585735
+    },
+    {
+      "sample_id": "d87e82071e24487481bf90c8f2682fb6_004",
+      "object_id": "d87e82071e24487481bf90c8f2682fb6",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/d87e82071e24487481bf90c8f2682fb6/views/004/full_surface.npz": "3793f65821ce27c8b9ec54c572b5221383473d88c45b8e8f5cae3ea8675280f0",
+        "generated_data/d87e82071e24487481bf90c8f2682fb6/views/004/camera.npz": "08f78a23768572bde9a0569a8ba8393f1fe9ffcff357b0b51e95d2ff1985bf78",
+        "generated_data/d87e82071e24487481bf90c8f2682fb6/target_latent.npz": "2129c4b32049ce1b1d12d217f2726b1bc201873a6a6bad69c4d716a16bb305dd"
+      },
+      "center": [
+        0.00019943714141845703,
+        -1.7970800399780273e-05,
+        0.0013304650783538818
+      ],
+      "radius": 0.5796972650989715,
+      "surface_max_extent": 0.9933361411094666,
+      "normalization_float32_vs_independent_float64_max": 6.871726665469424e-08,
+      "inverse_normalization_max_error": 1.7271288454967504e-08,
+      "canonicalization_rms_displacement_voxels": 0.18407244676263673,
+      "canonicalization_max_displacement_voxels": 0.32345569135455743,
+      "strict_target_q_over_2_scale_relative_to_current": 0.8625191631956988
+    },
+    {
+      "sample_id": "d87e82071e24487481bf90c8f2682fb6_015",
+      "object_id": "d87e82071e24487481bf90c8f2682fb6",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/d87e82071e24487481bf90c8f2682fb6/views/015/full_surface.npz": "7d102dbb1904cf6385d354dc1a8d67966280430cd351b285d9dbc28b2ed8b461",
+        "generated_data/d87e82071e24487481bf90c8f2682fb6/views/015/camera.npz": "57ea8c229ca55380ca4fb60fffc6bfc8eb35dee9e32f303c0993cf7f59bfddcc",
+        "generated_data/d87e82071e24487481bf90c8f2682fb6/target_latent.npz": "2129c4b32049ce1b1d12d217f2726b1bc201873a6a6bad69c4d716a16bb305dd"
+      },
+      "center": [
+        0.00019946694374084473,
+        -1.798570156097412e-05,
+        0.0013304948806762695
+      ],
+      "radius": 0.5796971978993168,
+      "surface_max_extent": 0.9933359622955322,
+      "normalization_float32_vs_independent_float64_max": 4.110987972261171e-08,
+      "inverse_normalization_max_error": 2.3493189837964223e-08,
+      "canonicalization_rms_displacement_voxels": 0.1840764419298056,
+      "canonicalization_max_displacement_voxels": 0.32346465136308467,
+      "strict_target_q_over_2_scale_relative_to_current": 0.8625192631806393
+    },
+    {
+      "sample_id": "dbba322581594949944949744937c788_000",
+      "object_id": "dbba322581594949944949744937c788",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/dbba322581594949944949744937c788/views/000/full_surface.npz": "7554baaa3a7f2769139b796302741746be227285176a24acc03f36da8a0fe45b",
+        "generated_data/dbba322581594949944949744937c788/views/000/camera.npz": "ebe87fb40e3952e72c2581feaf5544d76172b7cceedbe3081e0c352c74aa9b0a",
+        "generated_data/dbba322581594949944949744937c788/target_latent.npz": "2727f44d471892e6c6bfb324b0cdd85653991b651c54a84e6f12ffaa0e1555d5"
+      },
+      "center": [
+        9.956210851669312e-05,
+        -5.602836608886719e-05,
+        -1.2159347534179688e-05
+      ],
+      "radius": 0.5118849495725664,
+      "surface_max_extent": 0.9999756813049316,
+      "normalization_float32_vs_independent_float64_max": 6.142921882279495e-08,
+      "inverse_normalization_max_error": 1.5253286578253977e-08,
+      "canonicalization_rms_displacement_voxels": 0.0074334205484730305,
+      "canonicalization_max_displacement_voxels": 0.007706539771762223,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9767819905967337
+    },
+    {
+      "sample_id": "dbba322581594949944949744937c788_013",
+      "object_id": "dbba322581594949944949744937c788",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/dbba322581594949944949744937c788/views/013/full_surface.npz": "3234ab118b39a79fe9fc97327b0de1bd877b38ce978e6d52e3b3725171bf4255",
+        "generated_data/dbba322581594949944949744937c788/views/013/camera.npz": "060118be90d3b5528409e9f2b8c0c4ff2258f854a42dc282f549a193f724aff6",
+        "generated_data/dbba322581594949944949744937c788/target_latent.npz": "2727f44d471892e6c6bfb324b0cdd85653991b651c54a84e6f12ffaa0e1555d5"
+      },
+      "center": [
+        9.956955909729004e-05,
+        -5.602836608886719e-05,
+        -1.2278556823730469e-05
+      ],
+      "radius": 0.511884957636706,
+      "surface_max_extent": 0.9999754428863525,
+      "normalization_float32_vs_independent_float64_max": 9.78982309662868e-08,
+      "inverse_normalization_max_error": 1.5251862661713744e-08,
+      "canonicalization_rms_displacement_voxels": 0.007435158571523683,
+      "canonicalization_max_displacement_voxels": 0.0077108507933634175,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9767819752086933
+    },
+    {
+      "sample_id": "e2759dc44b4b40fb9cf9544afc650282_001",
+      "object_id": "e2759dc44b4b40fb9cf9544afc650282",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/e2759dc44b4b40fb9cf9544afc650282/views/001/full_surface.npz": "40dcea23242d998ead8f784bb633867ab278190e14d87cc952e4a0ff3d3d24fd",
+        "generated_data/e2759dc44b4b40fb9cf9544afc650282/views/001/camera.npz": "45d1b7e9b26a907c7c3f024330e7cbfb79f92401f34bc1969360e45a20479d49",
+        "generated_data/e2759dc44b4b40fb9cf9544afc650282/target_latent.npz": "c929587c8340b901a6402bed90c54d2680b5536a6540a162b0b7e9e92367266e"
+      },
+      "center": [
+        -1.5974044799804688e-05,
+        2.2202730178833008e-05,
+        -1.2248754501342773e-05
+      ],
+      "radius": 0.5057514143517099,
+      "surface_max_extent": 0.9999756217002869,
+      "normalization_float32_vs_independent_float64_max": 4.0624306030245805e-08,
+      "inverse_normalization_max_error": 1.5064472336234758e-08,
+      "canonicalization_rms_displacement_voxels": 0.001952690158527298,
+      "canonicalization_max_displacement_voxels": 0.002404718929685259,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9886279816753805
+    },
+    {
+      "sample_id": "e2759dc44b4b40fb9cf9544afc650282_011",
+      "object_id": "e2759dc44b4b40fb9cf9544afc650282",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/e2759dc44b4b40fb9cf9544afc650282/views/011/full_surface.npz": "68f51ca016250586d8bff5e08685f40550d36c8cf16a02b579de10697ad23bb1",
+        "generated_data/e2759dc44b4b40fb9cf9544afc650282/views/011/camera.npz": "dd43824c20c51825f4cb4a159056df1cae78f9162da3fdafc5b683d064fce126",
+        "generated_data/e2759dc44b4b40fb9cf9544afc650282/target_latent.npz": "c929587c8340b901a6402bed90c54d2680b5536a6540a162b0b7e9e92367266e"
+      },
+      "center": [
+        -1.6033649444580078e-05,
+        2.2232532501220703e-05,
+        -1.2248754501342773e-05
+      ],
+      "radius": 0.5057513421075136,
+      "surface_max_extent": 0.9999757409095764,
+      "normalization_float32_vs_independent_float64_max": 6.304328858952601e-08,
+      "inverse_normalization_max_error": 1.5072056547271728e-08,
+      "canonicalization_rms_displacement_voxels": 0.0019556555268485424,
+      "canonicalization_max_displacement_voxels": 0.0024048373935546207,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9886281228962296
+    },
+    {
+      "sample_id": "e697fbdea7d04aa2b09122e36efadf16_009",
+      "object_id": "e697fbdea7d04aa2b09122e36efadf16",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/e697fbdea7d04aa2b09122e36efadf16/views/009/full_surface.npz": "a8097fba760847725189175a56e7df0ac877b2b38d3d7739fce45dad0094d4e0",
+        "generated_data/e697fbdea7d04aa2b09122e36efadf16/views/009/camera.npz": "33fe214bcfcff2c2c8ae14abe5f611fe2a0cb7d73cb232f0bb920bf55bb76458",
+        "generated_data/e697fbdea7d04aa2b09122e36efadf16/target_latent.npz": "dcb6895ee9ebcd38f3f42b7b70656aeafb9cf0dc6958086ba78b54d09b8f6ab3"
+      },
+      "center": [
+        0.0,
+        0.0,
+        2.9802322387695312e-08
+      ],
+      "radius": 0.6693224354344335,
+      "surface_max_extent": 1.0000001788139343,
+      "normalization_float32_vs_independent_float64_max": 4.910610951203154e-08,
+      "inverse_normalization_max_error": 3.02772101834492e-08,
+      "canonicalization_rms_displacement_voxels": 7.567453605154316e-06,
+      "canonicalization_max_displacement_voxels": 1.3429840758593198e-05,
+      "strict_target_q_over_2_scale_relative_to_current": 0.7470241150298028
+    },
+    {
+      "sample_id": "e697fbdea7d04aa2b09122e36efadf16_012",
+      "object_id": "e697fbdea7d04aa2b09122e36efadf16",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/e697fbdea7d04aa2b09122e36efadf16/views/012/full_surface.npz": "396a023ea8e1d9aae34d8ad008644251c064f769874158be424cb95023fa8c80",
+        "generated_data/e697fbdea7d04aa2b09122e36efadf16/views/012/camera.npz": "03d6d2813a56131788b58ae4210c6442fcc9fa4cdc4a639e57cbeea5ff29752b",
+        "generated_data/e697fbdea7d04aa2b09122e36efadf16/target_latent.npz": "dcb6895ee9ebcd38f3f42b7b70656aeafb9cf0dc6958086ba78b54d09b8f6ab3"
+      },
+      "center": [
+        0.0,
+        7.450580596923828e-09,
+        -2.9802322387695312e-08
+      ],
+      "radius": 0.6693223231243077,
+      "surface_max_extent": 1.0000001788139343,
+      "normalization_float32_vs_independent_float64_max": 4.679456433454021e-08,
+      "inverse_normalization_max_error": 3.0277191087613176e-08,
+      "canonicalization_rms_displacement_voxels": 7.927699526775895e-06,
+      "canonicalization_max_displacement_voxels": 1.3119745090260153e-05,
+      "strict_target_q_over_2_scale_relative_to_current": 0.7470242403780385
+    },
+    {
+      "sample_id": "f240fc675fe649acafb6da700d299d55_001",
+      "object_id": "f240fc675fe649acafb6da700d299d55",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/f240fc675fe649acafb6da700d299d55/views/001/full_surface.npz": "2c8f1205a6e2a0df42cd87506e86aaa8af459fe0828579ed7b6507493931bf13",
+        "generated_data/f240fc675fe649acafb6da700d299d55/views/001/camera.npz": "ad565b1366328353abd4f2334861405428ac875a2bc3781894d500e0f8270d8c",
+        "generated_data/f240fc675fe649acafb6da700d299d55/target_latent.npz": "75cdbe4d8bc653b8b38d5eba447b304f0eef1a6c1b4332e680dfc1e4cc0e8e5d"
+      },
+      "center": [
+        -2.9802322387695312e-08,
+        0.0,
+        0.0
+      ],
+      "radius": 0.5160117121803598,
+      "surface_max_extent": 1.0000000596046448,
+      "normalization_float32_vs_independent_float64_max": 7.294465509399828e-08,
+      "inverse_normalization_max_error": 2.9802322387695312e-08,
+      "canonicalization_rms_displacement_voxels": 1.9574667899153788e-06,
+      "canonicalization_max_displacement_voxels": 3.822193976990972e-06,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9689702543519724
+    },
+    {
+      "sample_id": "f4e66b252b324dad84ba036a92b99f43_001",
+      "object_id": "f4e66b252b324dad84ba036a92b99f43",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/f4e66b252b324dad84ba036a92b99f43/views/001/full_surface.npz": "e963f89840151bdb1ddef429573953e1e1fa1bb6896de5a4a4df96e956a336a1",
+        "generated_data/f4e66b252b324dad84ba036a92b99f43/views/001/camera.npz": "fb7283fdadfe97c04e15e75c907502da6f3372b0d454dc2c2967e94224f11ba2",
+        "generated_data/f4e66b252b324dad84ba036a92b99f43/target_latent.npz": "798eabdf9a45cd337cc8fa34da9d7a23ae12cda892b35fbd156027821f4fcb20"
+      },
+      "center": [
+        -0.00018337368965148926,
+        -0.0001703202724456787,
+        0.0002492070198059082
+      ],
+      "radius": 0.5279442195945055,
+      "surface_max_extent": 0.9994672536849976,
+      "normalization_float32_vs_independent_float64_max": 4.3451101161551264e-08,
+      "inverse_normalization_max_error": 1.573009977828832e-08,
+      "canonicalization_rms_displacement_voxels": 0.026995595436893793,
+      "canonicalization_max_displacement_voxels": 0.03908528450831627,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9470697498762872,
+      "latest_target_support_reference": {
+        "file": "val_g1_targets.npz",
+        "index": 3
+      },
+      "latest_and_local_target_latents_equal": true,
+      "original_oracle_point_precision_1voxel": 1.0,
+      "original_oracle_point_precision_2voxels": 1.0,
+      "canonicalized_point_precision_1voxel": 1.0,
+      "canonicalized_point_precision_2voxels": 1.0
+    },
+    {
+      "sample_id": "f240fc675fe649acafb6da700d299d55_012",
+      "object_id": "f240fc675fe649acafb6da700d299d55",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/f240fc675fe649acafb6da700d299d55/views/012/full_surface.npz": "8e9dd8448baddcb46653174ec9a32e57cf4aef0f8a156aaef7e56b71b2c47bc9",
+        "generated_data/f240fc675fe649acafb6da700d299d55/views/012/camera.npz": "1b07f472ea14e3aa6f29c553f45bb31e4e2946f148e3c60c938393acda790a30",
+        "generated_data/f240fc675fe649acafb6da700d299d55/target_latent.npz": "75cdbe4d8bc653b8b38d5eba447b304f0eef1a6c1b4332e680dfc1e4cc0e8e5d"
+      },
+      "center": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "radius": 0.516011741057909,
+      "surface_max_extent": 1.0,
+      "normalization_float32_vs_independent_float64_max": 6.724275891656362e-08,
+      "inverse_normalization_max_error": 1.5370725026109255e-08,
+      "canonicalization_rms_displacement_voxels": 4.280400145805977e-07,
+      "canonicalization_max_displacement_voxels": 1.0123109024858104e-06,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9689702001255197
+    },
+    {
+      "sample_id": "f4e66b252b324dad84ba036a92b99f43_009",
+      "object_id": "f4e66b252b324dad84ba036a92b99f43",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/f4e66b252b324dad84ba036a92b99f43/views/009/full_surface.npz": "b11a38a67087558055c65a230b0a8ba90eb4c1b7a42f42becbc26f62f2ab9bb6",
+        "generated_data/f4e66b252b324dad84ba036a92b99f43/views/009/camera.npz": "bb53b7f26516badd80f3fbf49b3d0a077419cc441224d28972ac0bcf3818c71f",
+        "generated_data/f4e66b252b324dad84ba036a92b99f43/target_latent.npz": "798eabdf9a45cd337cc8fa34da9d7a23ae12cda892b35fbd156027821f4fcb20"
+      },
+      "center": [
+        -0.00018337368965148926,
+        -0.0001703500747680664,
+        0.00024922192096710205
+      ],
+      "radius": 0.5279442833544821,
+      "surface_max_extent": 0.9994674026966095,
+      "normalization_float32_vs_independent_float64_max": 6.724130396928985e-08,
+      "inverse_normalization_max_error": 3.063158560134838e-08,
+      "canonicalization_rms_displacement_voxels": 0.026994967028282864,
+      "canonicalization_max_displacement_voxels": 0.039081778711172036,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9470696354984126,
+      "latest_target_support_reference": {
+        "file": "val_g1_targets.npz",
+        "index": 3
+      },
+      "latest_and_local_target_latents_equal": true,
+      "original_oracle_point_precision_1voxel": 1.0,
+      "original_oracle_point_precision_2voxels": 1.0,
+      "canonicalized_point_precision_1voxel": 1.0,
+      "canonicalized_point_precision_2voxels": 1.0
+    },
+    {
+      "sample_id": "fe725496195f49bfbabb52407c58edf8_000",
+      "object_id": "fe725496195f49bfbabb52407c58edf8",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/fe725496195f49bfbabb52407c58edf8/views/000/full_surface.npz": "4b4d5a9a07934bdb7497e0897ca00b3dcb1a2e7ba5ed832bce34d4fdf4ff5796",
+        "generated_data/fe725496195f49bfbabb52407c58edf8/views/000/camera.npz": "11aadb93bbd40a52472bb68de41ba8d3cca1e80f33ae45ec01e10df8371251e1",
+        "generated_data/fe725496195f49bfbabb52407c58edf8/target_latent.npz": "cef249363d3b43da35623743765574d269a453292f7f0823aa1f9ebe96ca245a"
+      },
+      "center": [
+        -4.813075065612793e-05,
+        7.259845733642578e-05,
+        -0.00028592348098754883
+      ],
+      "radius": 0.5063202175125648,
+      "surface_max_extent": 0.9991015195846558,
+      "normalization_float32_vs_independent_float64_max": 8.335334766851332e-08,
+      "inverse_normalization_max_error": 1.5089393234912762e-08,
+      "canonicalization_rms_displacement_voxels": 0.029514361462384335,
+      "canonicalization_max_displacement_voxels": 0.048072642667303704,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9875173510873917
+    },
+    {
+      "sample_id": "fe725496195f49bfbabb52407c58edf8_010",
+      "object_id": "fe725496195f49bfbabb52407c58edf8",
+      "points": 8192,
+      "source_hashes": {
+        "generated_data/fe725496195f49bfbabb52407c58edf8/views/010/full_surface.npz": "9d95c3b9c5bc989b6e6d088b54d4be3d21bff2fb80e600a17fdbdcd87e05c3a3",
+        "generated_data/fe725496195f49bfbabb52407c58edf8/views/010/camera.npz": "e27a1d0b7227189fb2bfcc0d7e18c6211fb09f86c85012fde0a8727b83abe64a",
+        "generated_data/fe725496195f49bfbabb52407c58edf8/target_latent.npz": "cef249363d3b43da35623743765574d269a453292f7f0823aa1f9ebe96ca245a"
+      },
+      "center": [
+        -4.8160552978515625e-05,
+        7.261335849761963e-05,
+        -0.00028583407402038574
+      ],
+      "radius": 0.5063200133723675,
+      "surface_max_extent": 0.9991016983985901,
+      "normalization_float32_vs_independent_float64_max": 5.456140939053e-08,
+      "inverse_normalization_max_error": 1.5082618876061105e-08,
+      "canonicalization_rms_displacement_voxels": 0.029507886369957635,
+      "canonicalization_max_displacement_voxels": 0.048061665677874156,
+      "strict_target_q_over_2_scale_relative_to_current": 0.9875177492387219
+    }
+  ],
+  "same_object_view_pairs": [
+    {
+      "object_id": "07569a25210449ab8b54606974e6c767",
+      "samples": [
+        "07569a25210449ab8b54606974e6c767_007",
+        "07569a25210449ab8b54606974e6c767_012"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.980232238769531e-07,
+      "normalized_xyz_max_error": 4.76837158203125e-07
+    },
+    {
+      "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+      "samples": [
+        "0838b73f246f4768aa0671e7b2ba7c30_002",
+        "0838b73f246f4768aa0671e7b2ba7c30_012"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 3.5762786865234375e-07,
+      "normalized_xyz_max_error": 9.238719940185547e-07
+    },
+    {
+      "object_id": "0afbd2427ca84114b659e1d8cfcb647a",
+      "samples": [
+        "0afbd2427ca84114b659e1d8cfcb647a_001",
+        "0afbd2427ca84114b659e1d8cfcb647a_011"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.980232238769531e-07,
+      "normalized_xyz_max_error": 5.960464477539062e-07
+    },
+    {
+      "object_id": "0c15a58c6a0c4ec9bff9336312f675d2",
+      "samples": [
+        "0c15a58c6a0c4ec9bff9336312f675d2_010",
+        "0c15a58c6a0c4ec9bff9336312f675d2_013"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 6.556510925292969e-07
+    },
+    {
+      "object_id": "199b2202bc4543acb5a7a557212b605d",
+      "samples": [
+        "199b2202bc4543acb5a7a557212b605d_005",
+        "199b2202bc4543acb5a7a557212b605d_015"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.682209014892578e-07,
+      "normalized_xyz_max_error": 6.556510925292969e-07
+    },
+    {
+      "object_id": "1bf2bf7383d34e45aa5ac504c85e572c",
+      "samples": [
+        "1bf2bf7383d34e45aa5ac504c85e572c_013",
+        "1bf2bf7383d34e45aa5ac504c85e572c_015"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 4.805624485015869e-07
+    },
+    {
+      "object_id": "1cf32d0ef332402c81cdf8ea6d6030b3",
+      "samples": [
+        "1cf32d0ef332402c81cdf8ea6d6030b3_007",
+        "1cf32d0ef332402c81cdf8ea6d6030b3_013"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 6.258487701416016e-07
+    },
+    {
+      "object_id": "1f51096857cb46c5a2bd1ef8bc2c1803",
+      "samples": [
+        "1f51096857cb46c5a2bd1ef8bc2c1803_009",
+        "1f51096857cb46c5a2bd1ef8bc2c1803_014"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.980232238769531e-07,
+      "normalized_xyz_max_error": 7.152557373046875e-07
+    },
+    {
+      "object_id": "1fb985a5d5974bdcb412e91293d817f7",
+      "samples": [
+        "1fb985a5d5974bdcb412e91293d817f7_006",
+        "1fb985a5d5974bdcb412e91293d817f7_007"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 3.5762786865234375e-07,
+      "normalized_xyz_max_error": 8.344650268554688e-07
+    },
+    {
+      "object_id": "49853261fbbe48929211cfb4f5b13866",
+      "samples": [
+        "49853261fbbe48929211cfb4f5b13866_004",
+        "49853261fbbe48929211cfb4f5b13866_005"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 7.115304470062256e-07
+    },
+    {
+      "object_id": "548362a5ab6f4c8e8fda42143172614e",
+      "samples": [
+        "548362a5ab6f4c8e8fda42143172614e_006",
+        "548362a5ab6f4c8e8fda42143172614e_010"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 6.556510925292969e-07
+    },
+    {
+      "object_id": "68a31a8eb07d4b84aeb3b13484d4c9e8",
+      "samples": [
+        "68a31a8eb07d4b84aeb3b13484d4c9e8_000",
+        "68a31a8eb07d4b84aeb3b13484d4c9e8_008"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 4.76837158203125e-07
+    },
+    {
+      "object_id": "6a836cf7662f4cfaa7e1244a24d6e73a",
+      "samples": [
+        "6a836cf7662f4cfaa7e1244a24d6e73a_003",
+        "6a836cf7662f4cfaa7e1244a24d6e73a_005"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 4.917383193969727e-07
+    },
+    {
+      "object_id": "72b8b1136e124387a8a8b5dc10f9c58f",
+      "samples": [
+        "72b8b1136e124387a8a8b5dc10f9c58f_000",
+        "72b8b1136e124387a8a8b5dc10f9c58f_006"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.980232238769531e-07,
+      "normalized_xyz_max_error": 3.5762786865234375e-07
+    },
+    {
+      "object_id": "7bd547dc65b04894b6f37b33088f1a9e",
+      "samples": [
+        "7bd547dc65b04894b6f37b33088f1a9e_012",
+        "7bd547dc65b04894b6f37b33088f1a9e_013"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 5.960464477539062e-07
+    },
+    {
+      "object_id": "7c3286c7a4934e48860badc106f63ab3",
+      "samples": [
+        "7c3286c7a4934e48860badc106f63ab3_010",
+        "7c3286c7a4934e48860badc106f63ab3_013"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 3.5762786865234375e-07,
+      "normalized_xyz_max_error": 5.960464477539062e-07
+    },
+    {
+      "object_id": "8262743abb7f4f759aa0b3bda08551e5",
+      "samples": [
+        "8262743abb7f4f759aa0b3bda08551e5_013",
+        "8262743abb7f4f759aa0b3bda08551e5_014"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 5.960464477539062e-07
+    },
+    {
+      "object_id": "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4",
+      "samples": [
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_006",
+        "8ea6a2ff878b4ab7aab5a7ecd8ccc4a4_008"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.5331974029541016e-07,
+      "normalized_xyz_max_error": 7.748603820800781e-07
+    },
+    {
+      "object_id": "949af5011ce84b0098c5a0688420e569",
+      "samples": [
+        "949af5011ce84b0098c5a0688420e569_004",
+        "949af5011ce84b0098c5a0688420e569_013"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.980232238769531e-07,
+      "normalized_xyz_max_error": 7.599592208862305e-07
+    },
+    {
+      "object_id": "9e134caf65e04f5abaf742ac24df647d",
+      "samples": [
+        "9e134caf65e04f5abaf742ac24df647d_008",
+        "9e134caf65e04f5abaf742ac24df647d_015"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.980232238769531e-07,
+      "normalized_xyz_max_error": 6.556510925292969e-07
+    },
+    {
+      "object_id": "a807e2119b24443da16a2e28529cfa26",
+      "samples": [
+        "a807e2119b24443da16a2e28529cfa26_004",
+        "a807e2119b24443da16a2e28529cfa26_006"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.682209014892578e-07,
+      "normalized_xyz_max_error": 5.662441253662109e-07
+    },
+    {
+      "object_id": "b38765d87b644fdeb6c4c9ffe1ca98ba",
+      "samples": [
+        "b38765d87b644fdeb6c4c9ffe1ca98ba_007",
+        "b38765d87b644fdeb6c4c9ffe1ca98ba_013"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.980232238769531e-07,
+      "normalized_xyz_max_error": 6.258487701416016e-07
+    },
+    {
+      "object_id": "c057e4593f9e42f5a353718f6c3c9150",
+      "samples": [
+        "c057e4593f9e42f5a353718f6c3c9150_012",
+        "c057e4593f9e42f5a353718f6c3c9150_013"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 8.940696716308594e-07
+    },
+    {
+      "object_id": "d3eae95d30064e4baafe4427d7c9038a",
+      "samples": [
+        "d3eae95d30064e4baafe4427d7c9038a_008",
+        "d3eae95d30064e4baafe4427d7c9038a_015"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.980232238769531e-07,
+      "normalized_xyz_max_error": 5.960464477539062e-07
+    },
+    {
+      "object_id": "d7167aa45e6e43b4a91fdbf5eb70b661",
+      "samples": [
+        "d7167aa45e6e43b4a91fdbf5eb70b661_004",
+        "d7167aa45e6e43b4a91fdbf5eb70b661_012"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.980232238769531e-07,
+      "normalized_xyz_max_error": 7.152557373046875e-07
+    },
+    {
+      "object_id": "d87e82071e24487481bf90c8f2682fb6",
+      "samples": [
+        "d87e82071e24487481bf90c8f2682fb6_004",
+        "d87e82071e24487481bf90c8f2682fb6_015"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.980232238769531e-07,
+      "normalized_xyz_max_error": 5.364418029785156e-07
+    },
+    {
+      "object_id": "dbba322581594949944949744937c788",
+      "samples": [
+        "dbba322581594949944949744937c788_000",
+        "dbba322581594949944949744937c788_013"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 8.344650268554688e-07
+    },
+    {
+      "object_id": "e2759dc44b4b40fb9cf9544afc650282",
+      "samples": [
+        "e2759dc44b4b40fb9cf9544afc650282_001",
+        "e2759dc44b4b40fb9cf9544afc650282_011"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 1.7881393432617188e-07,
+      "normalized_xyz_max_error": 4.76837158203125e-07
+    },
+    {
+      "object_id": "e697fbdea7d04aa2b09122e36efadf16",
+      "samples": [
+        "e697fbdea7d04aa2b09122e36efadf16_009",
+        "e697fbdea7d04aa2b09122e36efadf16_012"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 4.76837158203125e-07
+    },
+    {
+      "object_id": "f240fc675fe649acafb6da700d299d55",
+      "samples": [
+        "f240fc675fe649acafb6da700d299d55_001",
+        "f240fc675fe649acafb6da700d299d55_012"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 4.76837158203125e-07
+    },
+    {
+      "object_id": "f4e66b252b324dad84ba036a92b99f43",
+      "samples": [
+        "f4e66b252b324dad84ba036a92b99f43_001",
+        "f4e66b252b324dad84ba036a92b99f43_009"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 5.140900611877441e-07
+    },
+    {
+      "object_id": "fe725496195f49bfbabb52407c58edf8",
+      "samples": [
+        "fe725496195f49bfbabb52407c58edf8_000",
+        "fe725496195f49bfbabb52407c58edf8_010"
+      ],
+      "point_ids_equal": true,
+      "oracle_xyz_max_error": 2.384185791015625e-07,
+      "normalized_xyz_max_error": 1.0132789611816406e-06
+    }
+  ],
+  "source_sha256": {
+    "doc/conditioning_investigation_2026-09-11/coordinate_reassessment_20260913/audit_normalization.py": "a51f862c382f6beba8c07ed04b6eece11dc19877de72a0358925249e08bde163",
+    "sam3d_objects/model/backbone/dit/embedder/touch.py": "a2db76b3e7cc2666890c600278915ed3e6d081fbbe3a980567ba591fa4d6418c",
+    "data_generation/objaverse-dexonomy/generated_data/samples_full_surface.jsonl": "72ca53b2428507f0761f64dd849bd2b0dde52b69dd70f2d04ac7340a51503a96",
+    "train.py": "92d6de6efcf36e9691ee50f167cb3e32ed4863a4fea2bf596bb4b4bc1224b14d",
+    "dataloader.py": "d50137bf75a146ccb3ef71ff92d6a6f15523c5011e036f1b7bdbcd0541d4a0da"
+  },
+  "scope": "64 locally available historical surfaces, before FPS (8192 points). CPU float32 production-normalizer replay and independent float64 arithmetic. Not a CUDA/FPS replay or an independent mesh-provenance check. Meshes unavailable locally; latest probe has different views and only three overlapping identities. Canonicalization uses the known centered max-extent-one dataset convention, not target geometry. Latest target proximity is descriptive, with target-latent equality checked separately."
+}

@@ -1,0 +1,2190 @@
+{
+  "pairing_and_completeness_verified": true,
+  "summary": {
+    "train": {
+      "present": {
+        "oracle": {
+          "objects": [
+            {
+              "object_id": "02b06fd2e66a478d9bf5d9870674bb14",
+              "iou": 0.1121079730790734,
+              "precision_2v": 0.556259322005985,
+              "recall_2v": 0.5020402215097639,
+              "fscore_2v": 0.5261915111756692
+            },
+            {
+              "object_id": "09a2330ce85d4f2fbb67e2134b9fb4b4",
+              "iou": 0.2752019190526452,
+              "precision_2v": 0.832442451919008,
+              "recall_2v": 0.8560100166944908,
+              "fscore_2v": 0.8435962630389742
+            },
+            {
+              "object_id": "14791e88b5d54b84a2db685a70c28e45",
+              "iou": 0.7786460153074052,
+              "precision_2v": 0.8318151521884025,
+              "recall_2v": 0.8042912327846825,
+              "fscore_2v": 0.8152701998315974
+            },
+            {
+              "object_id": "1baceeb8776c464fa61080f4d385cc91",
+              "iou": 0.44453559352717786,
+              "precision_2v": 0.9797656535618654,
+              "recall_2v": 0.9613327674023769,
+              "fscore_2v": 0.9702685865589759
+            },
+            {
+              "object_id": "23d33707c6754821b5ac46ace21931a4",
+              "iou": 0.18906922298786272,
+              "precision_2v": 0.7481987079124015,
+              "recall_2v": 0.6730267449445532,
+              "fscore_2v": 0.7067045546725822
+            },
+            {
+              "object_id": "2fc6ca6bd69f445c8936d4b6c7bcebdd",
+              "iou": 0.3718239900639917,
+              "precision_2v": 0.9421633665494209,
+              "recall_2v": 0.9824994262106954,
+              "fscore_2v": 0.9595135046359049
+            },
+            {
+              "object_id": "51484bb1747c41dbba24361b712646c2",
+              "iou": 0.08309846135629832,
+              "precision_2v": 0.583761589664794,
+              "recall_2v": 0.4235407980941036,
+              "fscore_2v": 0.48687701089015345
+            },
+            {
+              "object_id": "808396527262458580afd6dcfefb394d",
+              "iou": 0.05422088307998428,
+              "precision_2v": 0.3891310380476264,
+              "recall_2v": 0.24402985074626865,
+              "fscore_2v": 0.2915109173627895
+            },
+            {
+              "object_id": "953cfd1a82174315add348b2fc263330",
+              "iou": 0.13081327829533757,
+              "precision_2v": 0.8100355263054396,
+              "recall_2v": 0.7072119218500797,
+              "fscore_2v": 0.7508171674296046
+            },
+            {
+              "object_id": "aaf0fb95a7794739a608760a2024378d",
+              "iou": 0.2692865013360043,
+              "precision_2v": 0.8343737321580388,
+              "recall_2v": 0.8021118331053352,
+              "fscore_2v": 0.8177466246467109
+            },
+            {
+              "object_id": "ad88605777f84f6babafc363ad9b75ed",
+              "iou": 0.3636344710911505,
+              "precision_2v": 0.810351566268418,
+              "recall_2v": 0.9322478991596639,
+              "fscore_2v": 0.8565063852973839
+            },
+            {
+              "object_id": "bbf465d5a3df487a8ba38477fafc12d5",
+              "iou": 0.4090020263996486,
+              "precision_2v": 0.9399271844660194,
+              "recall_2v": 0.8291919191919191,
+              "fscore_2v": 0.8617772617413224
+            },
+            {
+              "object_id": "d792e36c80784b53b987c84e304481a9",
+              "iou": 0.2172485054592706,
+              "precision_2v": 0.7609961589527566,
+              "recall_2v": 0.7582848392036754,
+              "fscore_2v": 0.757042886486594
+            },
+            {
+              "object_id": "dc67a0ab13fe4e26bb8babeaeb4bf095",
+              "iou": 0.1172884463944376,
+              "precision_2v": 0.6150007687355844,
+              "recall_2v": 0.5952513013055721,
+              "fscore_2v": 0.5965261076344432
+            },
+            {
+              "object_id": "e32284322f1148a3924ea4bad4e8cd89",
+              "iou": 0.8805441783894488,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0
+            },
+            {
+              "object_id": "f1a289c083244cc5847faf6b5ce3a45c",
+              "iou": 0.34599590562212396,
+              "precision_2v": 0.8621483250993534,
+              "recall_2v": 0.9424657534246575,
+              "fscore_2v": 0.8985126321215646
+            }
+          ],
+          "mean_iou": 0.3151573357151163,
+          "mean_precision_2v": 0.7810231589896947,
+          "mean_recall_2v": 0.7508460328517399,
+          "mean_fscore_2v": 0.7586788508452669,
+          "object_iou_p10_order_statistic": 0.08309846135629832,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 2
+        },
+        "oracle_wrong": {
+          "objects": [
+            {
+              "object_id": "02b06fd2e66a478d9bf5d9870674bb14",
+              "iou": 0.05322936132894408,
+              "precision_2v": 0.30927775805909385,
+              "recall_2v": 0.29488487321480616,
+              "fscore_2v": 0.2990193600677615
+            },
+            {
+              "object_id": "09a2330ce85d4f2fbb67e2134b9fb4b4",
+              "iou": 0.10632167166598191,
+              "precision_2v": 0.2897071635162301,
+              "recall_2v": 0.6352253756260434,
+              "fscore_2v": 0.39556484054597596
+            },
+            {
+              "object_id": "14791e88b5d54b84a2db685a70c28e45",
+              "iou": 0.0053244876200710615,
+              "precision_2v": 0.07515999470527138,
+              "recall_2v": 0.02083683238159221,
+              "fscore_2v": 0.03118147810661516
+            },
+            {
+              "object_id": "1baceeb8776c464fa61080f4d385cc91",
+              "iou": 0.29916631479532985,
+              "precision_2v": 0.9464427748666033,
+              "recall_2v": 0.9249575551782683,
+              "fscore_2v": 0.9353407758001122
+            },
+            {
+              "object_id": "23d33707c6754821b5ac46ace21931a4",
+              "iou": 0.16205850290199095,
+              "precision_2v": 0.7379144556564367,
+              "recall_2v": 0.5214448793215917,
+              "fscore_2v": 0.5921442093785105
+            },
+            {
+              "object_id": "2fc6ca6bd69f445c8936d4b6c7bcebdd",
+              "iou": 0.022619747032367646,
+              "precision_2v": 0.2054201262247565,
+              "recall_2v": 0.45312141381684645,
+              "fscore_2v": 0.2621954113235816
+            },
+            {
+              "object_id": "51484bb1747c41dbba24361b712646c2",
+              "iou": 0.09771870525128686,
+              "precision_2v": 0.4514561176588313,
+              "recall_2v": 0.31488237045860634,
+              "fscore_2v": 0.35613856596900495
+            },
+            {
+              "object_id": "808396527262458580afd6dcfefb394d",
+              "iou": 0.03696269187760496,
+              "precision_2v": 0.2005281842221857,
+              "recall_2v": 0.16492537313432837,
+              "fscore_2v": 0.18022702267982915
+            },
+            {
+              "object_id": "953cfd1a82174315add348b2fc263330",
+              "iou": 0.01634765238130596,
+              "precision_2v": 0.21886393057979964,
+              "recall_2v": 0.08881578947368421,
+              "fscore_2v": 0.12403026380880551
+            },
+            {
+              "object_id": "aaf0fb95a7794739a608760a2024378d",
+              "iou": 0.21151788317776998,
+              "precision_2v": 0.8442496008776519,
+              "recall_2v": 0.5725247948016415,
+              "fscore_2v": 0.6391434527892756
+            },
+            {
+              "object_id": "ad88605777f84f6babafc363ad9b75ed",
+              "iou": 0.31436770922789675,
+              "precision_2v": 0.7598788954078375,
+              "recall_2v": 0.8785451680672269,
+              "fscore_2v": 0.8040319403814102
+            },
+            {
+              "object_id": "bbf465d5a3df487a8ba38477fafc12d5",
+              "iou": 0.15238694514654816,
+              "precision_2v": 0.7763476187424341,
+              "recall_2v": 0.5812121212121213,
+              "fscore_2v": 0.6521007965976198
+            },
+            {
+              "object_id": "d792e36c80784b53b987c84e304481a9",
+              "iou": 0.06824875477459548,
+              "precision_2v": 0.22045761095870584,
+              "recall_2v": 0.34895865237366,
+              "fscore_2v": 0.2701774573255857
+            },
+            {
+              "object_id": "dc67a0ab13fe4e26bb8babeaeb4bf095",
+              "iou": 0.05778884487670256,
+              "precision_2v": 0.43725160522477863,
+              "recall_2v": 0.365410871234747,
+              "fscore_2v": 0.39324373453844436
+            },
+            {
+              "object_id": "e32284322f1148a3924ea4bad4e8cd89",
+              "iou": 0.0006783346194167028,
+              "precision_2v": 0.0519528439733434,
+              "recall_2v": 0.0035833420202230795,
+              "fscore_2v": 0.006539848644925781
+            },
+            {
+              "object_id": "f1a289c083244cc5847faf6b5ce3a45c",
+              "iou": 0.0555097474874264,
+              "precision_2v": 0.18496613177618412,
+              "recall_2v": 0.6054794520547946,
+              "fscore_2v": 0.26200954874073684
+            }
+          ],
+          "mean_iou": 0.10376545963532746,
+          "mean_precision_2v": 0.419367175778134,
+          "mean_recall_2v": 0.42342555402313636,
+          "mean_fscore_2v": 0.3876930441686372,
+          "object_iou_p10_order_statistic": 0.0053244876200710615,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 0
+        },
+        "constant": {
+          "objects": [
+            {
+              "object_id": "02b06fd2e66a478d9bf5d9870674bb14",
+              "iou": 0.10943616638477986,
+              "precision_2v": 0.5560283050997182,
+              "recall_2v": 0.47974351501020107,
+              "fscore_2v": 0.5123264501891038
+            },
+            {
+              "object_id": "09a2330ce85d4f2fbb67e2134b9fb4b4",
+              "iou": 0.1985337567238348,
+              "precision_2v": 0.637052248615392,
+              "recall_2v": 0.6329298831385642,
+              "fscore_2v": 0.6320026303311411
+            },
+            {
+              "object_id": "14791e88b5d54b84a2db685a70c28e45",
+              "iou": 0.5088695632964855,
+              "precision_2v": 0.5658330618921611,
+              "recall_2v": 0.5275340107490762,
+              "fscore_2v": 0.5388164689265786
+            },
+            {
+              "object_id": "1baceeb8776c464fa61080f4d385cc91",
+              "iou": 0.44146874126904245,
+              "precision_2v": 0.9852824354929135,
+              "recall_2v": 0.9648981324278438,
+              "fscore_2v": 0.9748845979264567
+            },
+            {
+              "object_id": "23d33707c6754821b5ac46ace21931a4",
+              "iou": 0.17569724148897392,
+              "precision_2v": 0.6060090292079202,
+              "recall_2v": 0.6378016960208741,
+              "fscore_2v": 0.6211448997679474
+            },
+            {
+              "object_id": "2fc6ca6bd69f445c8936d4b6c7bcebdd",
+              "iou": 0.28518449008981256,
+              "precision_2v": 0.8741928291222935,
+              "recall_2v": 0.9590314436538903,
+              "fscore_2v": 0.911044558353466
+            },
+            {
+              "object_id": "51484bb1747c41dbba24361b712646c2",
+              "iou": 0.05513232124908639,
+              "precision_2v": 0.262076827283935,
+              "recall_2v": 0.16315515187611673,
+              "fscore_2v": 0.2000521944478327
+            },
+            {
+              "object_id": "808396527262458580afd6dcfefb394d",
+              "iou": 0.01889065434872093,
+              "precision_2v": 0.08976879788460235,
+              "recall_2v": 0.0914179104477612,
+              "fscore_2v": 0.09058574584929846
+            },
+            {
+              "object_id": "953cfd1a82174315add348b2fc263330",
+              "iou": 0.04944208498754188,
+              "precision_2v": 0.37285999475609555,
+              "recall_2v": 0.31237539872408293,
+              "fscore_2v": 0.3323871080041328
+            },
+            {
+              "object_id": "aaf0fb95a7794739a608760a2024378d",
+              "iou": 0.22646863768712763,
+              "precision_2v": 0.8351129892304713,
+              "recall_2v": 0.813141244870041,
+              "fscore_2v": 0.8229735706714382
+            },
+            {
+              "object_id": "ad88605777f84f6babafc363ad9b75ed",
+              "iou": 0.319009756039799,
+              "precision_2v": 0.8000557967165579,
+              "recall_2v": 0.944327731092437,
+              "fscore_2v": 0.8541402720522172
+            },
+            {
+              "object_id": "bbf465d5a3df487a8ba38477fafc12d5",
+              "iou": 0.2628789438787617,
+              "precision_2v": 0.770111573148677,
+              "recall_2v": 0.6705050505050505,
+              "fscore_2v": 0.708754373171478
+            },
+            {
+              "object_id": "d792e36c80784b53b987c84e304481a9",
+              "iou": 0.21178832177992,
+              "precision_2v": 0.7830431584934018,
+              "recall_2v": 0.746937212863706,
+              "fscore_2v": 0.7617680913755527
+            },
+            {
+              "object_id": "dc67a0ab13fe4e26bb8babeaeb4bf095",
+              "iou": 0.06952690444860703,
+              "precision_2v": 0.4467281588600602,
+              "recall_2v": 0.3878317262565065,
+              "fscore_2v": 0.4079857065102366
+            },
+            {
+              "object_id": "e32284322f1148a3924ea4bad4e8cd89",
+              "iou": 0.8947559119910213,
+              "precision_2v": 0.9942284170828661,
+              "recall_2v": 0.9992312102574794,
+              "fscore_2v": 0.9967044540073339
+            },
+            {
+              "object_id": "f1a289c083244cc5847faf6b5ce3a45c",
+              "iou": 0.25806869225250845,
+              "precision_2v": 0.7670273861254822,
+              "recall_2v": 0.9304794520547945,
+              "fscore_2v": 0.829961745104616
+            }
+          ],
+          "mean_iou": 0.25532201174475144,
+          "mean_precision_2v": 0.6465881880632842,
+          "mean_recall_2v": 0.6413337981217766,
+          "mean_fscore_2v": 0.6372208041680519,
+          "object_iou_p10_order_statistic": 0.04944208498754188,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 2
+        },
+        "oracle_minus_constant": {
+          "per_object": [
+            {
+              "object_id": "02b06fd2e66a478d9bf5d9870674bb14",
+              "fscore_difference": 0.01386506098656537,
+              "iou_difference": 0.002671806694293538
+            },
+            {
+              "object_id": "09a2330ce85d4f2fbb67e2134b9fb4b4",
+              "fscore_difference": 0.21159363270783305,
+              "iou_difference": 0.07666816232881038
+            },
+            {
+              "object_id": "14791e88b5d54b84a2db685a70c28e45",
+              "fscore_difference": 0.2764537309050188,
+              "iou_difference": 0.2697764520109197
+            },
+            {
+              "object_id": "1baceeb8776c464fa61080f4d385cc91",
+              "fscore_difference": -0.004616011367480799,
+              "iou_difference": 0.0030668522581354107
+            },
+            {
+              "object_id": "23d33707c6754821b5ac46ace21931a4",
+              "fscore_difference": 0.0855596549046348,
+              "iou_difference": 0.013371981498888796
+            },
+            {
+              "object_id": "2fc6ca6bd69f445c8936d4b6c7bcebdd",
+              "fscore_difference": 0.04846894628243892,
+              "iou_difference": 0.08663949997417913
+            },
+            {
+              "object_id": "51484bb1747c41dbba24361b712646c2",
+              "fscore_difference": 0.2868248164423207,
+              "iou_difference": 0.027966140107211934
+            },
+            {
+              "object_id": "808396527262458580afd6dcfefb394d",
+              "fscore_difference": 0.20092517151349104,
+              "iou_difference": 0.03533022873126335
+            },
+            {
+              "object_id": "953cfd1a82174315add348b2fc263330",
+              "fscore_difference": 0.4184300594254718,
+              "iou_difference": 0.08137119330779569
+            },
+            {
+              "object_id": "aaf0fb95a7794739a608760a2024378d",
+              "fscore_difference": -0.005226946024727286,
+              "iou_difference": 0.04281786364887666
+            },
+            {
+              "object_id": "ad88605777f84f6babafc363ad9b75ed",
+              "fscore_difference": 0.0023661132451666678,
+              "iou_difference": 0.044624715051351516
+            },
+            {
+              "object_id": "bbf465d5a3df487a8ba38477fafc12d5",
+              "fscore_difference": 0.15302288856984436,
+              "iou_difference": 0.1461230825208869
+            },
+            {
+              "object_id": "d792e36c80784b53b987c84e304481a9",
+              "fscore_difference": -0.004725204888958667,
+              "iou_difference": 0.005460183679350611
+            },
+            {
+              "object_id": "dc67a0ab13fe4e26bb8babeaeb4bf095",
+              "fscore_difference": 0.18854040112420667,
+              "iou_difference": 0.04776154194583057
+            },
+            {
+              "object_id": "e32284322f1148a3924ea4bad4e8cd89",
+              "fscore_difference": 0.003295545992666127,
+              "iou_difference": -0.014211733601572574
+            },
+            {
+              "object_id": "f1a289c083244cc5847faf6b5ce3a45c",
+              "fscore_difference": 0.06855088701694867,
+              "iou_difference": 0.08792721336961551
+            }
+          ],
+          "mean_fscore_difference": 0.12145804667721502,
+          "mean_iou_difference": 0.05983532397036482,
+          "objects_positive_fscore_difference": 13
+        },
+        "oracle_minus_oracle_wrong": {
+          "per_object": [
+            {
+              "object_id": "02b06fd2e66a478d9bf5d9870674bb14",
+              "fscore_difference": 0.22717215110790773,
+              "iou_difference": 0.05887861175012932
+            },
+            {
+              "object_id": "09a2330ce85d4f2fbb67e2134b9fb4b4",
+              "fscore_difference": 0.4480314224929982,
+              "iou_difference": 0.16888024738666327
+            },
+            {
+              "object_id": "14791e88b5d54b84a2db685a70c28e45",
+              "fscore_difference": 0.7840887217249822,
+              "iou_difference": 0.7733215276873341
+            },
+            {
+              "object_id": "1baceeb8776c464fa61080f4d385cc91",
+              "fscore_difference": 0.03492781075886364,
+              "iou_difference": 0.14536927873184802
+            },
+            {
+              "object_id": "23d33707c6754821b5ac46ace21931a4",
+              "fscore_difference": 0.11456034529407166,
+              "iou_difference": 0.02701072008587177
+            },
+            {
+              "object_id": "2fc6ca6bd69f445c8936d4b6c7bcebdd",
+              "fscore_difference": 0.6973180933123233,
+              "iou_difference": 0.34920424303162406
+            },
+            {
+              "object_id": "51484bb1747c41dbba24361b712646c2",
+              "fscore_difference": 0.1307384449211485,
+              "iou_difference": -0.014620243894988533
+            },
+            {
+              "object_id": "808396527262458580afd6dcfefb394d",
+              "fscore_difference": 0.11128389468296035,
+              "iou_difference": 0.01725819120237932
+            },
+            {
+              "object_id": "953cfd1a82174315add348b2fc263330",
+              "fscore_difference": 0.626786903620799,
+              "iou_difference": 0.1144656259140316
+            },
+            {
+              "object_id": "aaf0fb95a7794739a608760a2024378d",
+              "fscore_difference": 0.17860317185743524,
+              "iou_difference": 0.05776861815823431
+            },
+            {
+              "object_id": "ad88605777f84f6babafc363ad9b75ed",
+              "fscore_difference": 0.05247444491597364,
+              "iou_difference": 0.04926676186325374
+            },
+            {
+              "object_id": "bbf465d5a3df487a8ba38477fafc12d5",
+              "fscore_difference": 0.20967646514370264,
+              "iou_difference": 0.25661508125310045
+            },
+            {
+              "object_id": "d792e36c80784b53b987c84e304481a9",
+              "fscore_difference": 0.48686542916100833,
+              "iou_difference": 0.14899975068467514
+            },
+            {
+              "object_id": "dc67a0ab13fe4e26bb8babeaeb4bf095",
+              "fscore_difference": 0.2032823730959989,
+              "iou_difference": 0.05949960151773504
+            },
+            {
+              "object_id": "e32284322f1148a3924ea4bad4e8cd89",
+              "fscore_difference": 0.9934601513550743,
+              "iou_difference": 0.8798658437700321
+            },
+            {
+              "object_id": "f1a289c083244cc5847faf6b5ce3a45c",
+              "fscore_difference": 0.6365030833808278,
+              "iou_difference": 0.2904861581346976
+            }
+          ],
+          "mean_fscore_difference": 0.3709858066766297,
+          "mean_iou_difference": 0.21139187607978882,
+          "objects_positive_fscore_difference": 16
+        }
+      },
+      "zero": {
+        "oracle": {
+          "objects": [
+            {
+              "object_id": "02b06fd2e66a478d9bf5d9870674bb14",
+              "iou": 0.1365426680002202,
+              "precision_2v": 0.7373576626025139,
+              "recall_2v": 0.5920285631011367,
+              "fscore_2v": 0.6488720336581855
+            },
+            {
+              "object_id": "09a2330ce85d4f2fbb67e2134b9fb4b4",
+              "iou": 0.2914760574522434,
+              "precision_2v": 0.8170055798341925,
+              "recall_2v": 0.9401085141903172,
+              "fscore_2v": 0.8741203038276224
+            },
+            {
+              "object_id": "14791e88b5d54b84a2db685a70c28e45",
+              "iou": 1.0,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0
+            },
+            {
+              "object_id": "1baceeb8776c464fa61080f4d385cc91",
+              "iou": 0.29295684034292135,
+              "precision_2v": 0.915807182205745,
+              "recall_2v": 0.8824702886247877,
+              "fscore_2v": 0.8976003767318228
+            },
+            {
+              "object_id": "23d33707c6754821b5ac46ace21931a4",
+              "iou": 0.05876729417251987,
+              "precision_2v": 0.3220242967537872,
+              "recall_2v": 0.4717058056099152,
+              "fscore_2v": 0.37963275528570684
+            },
+            {
+              "object_id": "2fc6ca6bd69f445c8936d4b6c7bcebdd",
+              "iou": 0.28097595560436034,
+              "precision_2v": 0.9425127636284732,
+              "recall_2v": 0.9543263713564379,
+              "fscore_2v": 0.9471143404990052
+            },
+            {
+              "object_id": "51484bb1747c41dbba24361b712646c2",
+              "iou": 0.04971918047842871,
+              "precision_2v": 0.35389688664007046,
+              "recall_2v": 0.3553826682549136,
+              "fscore_2v": 0.3446965590561265
+            },
+            {
+              "object_id": "808396527262458580afd6dcfefb394d",
+              "iou": 0.04438460962248483,
+              "precision_2v": 0.2593615946858915,
+              "recall_2v": 0.3283582089552239,
+              "fscore_2v": 0.27465286160991825
+            },
+            {
+              "object_id": "953cfd1a82174315add348b2fc263330",
+              "iou": 0.09128980808387316,
+              "precision_2v": 0.5176817703783183,
+              "recall_2v": 0.5455542264752791,
+              "fscore_2v": 0.5246176154245248
+            },
+            {
+              "object_id": "aaf0fb95a7794739a608760a2024378d",
+              "iou": 0.17490266261674436,
+              "precision_2v": 0.7925972451787046,
+              "recall_2v": 0.6571049931600548,
+              "fscore_2v": 0.7131274444127915
+            },
+            {
+              "object_id": "ad88605777f84f6babafc363ad9b75ed",
+              "iou": 0.1776895637920026,
+              "precision_2v": 0.8805278059256614,
+              "recall_2v": 0.8730304621848739,
+              "fscore_2v": 0.8670699302763575
+            },
+            {
+              "object_id": "bbf465d5a3df487a8ba38477fafc12d5",
+              "iou": 0.2457941331715465,
+              "precision_2v": 0.7184209750336694,
+              "recall_2v": 0.7192929292929293,
+              "fscore_2v": 0.7138839355451337
+            },
+            {
+              "object_id": "d792e36c80784b53b987c84e304481a9",
+              "iou": 0.23690588776270508,
+              "precision_2v": 0.7931636912008424,
+              "recall_2v": 0.7734150076569679,
+              "fscore_2v": 0.7816458586876572
+            },
+            {
+              "object_id": "dc67a0ab13fe4e26bb8babeaeb4bf095",
+              "iou": 0.10172616317979742,
+              "precision_2v": 0.5945058040965566,
+              "recall_2v": 0.6407116648178173,
+              "fscore_2v": 0.6158408024377642
+            },
+            {
+              "object_id": "e32284322f1148a3924ea4bad4e8cd89",
+              "iou": 0.9361360749805178,
+              "precision_2v": 1.0,
+              "recall_2v": 1.0,
+              "fscore_2v": 1.0
+            },
+            {
+              "object_id": "f1a289c083244cc5847faf6b5ce3a45c",
+              "iou": 0.2455324562514566,
+              "precision_2v": 0.9055327607505036,
+              "recall_2v": 0.9017123287671233,
+              "fscore_2v": 0.90198285355649
+            }
+          ],
+          "mean_iou": 0.2727999597194889,
+          "mean_precision_2v": 0.7218997511821831,
+          "mean_recall_2v": 0.7272001270279861,
+          "mean_fscore_2v": 0.7178036044380691,
+          "object_iou_p10_order_statistic": 0.04971918047842871,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 2
+        },
+        "oracle_wrong": {
+          "objects": [
+            {
+              "object_id": "02b06fd2e66a478d9bf5d9870674bb14",
+              "iou": 0.05481968106629475,
+              "precision_2v": 0.243669360552513,
+              "recall_2v": 0.40148644709997083,
+              "fscore_2v": 0.3009171380968006
+            },
+            {
+              "object_id": "09a2330ce85d4f2fbb67e2134b9fb4b4",
+              "iou": 0.011157230866127455,
+              "precision_2v": 0.04639859133507279,
+              "recall_2v": 0.21869782971619367,
+              "fscore_2v": 0.07648799765467257
+            },
+            {
+              "object_id": "14791e88b5d54b84a2db685a70c28e45",
+              "iou": 0.00618174028810006,
+              "precision_2v": 0.09418035594919659,
+              "recall_2v": 0.014402082633523682,
+              "fscore_2v": 0.024732975037257406
+            },
+            {
+              "object_id": "1baceeb8776c464fa61080f4d385cc91",
+              "iou": 0.006375735772958547,
+              "precision_2v": 0.03397104232878191,
+              "recall_2v": 0.06222410865874363,
+              "fscore_2v": 0.043711263317339516
+            },
+            {
+              "object_id": "23d33707c6754821b5ac46ace21931a4",
+              "iou": 0.08127187852215031,
+              "precision_2v": 0.6989570938686263,
+              "recall_2v": 0.22627201565557728,
+              "fscore_2v": 0.3399312611152827
+            },
+            {
+              "object_id": "2fc6ca6bd69f445c8936d4b6c7bcebdd",
+              "iou": 0.012443027019779635,
+              "precision_2v": 0.051897746693127786,
+              "recall_2v": 0.14711957769107184,
+              "fscore_2v": 0.075922461472146
+            },
+            {
+              "object_id": "51484bb1747c41dbba24361b712646c2",
+              "iou": 0.06327080597162214,
+              "precision_2v": 0.28177839860300047,
+              "recall_2v": 0.30472007147111374,
+              "fscore_2v": 0.28741211360831587
+            },
+            {
+              "object_id": "808396527262458580afd6dcfefb394d",
+              "iou": 0.01326411039550384,
+              "precision_2v": 0.05316648771677541,
+              "recall_2v": 0.35074626865671643,
+              "fscore_2v": 0.09189100276798062
+            },
+            {
+              "object_id": "953cfd1a82174315add348b2fc263330",
+              "iou": 0.014187285065015934,
+              "precision_2v": 0.19561905106677435,
+              "recall_2v": 0.06818181818181818,
+              "fscore_2v": 0.09865263259987958
+            },
+            {
+              "object_id": "aaf0fb95a7794739a608760a2024378d",
+              "iou": 0.01404405571368794,
+              "precision_2v": 0.44379053267196034,
+              "recall_2v": 0.07188354993160054,
+              "fscore_2v": 0.12284383169103591
+            },
+            {
+              "object_id": "ad88605777f84f6babafc363ad9b75ed",
+              "iou": 0.05752946532434609,
+              "precision_2v": 0.444802851478002,
+              "recall_2v": 0.3954831932773109,
+              "fscore_2v": 0.40978828709189247
+            },
+            {
+              "object_id": "bbf465d5a3df487a8ba38477fafc12d5",
+              "iou": 0.10381591153566956,
+              "precision_2v": 0.5673117023743749,
+              "recall_2v": 0.4884848484848485,
+              "fscore_2v": 0.5237825122938358
+            },
+            {
+              "object_id": "d792e36c80784b53b987c84e304481a9",
+              "iou": 0.054081775424358845,
+              "precision_2v": 0.19814156485162684,
+              "recall_2v": 0.31915773353751914,
+              "fscore_2v": 0.24449347393647983
+            },
+            {
+              "object_id": "dc67a0ab13fe4e26bb8babeaeb4bf095",
+              "iou": 0.05548673384454601,
+              "precision_2v": 0.33042295091893575,
+              "recall_2v": 0.30442017236965613,
+              "fscore_2v": 0.312387205872583
+            },
+            {
+              "object_id": "e32284322f1148a3924ea4bad4e8cd89",
+              "iou": 0.002140796915023013,
+              "precision_2v": 0.08333316095215992,
+              "recall_2v": 0.007596685082872928,
+              "fscore_2v": 0.013739978390193149
+            },
+            {
+              "object_id": "f1a289c083244cc5847faf6b5ce3a45c",
+              "iou": 0.0011883070585439277,
+              "precision_2v": 0.004366812227074236,
+              "recall_2v": 0.07671232876712329,
+              "fscore_2v": 0.00826324332300428
+            }
+          ],
+          "mean_iou": 0.034453658798983,
+          "mean_precision_2v": 0.23573798147425015,
+          "mean_recall_2v": 0.2160992957009788,
+          "mean_fscore_2v": 0.1859348361417937,
+          "object_iou_p10_order_statistic": 0.002140796915023013,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 0
+        },
+        "constant": {
+          "objects": [
+            {
+              "object_id": "02b06fd2e66a478d9bf5d9870674bb14",
+              "iou": 0.022247637503409273,
+              "precision_2v": 0.11193293203445964,
+              "recall_2v": 0.27032935004371905,
+              "fscore_2v": 0.14287537296636715
+            },
+            {
+              "object_id": "09a2330ce85d4f2fbb67e2134b9fb4b4",
+              "iou": 0.029511522676861517,
+              "precision_2v": 0.10669698358341044,
+              "recall_2v": 0.22328881469115192,
+              "fscore_2v": 0.14030661660556626
+            },
+            {
+              "object_id": "14791e88b5d54b84a2db685a70c28e45",
+              "iou": 0.04383776872478503,
+              "precision_2v": 0.17095049071940505,
+              "recall_2v": 0.09420137722539469,
+              "fscore_2v": 0.12100094917400722
+            },
+            {
+              "object_id": "1baceeb8776c464fa61080f4d385cc91",
+              "iou": 0.024250298652543963,
+              "precision_2v": 0.13909880930168353,
+              "recall_2v": 0.1702037351443124,
+              "fscore_2v": 0.14987028414468515
+            },
+            {
+              "object_id": "23d33707c6754821b5ac46ace21931a4",
+              "iou": 0.024159518517546955,
+              "precision_2v": 0.1332833103856756,
+              "recall_2v": 0.21958577951728636,
+              "fscore_2v": 0.16448563286205506
+            },
+            {
+              "object_id": "2fc6ca6bd69f445c8936d4b6c7bcebdd",
+              "iou": 0.05651519667718725,
+              "precision_2v": 0.331655618382071,
+              "recall_2v": 0.2937801239384898,
+              "fscore_2v": 0.31004210412102784
+            },
+            {
+              "object_id": "51484bb1747c41dbba24361b712646c2",
+              "iou": 0.02492854673479112,
+              "precision_2v": 0.33326233015395107,
+              "recall_2v": 0.18630881477069683,
+              "fscore_2v": 0.1778246194454836
+            },
+            {
+              "object_id": "808396527262458580afd6dcfefb394d",
+              "iou": 0.011913065306997102,
+              "precision_2v": 0.04480293888980886,
+              "recall_2v": 0.18675373134328357,
+              "fscore_2v": 0.06904681001918682
+            },
+            {
+              "object_id": "953cfd1a82174315add348b2fc263330",
+              "iou": 0.019166056728938657,
+              "precision_2v": 0.21859963274393965,
+              "recall_2v": 0.08971291866028708,
+              "fscore_2v": 0.12010369773997243
+            },
+            {
+              "object_id": "aaf0fb95a7794739a608760a2024378d",
+              "iou": 0.029958145159502583,
+              "precision_2v": 0.25029179132443274,
+              "recall_2v": 0.18042493160054718,
+              "fscore_2v": 0.19118330644415626
+            },
+            {
+              "object_id": "ad88605777f84f6babafc363ad9b75ed",
+              "iou": 0.046482492258992585,
+              "precision_2v": 0.47443143068895277,
+              "recall_2v": 0.21349789915966386,
+              "fscore_2v": 0.273311962195803
+            },
+            {
+              "object_id": "bbf465d5a3df487a8ba38477fafc12d5",
+              "iou": 0.028593393208863997,
+              "precision_2v": 0.5729163208685766,
+              "recall_2v": 0.12883838383838384,
+              "fscore_2v": 0.18186974859431634
+            },
+            {
+              "object_id": "d792e36c80784b53b987c84e304481a9",
+              "iou": 0.006307025505344232,
+              "precision_2v": 0.16274155009150923,
+              "recall_2v": 0.02457886676875957,
+              "fscore_2v": 0.04240687130751359
+            },
+            {
+              "object_id": "dc67a0ab13fe4e26bb8babeaeb4bf095",
+              "iou": 0.01502554250920764,
+              "precision_2v": 0.15964463055962513,
+              "recall_2v": 0.0910913900503456,
+              "fscore_2v": 0.11037179751874893
+            },
+            {
+              "object_id": "e32284322f1148a3924ea4bad4e8cd89",
+              "iou": 0.011448600950782926,
+              "precision_2v": 0.13794548085151798,
+              "recall_2v": 0.037970395079745645,
+              "fscore_2v": 0.059147434152934636
+            },
+            {
+              "object_id": "f1a289c083244cc5847faf6b5ce3a45c",
+              "iou": 0.02237927044780289,
+              "precision_2v": 0.08641000607217475,
+              "recall_2v": 0.3522260273972603,
+              "fscore_2v": 0.1359624050999592
+            }
+          ],
+          "mean_iou": 0.026045255097722358,
+          "mean_precision_2v": 0.21466651604069964,
+          "mean_recall_2v": 0.17267453370183297,
+          "mean_fscore_2v": 0.14936310077448647,
+          "object_iou_p10_order_statistic": 0.011448600950782926,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 0
+        },
+        "oracle_minus_constant": {
+          "per_object": [
+            {
+              "object_id": "02b06fd2e66a478d9bf5d9870674bb14",
+              "fscore_difference": 0.5059966606918183,
+              "iou_difference": 0.11429503049681092
+            },
+            {
+              "object_id": "09a2330ce85d4f2fbb67e2134b9fb4b4",
+              "fscore_difference": 0.7338136872220562,
+              "iou_difference": 0.2619645347753819
+            },
+            {
+              "object_id": "14791e88b5d54b84a2db685a70c28e45",
+              "fscore_difference": 0.8789990508259928,
+              "iou_difference": 0.9561622312752149
+            },
+            {
+              "object_id": "1baceeb8776c464fa61080f4d385cc91",
+              "fscore_difference": 0.7477300925871376,
+              "iou_difference": 0.2687065416903774
+            },
+            {
+              "object_id": "23d33707c6754821b5ac46ace21931a4",
+              "fscore_difference": 0.21514712242365178,
+              "iou_difference": 0.034607775654972917
+            },
+            {
+              "object_id": "2fc6ca6bd69f445c8936d4b6c7bcebdd",
+              "fscore_difference": 0.6370722363779774,
+              "iou_difference": 0.2244607589271731
+            },
+            {
+              "object_id": "51484bb1747c41dbba24361b712646c2",
+              "fscore_difference": 0.1668719396106429,
+              "iou_difference": 0.02479063374363759
+            },
+            {
+              "object_id": "808396527262458580afd6dcfefb394d",
+              "fscore_difference": 0.20560605159073142,
+              "iou_difference": 0.03247154431548773
+            },
+            {
+              "object_id": "953cfd1a82174315add348b2fc263330",
+              "fscore_difference": 0.40451391768455236,
+              "iou_difference": 0.0721237513549345
+            },
+            {
+              "object_id": "aaf0fb95a7794739a608760a2024378d",
+              "fscore_difference": 0.5219441379686353,
+              "iou_difference": 0.1449445174572418
+            },
+            {
+              "object_id": "ad88605777f84f6babafc363ad9b75ed",
+              "fscore_difference": 0.5937579680805545,
+              "iou_difference": 0.13120707153301
+            },
+            {
+              "object_id": "bbf465d5a3df487a8ba38477fafc12d5",
+              "fscore_difference": 0.5320141869508174,
+              "iou_difference": 0.2172007399626825
+            },
+            {
+              "object_id": "d792e36c80784b53b987c84e304481a9",
+              "fscore_difference": 0.7392389873801436,
+              "iou_difference": 0.23059886225736084
+            },
+            {
+              "object_id": "dc67a0ab13fe4e26bb8babeaeb4bf095",
+              "fscore_difference": 0.5054690049190153,
+              "iou_difference": 0.08670062067058978
+            },
+            {
+              "object_id": "e32284322f1148a3924ea4bad4e8cd89",
+              "fscore_difference": 0.9408525658470653,
+              "iou_difference": 0.9246874740297348
+            },
+            {
+              "object_id": "f1a289c083244cc5847faf6b5ce3a45c",
+              "fscore_difference": 0.7660204484565308,
+              "iou_difference": 0.2231531858036537
+            }
+          ],
+          "mean_fscore_difference": 0.5684405036635827,
+          "mean_iou_difference": 0.24675470462176652,
+          "objects_positive_fscore_difference": 16
+        },
+        "oracle_minus_oracle_wrong": {
+          "per_object": [
+            {
+              "object_id": "02b06fd2e66a478d9bf5d9870674bb14",
+              "fscore_difference": 0.34795489556138487,
+              "iou_difference": 0.08172298693392543
+            },
+            {
+              "object_id": "09a2330ce85d4f2fbb67e2134b9fb4b4",
+              "fscore_difference": 0.7976323061729498,
+              "iou_difference": 0.28031882658611595
+            },
+            {
+              "object_id": "14791e88b5d54b84a2db685a70c28e45",
+              "fscore_difference": 0.9752670249627426,
+              "iou_difference": 0.9938182597119
+            },
+            {
+              "object_id": "1baceeb8776c464fa61080f4d385cc91",
+              "fscore_difference": 0.8538891134144833,
+              "iou_difference": 0.28658110456996283
+            },
+            {
+              "object_id": "23d33707c6754821b5ac46ace21931a4",
+              "fscore_difference": 0.03970149417042412,
+              "iou_difference": -0.022504584349630444
+            },
+            {
+              "object_id": "2fc6ca6bd69f445c8936d4b6c7bcebdd",
+              "fscore_difference": 0.8711918790268592,
+              "iou_difference": 0.2685329285845807
+            },
+            {
+              "object_id": "51484bb1747c41dbba24361b712646c2",
+              "fscore_difference": 0.05728444544781064,
+              "iou_difference": -0.013551625493193435
+            },
+            {
+              "object_id": "808396527262458580afd6dcfefb394d",
+              "fscore_difference": 0.18276185884193763,
+              "iou_difference": 0.031120499226980992
+            },
+            {
+              "object_id": "953cfd1a82174315add348b2fc263330",
+              "fscore_difference": 0.42596498282464523,
+              "iou_difference": 0.07710252301885723
+            },
+            {
+              "object_id": "aaf0fb95a7794739a608760a2024378d",
+              "fscore_difference": 0.5902836127217557,
+              "iou_difference": 0.16085860690305642
+            },
+            {
+              "object_id": "ad88605777f84f6babafc363ad9b75ed",
+              "fscore_difference": 0.457281643184465,
+              "iou_difference": 0.12016009846765652
+            },
+            {
+              "object_id": "bbf465d5a3df487a8ba38477fafc12d5",
+              "fscore_difference": 0.19010142325129797,
+              "iou_difference": 0.14197822163587692
+            },
+            {
+              "object_id": "d792e36c80784b53b987c84e304481a9",
+              "fscore_difference": 0.5371523847511774,
+              "iou_difference": 0.18282411233834622
+            },
+            {
+              "object_id": "dc67a0ab13fe4e26bb8babeaeb4bf095",
+              "fscore_difference": 0.30345359656518117,
+              "iou_difference": 0.04623942933525141
+            },
+            {
+              "object_id": "e32284322f1148a3924ea4bad4e8cd89",
+              "fscore_difference": 0.9862600216098069,
+              "iou_difference": 0.9339952780654948
+            },
+            {
+              "object_id": "f1a289c083244cc5847faf6b5ce3a45c",
+              "fscore_difference": 0.8937196102334857,
+              "iou_difference": 0.24434414919291267
+            }
+          ],
+          "mean_fscore_difference": 0.5318687682962755,
+          "mean_iou_difference": 0.23834630092050588,
+          "objects_positive_fscore_difference": 16
+        }
+      }
+    },
+    "val": {
+      "present": {
+        "oracle": {
+          "objects": [
+            {
+              "object_id": "0088cc8d1ae746038f091c8e459e2f38",
+              "iou": 0.09682922130963469,
+              "precision_2v": 0.5471562225254472,
+              "recall_2v": 0.4817996155694378,
+              "fscore_2v": 0.510562856054035
+            },
+            {
+              "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+              "iou": 0.23880048783265578,
+              "precision_2v": 0.7307124584793235,
+              "recall_2v": 0.769464892412231,
+              "fscore_2v": 0.7481700364786836
+            },
+            {
+              "object_id": "0f396dc864c74ed6a308dcb1610d78e5",
+              "iou": 0.13934148759075074,
+              "precision_2v": 0.5637801849730639,
+              "recall_2v": 0.5031394156842645,
+              "fscore_2v": 0.516232421322031
+            },
+            {
+              "object_id": "1f4fa3b947474d4ead7d9d054a8032cd",
+              "iou": 0.06997062998403253,
+              "precision_2v": 0.342451045902161,
+              "recall_2v": 0.4408844275637548,
+              "fscore_2v": 0.37992553443049687
+            },
+            {
+              "object_id": "21528b1fba3a47d885bec7080ef160cd",
+              "iou": 0.24258535444519586,
+              "precision_2v": 0.45534396621605666,
+              "recall_2v": 0.5287341772151899,
+              "fscore_2v": 0.48850991886769773
+            },
+            {
+              "object_id": "364e260a1bf942e9b3cde9874621cd13",
+              "iou": 0.31380179063614416,
+              "precision_2v": 0.8633180250703101,
+              "recall_2v": 0.8460697465799507,
+              "fscore_2v": 0.8528352073727485
+            },
+            {
+              "object_id": "502292cc39c6485c8708456fdcc63be1",
+              "iou": 0.2075898277653808,
+              "precision_2v": 0.6727545462385913,
+              "recall_2v": 0.6030360320284698,
+              "fscore_2v": 0.633814919730522
+            },
+            {
+              "object_id": "6141e7ddae4e4e67bfc522b586c0c551",
+              "iou": 0.1458619713293151,
+              "precision_2v": 0.7070146962235092,
+              "recall_2v": 0.5617105402823479,
+              "fscore_2v": 0.6086481701568958
+            },
+            {
+              "object_id": "6f05bcf4cd4c42218cb7abca0d1e492f",
+              "iou": 0.2364530301378491,
+              "precision_2v": 0.6924318732112755,
+              "recall_2v": 0.7449311706328033,
+              "fscore_2v": 0.7166223064304087
+            },
+            {
+              "object_id": "8c14c80723ea4991b2f746a708386caf",
+              "iou": 0.16967726278525497,
+              "precision_2v": 0.741943922027393,
+              "recall_2v": 0.667956513727658,
+              "fscore_2v": 0.6958463349271562
+            },
+            {
+              "object_id": "a05fa1e91eda4d409a8ebb59b0f4bd9e",
+              "iou": 0.058615649549908756,
+              "precision_2v": 0.31672443236698267,
+              "recall_2v": 0.4039970930232558,
+              "fscore_2v": 0.3531227995771119
+            },
+            {
+              "object_id": "a807e2119b24443da16a2e28529cfa26",
+              "iou": 0.37544606187132357,
+              "precision_2v": 0.9951657152884567,
+              "recall_2v": 0.9723495836062506,
+              "fscore_2v": 0.9835392447342513
+            },
+            {
+              "object_id": "ac91e19b6e584af68f0da3c7924cd7b3",
+              "iou": 0.1289129968506636,
+              "precision_2v": 0.701174028374696,
+              "recall_2v": 0.7526262626262626,
+              "fscore_2v": 0.7255467833536893
+            },
+            {
+              "object_id": "be8fef18842143d6b03732e6d01ff92e",
+              "iou": 0.2655387152913252,
+              "precision_2v": 0.8658170854948068,
+              "recall_2v": 0.7831562297209604,
+              "fscore_2v": 0.8221253918630682
+            },
+            {
+              "object_id": "beebcf86bb35455aaaa18b8de071daac",
+              "iou": 0.08939784774256687,
+              "precision_2v": 0.5161642965106841,
+              "recall_2v": 0.49038231064237775,
+              "fscore_2v": 0.5027219244577217
+            },
+            {
+              "object_id": "f4e66b252b324dad84ba036a92b99f43",
+              "iou": 0.30143101331762945,
+              "precision_2v": 0.801078511541016,
+              "recall_2v": 0.7670369177935179,
+              "fscore_2v": 0.7832234771881009
+            }
+          ],
+          "mean_iou": 0.19251583427747695,
+          "mean_precision_2v": 0.6570644381527359,
+          "mean_recall_2v": 0.6448296830692958,
+          "mean_fscore_2v": 0.6450904579340386,
+          "object_iou_p10_order_statistic": 0.06997062998403253,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 1
+        },
+        "oracle_wrong": {
+          "objects": [
+            {
+              "object_id": "0088cc8d1ae746038f091c8e459e2f38",
+              "iou": 0.10080511409114903,
+              "precision_2v": 0.5496265975185316,
+              "recall_2v": 0.45242671792407496,
+              "fscore_2v": 0.4954193992072581
+            },
+            {
+              "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+              "iou": 0.034327062073933635,
+              "precision_2v": 0.39451583858691197,
+              "recall_2v": 0.4410036806342016,
+              "fscore_2v": 0.41516130120526856
+            },
+            {
+              "object_id": "0f396dc864c74ed6a308dcb1610d78e5",
+              "iou": 0.0985221389342711,
+              "precision_2v": 0.40215108988027837,
+              "recall_2v": 0.3503651973347002,
+              "fscore_2v": 0.36194684716749365
+            },
+            {
+              "object_id": "1f4fa3b947474d4ead7d9d054a8032cd",
+              "iou": 0.03328967675377418,
+              "precision_2v": 0.18737384840151097,
+              "recall_2v": 0.21465002712967987,
+              "fscore_2v": 0.1968272325337192
+            },
+            {
+              "object_id": "21528b1fba3a47d885bec7080ef160cd",
+              "iou": 0.0032991202346041057,
+              "precision_2v": 0.02418175945825144,
+              "recall_2v": 0.011772151898734177,
+              "fscore_2v": 0.015811227462708
+            },
+            {
+              "object_id": "364e260a1bf942e9b3cde9874621cd13",
+              "iou": 0.18300310608015033,
+              "precision_2v": 0.5857702783943629,
+              "recall_2v": 0.7967313298945953,
+              "fscore_2v": 0.6649312249345286
+            },
+            {
+              "object_id": "502292cc39c6485c8708456fdcc63be1",
+              "iou": 0.025452231308839904,
+              "precision_2v": 0.09692168576099022,
+              "recall_2v": 0.18038256227758007,
+              "fscore_2v": 0.12318134962390577
+            },
+            {
+              "object_id": "6141e7ddae4e4e67bfc522b586c0c551",
+              "iou": 0.11136062612012947,
+              "precision_2v": 0.6045221585727133,
+              "recall_2v": 0.5368989491561406,
+              "fscore_2v": 0.567217300658754
+            },
+            {
+              "object_id": "6f05bcf4cd4c42218cb7abca0d1e492f",
+              "iou": 0.09232925227210069,
+              "precision_2v": 0.3466053278032133,
+              "recall_2v": 0.4311706328033294,
+              "fscore_2v": 0.3837690934620952
+            },
+            {
+              "object_id": "8c14c80723ea4991b2f746a708386caf",
+              "iou": 0.009170592331717778,
+              "precision_2v": 0.20874084283838482,
+              "recall_2v": 0.0615210982126405,
+              "fscore_2v": 0.09475852742284281
+            },
+            {
+              "object_id": "a05fa1e91eda4d409a8ebb59b0f4bd9e",
+              "iou": 0.1035860653300752,
+              "precision_2v": 0.4958254569816012,
+              "recall_2v": 0.5466085271317829,
+              "fscore_2v": 0.5163451922022976
+            },
+            {
+              "object_id": "a807e2119b24443da16a2e28529cfa26",
+              "iou": 0.3362529528937448,
+              "precision_2v": 0.9692642860890727,
+              "recall_2v": 0.943599700570787,
+              "fscore_2v": 0.9560438193587808
+            },
+            {
+              "object_id": "ac91e19b6e584af68f0da3c7924cd7b3",
+              "iou": 0.05735670244550681,
+              "precision_2v": 0.3611548468389652,
+              "recall_2v": 0.4746801346801347,
+              "fscore_2v": 0.4031265151695448
+            },
+            {
+              "object_id": "be8fef18842143d6b03732e6d01ff92e",
+              "iou": 0.11711946612986832,
+              "precision_2v": 0.4056453552807413,
+              "recall_2v": 0.3990509409474367,
+              "fscore_2v": 0.3891013147220157
+            },
+            {
+              "object_id": "beebcf86bb35455aaaa18b8de071daac",
+              "iou": 0.06341956147719714,
+              "precision_2v": 0.34105517510672556,
+              "recall_2v": 0.317563518696069,
+              "fscore_2v": 0.3281847194496504
+            },
+            {
+              "object_id": "f4e66b252b324dad84ba036a92b99f43",
+              "iou": 0.28308314109405264,
+              "precision_2v": 0.8649175004525353,
+              "recall_2v": 0.81677935179223,
+              "fscore_2v": 0.8384348369294468
+            }
+          ],
+          "mean_iou": 0.1032735505981947,
+          "mean_precision_2v": 0.4273920029977994,
+          "mean_recall_2v": 0.4359502825677573,
+          "mean_fscore_2v": 0.42189124384439436,
+          "object_iou_p10_order_statistic": 0.009170592331717778,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 0
+        },
+        "constant": {
+          "objects": [
+            {
+              "object_id": "0088cc8d1ae746038f091c8e459e2f38",
+              "iou": 0.10190581525171824,
+              "precision_2v": 0.5636443547956786,
+              "recall_2v": 0.5168789043728976,
+              "fscore_2v": 0.5328816536035828
+            },
+            {
+              "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+              "iou": 0.15556586838425565,
+              "precision_2v": 0.6277776971737794,
+              "recall_2v": 0.712202718006795,
+              "fscore_2v": 0.6620454525063622
+            },
+            {
+              "object_id": "0f396dc864c74ed6a308dcb1610d78e5",
+              "iou": 0.10442184123837697,
+              "precision_2v": 0.4583285499738692,
+              "recall_2v": 0.4080599692465402,
+              "fscore_2v": 0.4246256932540689
+            },
+            {
+              "object_id": "1f4fa3b947474d4ead7d9d054a8032cd",
+              "iou": 0.03968258140255001,
+              "precision_2v": 0.2519947383377289,
+              "recall_2v": 0.21172002170374388,
+              "fscore_2v": 0.229796158180894
+            },
+            {
+              "object_id": "21528b1fba3a47d885bec7080ef160cd",
+              "iou": 0.12098362723227048,
+              "precision_2v": 0.2156990650326254,
+              "recall_2v": 0.21746835443037976,
+              "fscore_2v": 0.21614680529922792
+            },
+            {
+              "object_id": "364e260a1bf942e9b3cde9874621cd13",
+              "iou": 0.26413171763206705,
+              "precision_2v": 0.8174099017758041,
+              "recall_2v": 0.7515418255214174,
+              "fscore_2v": 0.7813517580849948
+            },
+            {
+              "object_id": "502292cc39c6485c8708456fdcc63be1",
+              "iou": 0.0942273650169363,
+              "precision_2v": 0.34315405119662645,
+              "recall_2v": 0.35097864768683273,
+              "fscore_2v": 0.3426733894647915
+            },
+            {
+              "object_id": "6141e7ddae4e4e67bfc522b586c0c551",
+              "iou": 0.11075636660061283,
+              "precision_2v": 0.6559953830311329,
+              "recall_2v": 0.529999469270778,
+              "fscore_2v": 0.5659969154022506
+            },
+            {
+              "object_id": "6f05bcf4cd4c42218cb7abca0d1e492f",
+              "iou": 0.15546254228881734,
+              "precision_2v": 0.5307038226166905,
+              "recall_2v": 0.5929730018141074,
+              "fscore_2v": 0.5589156500627731
+            },
+            {
+              "object_id": "8c14c80723ea4991b2f746a708386caf",
+              "iou": 0.0832776398855925,
+              "precision_2v": 0.5297168873604737,
+              "recall_2v": 0.3767850562004791,
+              "fscore_2v": 0.42036370550479857
+            },
+            {
+              "object_id": "a05fa1e91eda4d409a8ebb59b0f4bd9e",
+              "iou": 0.04443670440969558,
+              "precision_2v": 0.2816091732841171,
+              "recall_2v": 0.35484496124031006,
+              "fscore_2v": 0.31083879724005703
+            },
+            {
+              "object_id": "a807e2119b24443da16a2e28529cfa26",
+              "iou": 0.3364132239931549,
+              "precision_2v": 0.9654458232988784,
+              "recall_2v": 0.9459857771123795,
+              "fscore_2v": 0.9554071935970921
+            },
+            {
+              "object_id": "ac91e19b6e584af68f0da3c7924cd7b3",
+              "iou": 0.08044108775592573,
+              "precision_2v": 0.4416204337587039,
+              "recall_2v": 0.40094276094276093,
+              "fscore_2v": 0.40695332690132746
+            },
+            {
+              "object_id": "be8fef18842143d6b03732e6d01ff92e",
+              "iou": 0.10267656250548379,
+              "precision_2v": 0.41212528245634716,
+              "recall_2v": 0.3838416612589228,
+              "fscore_2v": 0.38859108637341655
+            },
+            {
+              "object_id": "beebcf86bb35455aaaa18b8de071daac",
+              "iou": 0.09030869907867789,
+              "precision_2v": 0.4976085065039645,
+              "recall_2v": 0.4802552732502397,
+              "fscore_2v": 0.4883846540850677
+            },
+            {
+              "object_id": "f4e66b252b324dad84ba036a92b99f43",
+              "iou": 0.2778067446260867,
+              "precision_2v": 0.6860913817835333,
+              "recall_2v": 0.6463565142734493,
+              "fscore_2v": 0.6648693047884228
+            }
+          ],
+          "mean_iou": 0.13515614920638888,
+          "mean_precision_2v": 0.5174328157737471,
+          "mean_recall_2v": 0.4925521822707521,
+          "mean_fscore_2v": 0.4968650965218205,
+          "object_iou_p10_order_statistic": 0.04443670440969558,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 0
+        },
+        "oracle_minus_constant": {
+          "per_object": [
+            {
+              "object_id": "0088cc8d1ae746038f091c8e459e2f38",
+              "fscore_difference": -0.022318797549547797,
+              "iou_difference": -0.005076593942083554
+            },
+            {
+              "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+              "fscore_difference": 0.08612458397232148,
+              "iou_difference": 0.08323461944840013
+            },
+            {
+              "object_id": "0f396dc864c74ed6a308dcb1610d78e5",
+              "fscore_difference": 0.09160672806796205,
+              "iou_difference": 0.03491964635237377
+            },
+            {
+              "object_id": "1f4fa3b947474d4ead7d9d054a8032cd",
+              "fscore_difference": 0.15012937624960287,
+              "iou_difference": 0.03028804858148252
+            },
+            {
+              "object_id": "21528b1fba3a47d885bec7080ef160cd",
+              "fscore_difference": 0.2723631135684698,
+              "iou_difference": 0.12160172721292538
+            },
+            {
+              "object_id": "364e260a1bf942e9b3cde9874621cd13",
+              "fscore_difference": 0.07148344928775374,
+              "iou_difference": 0.04967007300407711
+            },
+            {
+              "object_id": "502292cc39c6485c8708456fdcc63be1",
+              "fscore_difference": 0.2911415302657305,
+              "iou_difference": 0.1133624627484445
+            },
+            {
+              "object_id": "6141e7ddae4e4e67bfc522b586c0c551",
+              "fscore_difference": 0.04265125475464515,
+              "iou_difference": 0.03510560472870228
+            },
+            {
+              "object_id": "6f05bcf4cd4c42218cb7abca0d1e492f",
+              "fscore_difference": 0.1577066563676356,
+              "iou_difference": 0.08099048784903176
+            },
+            {
+              "object_id": "8c14c80723ea4991b2f746a708386caf",
+              "fscore_difference": 0.2754826294223576,
+              "iou_difference": 0.08639962289966246
+            },
+            {
+              "object_id": "a05fa1e91eda4d409a8ebb59b0f4bd9e",
+              "fscore_difference": 0.04228400233705487,
+              "iou_difference": 0.01417894514021318
+            },
+            {
+              "object_id": "a807e2119b24443da16a2e28529cfa26",
+              "fscore_difference": 0.02813205113715911,
+              "iou_difference": 0.03903283787816869
+            },
+            {
+              "object_id": "ac91e19b6e584af68f0da3c7924cd7b3",
+              "fscore_difference": 0.3185934564523618,
+              "iou_difference": 0.048471909094737864
+            },
+            {
+              "object_id": "be8fef18842143d6b03732e6d01ff92e",
+              "fscore_difference": 0.43353430548965166,
+              "iou_difference": 0.16286215278584143
+            },
+            {
+              "object_id": "beebcf86bb35455aaaa18b8de071daac",
+              "fscore_difference": 0.014337270372653976,
+              "iou_difference": -0.0009108513361110182
+            },
+            {
+              "object_id": "f4e66b252b324dad84ba036a92b99f43",
+              "fscore_difference": 0.11835417239967816,
+              "iou_difference": 0.02362426869154277
+            }
+          ],
+          "mean_fscore_difference": 0.14822536141221815,
+          "mean_iou_difference": 0.05735968507108808,
+          "objects_positive_fscore_difference": 15
+        },
+        "oracle_minus_oracle_wrong": {
+          "per_object": [
+            {
+              "object_id": "0088cc8d1ae746038f091c8e459e2f38",
+              "fscore_difference": 0.01514345684677687,
+              "iou_difference": -0.003975892781514348
+            },
+            {
+              "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+              "fscore_difference": 0.33300873527341507,
+              "iou_difference": 0.20447342575872215
+            },
+            {
+              "object_id": "0f396dc864c74ed6a308dcb1610d78e5",
+              "fscore_difference": 0.1542855741545373,
+              "iou_difference": 0.04081934865647964
+            },
+            {
+              "object_id": "1f4fa3b947474d4ead7d9d054a8032cd",
+              "fscore_difference": 0.18309830189677767,
+              "iou_difference": 0.03668095323025835
+            },
+            {
+              "object_id": "21528b1fba3a47d885bec7080ef160cd",
+              "fscore_difference": 0.4726986914049897,
+              "iou_difference": 0.23928623421059175
+            },
+            {
+              "object_id": "364e260a1bf942e9b3cde9874621cd13",
+              "fscore_difference": 0.18790398243821993,
+              "iou_difference": 0.13079868455599383
+            },
+            {
+              "object_id": "502292cc39c6485c8708456fdcc63be1",
+              "fscore_difference": 0.5106335701066161,
+              "iou_difference": 0.18213759645654087
+            },
+            {
+              "object_id": "6141e7ddae4e4e67bfc522b586c0c551",
+              "fscore_difference": 0.04143086949814179,
+              "iou_difference": 0.034501345209185644
+            },
+            {
+              "object_id": "6f05bcf4cd4c42218cb7abca0d1e492f",
+              "fscore_difference": 0.3328532129683135,
+              "iou_difference": 0.14412377786574843
+            },
+            {
+              "object_id": "8c14c80723ea4991b2f746a708386caf",
+              "fscore_difference": 0.6010878075043133,
+              "iou_difference": 0.1605066704535372
+            },
+            {
+              "object_id": "a05fa1e91eda4d409a8ebb59b0f4bd9e",
+              "fscore_difference": -0.16322239262518567,
+              "iou_difference": -0.04497041578016644
+            },
+            {
+              "object_id": "a807e2119b24443da16a2e28529cfa26",
+              "fscore_difference": 0.02749542537547045,
+              "iou_difference": 0.03919310897757877
+            },
+            {
+              "object_id": "ac91e19b6e584af68f0da3c7924cd7b3",
+              "fscore_difference": 0.3224202681841445,
+              "iou_difference": 0.07155629440515679
+            },
+            {
+              "object_id": "be8fef18842143d6b03732e6d01ff92e",
+              "fscore_difference": 0.4330240771410525,
+              "iou_difference": 0.1484192491614569
+            },
+            {
+              "object_id": "beebcf86bb35455aaaa18b8de071daac",
+              "fscore_difference": 0.1745372050080713,
+              "iou_difference": 0.02597828626536973
+            },
+            {
+              "object_id": "f4e66b252b324dad84ba036a92b99f43",
+              "fscore_difference": -0.05521135974134583,
+              "iou_difference": 0.01834787222357681
+            }
+          ],
+          "mean_fscore_difference": 0.22319921408964427,
+          "mean_iou_difference": 0.08924228367928226,
+          "objects_positive_fscore_difference": 14
+        }
+      },
+      "zero": {
+        "oracle": {
+          "objects": [
+            {
+              "object_id": "0088cc8d1ae746038f091c8e459e2f38",
+              "iou": 0.07351627016085566,
+              "precision_2v": 0.37452811284639165,
+              "recall_2v": 0.3687830370014416,
+              "fscore_2v": 0.37084485279608703
+            },
+            {
+              "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+              "iou": 0.0900514023120108,
+              "precision_2v": 0.4783119642885745,
+              "recall_2v": 0.6578779728199321,
+              "fscore_2v": 0.5438730323972567
+            },
+            {
+              "object_id": "0f396dc864c74ed6a308dcb1610d78e5",
+              "iou": 0.06643522216593416,
+              "precision_2v": 0.3365062402167061,
+              "recall_2v": 0.35818170169144026,
+              "fscore_2v": 0.3433885001557788
+            },
+            {
+              "object_id": "1f4fa3b947474d4ead7d9d054a8032cd",
+              "iou": 0.03914336536846202,
+              "precision_2v": 0.17994411983701758,
+              "recall_2v": 0.2851871947911015,
+              "fscore_2v": 0.2199724545450556
+            },
+            {
+              "object_id": "21528b1fba3a47d885bec7080ef160cd",
+              "iou": 0.09580007197576151,
+              "precision_2v": 0.2803682531784467,
+              "recall_2v": 0.6168354430379747,
+              "fscore_2v": 0.3767066677589649
+            },
+            {
+              "object_id": "364e260a1bf942e9b3cde9874621cd13",
+              "iou": 0.09447011423033913,
+              "precision_2v": 0.39490000372171263,
+              "recall_2v": 0.5867066606862525,
+              "fscore_2v": 0.47167214180045347
+            },
+            {
+              "object_id": "502292cc39c6485c8708456fdcc63be1",
+              "iou": 0.23730382133049005,
+              "precision_2v": 0.7932564894420377,
+              "recall_2v": 0.7854203736654803,
+              "fscore_2v": 0.7836661049303707
+            },
+            {
+              "object_id": "6141e7ddae4e4e67bfc522b586c0c551",
+              "iou": 0.09643656033852278,
+              "precision_2v": 0.5748130315924381,
+              "recall_2v": 0.45560450058380214,
+              "fscore_2v": 0.49850756891295017
+            },
+            {
+              "object_id": "6f05bcf4cd4c42218cb7abca0d1e492f",
+              "iou": 0.07873463091558554,
+              "precision_2v": 0.45467349867714607,
+              "recall_2v": 0.506882936719667,
+              "fscore_2v": 0.47785341687104943
+            },
+            {
+              "object_id": "8c14c80723ea4991b2f746a708386caf",
+              "iou": 0.14730979468902103,
+              "precision_2v": 0.810316867950931,
+              "recall_2v": 0.7477197346600332,
+              "fscore_2v": 0.7743258496441596
+            },
+            {
+              "object_id": "a05fa1e91eda4d409a8ebb59b0f4bd9e",
+              "iou": 0.07345361402153355,
+              "precision_2v": 0.47407658608176495,
+              "recall_2v": 0.5979893410852712,
+              "fscore_2v": 0.5227510838880487
+            },
+            {
+              "object_id": "a807e2119b24443da16a2e28529cfa26",
+              "iou": 0.25562619347148363,
+              "precision_2v": 0.8567418235367291,
+              "recall_2v": 0.8832226069055862,
+              "fscore_2v": 0.868369979310142
+            },
+            {
+              "object_id": "ac91e19b6e584af68f0da3c7924cd7b3",
+              "iou": 0.11249771988321237,
+              "precision_2v": 0.5651953861218378,
+              "recall_2v": 0.5018181818181818,
+              "fscore_2v": 0.5300703885013803
+            },
+            {
+              "object_id": "be8fef18842143d6b03732e6d01ff92e",
+              "iou": 0.11028366748550147,
+              "precision_2v": 0.4687464918593762,
+              "recall_2v": 0.43812865022712527,
+              "fscore_2v": 0.44978277836320735
+            },
+            {
+              "object_id": "beebcf86bb35455aaaa18b8de071daac",
+              "iou": 0.07802812353083376,
+              "precision_2v": 0.4492067844394205,
+              "recall_2v": 0.3916886385426654,
+              "fscore_2v": 0.41765094813611303
+            },
+            {
+              "object_id": "f4e66b252b324dad84ba036a92b99f43",
+              "iou": 0.11396768579442351,
+              "precision_2v": 0.4451660067248857,
+              "recall_2v": 0.5117648637046577,
+              "fscore_2v": 0.47401307693498473
+            }
+          ],
+          "mean_iou": 0.11019114110462319,
+          "mean_precision_2v": 0.49604697878221354,
+          "mean_recall_2v": 0.5433632398712883,
+          "mean_fscore_2v": 0.5077155528091252,
+          "object_iou_p10_order_statistic": 0.06643522216593416,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 0
+        },
+        "oracle_wrong": {
+          "objects": [
+            {
+              "object_id": "0088cc8d1ae746038f091c8e459e2f38",
+              "iou": 0.04716808825497512,
+              "precision_2v": 0.24764027225154633,
+              "recall_2v": 0.2566524507448342,
+              "fscore_2v": 0.2508722175800043
+            },
+            {
+              "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+              "iou": 0.019323595926554193,
+              "precision_2v": 0.10625110994855502,
+              "recall_2v": 0.21188420158550397,
+              "fscore_2v": 0.1398896951800781
+            },
+            {
+              "object_id": "0f396dc864c74ed6a308dcb1610d78e5",
+              "iou": 0.014703532887412503,
+              "precision_2v": 0.1847445197825734,
+              "recall_2v": 0.06903511019989748,
+              "fscore_2v": 0.0984800949483723
+            },
+            {
+              "object_id": "1f4fa3b947474d4ead7d9d054a8032cd",
+              "iou": 0.02064455193473821,
+              "precision_2v": 0.08069836912805906,
+              "recall_2v": 0.19405860010851872,
+              "fscore_2v": 0.11357394656021047
+            },
+            {
+              "object_id": "21528b1fba3a47d885bec7080ef160cd",
+              "iou": 0.0038477684871400766,
+              "precision_2v": 0.01646973644876091,
+              "recall_2v": 0.06860759493670886,
+              "fscore_2v": 0.02654529838382786
+            },
+            {
+              "object_id": "364e260a1bf942e9b3cde9874621cd13",
+              "iou": 0.011835602087986048,
+              "precision_2v": 0.08434909877859792,
+              "recall_2v": 0.19309262166405022,
+              "fscore_2v": 0.11633325484671912
+            },
+            {
+              "object_id": "502292cc39c6485c8708456fdcc63be1",
+              "iou": 0.04194187984736852,
+              "precision_2v": 0.14378392419892871,
+              "recall_2v": 0.3543149466192171,
+              "fscore_2v": 0.20391411935764658
+            },
+            {
+              "object_id": "6141e7ddae4e4e67bfc522b586c0c551",
+              "iou": 0.020379974399852892,
+              "precision_2v": 0.2582252295274393,
+              "recall_2v": 0.07975533382868061,
+              "fscore_2v": 0.1200209779856291
+            },
+            {
+              "object_id": "6f05bcf4cd4c42218cb7abca0d1e492f",
+              "iou": 0.04160372253808241,
+              "precision_2v": 0.2945532370072028,
+              "recall_2v": 0.4328780279585957,
+              "fscore_2v": 0.349927364705048
+            },
+            {
+              "object_id": "8c14c80723ea4991b2f746a708386caf",
+              "iou": 0.026422085037040816,
+              "precision_2v": 0.38512754785644765,
+              "recall_2v": 0.14285056200479085,
+              "fscore_2v": 0.2064215000536736
+            },
+            {
+              "object_id": "a05fa1e91eda4d409a8ebb59b0f4bd9e",
+              "iou": 0.02928908756939757,
+              "precision_2v": 0.2265297068395979,
+              "recall_2v": 0.16058624031007754,
+              "fscore_2v": 0.18703914028867658
+            },
+            {
+              "object_id": "a807e2119b24443da16a2e28529cfa26",
+              "iou": 0.012708308213148493,
+              "precision_2v": 0.08083199814533071,
+              "recall_2v": 0.08271732010854309,
+              "fscore_2v": 0.08153708124171671
+            },
+            {
+              "object_id": "ac91e19b6e584af68f0da3c7924cd7b3",
+              "iou": 0.029014975861421977,
+              "precision_2v": 0.15165819118686819,
+              "recall_2v": 0.21181818181818182,
+              "fscore_2v": 0.17555286934837963
+            },
+            {
+              "object_id": "be8fef18842143d6b03732e6d01ff92e",
+              "iou": 0.011637083782104866,
+              "precision_2v": 0.07161410424100087,
+              "recall_2v": 0.07040882543802726,
+              "fscore_2v": 0.0698158884842941
+            },
+            {
+              "object_id": "beebcf86bb35455aaaa18b8de071daac",
+              "iou": 0.02548987122121755,
+              "precision_2v": 0.13863494418622707,
+              "recall_2v": 0.1371943911792905,
+              "fscore_2v": 0.1377387296803235
+            },
+            {
+              "object_id": "f4e66b252b324dad84ba036a92b99f43",
+              "iou": 0.061578831745228234,
+              "precision_2v": 0.3678862533449429,
+              "recall_2v": 0.23741682764541747,
+              "fscore_2v": 0.2875476731712807
+            }
+          ],
+          "mean_iou": 0.026099309987104344,
+          "mean_precision_2v": 0.1774373901795049,
+          "mean_recall_2v": 0.18145445225939597,
+          "mean_fscore_2v": 0.16032561573849255,
+          "object_iou_p10_order_statistic": 0.011637083782104866,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 0
+        },
+        "constant": {
+          "objects": [
+            {
+              "object_id": "0088cc8d1ae746038f091c8e459e2f38",
+              "iou": 0.015659413604510324,
+              "precision_2v": 0.12880559080289533,
+              "recall_2v": 0.09088178760211438,
+              "fscore_2v": 0.08483480489982069
+            },
+            {
+              "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+              "iou": 0.017628629009315423,
+              "precision_2v": 0.20199327731887043,
+              "recall_2v": 0.11944365798414497,
+              "fscore_2v": 0.14267037494067503
+            },
+            {
+              "object_id": "0f396dc864c74ed6a308dcb1610d78e5",
+              "iou": 0.02192857305088667,
+              "precision_2v": 0.15062863223467968,
+              "recall_2v": 0.14678370066632496,
+              "fscore_2v": 0.13358799852460895
+            },
+            {
+              "object_id": "1f4fa3b947474d4ead7d9d054a8032cd",
+              "iou": 0.01903213613097794,
+              "precision_2v": 0.12200990909330973,
+              "recall_2v": 0.13779164405860012,
+              "fscore_2v": 0.10420213760177642
+            },
+            {
+              "object_id": "21528b1fba3a47d885bec7080ef160cd",
+              "iou": 0.009896303147035827,
+              "precision_2v": 0.05264360886157673,
+              "recall_2v": 0.11139240506329115,
+              "fscore_2v": 0.06743138522469416
+            },
+            {
+              "object_id": "364e260a1bf942e9b3cde9874621cd13",
+              "iou": 0.04752821091974339,
+              "precision_2v": 0.29349179977553297,
+              "recall_2v": 0.2272090154743216,
+              "fscore_2v": 0.24616780022685997
+            },
+            {
+              "object_id": "502292cc39c6485c8708456fdcc63be1",
+              "iou": 0.016678065062700344,
+              "precision_2v": 0.06038630531982423,
+              "recall_2v": 0.18138345195729538,
+              "fscore_2v": 0.08677894730107673
+            },
+            {
+              "object_id": "6141e7ddae4e4e67bfc522b586c0c551",
+              "iou": 0.014420192149480609,
+              "precision_2v": 0.2044450753147894,
+              "recall_2v": 0.07466033329795138,
+              "fscore_2v": 0.09354323272438136
+            },
+            {
+              "object_id": "6f05bcf4cd4c42218cb7abca0d1e492f",
+              "iou": 0.017708076490872002,
+              "precision_2v": 0.14854966226076768,
+              "recall_2v": 0.14600896382456516,
+              "fscore_2v": 0.14050973469068886
+            },
+            {
+              "object_id": "8c14c80723ea4991b2f746a708386caf",
+              "iou": 0.018467001004915353,
+              "precision_2v": 0.2122262445658169,
+              "recall_2v": 0.09009351391192187,
+              "fscore_2v": 0.12245129510043026
+            },
+            {
+              "object_id": "a05fa1e91eda4d409a8ebb59b0f4bd9e",
+              "iou": 0.02336414684290998,
+              "precision_2v": 0.26663861021858515,
+              "recall_2v": 0.17192344961240308,
+              "fscore_2v": 0.16075179541213783
+            },
+            {
+              "object_id": "a807e2119b24443da16a2e28529cfa26",
+              "iou": 0.029736130718046188,
+              "precision_2v": 0.27585089571309546,
+              "recall_2v": 0.13025170768223074,
+              "fscore_2v": 0.1599373531437593
+            },
+            {
+              "object_id": "ac91e19b6e584af68f0da3c7924cd7b3",
+              "iou": 0.027102147965785462,
+              "precision_2v": 0.20874707398863743,
+              "recall_2v": 0.1859259259259259,
+              "fscore_2v": 0.19180394068961445
+            },
+            {
+              "object_id": "be8fef18842143d6b03732e6d01ff92e",
+              "iou": 0.03794811520570409,
+              "precision_2v": 0.24078647650524554,
+              "recall_2v": 0.2615590525632706,
+              "fscore_2v": 0.22662884815992201
+            },
+            {
+              "object_id": "beebcf86bb35455aaaa18b8de071daac",
+              "iou": 0.025429406653233108,
+              "precision_2v": 0.20151658768547268,
+              "recall_2v": 0.14444511025886864,
+              "fscore_2v": 0.15627896625202833
+            },
+            {
+              "object_id": "f4e66b252b324dad84ba036a92b99f43",
+              "iou": 0.046202890125445796,
+              "precision_2v": 0.2636340688435727,
+              "recall_2v": 0.19090738355870357,
+              "fscore_2v": 0.19826268105248632
+            }
+          ],
+          "mean_iou": 0.024295589880097657,
+          "mean_precision_2v": 0.189522113656417,
+          "mean_recall_2v": 0.15066631896512084,
+          "mean_fscore_2v": 0.14474008099656005,
+          "object_iou_p10_order_statistic": 0.014420192149480609,
+          "raw_endpoint_met": false,
+          "objects_95_precision_and_recall": 0
+        },
+        "oracle_minus_constant": {
+          "per_object": [
+            {
+              "object_id": "0088cc8d1ae746038f091c8e459e2f38",
+              "fscore_difference": 0.28601004789626633,
+              "iou_difference": 0.05785685655634533
+            },
+            {
+              "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+              "fscore_difference": 0.4012026574565817,
+              "iou_difference": 0.07242277330269536
+            },
+            {
+              "object_id": "0f396dc864c74ed6a308dcb1610d78e5",
+              "fscore_difference": 0.20980050163116987,
+              "iou_difference": 0.04450664911504749
+            },
+            {
+              "object_id": "1f4fa3b947474d4ead7d9d054a8032cd",
+              "fscore_difference": 0.11577031694327918,
+              "iou_difference": 0.02011122923748408
+            },
+            {
+              "object_id": "21528b1fba3a47d885bec7080ef160cd",
+              "fscore_difference": 0.3092752825342707,
+              "iou_difference": 0.08590376882872569
+            },
+            {
+              "object_id": "364e260a1bf942e9b3cde9874621cd13",
+              "fscore_difference": 0.2255043415735935,
+              "iou_difference": 0.046941903310595744
+            },
+            {
+              "object_id": "502292cc39c6485c8708456fdcc63be1",
+              "fscore_difference": 0.696887157629294,
+              "iou_difference": 0.2206257562677897
+            },
+            {
+              "object_id": "6141e7ddae4e4e67bfc522b586c0c551",
+              "fscore_difference": 0.4049643361885688,
+              "iou_difference": 0.08201636818904218
+            },
+            {
+              "object_id": "6f05bcf4cd4c42218cb7abca0d1e492f",
+              "fscore_difference": 0.3373436821803606,
+              "iou_difference": 0.06102655442471354
+            },
+            {
+              "object_id": "8c14c80723ea4991b2f746a708386caf",
+              "fscore_difference": 0.6518745545437293,
+              "iou_difference": 0.12884279368410567
+            },
+            {
+              "object_id": "a05fa1e91eda4d409a8ebb59b0f4bd9e",
+              "fscore_difference": 0.3619992884759109,
+              "iou_difference": 0.05008946717862357
+            },
+            {
+              "object_id": "a807e2119b24443da16a2e28529cfa26",
+              "fscore_difference": 0.7084326261663827,
+              "iou_difference": 0.22589006275343745
+            },
+            {
+              "object_id": "ac91e19b6e584af68f0da3c7924cd7b3",
+              "fscore_difference": 0.33826644781176585,
+              "iou_difference": 0.08539557191742692
+            },
+            {
+              "object_id": "be8fef18842143d6b03732e6d01ff92e",
+              "fscore_difference": 0.22315393020328533,
+              "iou_difference": 0.07233555227979738
+            },
+            {
+              "object_id": "beebcf86bb35455aaaa18b8de071daac",
+              "fscore_difference": 0.2613719818840847,
+              "iou_difference": 0.05259871687760065
+            },
+            {
+              "object_id": "f4e66b252b324dad84ba036a92b99f43",
+              "fscore_difference": 0.2757503958824984,
+              "iou_difference": 0.06776479566897772
+            }
+          ],
+          "mean_fscore_difference": 0.3629754718125651,
+          "mean_iou_difference": 0.08589555122452552,
+          "objects_positive_fscore_difference": 16
+        },
+        "oracle_minus_oracle_wrong": {
+          "per_object": [
+            {
+              "object_id": "0088cc8d1ae746038f091c8e459e2f38",
+              "fscore_difference": 0.11997263521608276,
+              "iou_difference": 0.026348181905880536
+            },
+            {
+              "object_id": "0838b73f246f4768aa0671e7b2ba7c30",
+              "fscore_difference": 0.4039833372171786,
+              "iou_difference": 0.0707278063854566
+            },
+            {
+              "object_id": "0f396dc864c74ed6a308dcb1610d78e5",
+              "fscore_difference": 0.24490840520740653,
+              "iou_difference": 0.051731689278521654
+            },
+            {
+              "object_id": "1f4fa3b947474d4ead7d9d054a8032cd",
+              "fscore_difference": 0.10639850798484513,
+              "iou_difference": 0.018498813433723806
+            },
+            {
+              "object_id": "21528b1fba3a47d885bec7080ef160cd",
+              "fscore_difference": 0.35016136937513703,
+              "iou_difference": 0.09195230348862143
+            },
+            {
+              "object_id": "364e260a1bf942e9b3cde9874621cd13",
+              "fscore_difference": 0.35533888695373433,
+              "iou_difference": 0.08263451214235308
+            },
+            {
+              "object_id": "502292cc39c6485c8708456fdcc63be1",
+              "fscore_difference": 0.5797519855727241,
+              "iou_difference": 0.19536194148312153
+            },
+            {
+              "object_id": "6141e7ddae4e4e67bfc522b586c0c551",
+              "fscore_difference": 0.37848659092732106,
+              "iou_difference": 0.07605658593866989
+            },
+            {
+              "object_id": "6f05bcf4cd4c42218cb7abca0d1e492f",
+              "fscore_difference": 0.12792605216600145,
+              "iou_difference": 0.03713090837750313
+            },
+            {
+              "object_id": "8c14c80723ea4991b2f746a708386caf",
+              "fscore_difference": 0.5679043495904861,
+              "iou_difference": 0.12088770965198022
+            },
+            {
+              "object_id": "a05fa1e91eda4d409a8ebb59b0f4bd9e",
+              "fscore_difference": 0.3357119435993721,
+              "iou_difference": 0.044164526452135984
+            },
+            {
+              "object_id": "a807e2119b24443da16a2e28529cfa26",
+              "fscore_difference": 0.7868328980684254,
+              "iou_difference": 0.24291788525833513
+            },
+            {
+              "object_id": "ac91e19b6e584af68f0da3c7924cd7b3",
+              "fscore_difference": 0.35451751915300067,
+              "iou_difference": 0.0834827440217904
+            },
+            {
+              "object_id": "be8fef18842143d6b03732e6d01ff92e",
+              "fscore_difference": 0.37996688987891325,
+              "iou_difference": 0.0986465837033966
+            },
+            {
+              "object_id": "beebcf86bb35455aaaa18b8de071daac",
+              "fscore_difference": 0.2799122184557895,
+              "iou_difference": 0.05253825230961621
+            },
+            {
+              "object_id": "f4e66b252b324dad84ba036a92b99f43",
+              "fscore_difference": 0.18646540376370402,
+              "iou_difference": 0.05238885404919528
+            }
+          ],
+          "mean_fscore_difference": 0.34738993707063265,
+          "mean_iou_difference": 0.08409183111751885,
+          "objects_positive_fscore_difference": 16
+        }
+      }
+    }
+  },
+  "scope": "Raw pose-sensitive Stage1 support fidelity. The historical full-data raw endpoint is mean object IoU>=.95 and the floor(0.1*N) sorted object IoU>=.90. Failure is not a pose-independent shape failure; saved supports permit rigid analysis. No significance or universal sampler/architecture claim."
+}
