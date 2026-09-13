@@ -40,6 +40,8 @@ def parse_args():
     parser.add_argument("--precision", choices=["bf16", "fp32"], default="bf16")
     parser.add_argument("--no-touch", action="store_true")
     parser.add_argument("--no-pointmap", action="store_true")
+    parser.add_argument("--no-visual", action="store_true",
+                        help="Permanently zero image, mask and pointmap conditioning, including validation")
     parser.add_argument("--oracle-point-frame", action="store_true")
     parser.add_argument("--visual-dropout", type=float, default=0.0,
                         help="Per-sample probability of zeroing image and pointmap tokens during training")
@@ -71,7 +73,7 @@ def setup_distributed(args):
     )
 
 
-def build_stage1_pipeline(config_path, device, no_pointmap=False):
+def build_stage1_pipeline(config_path, device, no_pointmap=False, no_visual=False):
     from hydra.utils import instantiate
     from omegaconf import OmegaConf
     from sam3d_objects.pipeline.inference_pipeline_pointmap import InferencePipelinePointMap
@@ -117,11 +119,14 @@ def build_stage1_pipeline(config_path, device, no_pointmap=False):
             }
 
     pipeline = Stage1TrainingPipeline(config_path, device)
-    if no_pointmap:
+    if no_pointmap or no_visual:
         condition_embedder = pipeline.ss_condition_embedder
         if condition_embedder is None:
             condition_embedder = pipeline.backbone.condition_embedder
-        disable_pointmap_conditioning(condition_embedder)
+        if no_visual:
+            disable_visual_conditioning(condition_embedder)
+        else:
+            disable_pointmap_conditioning(condition_embedder)
     return pipeline
 
 
@@ -131,6 +136,12 @@ def disable_pointmap_conditioning(fuser):
     if not pointmaps.issubset(names):
         raise ValueError(f"Expected pointmap and rgb_pointmap conditioning, found {sorted(names)}")
     fuser.force_drop_modalities = sorted(set(fuser.force_drop_modalities or []) | pointmaps)
+
+
+def disable_visual_conditioning(fuser):
+    # Surface tokens are appended separately, after this visual fuser.
+    names = {name for _, inputs in fuser.embedder_list for name, _ in inputs}
+    fuser.force_drop_modalities = sorted(set(fuser.force_drop_modalities or []) | names)
 
 
 def build_stage1_preprocessor(config_path):
@@ -150,7 +161,7 @@ def build_stage1_preprocessor(config_path):
 
 class TouchTrainingModel(torch.nn.Module):
     def __init__(self, generator, touch_encoder=None, no_pointmap=False, oracle_point_frame=False,
-                 visual_dropout=0.0, constant_touch=False):
+                 visual_dropout=0.0, constant_touch=False, no_visual=False):
         super().__init__()
         self.generator = generator
         self.touch_encoder = touch_encoder
@@ -158,6 +169,9 @@ class TouchTrainingModel(torch.nn.Module):
             "no_pointmap": no_pointmap,
             "oracle_point_frame": oracle_point_frame,
         }
+        # Omit the default to preserve legacy checkpoint metadata.
+        if no_visual:
+            self.conditioning_config["no_visual"] = True
         self.training_config = {"visual_dropout": visual_dropout, "constant_touch": constant_touch}
         self.register_buffer("constant_touch_features", None, persistent=False)
         self.constant_touch_sample_id = None
@@ -668,6 +682,8 @@ def main():
     args = parse_args()
     if not 0 <= args.visual_dropout <= 1:
         raise ValueError("--visual-dropout must be between 0 and 1")
+    if args.no_visual and (args.no_touch or args.joint_pointmap):
+        raise ValueError("--no-visual requires surface conditioning without --joint-pointmap")
     if args.constant_touch and (
         not args.oracle_point_frame or args.train_vecsetx or args.vecsetx_learn
     ):
@@ -710,7 +726,9 @@ def main():
         oracle_point_frame=args.oracle_point_frame,
     )
 
-    pipeline = build_stage1_pipeline(args.pipeline_config, device, no_pointmap=args.no_pointmap)
+    pipeline = build_stage1_pipeline(
+        args.pipeline_config, device, no_pointmap=args.no_pointmap, no_visual=args.no_visual,
+    )
     touch_encoder = None
     if not args.no_touch:
         from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
@@ -724,7 +742,7 @@ def main():
         ).to(device)
 
     model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, args.no_pointmap, args.oracle_point_frame,
-                               args.visual_dropout, args.constant_touch)
+                               args.visual_dropout, args.constant_touch, no_visual=args.no_visual)
     optimizer, parameters = build_optimizer(touch_encoder, pipeline.backbone, args)
     if args.no_touch:
         mode = "image"
@@ -780,6 +798,8 @@ def main():
         print(f"cross-attention scope: {args.cross_attention_scope}")
         print(f"precision: {args.precision}")
         print(f"visual dropout: {args.visual_dropout} per sample (training only)")
+        if args.no_visual:
+            print("visual conditioning: permanently disabled (training and validation)")
         if args.constant_touch:
             print(f"constant touch reference: {raw_model.constant_touch_sample_id}")
         print(f"GPUs: {world_size}")

@@ -624,7 +624,10 @@ def main():
     batches_to_run = min(args.batches, len(loader))
     examples_to_run = min(args.batch_size * batches_to_run, len(loader.dataset))
 
-    pipeline = build_stage1_pipeline(args.pipeline_config, device, no_pointmap=conditioning_config["no_pointmap"])
+    pipeline = build_stage1_pipeline(
+        args.pipeline_config, device, no_pointmap=conditioning_config["no_pointmap"],
+        no_visual=conditioning_config.get("no_visual", False),
+    )
     touch_encoder = None
     if checkpoint["touch_config"] is not None:
         from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder

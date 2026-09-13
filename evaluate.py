@@ -19,7 +19,7 @@ from scipy.spatial import cKDTree
 from dataloader import build_dataloader, load_data_config
 from train import (
     prepare_batch, TouchTrainingModel, build_optimizer,
-    disable_pointmap_conditioning, load_trainable_state_dict,
+    disable_pointmap_conditioning, disable_visual_conditioning, load_trainable_state_dict,
 )
 
 
@@ -38,11 +38,14 @@ def restore_run(pipeline, checkpoint, device):
     conditioning = checkpoint.get(
         "conditioning_config", {"no_pointmap": False, "oracle_point_frame": False}
     )
-    if conditioning["no_pointmap"]:
+    if conditioning["no_pointmap"] or conditioning.get("no_visual", False):
         fuser = pipeline.ss_condition_embedder
         if fuser is None:
             fuser = pipeline.backbone.condition_embedder
-        disable_pointmap_conditioning(fuser)
+        if conditioning.get("no_visual", False):
+            disable_visual_conditioning(fuser)
+        else:
+            disable_pointmap_conditioning(fuser)
 
     touch_encoder = None
     if checkpoint["touch_config"] is not None:
