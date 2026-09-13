@@ -22,7 +22,7 @@ Native flow loss is the actual training objective, not an arbitrary score. But i
 
 Decoding GT latents supplies an achievable reference through the same downstream measurement path. The earlier tiny-fit experiment used this principle at Stage 1. It does not require Stage 2 or final mesh CD. Preserve raw fixed-frame results; report target-assisted rigid alignment separately when explicitly testing pose-independent shape. It cannot count as a deployed correction or erase a fixed-frame training error. A new Stage-1 reconstruction check is justified when needed to promote a candidate to a reconstruction claim, not automatically for every diagnostic.
 
-**Current governing audit/branch selection:** [EVIDENCE_AUDIT_AND_BRANCH_PLAN.md](EVIDENCE_AUDIT_AND_BRANCH_PLAN.md). Branch A is completed in [POSE_SHAPE_RETURNED_FINDINGS.md](POSE_SHAPE_RETURNED_FINDINGS.md), summarized as F11 below. Before new training, the next proposed control is sampled geometry for the existing camera-plus-dropout checkpoint, completing the frame comparison under the same training policy. Other branches remain conditional, not queued automatically.
+**Current governing audit/branch selection:** [EVIDENCE_AUDIT_AND_BRANCH_PLAN.md](EVIDENCE_AUDIT_AND_BRANCH_PLAN.md). F11/F12 are completed. At the user's request, overnight implementation is parked and the short coordinate intervention continues: [SHARED_ORIENTATION_HANDOFF.md](SHARED_ORIENTATION_HANDOFF.md) implements one camera-oriented-target arm with unchanged camera inputs and a reused historical control. Target quality is checked before training; physical tolerance is compared in common original units. This is an experimental target contract, not a production output-frame decision. Local checks passed; GPU execution is pending. No full run or encoder replacement is selected.
 
 ## F0 — Early saved predictions already demonstrated pose/shape disagreement
 
@@ -168,7 +168,7 @@ Source: [separate-attention findings](SEPARATE_SURFACE_RETURNED_FINDINGS.md).
 
 Record, briefly, before handing off a run:
 
-1. **Starting evidence:** relevant F0–F11 IDs and the exact unresolved question; do not recreate completed evidence as a new discovery.
+1. **Starting evidence:** relevant F0–F12 IDs and the exact unresolved question; do not recreate completed evidence as a new discovery.
 2. **Claim being tested:** coordinate correctness, fitting, view robustness, geometry-specific use, or transfer. Name any entanglement that requires changing another factor.
 3. **Comparisons:** intervention, matched control, reference endpoint and claimed split. State whether the reference is perfect target agreement, exact alignment, a fitted-model score, or an image baseline.
 4. **Success/failure/inconclusive criteria:** justify the tolerance or effect size before results; include uncertainty/replication appropriate to the scope. A smaller scalar alone is not “resolved.” Retrospective margins cannot convert prior results into formal equivalence.
@@ -222,4 +222,22 @@ Source: [alignment results](ALIGNMENT_TOLERANCE_RETURNED_FINDINGS.md), [local va
 
 Source: [pose/shape findings](POSE_SHAPE_RETURNED_FINDINGS.md), [complete summary](pose_shape_analysis/summary.json), [comparison figure](pose_shape_analysis/rotation_shape_comparison.png).
 
-**Execution handoff:** [CAMERA_DROPOUT_GEOMETRY_HANDOFF.md](CAMERA_DROPOUT_GEOMETRY_HANDOFF.md) now implements that existing-checkpoint control. GPU execution/results are pending; the handoff fixes the comparisons and branches before results. No new finding or training fix is claimed from implementation alone.
+**Execution update:** the control in [CAMERA_DROPOUT_GEOMETRY_HANDOFF.md](CAMERA_DROPOUT_GEOMETRY_HANDOFF.md) has returned and is analyzed below. Do not rerun it.
+
+## F12 — Camera plus dropout retains a large frame-treatment penalty, including a wrong-object failure
+
+**Matched reference:** same four fitted identities, fit/reserved views, two sampling draws, CFG 0, 25 steps, same visual-dropout training policy. All 112 returned predictions and 57 manifest members validated; reported code hashes match and all 112 historical native-loss replay values agree exactly. GT-support contents and actual sampling noise match the oracle comparison. All saved geometry metrics were reproduced on CPU with the unchanged proper-rigid analysis.
+
+**Reserved shape:** camera-dropout IoU is **56.17%**, versus oracle-dropout **97.17%**. Raw one-voxel F-score is **67.13% vs 99.997%**; under the prespecified identity-or-rigid witness, **79.26% vs 99.997%**. Only **one of four** camera objects meets the precision/recall reference. Wrong surfaces reach **88.97%** witness F-score, beating correct surfaces by 9.71 pp on average and on three object means. Individual results are mixed: correct wins 14/24, wrong 9/24, one tie. Fitted camera views have 99.63% raw F-score; the major problem here is reserved-view behavior, not complete inability to fit.
+
+**Concrete wrong-shape evidence:** an exploratory all-four-target comparison of every reserved correct prediction finds that bathtub view `e846574d…_000` produces the fitted **shield** for both draws: **99.966%/99.890% raw F-score to the shield**, versus **31.74%/31.80% after rigid fitting to the bathtub**. This is not merely the correct object in a different pose. It suggests view-dependent interpretation of fitted surface codes, but does not identify the responsible encoder/projector/attention mechanism or prove general shape transport in the successful oracle model.
+
+**Correction to broad dropout language:** camera native reserved loss improved .07718→.05381, but its same-metric pose-witness F-score is **82.99%→79.26%**. Dropout has a strong sampled success with oracle alignment (F9); it has **not** resolved camera-frame view dependence or demonstrated camera geometry improvement. Do not enable it as a universal repair from these results.
+
+**Established:** a large sampled frame-treatment penalty remains under matched dropout policy, including errors that are not only output pose. Camera/oracle changes orientation and normalization together; F3 isolates rotation under the original policy, but the full dropout gap is not quantitatively attributable to rotation alone. This is a finite-budget, fitted-identity result, not impossibility or new-object evidence.
+
+**Next-experiment consequence:** stop measuring this missing cell; it is complete. Advance to a coordinate intervention. Shared observable target orientation is the leading branch if original asset axes are unnecessary; otherwise a deployment-available frame recovery strategy is required. Both retain VecSetX and sparse-touch constraints. No full run is earned without a short successful intervention and new-object surface utility. Await the output-frame preference before choosing the changed target contract.
+
+Source: [returned findings](CAMERA_DROPOUT_GEOMETRY_RETURNED_FINDINGS.md), [numerical summary](camera_dropout_geometry_analysis/summary.json), [identity diagnostic](camera_dropout_geometry_analysis/cross_identity.json), [failure illustration](camera_dropout_geometry_analysis/bathtub_shield_failure.png).
+
+**Subsequent execution decision, not new evidence:** the user paused overnight work and requested continued short coordinate experiments. [SHARED_ORIENTATION_HANDOFF.md](SHARED_ORIENTATION_HANDOFF.md) now implements the shared-orientation label intervention. Diagnostic comparison can proceed without committing the final product to that output frame. It reuses the existing camera/dropout control, gates new target VAE fidelity before updates, and retains known inverse transforms for comparison in common original units. Success would still require new-object utility before scaling; failure is not an architecture-impossibility result. GPU output is pending.

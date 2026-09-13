@@ -1,6 +1,6 @@
 # Complete the same-policy frame comparison using existing weights
 
-Status: implemented, local source/reference checks passed; GPU execution pending. This is a single inference-only control following F11, not another fit or an extension of training.
+Status: completed and analyzed in [CAMERA_DROPOUT_GEOMETRY_RETURNED_FINDINGS.md](CAMERA_DROPOUT_GEOMETRY_RETURNED_FINDINGS.md), now F12 in the pivotal ledger. Do not rerun. The protocol below is retained as the pre-result specification. Camera dropout fails the same-policy oracle shape reference even after pose adjustment; no training occurred in this control.
 
 ## Why this comparison is needed
 

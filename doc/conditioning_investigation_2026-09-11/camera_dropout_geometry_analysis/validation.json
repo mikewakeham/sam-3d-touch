@@ -1,0 +1,13 @@
+{
+  "bundle_sha256": "c351e2224ade1a98aed17513fdd8ceb833672d9af99901961c4149171251eb81",
+  "members": 57,
+  "rows": 112,
+  "report_sha256": "64771d2b85c8f038d1716ac6f2d9f051b29722c2e05b52fc47976c8e649d4545",
+  "replay_max_absolute_error": 0.0,
+  "source_sha256": {
+    "analyze_camera_dropout_geometry.py": "765a9fdf63cf3449e0d8fe3215f0b4a1bc900c6d1c3bdcda401175ef8dcebc1e",
+    "pose_shape_geometry.py": "b7654cb415c08496ece2e743ed0a7b96becd2470d64e8d342a9e1f2a36243200"
+  },
+  "reference_analysis_sha256": "0bea862cfea64e3e60a7955caae483f00e67abe9f29ec2db7e9689c9c267e0b9",
+  "checks": "CRC/member hashes; pasted report equality; source/reference hashes; unchanged checkpoint parameter hash; all native replay losses; inputs, GT support and sampling noise; array dtypes/shapes/counts/IoUs; prior controls."
+}

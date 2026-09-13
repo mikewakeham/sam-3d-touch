@@ -1,0 +1,968 @@
+{
+  "format_version": 2,
+  "scope": "No training. Same fitted objects and fit/reserved views, CFG0 and sampling noise as the completed oracle/dropout probe. Actual camera-frame conditioning, no oracle transform. Wrong surfaces contradict the visual inputs.",
+  "cases": [
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g0_d0",
+      "file": "correct_surface_g0_d0.npz",
+      "condition": "correct_surface",
+      "group": 0,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g0_d1",
+      "file": "correct_surface_g0_d1.npz",
+      "condition": "correct_surface",
+      "group": 0,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g1_d0",
+      "file": "correct_surface_g1_d0.npz",
+      "condition": "correct_surface",
+      "group": 1,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g1_d1",
+      "file": "correct_surface_g1_d1.npz",
+      "condition": "correct_surface",
+      "group": 1,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g2_d0",
+      "file": "correct_surface_g2_d0.npz",
+      "condition": "correct_surface",
+      "group": 2,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g2_d1",
+      "file": "correct_surface_g2_d1.npz",
+      "condition": "correct_surface",
+      "group": 2,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g3_d0",
+      "file": "correct_surface_g3_d0.npz",
+      "condition": "correct_surface",
+      "group": 3,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g3_d1",
+      "file": "correct_surface_g3_d1.npz",
+      "condition": "correct_surface",
+      "group": 3,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g4_d0",
+      "file": "correct_surface_g4_d0.npz",
+      "condition": "correct_surface",
+      "group": 4,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g4_d1",
+      "file": "correct_surface_g4_d1.npz",
+      "condition": "correct_surface",
+      "group": 4,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g5_d0",
+      "file": "correct_surface_g5_d0.npz",
+      "condition": "correct_surface",
+      "group": 5,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g5_d1",
+      "file": "correct_surface_g5_d1.npz",
+      "condition": "correct_surface",
+      "group": 5,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g6_d0",
+      "file": "correct_surface_g6_d0.npz",
+      "condition": "correct_surface",
+      "group": 6,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/correct_surface_g6_d1",
+      "file": "correct_surface_g6_d1.npz",
+      "condition": "correct_surface",
+      "group": 6,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g0_d0",
+      "file": "wrong_surface_g0_d0.npz",
+      "condition": "wrong_surface",
+      "group": 0,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g0_d1",
+      "file": "wrong_surface_g0_d1.npz",
+      "condition": "wrong_surface",
+      "group": 0,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_000",
+        "e846574df9334973955c80286af47ba7_007",
+        "fe200ce00a5d4c298eee89de0fc15f01_011",
+        "146b6c1f10bd445da977424c64dbb051_002"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g1_d0",
+      "file": "wrong_surface_g1_d0.npz",
+      "condition": "wrong_surface",
+      "group": 1,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g1_d1",
+      "file": "wrong_surface_g1_d1.npz",
+      "condition": "wrong_surface",
+      "group": 1,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_003",
+        "e846574df9334973955c80286af47ba7_002",
+        "fe200ce00a5d4c298eee89de0fc15f01_002",
+        "146b6c1f10bd445da977424c64dbb051_003"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g2_d0",
+      "file": "wrong_surface_g2_d0.npz",
+      "condition": "wrong_surface",
+      "group": 2,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g2_d1",
+      "file": "wrong_surface_g2_d1.npz",
+      "condition": "wrong_surface",
+      "group": 2,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_015",
+        "e846574df9334973955c80286af47ba7_015",
+        "fe200ce00a5d4c298eee89de0fc15f01_015",
+        "146b6c1f10bd445da977424c64dbb051_015"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g3_d0",
+      "file": "wrong_surface_g3_d0.npz",
+      "condition": "wrong_surface",
+      "group": 3,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g3_d1",
+      "file": "wrong_surface_g3_d1.npz",
+      "condition": "wrong_surface",
+      "group": 3,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_008",
+        "e846574df9334973955c80286af47ba7_008",
+        "fe200ce00a5d4c298eee89de0fc15f01_007",
+        "146b6c1f10bd445da977424c64dbb051_008"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g4_d0",
+      "file": "wrong_surface_g4_d0.npz",
+      "condition": "wrong_surface",
+      "group": 4,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g4_d1",
+      "file": "wrong_surface_g4_d1.npz",
+      "condition": "wrong_surface",
+      "group": 4,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_011",
+        "e846574df9334973955c80286af47ba7_011",
+        "fe200ce00a5d4c298eee89de0fc15f01_010",
+        "146b6c1f10bd445da977424c64dbb051_011"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g5_d0",
+      "file": "wrong_surface_g5_d0.npz",
+      "condition": "wrong_surface",
+      "group": 5,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g5_d1",
+      "file": "wrong_surface_g5_d1.npz",
+      "condition": "wrong_surface",
+      "group": 5,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_001",
+        "e846574df9334973955c80286af47ba7_000",
+        "fe200ce00a5d4c298eee89de0fc15f01_000",
+        "146b6c1f10bd445da977424c64dbb051_000"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g6_d0",
+      "file": "wrong_surface_g6_d0.npz",
+      "condition": "wrong_surface",
+      "group": 6,
+      "draw": 0,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    },
+    {
+      "kind": "camera_dropout",
+      "prefix": "camera_dropout/wrong_surface_g6_d1",
+      "file": "wrong_surface_g6_d1.npz",
+      "condition": "wrong_surface",
+      "group": 6,
+      "draw": 1,
+      "sample_ids": [
+        "479bbf9062de4b3196f08e52d1c12821_007",
+        "e846574df9334973955c80286af47ba7_006",
+        "fe200ce00a5d4c298eee89de0fc15f01_006",
+        "146b6c1f10bd445da977424c64dbb051_007"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "archive_path": "camera_dropout/results.json",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/results.json",
+      "bytes": 125360,
+      "sha256": "64771d2b85c8f038d1716ac6f2d9f051b29722c2e05b52fc47976c8e649d4545"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g0_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g0_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "8b462da0b8beff79df9caf06507943851d09f5ae8ca3ac9ecfe0171b99e162e0"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g0_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g0_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g0_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g0_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "008b43b3fdf66b525398729a84c0c0d57f0f06699e41a1b69c292116ccd9bce4"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g0_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g0_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g1_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g1_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "ba1c706d0b0ed8b5a28339f01a485900cfd13159ff34a79ae91631dff8c3b8f9"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g1_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g1_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g1_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g1_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "310e5e01b07fc1c55f0ae6132efca1c13564ee2a90360a575c3c399bb090babc"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g1_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g1_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g2_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g2_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "6798f9d94c92b43792ff1a400eb8d6f09ea603a0b1e016548721f529ee233639"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g2_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g2_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g2_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g2_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "82456d2f11c180721ec0a28de8402ba17df44a95beda1a8e2edaa1e35701688b"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g2_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g2_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g3_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g3_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "c33a696f4ed5e543bea31dc8e95bf2eab88052fd8e15d1b5bc3b9cda4377b1c1"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g3_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g3_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g3_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g3_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "403f992c50a326bdafc16f836281d61201c9a4c25d12b768bfb9d95d6a64a9b3"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g3_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g3_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g4_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g4_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "0a0d1f2192439ac2f9fb8516fe3c3544c8ad480ebe03c0afdf38c792fa383539"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g4_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g4_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g4_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g4_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "671ab74c7e94a46027bab35cc889955a176353220c0ca87e04611cfe8a4ef180"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g4_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g4_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g5_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g5_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "dbd64f6676c92db91699417a61922e3c03dd2f97c0a24155796e0030cbba67c0"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g5_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g5_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g5_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g5_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "e3eda40bcbc41f99674aa6eaf35cfedd17e326b6326b6253921798168093d45a"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g5_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g5_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g6_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g6_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "0a416e8723e548a88aefa888f98a3c12f6dbdd560a7cbcee65b2ba0a5d6c9d23"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g6_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g6_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g6_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g6_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "fc4280ee5a0161f9cf59fb20b398723bd0a37640cea6b44dd2778aa82d889f58"
+    },
+    {
+      "archive_path": "camera_dropout/correct_surface_g6_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g6_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g0_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g0_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "d917ec228867f15eb8adfc89c7a7ba9e96b87b17c4ef1a403372ace0811b0e09"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g0_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g0_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g0_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g0_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "3af0df6f86ede592e0bcf8fa6a39bd7351c94fe9f02aabcd6e1b40d23c3ea946"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g0_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g0_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g1_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g1_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "b4868790b8d436538505207c27a4f1322c488fc2f0a8745ff8283cdb6f46d31d"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g1_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g1_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g1_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g1_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "e1cb3406041b981281d7f8bac404d6017566930ec53eee38e6bb0a5d183fb8e3"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g1_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g1_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g2_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g2_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "849c79fb08524daba8530f4b8db303b0ba39bc04339ae1c5cce87e9804ed53cd"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g2_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g2_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g2_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g2_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "9771c4e3f5269611ae13129daea8e9636416ce011d0e48e6bfa95f6d0f19e045"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g2_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g2_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g3_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g3_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "3b92156dd0769bff7944c5d500eb60e39375f1b19a9fec4e722bf23095ff2c86"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g3_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g3_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g3_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g3_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a8d9efd38e5599f12f34e7ee45a03cae24e8a50b172e21f405d36cba0ad9db38"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g3_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g3_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g4_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g4_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "45f807af05af6cfceabc0c6024961c3b38214e814695faff346b2a2931f803ca"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g4_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g4_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g4_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g4_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "e3b2f940f7e4d26713eab3df8305f57770b79d4eb0147e73a6a0000c1ae47401"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g4_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g4_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g5_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g5_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "74f3fd2078cee68083fcaab3976d384a1725982778f107d27fd0448d05100b19"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g5_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g5_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g5_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g5_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "8c3adeb8e3ad83e866cbdca53ad2edce827e23d3e384deacae290df047b60327"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g5_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g5_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g6_d0/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g6_d0.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "2352c82e4118b55d16c938779120c7a211d97bc36ef99addf64d4dc1f8856172"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g6_d0/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g6_d0.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g6_d1/predicted_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g6_d1.npz",
+      "source_member": "predicted_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "03ba31d52fde9d7a674b4af3d8f36f269a03802910ea67c3c07db983916eca25"
+    },
+    {
+      "archive_path": "camera_dropout/wrong_surface_g6_d1/target_occupancy.npy",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g6_d1.npz",
+      "source_member": "target_occupancy.npy",
+      "bytes": 1048704,
+      "sha256": "a90f06312908770967d1eb3b0f9a474cdc0c2c810d51e65f2403b7c645786511"
+    }
+  ],
+  "source_npz": [
+    {
+      "prefix": "camera_dropout/correct_surface_g0_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g0_d0.npz",
+      "bytes": 978930,
+      "sha256": "1c4174a37a1ff908a128dad16966153d7e20b2a3917e404eea64a48cf162a42d"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g0_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g0_d1.npz",
+      "bytes": 979459,
+      "sha256": "4089ab8f03490c7e2f5fb13426cf55b28fc200d988e6383e7f2fa3b945025b98"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g1_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g1_d0.npz",
+      "bytes": 978545,
+      "sha256": "cc151068dfabcbe4cb65da69843f9f78e14ce687dbdf2e632b822ba96d053910"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g1_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g1_d1.npz",
+      "bytes": 979058,
+      "sha256": "c77914232922d50f31e12fe015e4c7172abbacd86d9b6d6b387ae1ddc438ad97"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g2_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g2_d0.npz",
+      "bytes": 978648,
+      "sha256": "ef2922c9252e17334a730e7af91d042d1b0410e5d54be6990749c14f91f12c1a"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g2_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g2_d1.npz",
+      "bytes": 978971,
+      "sha256": "0bd5c3945943702b7205c45722331bb9c87ac409825c94cb29c4d1e0dd1b4f9b"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g3_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g3_d0.npz",
+      "bytes": 978870,
+      "sha256": "228cf893e1868f6df81533fbacc5e063293257c21a2964306c2ecdb4cc779970"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g3_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g3_d1.npz",
+      "bytes": 979158,
+      "sha256": "e1dff5c2b69b475e344182a597fa506480a5487b2700ec11fe590a5635198afb"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g4_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g4_d0.npz",
+      "bytes": 979043,
+      "sha256": "b05a6f2c29e49d4df793b665b97d45c5b89c4185f178838c60011eb0abdce220"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g4_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g4_d1.npz",
+      "bytes": 979150,
+      "sha256": "613ec7e2625ef1520b11fd30e18207ef78301c5adce90f3e194b70f0bb0cefa3"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g5_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g5_d0.npz",
+      "bytes": 980647,
+      "sha256": "bfc76fe74d5f4d8bcf89d32fdec3dd5bf88f31508293b72938fbf70816325608"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g5_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g5_d1.npz",
+      "bytes": 980247,
+      "sha256": "f0bfdbd1640caf966d952d74a79b36aa173a30a98b5be95519268556f016da26"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g6_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g6_d0.npz",
+      "bytes": 979082,
+      "sha256": "899bf4cf8af8112fbeaeb1dcc1447f4a8061dd6ed46dc702222c566364580c78"
+    },
+    {
+      "prefix": "camera_dropout/correct_surface_g6_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/correct_surface_g6_d1.npz",
+      "bytes": 979182,
+      "sha256": "c85dbd9de644cceba0d316cc756d41a305ba480b7db113ecb34630987d2cc7b4"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g0_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g0_d0.npz",
+      "bytes": 980993,
+      "sha256": "0c91ed762e771a1aa4ab1d734dcf3b1068d35ebe7928fa28273f8e89035a83a6"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g0_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g0_d1.npz",
+      "bytes": 979474,
+      "sha256": "dd9b29bcb3976cff57168033087e08a1e14007c484fbfb2d2861a6ff40fd7336"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g1_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g1_d0.npz",
+      "bytes": 978084,
+      "sha256": "fba91e0d69b25b1d6103fa93c8688acf842b212b19d5b54bad825a6e3b851cd1"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g1_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g1_d1.npz",
+      "bytes": 978019,
+      "sha256": "d810e68783c91f3b0621ec660e7fff6621d5e4dd6c397a5121368025aa23144f"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g2_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g2_d0.npz",
+      "bytes": 975918,
+      "sha256": "0f0da19effd5f9b3f9ad09fd5b696877292f6abeabbd43fcd2ca28099eda2179"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g2_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g2_d1.npz",
+      "bytes": 975864,
+      "sha256": "ab6ec8e0745af04c1124c7dcb8878e79a04058e0ec80407077bf6b0a9b9bacee"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g3_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g3_d0.npz",
+      "bytes": 978754,
+      "sha256": "3c26ec3f8099cc5164dd963891f30bab2dc82fbc71de4fca49e3caa650845968"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g3_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g3_d1.npz",
+      "bytes": 978721,
+      "sha256": "32796aa14d56304a7a0fabe4e107f55f67f80faf79222134ea1244b980146fbd"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g4_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g4_d0.npz",
+      "bytes": 978903,
+      "sha256": "a687f6c8c144253e2b8e0898c94f4a515b2b9c97669f204152a283558b79cc38"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g4_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g4_d1.npz",
+      "bytes": 979149,
+      "sha256": "04c181a5a0263a8ac8081120abd3385d5a156cab4360c58caa7972d01241207f"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g5_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g5_d0.npz",
+      "bytes": 979222,
+      "sha256": "31bda39c17586ba1445c8b34ce3e7e52c6351557d8a17d94d0601d6b2c4babd2"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g5_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g5_d1.npz",
+      "bytes": 978515,
+      "sha256": "4fb9d5daf2c01d7489d52d89c4cc1aa2e6b79d300bc01693c0828f83ffa4b3b4"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g6_d0",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g6_d0.npz",
+      "bytes": 978360,
+      "sha256": "1d11081d6ddd6b50aa8a2ee1f0a0eff212c40db054b94ab4a5ec4e0a91f22378"
+    },
+    {
+      "prefix": "camera_dropout/wrong_surface_g6_d1",
+      "source_path": "outputs/conditioning_investigation/camera_dropout_geometry/manual/wrong_surface_g6_d1.npz",
+      "bytes": 978824,
+      "sha256": "e7b29133ad9f3a56147837e8fe40644c4d51efd64f6a30291ffab0d935d52fb0"
+    }
+  ]
+}

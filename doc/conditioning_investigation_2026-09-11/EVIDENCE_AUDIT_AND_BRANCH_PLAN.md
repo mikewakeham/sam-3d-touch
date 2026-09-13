@@ -1,6 +1,8 @@
 # Evidence audit and coordinate investigation branches — 12 September 2026
 
-**Execution update:** selected branch A is completed; [POSE_SHAPE_RETURNED_FINDINGS.md](POSE_SHAPE_RETURNED_FINDINGS.md) records the full CPU analysis and its controls. This document preserves the pre-analysis design. F11 in the ledger records the outcome and the remaining same-policy camera-plus-dropout sampling control before another training intervention.
+**Execution update:** selected branch A and the subsequent same-policy camera/dropout control are completed. [POSE_SHAPE_RETURNED_FINDINGS.md](POSE_SHAPE_RETURNED_FINDINGS.md) records F11; [CAMERA_DROPOUT_GEOMETRY_RETURNED_FINDINGS.md](CAMERA_DROPOUT_GEOMETRY_RETURNED_FINDINGS.md) records F12. Camera dropout remains far below oracle dropout after pose adjustment and sometimes reconstructs another fitted object. Next: coordinate intervention, with shared observable target orientation conditional on the output-frame contract. No new full training is selected. The remainder of this document preserves the pre-analysis audit/design; its then-unknown questions are superseded by F11–F12 where explicitly answered.
+
+**Current handoff:** [SHARED_ORIENTATION_HANDOFF.md](SHARED_ORIENTATION_HANDOFF.md) implements the short alternative-target experiment after the user asked to continue this branch and park overnight work. It is a diagnostic contract comparison; the final output-frame requirement remains a separate decision. One new arm, historical control reused, target quality checked before updates, common physical units retained for scoring. Local checks passed; GPU execution pending.
 
 ## Material Passport
 
