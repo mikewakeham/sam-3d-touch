@@ -1,0 +1,435 @@
+{
+  "rows": [
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_000",
+      "determinant": 0.9999998019077588,
+      "singular_values": [
+        1.0000000266704523,
+        0.999999954308776,
+        0.999999820928528
+      ],
+      "orthogonality_max_error": 3.4837157159017806e-07,
+      "max_singular_value_error": 1.7907147198403806e-07,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.5508044383125034e-07,
+      "unit_cube_displacement_bound_in_voxels": 9.925148405200022e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_007",
+      "determinant": 1.0000000798279451,
+      "singular_values": [
+        1.0000000981703365,
+        1.0000000646006617,
+        0.9999999170569543
+      ],
+      "orthogonality_max_error": 1.7381041250708051e-07,
+      "max_singular_value_error": 9.81703365265929e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 8.501800533009684e-08,
+      "unit_cube_displacement_bound_in_voxels": 5.441152341126198e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_011",
+      "determinant": 0.999999900731221,
+      "singular_values": [
+        1.0000000206418176,
+        0.9999999478851013,
+        0.9999999322043012
+      ],
+      "orthogonality_max_error": 1.2502377422229927e-07,
+      "max_singular_value_error": 6.779569883264003e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 5.871279745638527e-08,
+      "unit_cube_displacement_bound_in_voxels": 3.7576190372086574e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_002",
+      "determinant": 0.9999999762211962,
+      "singular_values": [
+        1.0000000154843194,
+        0.9999999983481385,
+        0.9999999623887391
+      ],
+      "orthogonality_max_error": 5.186370799492579e-08,
+      "max_singular_value_error": 3.761126088352995e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 3.2572307393500886e-08,
+      "unit_cube_displacement_bound_in_voxels": 2.0846276731840567e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_003",
+      "determinant": 0.9999997341334551,
+      "singular_values": [
+        0.99999994657262,
+        0.999999930307286,
+        0.9999998572535274
+      ],
+      "orthogonality_max_error": 2.716843228167676e-07,
+      "max_singular_value_error": 1.4274647264223006e-07,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.236220716087916e-07,
+      "unit_cube_displacement_bound_in_voxels": 7.911812582962663e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_002",
+      "determinant": 0.9999998511267152,
+      "singular_values": [
+        0.9999999845438429,
+        0.9999999446304539,
+        0.9999999219524118
+      ],
+      "orthogonality_max_error": 1.2420894868192534e-07,
+      "max_singular_value_error": 7.804758817009372e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 6.759119405940699e-08,
+      "unit_cube_displacement_bound_in_voxels": 4.325836419802047e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_002",
+      "determinant": 0.9999999399934014,
+      "singular_values": [
+        1.0000000226717265,
+        0.9999999666178966,
+        0.9999999507037781
+      ],
+      "orthogonality_max_error": 9.857453819872575e-08,
+      "max_singular_value_error": 4.92962218823223e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 4.269178046068545e-08,
+      "unit_cube_displacement_bound_in_voxels": 2.7322739494838688e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_003",
+      "determinant": 0.9999998258425543,
+      "singular_values": [
+        1.0000000021664044,
+        0.9999999774173564,
+        0.9999998462587908
+      ],
+      "orthogonality_max_error": 2.3271712523698085e-07,
+      "max_singular_value_error": 1.5374120920785828e-07,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.331437927825433e-07,
+      "unit_cube_displacement_bound_in_voxels": 8.521202738082771e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_015",
+      "determinant": 1.0000001975881798,
+      "singular_values": [
+        1.0000001431999193,
+        1.0000000346799427,
+        1.0000000197083099
+      ],
+      "orthogonality_max_error": 2.586982414953809e-07,
+      "max_singular_value_error": 1.4319991925582087e-07,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.2401476789542128e-07,
+      "unit_cube_displacement_bound_in_voxels": 7.936945145306962e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_015",
+      "determinant": 0.9999998622801535,
+      "singular_values": [
+        1.000000074365286,
+        0.9999999247565006,
+        0.9999998631583727
+      ],
+      "orthogonality_max_error": 1.8898193854255396e-07,
+      "max_singular_value_error": 1.368416272518047e-07,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.1850832549526381e-07,
+      "unit_cube_displacement_bound_in_voxels": 7.584532831696884e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_015",
+      "determinant": 0.9999997314718667,
+      "singular_values": [
+        0.9999999793155174,
+        0.9999999684371357,
+        0.9999997837192015
+      ],
+      "orthogonality_max_error": 2.944799177839741e-07,
+      "max_singular_value_error": 2.1628079849289605e-07,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.873046658456311e-07,
+      "unit_cube_displacement_bound_in_voxels": 1.198749861412039e-05,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_015",
+      "determinant": 1.0000001577742128,
+      "singular_values": [
+        1.000001026048976,
+        1.0000001018400742,
+        0.9999990298861514
+      ],
+      "orthogonality_max_error": 1.9206396920656843e-06,
+      "max_singular_value_error": 1.0260489760050007e-06,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 8.885844787473404e-07,
+      "unit_cube_displacement_bound_in_voxels": 5.686940663982979e-05,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_008",
+      "determinant": 0.9999999299672602,
+      "singular_values": [
+        1.0000000035387469,
+        0.9999999672302076,
+        0.9999999591983045
+      ],
+      "orthogonality_max_error": 6.668912155838314e-08,
+      "max_singular_value_error": 4.080169546671897e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 3.5335304791654995e-08,
+      "unit_cube_displacement_bound_in_voxels": 2.2614595066659197e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_008",
+      "determinant": 0.9999999036697832,
+      "singular_values": [
+        0.9999999926844119,
+        0.9999999790117978,
+        0.9999999319735716
+      ],
+      "orthogonality_max_error": 1.2334137622360686e-07,
+      "max_singular_value_error": 6.80264283792198e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 5.891261510512701e-08,
+      "unit_cube_displacement_bound_in_voxels": 3.7704073667281288e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_007",
+      "determinant": 1.0000000341123678,
+      "singular_values": [
+        1.0000001236971574,
+        0.9999999611357551,
+        0.9999999492794647
+      ],
+      "orthogonality_max_error": 1.6280208647856398e-07,
+      "max_singular_value_error": 1.2369715740589982e-07,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.0712488068943164e-07,
+      "unit_cube_displacement_bound_in_voxels": 6.855992364123625e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_008",
+      "determinant": 1.0000000239093967,
+      "singular_values": [
+        1.0000000167383458,
+        1.000000008826684,
+        0.9999999983443664
+      ],
+      "orthogonality_max_error": 3.2948727302084535e-08,
+      "max_singular_value_error": 1.673834582049949e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.4495832697881641e-08,
+      "unit_cube_displacement_bound_in_voxels": 9.27733292664425e-07,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_011",
+      "determinant": 1.0000000662347768,
+      "singular_values": [
+        1.0000000794995492,
+        1.0000000216934442,
+        0.9999999650417853
+      ],
+      "orthogonality_max_error": 1.0034112651879923e-07,
+      "max_singular_value_error": 7.949954916597335e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 6.88486291671429e-08,
+      "unit_cube_displacement_bound_in_voxels": 4.406312266697145e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_011",
+      "determinant": 0.9999997986278079,
+      "singular_values": [
+        1.0000000030682281,
+        0.9999999273889243,
+        0.9999998681706459
+      ],
+      "orthogonality_max_error": 2.0419664892301626e-07,
+      "max_singular_value_error": 1.3182935409972174e-07,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.1416756961485325e-07,
+      "unit_cube_displacement_bound_in_voxels": 7.306724455350608e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_010",
+      "determinant": 0.9999998236748537,
+      "singular_values": [
+        0.9999999771830234,
+        0.9999999274605772,
+        0.999999919031244
+      ],
+      "orthogonality_max_error": 1.3532637388458113e-07,
+      "max_singular_value_error": 8.09687560332506e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 7.012099963761956e-08,
+      "unit_cube_displacement_bound_in_voxels": 4.4877439768076515e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_011",
+      "determinant": 1.0000000834235354,
+      "singular_values": [
+        1.0000000960856792,
+        1.000000042650674,
+        0.9999999446871857
+      ],
+      "orthogonality_max_error": 1.3047802571719558e-07,
+      "max_singular_value_error": 9.608567919094924e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 8.321263911924384e-08,
+      "unit_cube_displacement_bound_in_voxels": 5.3256089036316055e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_001",
+      "determinant": 1.000000005261509,
+      "singular_values": [
+        1.0000000135897813,
+        0.9999999993270691,
+        0.9999999923446585
+      ],
+      "orthogonality_max_error": 2.4296021416958524e-08,
+      "max_singular_value_error": 1.3589781300282766e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.1769095837919596e-08,
+      "unit_cube_displacement_bound_in_voxels": 7.532221336268541e-07,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "determinant": 0.9999995848667746,
+      "singular_values": [
+        0.9999999846075699,
+        0.9999998596240972,
+        0.9999997406350645
+      ],
+      "orthogonality_max_error": 5.177207418327612e-07,
+      "max_singular_value_error": 2.593649355286942e-07,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 2.246166230187623e-07,
+      "unit_cube_displacement_bound_in_voxels": 1.4375463873200787e-05,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "determinant": 0.9999998718188049,
+      "singular_values": [
+        1.0000000181146866,
+        0.9999999507463393,
+        0.9999999029577773
+      ],
+      "orthogonality_max_error": 1.7776735006247435e-07,
+      "max_singular_value_error": 9.704222270201512e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 8.404103009965206e-08,
+      "unit_cube_displacement_bound_in_voxels": 5.378625926377732e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_000",
+      "determinant": 0.9999997088280961,
+      "singular_values": [
+        0.9999999760724648,
+        0.9999998767173341,
+        0.9999998560382729
+      ],
+      "orthogonality_max_error": 2.8629982296024536e-07,
+      "max_singular_value_error": 1.4396172709485455e-07,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 1.2467451283682657e-07,
+      "unit_cube_displacement_bound_in_voxels": 7.9791688215569e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "479bbf9062de4b3196f08e52d1c12821_007",
+      "determinant": 1.000000036022385,
+      "singular_values": [
+        1.0000000408081433,
+        1.00000000029572,
+        0.9999999949185215
+      ],
+      "orthogonality_max_error": 7.884828878701455e-08,
+      "max_singular_value_error": 4.0808143308979083e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 3.534088878685185e-08,
+      "unit_cube_displacement_bound_in_voxels": 2.2618168823585183e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_006",
+      "determinant": 1.0000001359414037,
+      "singular_values": [
+        1.0000000663512283,
+        1.0000000428169038,
+        1.0000000267732663
+      ],
+      "orthogonality_max_error": 1.321333817916326e-07,
+      "max_singular_value_error": 6.635122828946294e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 5.7461849270975604e-08,
+      "unit_cube_displacement_bound_in_voxels": 3.6775583533424387e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_006",
+      "determinant": 1.0000000920099787,
+      "singular_values": [
+        1.0000000682822794,
+        1.0000000323465317,
+        0.9999999913811661
+      ],
+      "orthogonality_max_error": 1.3377759544574985e-07,
+      "max_singular_value_error": 6.828227938626696e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 5.913418857681369e-08,
+      "unit_cube_displacement_bound_in_voxels": 3.7845880689160764e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    },
+    {
+      "sample_id": "146b6c1f10bd445da977424c64dbb051_007",
+      "determinant": 0.9999999204416304,
+      "singular_values": [
+        1.00000005956166,
+        0.9999999474166325,
+        0.9999999134633419
+      ],
+      "orthogonality_max_error": 1.2830963092014258e-07,
+      "max_singular_value_error": 8.653665806157562e-08,
+      "singular_value_tolerance": 3.814697265625e-06,
+      "unit_cube_displacement_bound": 7.494294423993192e-08,
+      "unit_cube_displacement_bound_in_voxels": 4.796348431355643e-06,
+      "matrix_policy": "Recorded matrix retained; no SVD projection or input change"
+    }
+  ],
+  "invalid_rejected": [
+    "reflection",
+    "scale",
+    "singular",
+    "nonfinite",
+    "shear",
+    "projective"
+  ],
+  "source_sha256": "58e0ef6692d8f063ad308165da13c5e0fc381d50bd53a70b4d5970bb0ee26caa",
+  "returned_sha256": "5e8f2c9f84b8e1ce4afa5cb5413f1ccacb71c0a894443439a37030990ba387a7",
+  "scope": "CPU replay on all returned matrices, inverse and distortion-bound checks; camera inputs unchanged. No GPU rerun."
+}
