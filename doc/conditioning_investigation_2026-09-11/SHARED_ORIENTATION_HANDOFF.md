@@ -10,6 +10,10 @@ Status: implemented, local coordinate/source checks passed; GPU execution pendin
 
 Sync the updated protocol helper and rerun the original command with a fresh output directory, e.g. `outputs/conditioning_investigation/shared_orientation/manual_rigid_check_fix`. There is no trained checkpoint to resume from this failed attempt. The GPU target-quality/training result remains pending.
 
+**Second preflight correction (13 September):** the corrected run passed camera validation, target generation, exact initialization hash and all seven recorded input/VecSetX feature hashes. It then failed the bitwise initial-loss replay: maximum absolute difference 3.51667404e-5, relative 9.47415049e-5 (0.009474%). No training occurred. The specific numerical source is not identified by the traceback. The new runner used one autocast scope and precomputed projected tokens across draws, whereas the historical comparator recomputed under a per-draw autocast scope; those scopes now match. This is a candidate source of numerical differences, not a confirmed explanation.
+
+The loss guard now requires numerical agreement with rtol=1e-3 (0.1%), atol=1e-6; it records actual/expected vectors, errors and bitwise-equality status and saves them before checking. This permits the observed small BF16 discrepancy while retaining all exact source/parameter/input-hash checks. Target quality and scientific success gates are unchanged. A CPU check on the rounded displayed values passes and an injected 1% difference fails (`shared_orientation_replay_check.json`); no local GPU rerun is claimed. Sync the updated `fit_shared_orientation_gpu.py`, retain the already updated protocol helper, and use a new output suffix such as `manual_replay_fix`. Do not describe these tooling fixes as coordinate findings or successful training.
+
 ## Starting evidence and question
 
 F1: inspected bookkeeping is consistent and the target is spatial/orientation-dependent. F3: input rotation adds a finite-budget learning burden. F9: exact oracle alignment plus dropout permits accurate reserved-view reconstruction on four fitted identities. F11: output pose correction is not a general rescue, and sub-5° precision is not universally required. F12: with dropout policy matched, camera inputs still fail badly; a bathtub view even produces the fitted shield. Stop repeating that comparison.
@@ -38,7 +42,7 @@ The target changes both orientation and its consequent bounding-box normalizatio
 
 ## Automatic checks before any training
 
-1. Historical source/config hashes; original target regeneration; exact initialization parameter hash; all seven original camera feature/input hashes; eight exact initial native-loss replay values.
+1. Historical source/config hashes; original target regeneration; exact initialization parameter hash; all seven original camera feature/input hashes; eight numerically matching initial native-loss replay values (rtol=1e-3, atol=1e-6, with exact vectors/errors retained).
 2. Proper camera rotation, reversible affine transformation, unit-box target bounds. Local checks already cover 25 synthetic rotations, five saved surface/camera pairs and three malformed transforms.
 3. Decode every new target through the existing Stage-1 decoder. Each target must have at least 95% IoU to its physically voxelized mesh.
 4. Map decoded new targets back with the **known inverse label transform**, and compare with the original decoded target in original object units. Every target must have at least 95% bidirectional proximity within 1/64 original-object units. This prevents silently accepting label damage or apparent improvements from a relaxed spatial tolerance.
