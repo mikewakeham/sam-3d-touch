@@ -1,3 +1,5 @@
+**Superseded on 13 September:** The user now requests oracle-upper-bound confirmation followed by full-data training. See [the active implementation and commands](oracle_upper_bound/HANDOFF.md). The parked proposal below is historical; its no-dropout arm and parallel coordinate branch are not the current selected plan.
+
 # Proposed overnight scale test after F12
 
 Status: parked at the user's request; not implemented or launched. The user asked to continue the short coordinate branch first. Keep this overnight option available for later, without treating it as the active experiment. No overnight trainer code was changed. This is a proposed scale/transfer diagnostic of a supported small-task intervention, not promotion of a proven general fix. Full surfaces remain primary.

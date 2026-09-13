@@ -324,3 +324,33 @@ The pending inference-only probe remains the cheapest next discriminator and is 
 
 
 **Execution status after F15 (not new evidence):** [ORIENTATION_COVERAGE_HANDOFF.md](ORIENTATION_COVERAGE_HANDOFF.md) implements the selected matched coverage comparison. Both arms resume broader step2000 with Adam continuity for1000 updates; only the500 visual-dropped treatment updates receive joint point/label cube rotations. The identity control, all visuals-present updates and reserved inputs are unchanged. Three runtime files to sync; one GPU prepares the shared bank, then two GPUs run arms concurrently or one sequentially. CPU transform/protocol/source/schema checks pass; GPU target-bank validation and execution are required next. Do not replace this comparison with another generator-scope change while awaiting its output. Larger-data pilots remain possible under the scale-up clarification, but none is launched here.
+
+## F16 — The control now overfits nearly exactly; augmentation has not learned its added conditions
+
+**Verified:** both completed coverage arms,708 payload hashes/CRCs,512 sampled outputs,384 shared rotated-label controls. Exact initial native replay; matched parameter/Adam/input/source/schedule provenance. Every target rotation reproduces locally; minimum VAE IoU99.9823%. Empty predictions are retained as zero P/R/F-score failures, not discarded.
+
+**Positive milestone:** unaugmented broader-scope control at step3000 reaches fitted IoU99.855% with visuals and99.557% without. Both fitted states reach100% common-unit P/R for all4 object means, pass all32 individual geometry screens, and pass each-object correct-surface dependence. The model can overfit shape AND orientation under this contract with frozen VecSetX. This is a sufficient recipe at this tiny scale, not proof broader scope is necessary or that full-dataset conditioning/generalization is fixed.
+
+**Treatment:** reserved visual-present IoU17.86→18.32% and pose-witness F-score81.84→84.40%, still far below the target reference; reserved visual-zero IoU10.50→5.75% and witness62.17→54.45%. The sampled augmented training conditions themselves reach only4.74% IoU/49.54% pose-witness F-score, with0/32 geometry passes. This short augmentation recipe is not a demonstrated remedy. Native reserved losses improve while sampled geometry remains poor; keep those endpoints separate.
+
+**Critical limitation:** each of368 new rotated conditions receives only5–6 presentations; the control gives each original zero-visual condition125 presentations. Original-orientation zero-visual examples are replaced during the treatment continuation, not retained alongside the rotations. Their fitted IoU falls99.56→13.68% versus control. The experiment does not establish sufficient optimization of the expanded task, rotation impossibility, or VecSetX failure. Do not automatically prescribe more iterations or promote this augmentation recipe to full training.
+
+**User's output objective:** correct intrinsic shape matters; matching GT pose is not required. The current spatial-latent training loss is orientation-specific, but that is the chosen implementation contract. Exact native frame matching is diagnostic, not an extra product acceptance requirement. Rigid-adjusted geometry already distinguishes many pose-only errors from shape failures. Reground the next intervention around shape accuracy and this distinction before selecting another run; frame canonicalization or orientation-invariant supervision remain alternatives, not implemented solutions.
+
+Details: [ORIENTATION_COVERAGE_RETURNED_FINDINGS.md](ORIENTATION_COVERAGE_RETURNED_FINDINGS.md), `orientation_coverage_analysis/{summary,complete,learning_and_exposure}.json`.
+
+
+## Active decision after F16 — establish the oracle upper bound first
+
+The user explicitly prioritizes a concrete useful oracle endpoint before further non-oracle alignment or pose recovery. This is a change in experimental priority, not new evidence. Preserve F9's accurate reserved-view result and F6/F7's unproven new-object geometry use. No additional four-object fitting result is needed before a larger diagnostic run.
+
+[The oracle-upper-bound handoff](oracle_upper_bound/HANDOFF.md) provides a no-update implementation replay against the successful oracle/dropout checkpoint, then matched full-data oracle/dropout, constant/dropout, camera/dropout and practical image controls. Retain fixed object-frame targets, frozen VecSetX and original full shape-cross-attention scope; broader generator adaptation is conditional on aligned fitting failure. The full-data comparison, rather than another tiny transfer test, answers whether the aligned route scales. New-source GPU parity and all full training remain pending.
+
+Success with oracle alone establishes an aligned working setup at its measured scope. A matched worse camera arm is needed to attribute a remaining cost to frame treatment; neither proves rotation was the only cause. If oracle fails new-object utility or constant matches it, remain on the aligned branch instead of immediately investigating inference pose recovery. Output orientation remains flexible; raw-pose failure must not be mislabeled intrinsic-shape failure.
+
+
+### Implementation status — approved production integration (not a new experimental finding)
+
+The user authorized one minimal source integration and requested full shape cross-attention as the new CLI default, with shorter job names. Production train.py now supports per-sample visual dropout and a fixed real-training-surface feature control; evaluate.py restores the bank consistently. Historical missing-scope checkpoint metadata still means KV. New jobs are `stage1_full_surface_oracle_dropout.sh`, `stage1_full_surface_oracle_constant_dropout.sh` and `stage1_full_surface_dropout.sh`, each four GPUs/global batch16/20 epochs with the existing resource template. Visual baselines xun3al7m and fl7b2znc are reused subject to manifest/example comparability.
+
+The dropout granularity follows SAM3D modality dropout (per sample); the earlier successful tiny run used whole-batch dropout. No claim of exact training-policy replication follows. Ten real CPU PyTorch tests, including two-rank DDP and old-checkpoint compatibility, pass; no SAM3D GPU run or full-data success has occurred. [Source integration handoff](oracle_upper_bound/SOURCE_INTEGRATION.md) supersedes the standalone trainer and old preflight. Further experimental edits return to the investigation folder.

@@ -1,0 +1,250 @@
+{
+  "control": {
+    "native_curve": [
+      {
+        "step": 2000,
+        "cells": {
+          "fit/present/False": 0.042723160062450916,
+          "fit/present/True": 0.1275650765746832,
+          "fit/zero/False": 0.05466434371192008,
+          "fit/zero/True": 0.2223001483362168,
+          "reserved_view/present/False": 0.22329625052710375,
+          "reserved_view/present/True": 0.2211362967888514,
+          "reserved_view/zero/False": 0.2417733365048965,
+          "reserved_view/zero/True": 0.2513712340344985
+        }
+      },
+      {
+        "step": 2300,
+        "cells": {
+          "fit/present/False": 0.029330371122341603,
+          "fit/present/True": 0.14513463713228703,
+          "fit/zero/False": 0.036554682767018676,
+          "fit/zero/True": 0.2551708046812564,
+          "reserved_view/present/False": 0.24653725884854794,
+          "reserved_view/present/True": 0.23716479043165842,
+          "reserved_view/zero/False": 0.2613578910628955,
+          "reserved_view/zero/True": 0.2686077306667964
+        }
+      },
+      {
+        "step": 3000,
+        "cells": {
+          "fit/present/False": 0.012018265319056809,
+          "fit/present/True": 0.2344914311543107,
+          "fit/zero/False": 0.013453569074044935,
+          "fit/zero/True": 0.45378410816192627,
+          "reserved_view/present/False": 0.30463162002464134,
+          "reserved_view/present/True": 0.29199016839265823,
+          "reserved_view/zero/False": 0.32413248779873055,
+          "reserved_view/zero/True": 0.3512431358297666
+        }
+      }
+    ],
+    "dropped_condition_counts": {
+      "0/0": 125,
+      "1/0": 125,
+      "2/0": 125,
+      "3/0": 125
+    },
+    "sampled_empty_counts": {
+      "fit": 4,
+      "reserved_view": 8,
+      "augmented_fit_diagnostic": 8
+    },
+    "training_means": [
+      {
+        "first": 2001,
+        "last": 2100,
+        "means": {
+          "False": 0.04296124532666742,
+          "True": 0.050139629957722684
+        }
+      },
+      {
+        "first": 2401,
+        "last": 2500,
+        "means": {
+          "False": 0.023081069558181545,
+          "True": 0.028455359495377967
+        }
+      },
+      {
+        "first": 2901,
+        "last": 3000,
+        "means": {
+          "False": 0.011248108766534749,
+          "True": 0.01272885314169891
+        }
+      }
+    ]
+  },
+  "augmented": {
+    "native_curve": [
+      {
+        "step": 2000,
+        "cells": {
+          "fit/present/False": 0.042723160062450916,
+          "fit/present/True": 0.1275650765746832,
+          "fit/zero/False": 0.05466434371192008,
+          "fit/zero/True": 0.2223001483362168,
+          "reserved_view/present/False": 0.22329625052710375,
+          "reserved_view/present/True": 0.2211362967888514,
+          "reserved_view/zero/False": 0.2417733365048965,
+          "reserved_view/zero/True": 0.2513712340344985
+        }
+      },
+      {
+        "step": 2300,
+        "cells": {
+          "fit/present/False": 0.040791030100081116,
+          "fit/present/True": 0.07982613891363144,
+          "fit/zero/False": 0.08511517161969095,
+          "fit/zero/True": 0.1379600204527378,
+          "reserved_view/present/False": 0.1756807155907154,
+          "reserved_view/present/True": 0.1753635791440805,
+          "reserved_view/zero/False": 0.18839391631384692,
+          "reserved_view/zero/True": 0.19257748064895472
+        }
+      },
+      {
+        "step": 3000,
+        "cells": {
+          "fit/present/False": 0.025437852076720446,
+          "fit/present/True": 0.07545067893806845,
+          "fit/zero/False": 0.0871208633761853,
+          "fit/zero/True": 0.13808350614272058,
+          "reserved_view/present/False": 0.18267492949962616,
+          "reserved_view/present/True": 0.18060600571334362,
+          "reserved_view/zero/False": 0.18137717247009277,
+          "reserved_view/zero/True": 0.18925123351315656
+        }
+      }
+    ],
+    "dropped_condition_counts": {
+      "0/1": 6,
+      "0/2": 5,
+      "0/3": 5,
+      "0/4": 6,
+      "0/5": 6,
+      "0/6": 5,
+      "0/7": 6,
+      "0/8": 6,
+      "0/9": 6,
+      "0/10": 5,
+      "0/11": 6,
+      "0/12": 6,
+      "0/13": 6,
+      "0/14": 5,
+      "0/15": 5,
+      "0/16": 5,
+      "0/17": 5,
+      "0/18": 5,
+      "0/19": 5,
+      "0/20": 5,
+      "0/21": 5,
+      "0/22": 6,
+      "0/23": 5,
+      "1/1": 6,
+      "1/2": 5,
+      "1/3": 5,
+      "1/4": 5,
+      "1/5": 6,
+      "1/6": 5,
+      "1/7": 6,
+      "1/8": 6,
+      "1/9": 5,
+      "1/10": 6,
+      "1/11": 5,
+      "1/12": 6,
+      "1/13": 5,
+      "1/14": 6,
+      "1/15": 5,
+      "1/16": 5,
+      "1/17": 5,
+      "1/18": 6,
+      "1/19": 6,
+      "1/20": 6,
+      "1/21": 5,
+      "1/22": 5,
+      "1/23": 5,
+      "2/1": 5,
+      "2/2": 5,
+      "2/3": 5,
+      "2/4": 5,
+      "2/5": 6,
+      "2/6": 5,
+      "2/7": 6,
+      "2/8": 5,
+      "2/9": 5,
+      "2/10": 5,
+      "2/11": 6,
+      "2/12": 5,
+      "2/13": 5,
+      "2/14": 6,
+      "2/15": 6,
+      "2/16": 5,
+      "2/17": 5,
+      "2/18": 6,
+      "2/19": 6,
+      "2/20": 5,
+      "2/21": 6,
+      "2/22": 6,
+      "2/23": 6,
+      "3/1": 5,
+      "3/2": 6,
+      "3/3": 5,
+      "3/4": 5,
+      "3/5": 5,
+      "3/6": 6,
+      "3/7": 6,
+      "3/8": 5,
+      "3/9": 5,
+      "3/10": 6,
+      "3/11": 6,
+      "3/12": 5,
+      "3/13": 5,
+      "3/14": 6,
+      "3/15": 5,
+      "3/16": 5,
+      "3/17": 6,
+      "3/18": 5,
+      "3/19": 5,
+      "3/20": 6,
+      "3/21": 6,
+      "3/22": 5,
+      "3/23": 6
+    },
+    "sampled_empty_counts": {
+      "fit": 0,
+      "reserved_view": 0,
+      "augmented_fit_diagnostic": 0
+    },
+    "training_means": [
+      {
+        "first": 2001,
+        "last": 2100,
+        "means": {
+          "False": 0.05164029479635005,
+          "True": 0.1843924091434946
+        }
+      },
+      {
+        "first": 2401,
+        "last": 2500,
+        "means": {
+          "False": 0.03503332989798351,
+          "True": 0.1682007440498897
+        }
+      },
+      {
+        "first": 2901,
+        "last": 3000,
+        "means": {
+          "False": 0.024814424415429432,
+          "True": 0.16510750657441664
+        }
+      }
+    ]
+  }
+}

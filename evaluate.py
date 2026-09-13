@@ -57,13 +57,15 @@ def restore_run(pipeline, checkpoint, device):
         touch_encoder = TouchEncoder(**config).to(device)
 
     pipeline.ss_generator.requires_grad_(False)
-    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, **conditioning)
+    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, **conditioning,
+                               **checkpoint.get("training_config", {}))
     build_optimizer(touch_encoder, pipeline.backbone, argparse.Namespace(
         learning_rate=0.0,
         cross_attention_learning_rate=1.0,
         cross_attention_scope=checkpoint.get("cross_attention_scope", "kv"),
     ))
     load_trainable_state_dict(model, checkpoint["model"])
+    model.load_constant_touch(checkpoint.get("constant_touch"))
     if touch_encoder is not None:
         touch_encoder.eval()
     return model
@@ -564,7 +566,7 @@ def write_metrics(path, rows):
 
 def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                        completed, metrics_path, args, joint_pointmap=False,
-                       oracle_point_frame=False, use_gt_latent=False):
+                       oracle_point_frame=False, use_gt_latent=False, touch_token_fn=None):
     from sam3d_objects.pipeline.inference_utils import downsample_sparse_structure, prune_sparse_structure
 
     rows = []
@@ -602,7 +604,8 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     dtype=dtype,
                     enabled=not args.no_amp and torch.device(args.device).type == "cuda",
                 ):
-                    touch_tokens = encoder(touch_xyz, touch_mask) if touch_xyz is not None else None
+                    encode_touch = touch_token_fn if touch_token_fn is not None else encoder
+                    touch_tokens = encode_touch(touch_xyz, touch_mask) if touch_xyz is not None else None
                     prediction = batch["target_shape"].to(args.device) if use_gt_latent else sample_shape(
                         pipeline, condition_args, condition_kwargs, touch_tokens,
                         args.inference_steps, args.device,
@@ -914,6 +917,7 @@ def main():
             rank_metrics_path, args,
             joint_pointmap=checkpoint is not None and checkpoint["mode"] == "image_touch_joint",
             oracle_point_frame=conditioning["oracle_point_frame"],
+            touch_token_fn=model.get_touch_tokens if model is not None else None,
         )
         for row in new_rows:
             rows_by_key[(row["condition"], row["sample_id"])] = row

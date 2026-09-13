@@ -13,7 +13,7 @@ import yaml
 from torch.nn.parallel import DistributedDataParallel
 from torch.nn.utils.rnn import pad_sequence
 
-from dataloader import build_dataloader, load_data_config
+from dataloader import build_dataloader, collate_touch_batch, load_data_config
 
 
 def parse_args():
@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--cross-attention-learning-rate", type=float, default=1e-5)
     parser.add_argument(
-        "--cross-attention-scope", choices=["kv", "full"], default="kv",
+        "--cross-attention-scope", choices=["kv", "full"], default="full",
         help="Train shape K/V only, or full shape cross-attention plus its input norm",
     )
     parser.add_argument("--gradient-clip", type=float, default=1.0)
@@ -41,6 +41,10 @@ def parse_args():
     parser.add_argument("--no-touch", action="store_true")
     parser.add_argument("--no-pointmap", action="store_true")
     parser.add_argument("--oracle-point-frame", action="store_true")
+    parser.add_argument("--visual-dropout", type=float, default=0.0,
+                        help="Per-sample probability of zeroing image and pointmap tokens during training")
+    parser.add_argument("--constant-touch", action="store_true",
+                        help="Use one fixed training surface's VecSetX features for every example")
     parser.add_argument("--train-vecsetx", action="store_true")
     parser.add_argument("--vecsetx-learn", action="store_true",
                         help="Use frozen VecSetX decoder features before touch projection")
@@ -145,7 +149,8 @@ def build_stage1_preprocessor(config_path):
 
 
 class TouchTrainingModel(torch.nn.Module):
-    def __init__(self, generator, touch_encoder=None, no_pointmap=False, oracle_point_frame=False):
+    def __init__(self, generator, touch_encoder=None, no_pointmap=False, oracle_point_frame=False,
+                 visual_dropout=0.0, constant_touch=False):
         super().__init__()
         self.generator = generator
         self.touch_encoder = touch_encoder
@@ -153,12 +158,46 @@ class TouchTrainingModel(torch.nn.Module):
             "no_pointmap": no_pointmap,
             "oracle_point_frame": oracle_point_frame,
         }
+        self.training_config = {"visual_dropout": visual_dropout, "constant_touch": constant_touch}
+        self.register_buffer("constant_touch_features", None, persistent=False)
+        self.constant_touch_sample_id = None
 
-    def forward(self, targets, condition_args, condition_kwargs, touch_xyz, touch_mask):
+    def get_touch_tokens(self, touch_xyz, touch_mask):
+        if self.touch_encoder is None:
+            return None
+        if self.training_config["constant_touch"]:
+            if self.constant_touch_features is None:
+                raise RuntimeError("Constant touch features have not been initialized or restored")
+            features = self.constant_touch_features.expand(len(touch_xyz), -1, -1)
+            return self.touch_encoder.output_projection(features) + self.touch_encoder.touch_embedding
+        return self.touch_encoder(touch_xyz, touch_mask)
+
+    def load_constant_touch(self, state):
+        if not self.training_config["constant_touch"]:
+            if state is not None:
+                raise ValueError("Unexpected constant touch state for a normal surface run")
+            return
+        if state is None or self.touch_encoder is None:
+            raise ValueError("Constant touch checkpoint is missing its fixed feature bank")
+        features = state["features"]
+        if features.ndim != 3 or features.shape[0] != 1 or not torch.isfinite(features).all():
+            raise ValueError("Invalid constant touch feature bank")
+        self.constant_touch_features = features.detach().to(self.touch_encoder.touch_embedding.device)
+        self.constant_touch_sample_id = state["sample_id"]
+
+    def forward(self, targets, condition_args, condition_kwargs, touch_xyz, touch_mask,
+                visual_drop_mask=None):
+        if visual_drop_mask is not None:
+            if len(condition_args) != 1 or condition_kwargs:
+                raise ValueError("Visual dropout expects a single precomputed visual-token context")
+            visual = condition_args[0]
+            if visual_drop_mask.shape != (visual.shape[0],):
+                raise ValueError("Visual dropout mask must contain one decision per sample")
+            condition_args = (visual.masked_fill(visual_drop_mask[:, None, None], 0),)
         if self.touch_encoder is None:
             loss, _ = self.generator.loss(targets, *condition_args, **condition_kwargs)
         else:
-            touch_tokens = self.touch_encoder(touch_xyz, touch_mask)
+            touch_tokens = self.get_touch_tokens(touch_xyz, touch_mask)
             loss, _ = self.generator.loss(
                 targets, *condition_args, touch_tokens=touch_tokens, **condition_kwargs
             )
@@ -291,6 +330,41 @@ def prepare_batch(
     return make_targets(shape, pipeline.backbone), condition_args, condition_kwargs, touch_xyz, touch_mask
 
 
+def initialize_constant_touch(model, pipeline, dataset, device, precision):
+    index = min(range(len(dataset)), key=lambda i: dataset.records[i]["sample_id"])
+    python_state, numpy_state = random.getstate(), np.random.get_state()
+    devices = [torch.cuda.current_device()] if device.type == "cuda" else []
+    try:
+        with torch.random.fork_rng(devices=devices), torch.no_grad():
+            batch = collate_touch_batch([dataset[index]])
+            _, _, _, points, mask = prepare_batch(
+                pipeline, batch, device, precision, True, oracle_point_frame=True,
+            )
+            encoder = model.touch_encoder
+            was_training = encoder.training
+            try:
+                encoder.eval()
+                with amp(device, precision):
+                    points, mask, _, _ = encoder.prepare_points(points, mask)
+                    features = encoder.encoder.encode(points, mask)["x"]
+            finally:
+                encoder.train(was_training)
+            model.load_constant_touch({"features": features, "sample_id": dataset.records[index]["sample_id"]})
+            if dist.is_initialized():
+                dist.broadcast(model.constant_touch_features, src=0)
+    finally:
+        random.setstate(python_state)
+        np.random.set_state(numpy_state)
+
+
+def make_visual_drop_mask(batch_size, probability, device, seed, step, rank):
+    if probability == 0:
+        return None
+    # Separate, step-addressed RNG: no consumption of flow noise/time randomness.
+    generator = torch.Generator(device=device).manual_seed(seed + 1_000_003 * step + 1_000_033 * rank)
+    return torch.rand(batch_size, device=device, generator=generator) < probability
+
+
 def build_optimizer(touch_encoder, backbone, args):
     groups = []
     if touch_encoder is not None:
@@ -405,6 +479,12 @@ def save_checkpoint(
         "best_loss": best_loss,
         "mode": mode,
         "conditioning_config": model.conditioning_config,
+        "training_config": model.training_config,
+        "constant_touch": (
+            {"sample_id": model.constant_touch_sample_id,
+             "features": model.constant_touch_features.detach().cpu()}
+            if model.constant_touch_features is not None else None
+        ),
         "cross_attention_scope": cross_attention_scope,
         "touch_config": (
             model.touch_encoder.get_config() if model.touch_encoder is not None else None
@@ -418,12 +498,15 @@ def load_checkpoint(path, model, optimizer, mode, cross_attention_scope="kv"):
         raise ValueError("Checkpoint conditioning configuration does not match this run")
     if checkpoint.get("cross_attention_scope", "kv") != cross_attention_scope:
         raise ValueError("Checkpoint cross-attention scope does not match this run")
+    if checkpoint.get("training_config", {"visual_dropout": 0.0, "constant_touch": False}) != model.training_config:
+        raise ValueError("Checkpoint visual dropout or constant touch setting does not match this run")
     touch_config = (
         model.touch_encoder.get_config() if model.touch_encoder is not None else None
     )
     if checkpoint["mode"] != mode or checkpoint["touch_config"] != touch_config:
         raise ValueError("Checkpoint mode or touch configuration does not match this run")
     load_trainable_state_dict(model, checkpoint["model"])
+    model.load_constant_touch(checkpoint.get("constant_touch"))
     optimizer.load_state_dict(checkpoint["optimizer"])
     return checkpoint["epoch"], checkpoint["step"], checkpoint["best_loss"]
 
@@ -438,7 +521,7 @@ def aggregate(total_loss, total_samples, device, distributed):
 def train_epoch(
     pipeline, model, raw_model, loader, optimizer, parameters,
     device, args, epoch, step, total_train_steps, world_size,
-    distributed, main_process, run,
+    distributed, main_process, run, seed=0,
 ):
     if distributed:
         loader.sampler.set_epoch(epoch)
@@ -447,6 +530,7 @@ def train_epoch(
 
     total_loss = 0.0
     total_samples = 0
+    total_dropped = 0
     log_start_time = time.perf_counter()
     for batch_index, batch in enumerate(loader):
         prepared = prepare_batch(
@@ -456,8 +540,12 @@ def train_epoch(
             args.oracle_point_frame,
         )
         optimizer.zero_grad(set_to_none=True)
+        drop_mask = make_visual_drop_mask(
+            len(batch["target_shape"]), raw_model.training_config["visual_dropout"],
+            device, seed, step, dist.get_rank() if distributed else 0,
+        )
         with amp(device, args.precision):
-            loss = model(*prepared)
+            loss = model(*prepared, visual_drop_mask=drop_mask)
         loss.backward()
         should_log = (
             step == 0
@@ -480,6 +568,8 @@ def train_epoch(
         batch_size = batch["target_shape"].shape[0]
         total_loss += loss.item() * batch_size
         total_samples += batch_size
+        if drop_mask is not None:
+            total_dropped += int(drop_mask.sum())
 
         if step == 1 or step % args.log_every == 0 or batch_index + 1 == len(loader):
             elapsed = torch.tensor(
@@ -490,6 +580,9 @@ def train_epoch(
             loss_sum, sample_count = aggregate(
                 total_loss, total_samples, device, distributed
             )
+            dropped_sum = 0
+            if raw_model.training_config["visual_dropout"] > 0:
+                dropped_sum, _ = aggregate(total_dropped, total_samples, device, distributed)
             if distributed:
                 dist.all_reduce(elapsed, op=dist.ReduceOp.MAX)
 
@@ -512,6 +605,7 @@ def train_epoch(
                 metrics = {
                     "global_step": step,
                     "loss/train": mean_loss,
+                    "conditioning/visual_dropout_fraction": dropped_sum / sample_count,
                     "performance/samples_per_second": samples_per_second,
                     "performance/train_eta_seconds": eta_seconds,
                 }
@@ -523,6 +617,7 @@ def train_epoch(
                 run.log(metrics)
             total_loss = 0.0
             total_samples = 0
+            total_dropped = 0
             log_start_time = time.perf_counter()
 
         if args.max_steps and step >= args.max_steps:
@@ -571,6 +666,12 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
 
 def main():
     args = parse_args()
+    if not 0 <= args.visual_dropout <= 1:
+        raise ValueError("--visual-dropout must be between 0 and 1")
+    if args.constant_touch and (
+        not args.oracle_point_frame or args.train_vecsetx or args.vecsetx_learn
+    ):
+        raise ValueError("--constant-touch requires oracle full surfaces and frozen raw VecSetX features")
     if args.oracle_point_frame and (args.no_touch or args.joint_pointmap or not args.no_touch_position):
         raise ValueError("Oracle point frame requires touch, --no-touch-position, and no joint pointmap")
     if args.no_touch and args.train_vecsetx:
@@ -622,7 +723,8 @@ def main():
             position_scale="log",
         ).to(device)
 
-    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, args.no_pointmap, args.oracle_point_frame)
+    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, args.no_pointmap, args.oracle_point_frame,
+                               args.visual_dropout, args.constant_touch)
     optimizer, parameters = build_optimizer(touch_encoder, pipeline.backbone, args)
     if args.no_touch:
         mode = "image"
@@ -635,6 +737,8 @@ def main():
         start_epoch, step, best_loss = load_checkpoint(
             args.resume, model, optimizer, mode, args.cross_attention_scope
         )
+    elif args.constant_touch:
+        initialize_constant_touch(model, pipeline, train_loader.dataset, device, args.precision)
 
     if distributed:
         model = DistributedDataParallel(
@@ -661,6 +765,7 @@ def main():
                     touch_encoder.get_config() if touch_encoder is not None else None
                 ),
                 "data": data_config,
+                "constant_touch_sample_id": raw_model.constant_touch_sample_id,
             }
             with open(config_path, "w") as file:
                 yaml.safe_dump(run_config, file, sort_keys=False)
@@ -674,6 +779,9 @@ def main():
         print(f"mode: {mode}")
         print(f"cross-attention scope: {args.cross_attention_scope}")
         print(f"precision: {args.precision}")
+        print(f"visual dropout: {args.visual_dropout} per sample (training only)")
+        if args.constant_touch:
+            print(f"constant touch reference: {raw_model.constant_touch_sample_id}")
         print(f"GPUs: {world_size}")
         print(
             f"batch size: {args.batch_size} per GPU, "
@@ -697,6 +805,7 @@ def main():
             "mode": mode,
             "world_size": world_size,
             "global_batch_size": args.batch_size * world_size,
+            "constant_touch_sample_id": raw_model.constant_touch_sample_id,
             "touch_config": (
                 touch_encoder.get_config() if touch_encoder is not None else None
             ),
@@ -720,7 +829,7 @@ def main():
         step = train_epoch(
             pipeline, model, raw_model, train_loader, optimizer, parameters,
             device, args, epoch, step, total_train_steps, world_size,
-            distributed, main_process, run,
+            distributed, main_process, run, seed=seed,
         )
         val_loss = validate(
             pipeline, raw_model, val_loader, device, args,

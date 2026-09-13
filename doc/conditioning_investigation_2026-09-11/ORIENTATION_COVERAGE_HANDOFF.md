@@ -1,6 +1,6 @@
 # Matched orientation coverage after F15
 
-Status: implemented and checked locally; GPU execution is required. This follows the completed visual-zero comparison, not a restart. Stage1, frozen VecSetX, full-surface upper bound, no production changes.
+Status: completed and verified; do not rerun. See [ORIENTATION_COVERAGE_RETURNED_FINDINGS.md](ORIENTATION_COVERAGE_RETURNED_FINDINGS.md). The control now fits nearly exactly; the short augmented arm fails to fit sampled added orientations and does not resolve transfer. The command below is historical. Stage1, frozen VecSetX, full-surface upper bound, no production changes.
 
 ## Question and matched treatment
 

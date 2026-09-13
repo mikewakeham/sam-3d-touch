@@ -605,6 +605,9 @@ def main():
     torch.set_float32_matmul_precision("high")
 
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
+    if checkpoint.get("training_config", {}).get("constant_touch", False):
+        raise ValueError("These activation diagnostics require live per-sample VecSetX encoding. "
+                         "Use the investigation Stage-1 assessment for constant-touch checkpoints.")
     conditioning_config = checkpoint.get(
         "conditioning_config", {"no_pointmap": False, "oracle_point_frame": False}
     )
