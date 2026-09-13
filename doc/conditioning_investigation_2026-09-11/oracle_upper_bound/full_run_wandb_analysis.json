@@ -1,0 +1,968 @@
+{
+  "runs": {
+    "oracle": {
+      "run_id": "cps50h2l",
+      "name": "stage1_full_surface_oracle_dropout",
+      "state": "finished",
+      "config": {
+        "batch_size": 4,
+        "constant_touch": false,
+        "constant_touch_sample_id": null,
+        "cross_attention_learning_rate": 1e-05,
+        "cross_attention_scope": "full",
+        "data_config": "configs/data_full_surface.yaml",
+        "device": "cuda",
+        "epochs": 20,
+        "global_batch_size": 16,
+        "gradient_clip": 1,
+        "joint_pointmap": false,
+        "learning_rate": 0.0001,
+        "local_rank": 0,
+        "log_every": 10,
+        "max_steps": 0,
+        "mode": "image_touch",
+        "no_pointmap": false,
+        "no_touch": false,
+        "no_touch_position": true,
+        "oracle_point_frame": true,
+        "output_dir": "outputs/conditioning_investigation/stage1_full_surface_oracle_dropout",
+        "pipeline_config": "checkpoints/hf/pipeline.yaml",
+        "precision": "bf16",
+        "resume": null,
+        "touch_config": {
+          "encoder_name": "vecsetx",
+          "output_dim": 1024,
+          "trainable": false,
+          "use_position": false
+        },
+        "train_vecsetx": false,
+        "val_workers": 2,
+        "vecsetx_learn": false,
+        "visual_dropout": 0.5,
+        "wandb_id": null,
+        "workers": 8,
+        "world_size": 4
+      },
+      "final_step": 14660,
+      "validation": [
+        {
+          "epoch": 1,
+          "step": 733,
+          "loss": 0.09641630484165252
+        },
+        {
+          "epoch": 2,
+          "step": 1466,
+          "loss": 0.09291071991272783
+        },
+        {
+          "epoch": 3,
+          "step": 2199,
+          "loss": 0.09147844148092742
+        },
+        {
+          "epoch": 4,
+          "step": 2932,
+          "loss": 0.09102203460019442
+        },
+        {
+          "epoch": 5,
+          "step": 3665,
+          "loss": 0.09064067791174449
+        },
+        {
+          "epoch": 6,
+          "step": 4398,
+          "loss": 0.09014618895457731
+        },
+        {
+          "epoch": 7,
+          "step": 5131,
+          "loss": 0.08998316378808587
+        },
+        {
+          "epoch": 8,
+          "step": 5864,
+          "loss": 0.08990335322775474
+        },
+        {
+          "epoch": 9,
+          "step": 6597,
+          "loss": 0.08952774104986556
+        },
+        {
+          "epoch": 10,
+          "step": 7330,
+          "loss": 0.08951684272397009
+        },
+        {
+          "epoch": 11,
+          "step": 8063,
+          "loss": 0.08940005647077574
+        },
+        {
+          "epoch": 12,
+          "step": 8796,
+          "loss": 0.08970346251764198
+        },
+        {
+          "epoch": 13,
+          "step": 9529,
+          "loss": 0.08973895485191082
+        },
+        {
+          "epoch": 14,
+          "step": 10262,
+          "loss": 0.08921697497162209
+        },
+        {
+          "epoch": 15,
+          "step": 10995,
+          "loss": 0.08897716831586748
+        },
+        {
+          "epoch": 16,
+          "step": 11728,
+          "loss": 0.0890501232437536
+        },
+        {
+          "epoch": 17,
+          "step": 12461,
+          "loss": 0.08938367340528593
+        },
+        {
+          "epoch": 18,
+          "step": 13194,
+          "loss": 0.08925641570650314
+        },
+        {
+          "epoch": 19,
+          "step": 13927,
+          "loss": 0.08932340709838005
+        },
+        {
+          "epoch": 20,
+          "step": 14660,
+          "loss": 0.08939843291240937
+        }
+      ],
+      "final_validation": 0.08939843291240937,
+      "best_validation": {
+        "epoch": 15,
+        "step": 10995,
+        "loss": 0.08897716831586748
+      },
+      "train_epoch1_update_weighted": 0.1276964035082423,
+      "train_epochs19_20_update_weighted": 0.09580256094494076,
+      "dropout_update_weighted": 0.5004098294956548,
+      "gradient_logging": {
+        "gradients/shape_cross_attention": {
+          "min": 0.016421936452388763,
+          "max": 0.4143182635307312,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/shape_cross_attention_kv": {
+          "min": 0.008240903727710247,
+          "max": 0.2759808599948883,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/touch_embedding": {
+          "min": 0.0009090806706808507,
+          "max": 0.03795759379863739,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/touch_output_projection": {
+          "min": 0.0055568646639585495,
+          "max": 0.21601927280426025,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/touch_position_projection": {
+          "min": 0.0,
+          "max": 0.0,
+          "nonzero_records": 0,
+          "records": 1485
+        },
+        "gradients/vecsetx_encoder": {
+          "min": 0.0,
+          "max": 0.0,
+          "nonzero_records": 0,
+          "records": 1485
+        }
+      }
+    },
+    "constant": {
+      "run_id": "hwz5ifqt",
+      "name": "stage1_full_surface_oracle_constant_dropout",
+      "state": "finished",
+      "config": {
+        "batch_size": 4,
+        "constant_touch": true,
+        "constant_touch_sample_id": "003d24749f2e4047b95f9d04a7c7957b_000",
+        "cross_attention_learning_rate": 1e-05,
+        "cross_attention_scope": "full",
+        "data_config": "configs/data_full_surface.yaml",
+        "device": "cuda",
+        "epochs": 20,
+        "global_batch_size": 16,
+        "gradient_clip": 1,
+        "joint_pointmap": false,
+        "learning_rate": 0.0001,
+        "local_rank": 0,
+        "log_every": 10,
+        "max_steps": 0,
+        "mode": "image_touch",
+        "no_pointmap": false,
+        "no_touch": false,
+        "no_touch_position": true,
+        "oracle_point_frame": true,
+        "output_dir": "outputs/conditioning_investigation/stage1_full_surface_oracle_constant_dropout",
+        "pipeline_config": "checkpoints/hf/pipeline.yaml",
+        "precision": "bf16",
+        "resume": null,
+        "touch_config": {
+          "encoder_name": "vecsetx",
+          "output_dim": 1024,
+          "trainable": false,
+          "use_position": false
+        },
+        "train_vecsetx": false,
+        "val_workers": 2,
+        "vecsetx_learn": false,
+        "visual_dropout": 0.5,
+        "wandb_id": null,
+        "workers": 8,
+        "world_size": 4
+      },
+      "final_step": 14660,
+      "validation": [
+        {
+          "epoch": 1,
+          "step": 733,
+          "loss": 0.0948649997219662
+        },
+        {
+          "epoch": 2,
+          "step": 1466,
+          "loss": 0.09218491349534552
+        },
+        {
+          "epoch": 3,
+          "step": 2199,
+          "loss": 0.09077570197937278
+        },
+        {
+          "epoch": 4,
+          "step": 2932,
+          "loss": 0.09029869897632156
+        },
+        {
+          "epoch": 5,
+          "step": 3665,
+          "loss": 0.08981162150268672
+        },
+        {
+          "epoch": 6,
+          "step": 4398,
+          "loss": 0.0895253772107391
+        },
+        {
+          "epoch": 7,
+          "step": 5131,
+          "loss": 0.08950784020908699
+        },
+        {
+          "epoch": 8,
+          "step": 5864,
+          "loss": 0.08932120433612152
+        },
+        {
+          "epoch": 9,
+          "step": 6597,
+          "loss": 0.08891558034278407
+        },
+        {
+          "epoch": 10,
+          "step": 7330,
+          "loss": 0.08881770335125418
+        },
+        {
+          "epoch": 11,
+          "step": 8063,
+          "loss": 0.08901939958845295
+        },
+        {
+          "epoch": 12,
+          "step": 8796,
+          "loss": 0.08914427875989726
+        },
+        {
+          "epoch": 13,
+          "step": 9529,
+          "loss": 0.08862306666715795
+        },
+        {
+          "epoch": 14,
+          "step": 10262,
+          "loss": 0.0890578086923788
+        },
+        {
+          "epoch": 15,
+          "step": 10995,
+          "loss": 0.08907155374753438
+        },
+        {
+          "epoch": 16,
+          "step": 11728,
+          "loss": 0.08852100480357812
+        },
+        {
+          "epoch": 17,
+          "step": 12461,
+          "loss": 0.08877265922580128
+        },
+        {
+          "epoch": 18,
+          "step": 13194,
+          "loss": 0.08875007594706028
+        },
+        {
+          "epoch": 19,
+          "step": 13927,
+          "loss": 0.08874335949810246
+        },
+        {
+          "epoch": 20,
+          "step": 14660,
+          "loss": 0.08887745778503803
+        }
+      ],
+      "final_validation": 0.08887745778503803,
+      "best_validation": {
+        "epoch": 16,
+        "step": 11728,
+        "loss": 0.08852100480357812
+      },
+      "train_epoch1_update_weighted": 0.12474706079005109,
+      "train_epochs19_20_update_weighted": 0.09870239798755366,
+      "dropout_update_weighted": 0.5004098294956548,
+      "gradient_logging": {
+        "gradients/shape_cross_attention": {
+          "min": 0.014840591698884964,
+          "max": 0.4017845690250397,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/shape_cross_attention_kv": {
+          "min": 0.007413227576762438,
+          "max": 0.2588191032409668,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/touch_embedding": {
+          "min": 0.0007380708120763302,
+          "max": 0.039710260927677155,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/touch_output_projection": {
+          "min": 0.0036785644479095936,
+          "max": 0.3116254210472107,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/touch_position_projection": {
+          "min": 0.0,
+          "max": 0.0,
+          "nonzero_records": 0,
+          "records": 1485
+        },
+        "gradients/vecsetx_encoder": {
+          "min": 0.0,
+          "max": 0.0,
+          "nonzero_records": 0,
+          "records": 1485
+        }
+      }
+    },
+    "camera": {
+      "run_id": "mpd9bbwh",
+      "name": "stage1_full_surface_dropout",
+      "state": "finished",
+      "config": {
+        "batch_size": 4,
+        "constant_touch": false,
+        "constant_touch_sample_id": null,
+        "cross_attention_learning_rate": 1e-05,
+        "cross_attention_scope": "full",
+        "data_config": "configs/data_full_surface.yaml",
+        "device": "cuda",
+        "epochs": 20,
+        "global_batch_size": 16,
+        "gradient_clip": 1,
+        "joint_pointmap": false,
+        "learning_rate": 0.0001,
+        "local_rank": 0,
+        "log_every": 10,
+        "max_steps": 0,
+        "mode": "image_touch",
+        "no_pointmap": false,
+        "no_touch": false,
+        "no_touch_position": true,
+        "oracle_point_frame": false,
+        "output_dir": "outputs/conditioning_investigation/stage1_full_surface_dropout",
+        "pipeline_config": "checkpoints/hf/pipeline.yaml",
+        "precision": "bf16",
+        "resume": null,
+        "touch_config": {
+          "encoder_name": "vecsetx",
+          "output_dim": 1024,
+          "trainable": false,
+          "use_position": false
+        },
+        "train_vecsetx": false,
+        "val_workers": 2,
+        "vecsetx_learn": false,
+        "visual_dropout": 0.5,
+        "wandb_id": null,
+        "workers": 8,
+        "world_size": 4
+      },
+      "final_step": 14660,
+      "validation": [
+        {
+          "epoch": 1,
+          "step": 733,
+          "loss": 0.09642076599607374
+        },
+        {
+          "epoch": 2,
+          "step": 1466,
+          "loss": 0.09273034549368579
+        },
+        {
+          "epoch": 3,
+          "step": 2199,
+          "loss": 0.09147499654388641
+        },
+        {
+          "epoch": 4,
+          "step": 2932,
+          "loss": 0.09099120982013037
+        },
+        {
+          "epoch": 5,
+          "step": 3665,
+          "loss": 0.09022132243515005
+        },
+        {
+          "epoch": 6,
+          "step": 4398,
+          "loss": 0.09030504186241313
+        },
+        {
+          "epoch": 7,
+          "step": 5131,
+          "loss": 0.08964955122498988
+        },
+        {
+          "epoch": 8,
+          "step": 5864,
+          "loss": 0.0897625351248258
+        },
+        {
+          "epoch": 9,
+          "step": 6597,
+          "loss": 0.0891709381663517
+        },
+        {
+          "epoch": 10,
+          "step": 7330,
+          "loss": 0.08935178684728037
+        },
+        {
+          "epoch": 11,
+          "step": 8063,
+          "loss": 0.08939337289458472
+        },
+        {
+          "epoch": 12,
+          "step": 8796,
+          "loss": 0.08914549791566614
+        },
+        {
+          "epoch": 13,
+          "step": 9529,
+          "loss": 0.08873186660622973
+        },
+        {
+          "epoch": 14,
+          "step": 10262,
+          "loss": 0.08885217895479705
+        },
+        {
+          "epoch": 15,
+          "step": 10995,
+          "loss": 0.08886109316566856
+        },
+        {
+          "epoch": 16,
+          "step": 11728,
+          "loss": 0.0889234844260626
+        },
+        {
+          "epoch": 17,
+          "step": 12461,
+          "loss": 0.08873021598328142
+        },
+        {
+          "epoch": 18,
+          "step": 13194,
+          "loss": 0.0888138705738115
+        },
+        {
+          "epoch": 19,
+          "step": 13927,
+          "loss": 0.08902710882882856
+        },
+        {
+          "epoch": 20,
+          "step": 14660,
+          "loss": 0.08876910951722282
+        }
+      ],
+      "final_validation": 0.08876910951722282,
+      "best_validation": {
+        "epoch": 17,
+        "step": 12461,
+        "loss": 0.08873021598328142
+      },
+      "train_epoch1_update_weighted": 0.12775939058462898,
+      "train_epochs19_20_update_weighted": 0.09850713039910462,
+      "dropout_update_weighted": 0.5004098294956548,
+      "gradient_logging": {
+        "gradients/shape_cross_attention": {
+          "min": 0.015312917530536652,
+          "max": 0.5432313084602356,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/shape_cross_attention_kv": {
+          "min": 0.007559429854154587,
+          "max": 0.37549036741256714,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/touch_embedding": {
+          "min": 0.0006729592569172382,
+          "max": 0.03958912193775177,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/touch_output_projection": {
+          "min": 0.0031438518781214952,
+          "max": 0.20258814096450806,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/touch_position_projection": {
+          "min": 0.0,
+          "max": 0.0,
+          "nonzero_records": 0,
+          "records": 1485
+        },
+        "gradients/vecsetx_encoder": {
+          "min": 0.0,
+          "max": 0.0,
+          "nonzero_records": 0,
+          "records": 1485
+        }
+      }
+    },
+    "image_pointmap": {
+      "run_id": "xun3al7m",
+      "name": "stage1_image_full_cross_attention",
+      "state": "finished",
+      "config": {
+        "batch_size": 4,
+        "cross_attention_learning_rate": 1e-05,
+        "cross_attention_scope": "full",
+        "data_config": "configs/data1.yaml",
+        "device": "cuda",
+        "epochs": 20,
+        "global_batch_size": 16,
+        "gradient_clip": 1,
+        "joint_pointmap": false,
+        "learning_rate": 0.0001,
+        "local_rank": 0,
+        "log_every": 10,
+        "max_steps": 0,
+        "mode": "image",
+        "no_touch": true,
+        "no_touch_position": false,
+        "output_dir": "outputs/stage1_image_full_cross_attention",
+        "pipeline_config": "checkpoints/hf/pipeline.yaml",
+        "precision": "bf16",
+        "resume": null,
+        "touch_config": null,
+        "train_vecsetx": false,
+        "val_workers": 2,
+        "wandb_id": null,
+        "workers": 8,
+        "world_size": 4
+      },
+      "final_step": 14660,
+      "validation": [
+        {
+          "epoch": 1,
+          "step": 733,
+          "loss": 0.09581664586073164
+        },
+        {
+          "epoch": 2,
+          "step": 1466,
+          "loss": 0.09236337955645954
+        },
+        {
+          "epoch": 3,
+          "step": 2199,
+          "loss": 0.09087156145097197
+        },
+        {
+          "epoch": 4,
+          "step": 2932,
+          "loss": 0.0900867895024075
+        },
+        {
+          "epoch": 5,
+          "step": 3665,
+          "loss": 0.08959773386887003
+        },
+        {
+          "epoch": 6,
+          "step": 4398,
+          "loss": 0.08923858847826958
+        },
+        {
+          "epoch": 7,
+          "step": 5131,
+          "loss": 0.08897541788685633
+        },
+        {
+          "epoch": 8,
+          "step": 5864,
+          "loss": 0.08876484096639872
+        },
+        {
+          "epoch": 9,
+          "step": 6597,
+          "loss": 0.0887476123970069
+        },
+        {
+          "epoch": 10,
+          "step": 7330,
+          "loss": 0.08867470451675386
+        },
+        {
+          "epoch": 11,
+          "step": 8063,
+          "loss": 0.08863270667234338
+        },
+        {
+          "epoch": 12,
+          "step": 8796,
+          "loss": 0.0885780492374702
+        },
+        {
+          "epoch": 13,
+          "step": 9529,
+          "loss": 0.08860814647970869
+        },
+        {
+          "epoch": 14,
+          "step": 10262,
+          "loss": 0.08859566010219766
+        },
+        {
+          "epoch": 15,
+          "step": 10995,
+          "loss": 0.08876086557684733
+        },
+        {
+          "epoch": 16,
+          "step": 11728,
+          "loss": 0.08881594218158992
+        },
+        {
+          "epoch": 17,
+          "step": 12461,
+          "loss": 0.08880145686617702
+        },
+        {
+          "epoch": 18,
+          "step": 13194,
+          "loss": 0.08887213835582197
+        },
+        {
+          "epoch": 19,
+          "step": 13927,
+          "loss": 0.08901822122604182
+        },
+        {
+          "epoch": 20,
+          "step": 14660,
+          "loss": 0.08909781804287172
+        }
+      ],
+      "final_validation": 0.08909781804287172,
+      "best_validation": {
+        "epoch": 12,
+        "step": 8796,
+        "loss": 0.0885780492374702
+      },
+      "train_epoch1_update_weighted": 0.15664539330314103,
+      "train_epochs19_20_update_weighted": 0.08632536321080103,
+      "dropout_update_weighted": 0.0,
+      "gradient_logging": {
+        "gradients/shape_cross_attention": {
+          "min": 0.014187820255756378,
+          "max": 0.7896614670753479,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/shape_cross_attention_kv": {
+          "min": 0.00806961115449667,
+          "max": 0.523182213306427,
+          "nonzero_records": 1485,
+          "records": 1485
+        }
+      }
+    },
+    "image_only": {
+      "run_id": "fl7b2znc",
+      "name": "stage1_image_no_pointmap_full_cross_attention",
+      "state": "finished",
+      "config": {
+        "batch_size": 4,
+        "cross_attention_learning_rate": 1e-05,
+        "cross_attention_scope": "full",
+        "data_config": "configs/data_full_surface.yaml",
+        "device": "cuda",
+        "epochs": 20,
+        "global_batch_size": 16,
+        "gradient_clip": 1,
+        "joint_pointmap": false,
+        "learning_rate": 0.0001,
+        "local_rank": 0,
+        "log_every": 10,
+        "max_steps": 0,
+        "mode": "image",
+        "no_pointmap": true,
+        "no_touch": true,
+        "no_touch_position": false,
+        "oracle_point_frame": false,
+        "output_dir": "outputs/stage1_image_no_pointmap_full_cross_attention",
+        "pipeline_config": "checkpoints/hf/pipeline.yaml",
+        "precision": "bf16",
+        "resume": null,
+        "touch_config": null,
+        "train_vecsetx": false,
+        "val_workers": 2,
+        "vecsetx_learn": false,
+        "wandb_id": null,
+        "workers": 8,
+        "world_size": 4
+      },
+      "final_step": 14660,
+      "validation": [
+        {
+          "epoch": 1,
+          "step": 733,
+          "loss": 0.09764752140811696
+        },
+        {
+          "epoch": 2,
+          "step": 1466,
+          "loss": 0.09339898387858615
+        },
+        {
+          "epoch": 3,
+          "step": 2199,
+          "loss": 0.0917980211325303
+        },
+        {
+          "epoch": 4,
+          "step": 2932,
+          "loss": 0.09085306511095925
+        },
+        {
+          "epoch": 5,
+          "step": 3665,
+          "loss": 0.09035847081415718
+        },
+        {
+          "epoch": 6,
+          "step": 4398,
+          "loss": 0.08977635641112611
+        },
+        {
+          "epoch": 7,
+          "step": 5131,
+          "loss": 0.08959492846681619
+        },
+        {
+          "epoch": 8,
+          "step": 5864,
+          "loss": 0.08947304109520862
+        },
+        {
+          "epoch": 9,
+          "step": 6597,
+          "loss": 0.08937856185997403
+        },
+        {
+          "epoch": 10,
+          "step": 7330,
+          "loss": 0.08934916932200435
+        },
+        {
+          "epoch": 11,
+          "step": 8063,
+          "loss": 0.08920782584162072
+        },
+        {
+          "epoch": 12,
+          "step": 8796,
+          "loss": 0.08923142351439375
+        },
+        {
+          "epoch": 13,
+          "step": 9529,
+          "loss": 0.0892123433934019
+        },
+        {
+          "epoch": 14,
+          "step": 10262,
+          "loss": 0.08922647089051894
+        },
+        {
+          "epoch": 15,
+          "step": 10995,
+          "loss": 0.08936249124450986
+        },
+        {
+          "epoch": 16,
+          "step": 11728,
+          "loss": 0.08930587733498066
+        },
+        {
+          "epoch": 17,
+          "step": 12461,
+          "loss": 0.0893126927347875
+        },
+        {
+          "epoch": 18,
+          "step": 13194,
+          "loss": 0.08948346658415963
+        },
+        {
+          "epoch": 19,
+          "step": 13927,
+          "loss": 0.08975317145606442
+        },
+        {
+          "epoch": 20,
+          "step": 14660,
+          "loss": 0.08980807784436552
+        }
+      ],
+      "final_validation": 0.08980807784436552,
+      "best_validation": {
+        "epoch": 11,
+        "step": 8063,
+        "loss": 0.08920782584162072
+      },
+      "train_epoch1_update_weighted": 0.16280010779332768,
+      "train_epochs19_20_update_weighted": 0.0869006913594323,
+      "dropout_update_weighted": 0.0,
+      "gradient_logging": {
+        "gradients/shape_cross_attention": {
+          "min": 0.01340034231543541,
+          "max": 0.5367783904075623,
+          "nonzero_records": 1485,
+          "records": 1485
+        },
+        "gradients/shape_cross_attention_kv": {
+          "min": 0.007073622662574053,
+          "max": 0.3614339530467987,
+          "nonzero_records": 1485,
+          "records": 1485
+        }
+      }
+    }
+  },
+  "source_sha256": {
+    "cps50h2l": {
+      "run.json": "b1f949d6be08505583ed6fb113ad0e6bbbb6317a8710721d21d30d5cc6a5f121",
+      "history.csv": "38a27124ce7ac46193a67a38b08db8455f597fbb7b90d1e82a4da5a7dc87ad5b"
+    },
+    "hwz5ifqt": {
+      "run.json": "8fe6e6cb36132ed75fe6cb19cea74b942e0c963e33d521dfcaa9f4ae7b59f2ea",
+      "history.csv": "f5b0e1a05fc9a68b3a2804c237dabee94dc832d56338684260307171d2077393"
+    },
+    "mpd9bbwh": {
+      "run.json": "ae78a43c3f200bac4e9047621ecf77823c0040579b7df7a36ff274f454ac41b7",
+      "history.csv": "5133a39c5cf54f92e680bd3405c653888ec8439db0649e07ebf9f4c88cba1a8e"
+    },
+    "xun3al7m": {
+      "run.json": "0f6e4c78e0e901f31912c26badf94eece630be58642c848b4863c1e5fc098c58",
+      "history.csv": "990c318bb417944540f9d69c6946df9dfbe0d1c84597dc0af152419a42c61609"
+    },
+    "fl7b2znc": {
+      "run.json": "f67c7e79ec3cdcf985d4d5ef2620552015c692bc24b7e5c747151e6a41adbd40",
+      "history.csv": "f36f5d574ab3e6334bb1b62add95eb3a7102f31fd302589aec190aed5ab8fceb"
+    }
+  },
+  "scope": "Descriptive exported aggregate losses, one run per arm. No per-object inference, significance test, equivalence test, or training replay.",
+  "identical_dropout_log_series": true,
+  "oracle_comparisons": {
+    "constant": {
+      "final_validation_oracle_minus_reference": 0.0005209751273713426,
+      "final_validation_relative_percent": 0.5861724000155251,
+      "epochs_oracle_lower_validation": 1,
+      "late_training_relative_percent": -2.9379600716272103
+    },
+    "camera": {
+      "final_validation_oracle_minus_reference": 0.0006293233951865512,
+      "final_validation_relative_percent": 0.7089441345183835,
+      "epochs_oracle_lower_validation": 2,
+      "late_training_relative_percent": -2.745557040598201
+    },
+    "image_pointmap": {
+      "final_validation_oracle_minus_reference": 0.0003006148695376548,
+      "final_validation_relative_percent": 0.3373986884763061,
+      "epochs_oracle_lower_validation": 0,
+      "late_training_relative_percent": 10.978462622852824
+    },
+    "image_only": {
+      "final_validation_oracle_minus_reference": -0.0004096449319561518,
+      "final_validation_relative_percent": -0.45613372626241167,
+      "epochs_oracle_lower_validation": 9,
+      "late_training_relative_percent": 10.2437270017671
+    }
+  },
+  "limitations": [
+    "Training averages are update-weighted estimates; logs internally weight samples and final batches may be smaller.",
+    "New training losses mix visual-present and visual-zero examples; historical visual baselines do not.",
+    "Validation keeps visuals present; no visual-zero or per-time or per-object losses were exported.",
+    "Nonzero gradients prove a connected optimization path, not useful geometry interpretation.",
+    "Epochs reuse the same validation data and seeded evaluation; they are not independent replicates.",
+    "Historical image+pointmap manifest differs by path; equality with the full-surface manifest is not verified locally.",
+    "Equal seeds and dropout counts do not by themselves prove identical latent noise or all training input tensors.",
+    "No reconstruction or coordinate-impossibility claim follows from aggregate native losses."
+  ],
+  "analysis_source_sha256": "10b0be7dd92e49bde106979bf54bbb9c696b42eb1bba04b6ae3780adfaf4825e"
+}

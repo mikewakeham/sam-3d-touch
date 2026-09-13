@@ -348,6 +348,18 @@ The user explicitly prioritizes a concrete useful oracle endpoint before further
 
 Success with oracle alone establishes an aligned working setup at its measured scope. A matched worse camera arm is needed to attribute a remaining cost to frame treatment; neither proves rotation was the only cause. If oracle fails new-object utility or constant matches it, remain on the aligned branch instead of immediately investigating inference pose recovery. Output orientation remains flexible; raw-pose failure must not be mislabeled intrinsic-shape failure.
 
+## F17 — Full-data oracle/dropout has a small training advantage, no native validation advantage
+
+All three authorized production runs finished20 epochs/14,660 steps. Exported final visual-present validation loss: oracle .08939843, constant .08887746, camera .08876911; historical image+pointmap .08909782. Oracle is worse than constant at19/20 checkpoints, but these correlated epoch measurements are not independent replicates or a significance test. The useful full-data oracle upper bound remains **unproven**.
+
+Late mixed training loss does differ: update-weighted epochs19–20 oracle .09580256 versus constant .09870240 and camera .09850713 (oracle2.94%/2.75% lower). This may reflect some fitting utility, not established transfer or sampled fidelity. The new runs' logged dropout sequences match, average approximately50%; surface projector/embedding and shape CA gradients are finite/nonzero at all1,485 logged steps. A completely disconnected adapter or accidentally disabled dropout is not supported by these logs.
+
+**Next consequence:** stay on aligned conditioning. Probe existing matched last checkpoints without updates, separating training/validation identities, visual-present/zero states, and correct/wrong geometry with actual paired noise/time. Establish both condition dependence and absolute Stage-1 fidelity before calling it a working upper bound. Do not move to non-oracle pose recovery, replace VecSetX, or extend training solely because curves plateau. No conclusion of intrinsic architectural or coordinate impossibility follows. Historical manifest equality remains unverified; oracle/constant is the strongest matched full-run control.
+
+Source and reproducible numerical audit: [full-run returned findings](oracle_upper_bound/FULL_RUN_RETURNED_FINDINGS.md), `oracle_upper_bound/full_run_wandb_analysis.json`.
+
+**Execution status after F17 (not new evidence):** the [completed-run checkpoint probe](oracle_upper_bound/CHECKPOINT_PROBE_HANDOFF.md) is ready for the user's GPU node. It restores oracle/constant production last checkpoints at14,660; checks actual input/noise/time pairing; crosses visual-present/zero with correct/three wrong surfaces on16 train and16 validation identities, two views each; and reports native plus three fixed-time losses. Four local CPU pairing/completeness tests pass and GPU-module imports/CLI succeed locally. Full SAM3D execution is untested and pending. No new training or production-source edits. This probe does not itself establish sampled geometry fidelity; use its result to choose that verification or the relevant aligned-fitting/transfer/fusion branch. GPU results are now required before further causal conclusions.
+
 
 ### Implementation status — approved production integration (not a new experimental finding)
 
