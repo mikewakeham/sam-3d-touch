@@ -1,0 +1,17 @@
+{
+  "config": {
+    "source_sha256": {
+      "pose_shape_geometry.py": "b7654cb415c08496ece2e743ed0a7b96becd2470d64e8d342a9e1f2a36243200",
+      "analyze_pose_shape.py": "92e392076df084dada2a9d763e41fb9824a54c60c143ffa0e4a6e4979cea28a0"
+    },
+    "bundle_manifest_sha256": "d37b5917183b45d40cd71291fe11f72e6cfaa31dcfd74c9ed4b889b2fc73eef1",
+    "registration": "SE(3) only; 24 proper axes +24 PCA axes +identity/known inverse; 1024 coarse/4096 fine samples, 35 iterations each, 6 prescreened starts plus analytic starts, 3 fine candidates, full-cloud symmetric squared-distance selection; no trimming or scaling.",
+    "thresholds": [
+      0.015625,
+      0.03125
+    ],
+    "scope": "GT-assisted pose/shape diagnosis on fitted identities, not deployment or new-object validation."
+  },
+  "rows": 1232,
+  "predictions_sha256": "f2e3df7eff6ab1b753407c98f7ab3fa5f547bc697ccd6d0e32a567d8fe19b1da"
+}

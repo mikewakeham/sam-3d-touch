@@ -1,5 +1,7 @@
 # Saved occupancy transfer for the selected pose/shape branch
 
+**Completed:** the bundle arrived and all 1,232 predictions were analyzed on CPU. See [POSE_SHAPE_RETURNED_FINDINGS.md](POSE_SHAPE_RETURNED_FINDINGS.md). The command below is historical; do not rerun it.
+
 Continues branch A of [EVIDENCE_AUDIT_AND_BRANCH_PLAN.md](EVIDENCE_AUDIT_AND_BRANCH_PLAN.md). No new inference or training. The latest prediction arrays are not local, so no pose-adjusted outcome is claimed.
 
 `bundle_alignment_geometry.py` uses only the Python standard library. It runs the unchanged four-shard report analyzer, requires every saved alignment NPZ, and collects all 294 batch artifacts (21 conditions × seven view groups × two seeds), without selecting favorable cases. It copies their `predicted_occupancy.npy` and `target_occupancy.npy` members byte-for-byte, omitting latent arrays to reduce transfer size. The archive includes all four raw reports, validated aggregate analysis inside its manifest, original NPZ hashes and copied member hashes. This also supplies the previously missing raw shard 2 report.

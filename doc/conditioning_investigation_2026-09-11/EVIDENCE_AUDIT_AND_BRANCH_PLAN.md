@@ -1,5 +1,7 @@
 # Evidence audit and coordinate investigation branches — 12 September 2026
 
+**Execution update:** selected branch A is completed; [POSE_SHAPE_RETURNED_FINDINGS.md](POSE_SHAPE_RETURNED_FINDINGS.md) records the full CPU analysis and its controls. This document preserves the pre-analysis design. F11 in the ledger records the outcome and the remaining same-policy camera-plus-dropout sampling control before another training intervention.
+
 ## Material Passport
 
 - Origin: existing SAM3D-touch investigation; experiment-planning workflow of academic-research-suite.

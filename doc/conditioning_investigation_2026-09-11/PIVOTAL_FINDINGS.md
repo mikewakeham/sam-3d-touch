@@ -22,7 +22,7 @@ Native flow loss is the actual training objective, not an arbitrary score. But i
 
 Decoding GT latents supplies an achievable reference through the same downstream measurement path. The earlier tiny-fit experiment used this principle at Stage 1. It does not require Stage 2 or final mesh CD. Preserve raw fixed-frame results; report target-assisted rigid alignment separately when explicitly testing pose-independent shape. It cannot count as a deployed correction or erase a fixed-frame training error. A new Stage-1 reconstruction check is justified when needed to promote a candidate to a reconstruction claim, not automatically for every diagnostic.
 
-**Current governing audit/branch selection:** [EVIDENCE_AUDIT_AND_BRANCH_PLAN.md](EVIDENCE_AUDIT_AND_BRANCH_PLAN.md). The next selected branch is CPU analysis of saved predictions separating pose from shape, with registration/discretization and wrong-shape controls. This precedes any augmentation or target-frame training. Other branches are retained explicitly, not queued automatically.
+**Current governing audit/branch selection:** [EVIDENCE_AUDIT_AND_BRANCH_PLAN.md](EVIDENCE_AUDIT_AND_BRANCH_PLAN.md). Branch A is completed in [POSE_SHAPE_RETURNED_FINDINGS.md](POSE_SHAPE_RETURNED_FINDINGS.md), summarized as F11 below. Before new training, the next proposed control is sampled geometry for the existing camera-plus-dropout checkpoint, completing the frame comparison under the same training policy. Other branches remain conditional, not queued automatically.
 
 ## F0 — Early saved predictions already demonstrated pose/shape disagreement
 
@@ -168,7 +168,7 @@ Source: [separate-attention findings](SEPARATE_SURFACE_RETURNED_FINDINGS.md).
 
 Record, briefly, before handing off a run:
 
-1. **Starting evidence:** relevant F0–F10 IDs and the exact unresolved question; do not recreate completed evidence as a new discovery.
+1. **Starting evidence:** relevant F0–F11 IDs and the exact unresolved question; do not recreate completed evidence as a new discovery.
 2. **Claim being tested:** coordinate correctness, fitting, view robustness, geometry-specific use, or transfer. Name any entanglement that requires changing another factor.
 3. **Comparisons:** intervention, matched control, reference endpoint and claimed split. State whether the reference is perfect target agreement, exact alignment, a fitted-model score, or an image baseline.
 4. **Success/failure/inconclusive criteria:** justify the tolerance or effect size before results; include uncertainty/replication appropriate to the scope. A smaller scalar alone is not “resolved.” Retrospective margins cannot convert prior results into formal equivalence.
@@ -194,6 +194,8 @@ Source: [alignment results](ALIGNMENT_TOLERANCE_RETURNED_FINDINGS.md).
 
 **Intervention:** rotate oracle-aligned points before the existing VecSetX normalization/encoder; hold visuals, targets, weights and noise fixed. At 5°, reserved mean IoU spans 94.14–97.13% across six signed axes, but the worst object-mean is 85.51%; only +x and −y pass the prespecified per-object tolerance. At 30°, means span 64.74–85.63%, worst object-mean 13.56%, and no direction passes. These raw shards passed local validation. The supplied aggregate's 15° means span 79.00–93.25%, worst object 42.21%; its raw shard 2 is still missing, so those intermediate-angle values are not independently reproduced locally.
 
+**Validation update:** the geometry bundle subsequently supplied shard 2. All four reports now reproduce the aggregate, and all saved raw occupancy metrics were independently reproduced on CPU. The earlier missing-data qualification is resolved.
+
 **Established:** the complete current conditioning path can reconstruct near its target under exact alignment yet lose meaningful fixed-frame agreement under small residual pose errors. A coarse pose correction is not automatically adequate for that criterion.
 
 **Limits:** no universal angular bound, arbitrary-axis coverage, learned pose estimate, localization of sensitivity within VecSetX/normalization/attention, new-object transfer, or inherent incompatibility is established. Normalization responds to the perturbation too.
@@ -203,3 +205,21 @@ Source: [alignment results](ALIGNMENT_TOLERANCE_RETURNED_FINDINGS.md).
 **Next-experiment consequence:** before launching residual-rotation augmentation, inspect the already saved perturbed predictions for rigid-pose versus shape error. Compare their raw support, known inverse-rotation compensation, and a separately identified rigid-registration diagnostic against GT, accounting for voxel discretization and registration failure. This uses the existing artifacts and does not require a new training run. Registration to GT is a diagnostic, not a deployable inference correction. Small residual-rotation augmentation remains a candidate if orientation errors actually damage shape or if fixed-frame output is required; it is not yet implemented or launched. A successful local robustness repair would still need observable frame recovery and separate held-object utility before full training.
 
 Source: [alignment results](ALIGNMENT_TOLERANCE_RETURNED_FINDINGS.md), [local validation](alignment_tolerance_returned_manual/local_validation.json).
+
+## F11 — Pose adjustment does not generally rescue the errors, but the small-angle IoU result overstated broad shape fragility
+
+**Evidence:** all 1,232 existing saved predictions analyzed on CPU, all raw IoU/count/distance values reproduced. Proper rigid registration passed known-transform, revoxelization and wrong-object controls. All four trained identities, fit/reserved views and two seeds retained; no new model inference. F-score uses one-voxel proximity (1/64), a different and less exact criterion than fixed-grid IoU.
+
+**Residual rotations:** at 5°, raw F-score averages 99.67% before any alignment, with 2/144 individual reserved predictions below 95% precision/recall. Both failures are one bathtub view/noise draw under two directions; they are real exceptions. At 15°/30°, raw means are 95.87%/88.32%; corresponding individual failures are 17/144 and 40/144, and the tested rigid transform does not make those failures pass. Known inverse perturbation worsens F-score in 431/432 reserved cases. Outputs do not generally follow the imposed input rotation in a way that its inverse corrects.
+
+**Natural inputs:** original-policy camera raw→registered F-score is 72.83→80.47%; original-policy oracle is 84.47→85.32%; oracle dropout is already 99.997% raw. Some individual predictions benefit greatly from pose correction (one camera drill 2.03→79.72%), but it does not generally reach the accurate endpoint. Registered two-voxel scores are 92.13%, 95.35% and 100%, respectively, so the severity depends on spatial tolerance.
+
+**Corroborated shape failure:** a +30° drill prediction retains only 16.38% registered one-voxel /33.64% two-voxel F-score. Visible thickening and covariance eigenvalue changes, far beyond the revoxelization control, corroborate non-pose error. Registration is not globally certified and its RMS objective can worsen thresholded F-score; raw results and this limitation remain explicit. A secondary best-of-raw/registered check does not rescue the overall original-model comparison.
+
+**Established consequence:** neither a universal sub-5° requirement nor a general post-hoc pose-only fix is supported. Small perturbations are usually shape-tolerable at voxel resolution, with rare failures; larger perturbations can change shape and pose. This is a fitted-identity result, not generalization or a deployed correction.
+
+**Next-experiment consequence:** avoid automatically training a precision pose head or augmenting an already mostly robust four-object oracle model. First sample the already trained camera-plus-dropout model to complete the same-policy natural-input geometry comparison: its native loss alone cannot establish its shape quality. That inference-only control can decide whether a sampled frame burden remains under the improved policy. A shared camera-oriented target task, local augmentation or a new-object utility check follows the appropriate outcome; no full run is earned yet.
+
+Source: [pose/shape findings](POSE_SHAPE_RETURNED_FINDINGS.md), [complete summary](pose_shape_analysis/summary.json), [comparison figure](pose_shape_analysis/rotation_shape_comparison.png).
+
+**Execution handoff:** [CAMERA_DROPOUT_GEOMETRY_HANDOFF.md](CAMERA_DROPOUT_GEOMETRY_HANDOFF.md) now implements that existing-checkpoint control. GPU execution/results are pending; the handoff fixes the comparisons and branches before results. No new finding or training fix is claimed from implementation alone.

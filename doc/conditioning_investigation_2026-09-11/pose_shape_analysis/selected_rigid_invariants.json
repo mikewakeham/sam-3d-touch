@@ -1,0 +1,77 @@
+{
+  "scope": "Post-result diagnostic on the three plot examples. Uniform occupied-center counts and covariance eigenvalues are invariant to rigid transforms of these finite clouds, but can change under voxelization/sampling; not a global registration certificate.",
+  "rows": [
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "condition": "natural",
+      "counts": [
+        1308,
+        1301
+      ],
+      "covariance_eigenvalues_prediction_target": [
+        [
+          0.0010943615985821266,
+          0.008566869649695132,
+          0.08313293973373465
+        ],
+        [
+          0.0008968578348005594,
+          0.007542243674030765,
+          0.08876752844264578
+        ]
+      ],
+      "rigid_angle": 173.87147317948828,
+      "rigid_fscore_1v": 0.7972014467447138,
+      "rigid_fscore_2v": 0.9652816450091566,
+      "rigid_p95": 0.03123774262742158
+    },
+    {
+      "sample_id": "fe200ce00a5d4c298eee89de0fc15f01_000",
+      "condition": "z_+30",
+      "counts": [
+        2617,
+        1301
+      ],
+      "covariance_eigenvalues_prediction_target": [
+        [
+          0.0060748261848290516,
+          0.008369145201936405,
+          0.08308401187716659
+        ],
+        [
+          0.0008968578348005594,
+          0.007542243674030765,
+          0.08876752844264578
+        ]
+      ],
+      "rigid_angle": 118.73400336780605,
+      "rigid_fscore_1v": 0.1638297643602341,
+      "rigid_fscore_2v": 0.33638361696232605,
+      "rigid_p95": 0.12514295031293793
+    },
+    {
+      "sample_id": "e846574df9334973955c80286af47ba7_000",
+      "condition": "x_-5",
+      "counts": [
+        9582,
+        8811
+      ],
+      "covariance_eigenvalues_prediction_target": [
+        [
+          0.01178235970451762,
+          0.03163657055023617,
+          0.10484629676862911
+        ],
+        [
+          0.007411949818281266,
+          0.030543077021939143,
+          0.10244382270426312
+        ]
+      ],
+      "rigid_angle": 0.727768644880488,
+      "rigid_fscore_1v": 0.5485901401752581,
+      "rigid_fscore_2v": 0.7988048452294937,
+      "rigid_p95": 0.03397967153599072
+    }
+  ]
+}

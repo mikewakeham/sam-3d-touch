@@ -1,0 +1,7 @@
+{
+  "bundle_sha256": "ca514549e67974e85ecb8ae4379b9584d1dcbdbe19cbe7c0e1e314022b3e4f77",
+  "all_manifest_files_verified": 705,
+  "all_four_shards_reproduce_aggregate_exactly": true,
+  "camera": "complete: 56 saved natural camera predictions",
+  "scope": "Archive and returned report validation; numerical occupancy checks pending."
+}
