@@ -1,0 +1,25 @@
+{
+  "scope": "Retrospective source/report audit; no new GPU execution or sampled geometry analysis.",
+  "cohort_check": {
+    "earlier_probe_objects": 32,
+    "later_training_overlap": 16,
+    "later_held_overlap": 16,
+    "union_exactly_equals_earlier_pool": true,
+    "later_train_held_disjoint": true
+  },
+  "latest_prediction_npz_files_local": 0,
+  "file_sha256": {
+    "PIVOTAL_FINDINGS.md": "dc51544ace46ef2fcff16b19aa3d437add2e58f83f2cca7dfa71041522b46f54",
+    "EVIDENCE_AUDIT_AND_BRANCH_PLAN.md": "7a3f66cdcce8e631f488c89f1c70d8a96d86fb6ebdf7a56ef9556545d8724cff",
+    "GEOMETRY_FINDINGS.md": "de53c23358d9d00fa1e50d218de6755ced77d32613368e501e49188dcce14b5b",
+    "FRAME_FACTORS_RETURNED_FINDINGS.md": "f68e43132ccb99fd772e636773a2bea132ca72de2af35aa78b205e0a3d71e8e6",
+    "TARGET_FRAME_RETURNED_FINDINGS.md": "6fa455c3dd88e4c098d96c9eba3171d4ed54d33e431ffa26774aa0d79c057304",
+    "REPRESENTATION_RETURNED_FINDINGS.md": "2f7f09fd90468437009b4901efbe2c752a7aa41df90128d4a9b6c22cf979d86d",
+    "OBJECT_TRANSFER_RETURNED_FINDINGS.md": "6008f621e30cea9e6217d6ebc2746936aea82ea30145151147f3611edf4990b8",
+    "CONSTANT_SURFACE_RETURNED_FINDINGS.md": "cdeff644956080c916f3c3b5e5ab4c668b33cb7f22255137fafb293ed4a8ab6a",
+    "SEPARATE_SURFACE_RETURNED_FINDINGS.md": "9c88303916e58678caf8300b36bea43c7a1b55aedf828a4af65341ee0e1551e7",
+    "ALIGNMENT_TOLERANCE_RETURNED_FINDINGS.md": "829981ba42c4d2d13d81ac2b86c92614e64e401c3cdb00c78cc228dab93d5795",
+    "object_transfer_plan.json": "33a967da1a96e0a4fb6317f4f5862c4af3a1548552e47bb6c026a8349bb35bd9",
+    "unseen_objects_returned_manual/oracle_original.json": "12f01528400646c613039048664a996ad99f41c269aba3f9d342a84f90a588da"
+  }
+}

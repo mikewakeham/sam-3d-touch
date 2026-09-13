@@ -1,0 +1,652 @@
+{
+  "cells": {
+    "fit": {
+      "original/aligned": {
+        "mean_object_iou": 0.9693212245124867,
+        "minimum_object_mean_iou": 0.9312768623175407,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9879405017586321,
+          "e846574df9334973955c80286af47ba7": 0.9985258134473034,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9312768623175407,
+          "146b6c1f10bd445da977424c64dbb051": 0.9595417205264705
+        }
+      },
+      "dropout/aligned": {
+        "mean_object_iou": 0.9780334240987378,
+        "minimum_object_mean_iou": 0.9418723577200862,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9934094111056706,
+          "e846574df9334973955c80286af47ba7": 0.9954532300222809,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9418723577200862,
+          "146b6c1f10bd445da977424c64dbb051": 0.9813986975469137
+        }
+      },
+      "dropout/wrong_surface": {
+        "mean_object_iou": 0.025510160396629025,
+        "minimum_object_mean_iou": 0.014239158793140933,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.04614274093333427,
+          "e846574df9334973955c80286af47ba7": 0.022438468304794294,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.014239158793140933,
+          "146b6c1f10bd445da977424c64dbb051": 0.0192202735552466
+        }
+      },
+      "dropout/x_-5": {
+        "mean_object_iou": 0.9630378392788939,
+        "minimum_object_mean_iou": 0.9269976957782721,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9928973442334414,
+          "e846574df9334973955c80286af47ba7": 0.989731981970283,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9269976957782721,
+          "146b6c1f10bd445da977424c64dbb051": 0.9425243351335791
+        }
+      },
+      "dropout/x_+5": {
+        "mean_object_iou": 0.9694158625795198,
+        "minimum_object_mean_iou": 0.9251762850447551,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9922904979238952,
+          "e846574df9334973955c80286af47ba7": 0.9955239253126749,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9251762850447551,
+          "146b6c1f10bd445da977424c64dbb051": 0.9646727420367541
+        }
+      },
+      "dropout/y_-5": {
+        "mean_object_iou": 0.9781260661618527,
+        "minimum_object_mean_iou": 0.9506050080117241,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.992927964016761,
+          "e846574df9334973955c80286af47ba7": 0.9952135130227828,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9506050080117241,
+          "146b6c1f10bd445da977424c64dbb051": 0.9737577795961431
+        }
+      },
+      "dropout/y_+5": {
+        "mean_object_iou": 0.9681620810592209,
+        "minimum_object_mean_iou": 0.9113564775602,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9908212621344423,
+          "e846574df9334973955c80286af47ba7": 0.9916363266785816,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9113564775602,
+          "146b6c1f10bd445da977424c64dbb051": 0.9788342578636594
+        }
+      },
+      "dropout/z_-5": {
+        "mean_object_iou": 0.9631794528097597,
+        "minimum_object_mean_iou": 0.8839539004038814,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9921679805616962,
+          "e846574df9334973955c80286af47ba7": 0.9955524443945665,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.8839539004038814,
+          "146b6c1f10bd445da977424c64dbb051": 0.9810434858788947
+        }
+      },
+      "dropout/z_+5": {
+        "mean_object_iou": 0.9716928092897733,
+        "minimum_object_mean_iou": 0.9215509069053981,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9905599832263461,
+          "e846574df9334973955c80286af47ba7": 0.9953258743118814,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9215509069053981,
+          "146b6c1f10bd445da977424c64dbb051": 0.9793344727154678
+        }
+      },
+      "dropout/x_-15": {
+        "mean_object_iou": 0.8247763844990076,
+        "minimum_object_mean_iou": 0.4965001049574753,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9919572565175548,
+          "e846574df9334973955c80286af47ba7": 0.9690355790583418,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.4965001049574753,
+          "146b6c1f10bd445da977424c64dbb051": 0.8416125974626585
+        }
+      },
+      "dropout/x_+15": {
+        "mean_object_iou": 0.9403439876570854,
+        "minimum_object_mean_iou": 0.8866462175703027,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9915687956539416,
+          "e846574df9334973955c80286af47ba7": 0.9902980833174518,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.8866462175703027,
+          "146b6c1f10bd445da977424c64dbb051": 0.8928628540866455
+        }
+      },
+      "dropout/y_-15": {
+        "mean_object_iou": 0.9504681847043716,
+        "minimum_object_mean_iou": 0.8920088505242602,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9886538576492627,
+          "e846574df9334973955c80286af47ba7": 0.9928298171056646,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.8920088505242602,
+          "146b6c1f10bd445da977424c64dbb051": 0.9283802135382986
+        }
+      },
+      "dropout/y_+15": {
+        "mean_object_iou": 0.9091011799380149,
+        "minimum_object_mean_iou": 0.7383796525090242,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.97979198401832,
+          "e846574df9334973955c80286af47ba7": 0.9531565731326141,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.7383796525090242,
+          "146b6c1f10bd445da977424c64dbb051": 0.9650765100921014
+        }
+      },
+      "dropout/z_-15": {
+        "mean_object_iou": 0.8859124854570666,
+        "minimum_object_mean_iou": 0.5882043258484371,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9870806768364664,
+          "e846574df9334973955c80286af47ba7": 0.9953542511158753,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.5882043258484371,
+          "146b6c1f10bd445da977424c64dbb051": 0.9730106880274878
+        }
+      },
+      "dropout/z_+15": {
+        "mean_object_iou": 0.9280315197643144,
+        "minimum_object_mean_iou": 0.7663527807902537,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9770162797648747,
+          "e846574df9334973955c80286af47ba7": 0.995128753005087,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.7663527807902537,
+          "146b6c1f10bd445da977424c64dbb051": 0.9736282654970422
+        }
+      },
+      "dropout/x_-30": {
+        "mean_object_iou": 0.6975325618407361,
+        "minimum_object_mean_iou": 0.21913846584069938,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.991966428393028,
+          "e846574df9334973955c80286af47ba7": 0.8730938695452382,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.21913846584069938,
+          "146b6c1f10bd445da977424c64dbb051": 0.7059314835839788
+        }
+      },
+      "dropout/x_+30": {
+        "mean_object_iou": 0.8226383861914284,
+        "minimum_object_mean_iou": 0.556758934815112,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9911298282383418,
+          "e846574df9334973955c80286af47ba7": 0.9905166141954349,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.752148167516825,
+          "146b6c1f10bd445da977424c64dbb051": 0.556758934815112
+        }
+      },
+      "dropout/y_-30": {
+        "mean_object_iou": 0.8999012983508324,
+        "minimum_object_mean_iou": 0.7961829204523574,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.911160606195889,
+          "e846574df9334973955c80286af47ba7": 0.9551502839796938,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.7961829204523574,
+          "146b6c1f10bd445da977424c64dbb051": 0.9371113827753896
+        }
+      },
+      "dropout/y_+30": {
+        "mean_object_iou": 0.8347790503786509,
+        "minimum_object_mean_iou": 0.5623269743762842,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9027630440491987,
+          "e846574df9334973955c80286af47ba7": 0.9177035920882227,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.5623269743762842,
+          "146b6c1f10bd445da977424c64dbb051": 0.9563225910008978
+        }
+      },
+      "dropout/z_-30": {
+        "mean_object_iou": 0.8087953916337809,
+        "minimum_object_mean_iou": 0.35194400671799053,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9712251073165199,
+          "e846574df9334973955c80286af47ba7": 0.9858114614686779,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.35194400671799053,
+          "146b6c1f10bd445da977424c64dbb051": 0.9262009910319352
+        }
+      },
+      "dropout/z_+30": {
+        "mean_object_iou": 0.7149768518198997,
+        "minimum_object_mean_iou": 0.1576295998048624,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.7642189934085635,
+          "e846574df9334973955c80286af47ba7": 0.9914788932517123,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.1576295998048624,
+          "146b6c1f10bd445da977424c64dbb051": 0.9465799208144604
+        }
+      }
+    },
+    "reserved_view": {
+      "original/aligned": {
+        "mean_object_iou": 0.669524303014279,
+        "minimum_object_mean_iou": 0.26200738851399313,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.7877804631719414,
+          "e846574df9334973955c80286af47ba7": 0.928324148081876,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.26200738851399313,
+          "146b6c1f10bd445da977424c64dbb051": 0.6999852122893055
+        }
+      },
+      "dropout/aligned": {
+        "mean_object_iou": 0.9716623551983723,
+        "minimum_object_mean_iou": 0.9195986336351976,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9935485630387585,
+          "e846574df9334973955c80286af47ba7": 0.9940940834901352,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9195986336351976,
+          "146b6c1f10bd445da977424c64dbb051": 0.9794081406293981
+        }
+      },
+      "dropout/wrong_surface": {
+        "mean_object_iou": 0.024873847098381707,
+        "minimum_object_mean_iou": 0.013970217637811477,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.04546291376331283,
+          "e846574df9334973955c80286af47ba7": 0.022483877431880493,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.013970217637811477,
+          "146b6c1f10bd445da977424c64dbb051": 0.017578379560522026
+        }
+      },
+      "dropout/x_-5": {
+        "mean_object_iou": 0.9413653313325576,
+        "minimum_object_mean_iou": 0.9087730788440981,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9930888595200074,
+          "e846574df9334973955c80286af47ba7": 0.9280674030804668,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9087730788440981,
+          "146b6c1f10bd445da977424c64dbb051": 0.9355319838856581
+        }
+      },
+      "dropout/x_+5": {
+        "mean_object_iou": 0.9627133020155261,
+        "minimum_object_mean_iou": 0.9040792219354995,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9929903153021203,
+          "e846574df9334973955c80286af47ba7": 0.9940034124631261,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9040792219354995,
+          "146b6c1f10bd445da977424c64dbb051": 0.9597802583613582
+        }
+      },
+      "dropout/y_-5": {
+        "mean_object_iou": 0.9713026856612489,
+        "minimum_object_mean_iou": 0.9214959340405164,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9933945124997876,
+          "e846574df9334973955c80286af47ba7": 0.9984879006024046,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.9214959340405164,
+          "146b6c1f10bd445da977424c64dbb051": 0.9718323955022868
+        }
+      },
+      "dropout/y_+5": {
+        "mean_object_iou": 0.9431412508760796,
+        "minimum_object_mean_iou": 0.8774825736831048,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9910017732658267,
+          "e846574df9334973955c80286af47ba7": 0.9284535304584511,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.8774825736831048,
+          "146b6c1f10bd445da977424c64dbb051": 0.9756271260969356
+        }
+      },
+      "dropout/z_-5": {
+        "mean_object_iou": 0.955236827271332,
+        "minimum_object_mean_iou": 0.8551454228546111,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9927699628183012,
+          "e846574df9334973955c80286af47ba7": 0.9942250443128517,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.8551454228546111,
+          "146b6c1f10bd445da977424c64dbb051": 0.9788068790995639
+        }
+      },
+      "dropout/z_+5": {
+        "mean_object_iou": 0.9650224417644454,
+        "minimum_object_mean_iou": 0.8982075693826368,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9905436341537797,
+          "e846574df9334973955c80286af47ba7": 0.9941137671857312,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.8982075693826368,
+          "146b6c1f10bd445da977424c64dbb051": 0.977224796335634
+        }
+      },
+      "dropout/x_-15": {
+        "mean_object_iou": 0.7899788195817932,
+        "minimum_object_mean_iou": 0.4324976865837238,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9923091082192852,
+          "e846574df9334973955c80286af47ba7": 0.8911831471952371,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.4324976865837238,
+          "146b6c1f10bd445da977424c64dbb051": 0.8439253363289265
+        }
+      },
+      "dropout/x_+15": {
+        "mean_object_iou": 0.9325421455855928,
+        "minimum_object_mean_iou": 0.8631316272833247,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9919860266725792,
+          "e846574df9334973955c80286af47ba7": 0.9916282500580196,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.8631316272833247,
+          "146b6c1f10bd445da977424c64dbb051": 0.8834226783284478
+        }
+      },
+      "dropout/y_-15": {
+        "mean_object_iou": 0.9261060237113505,
+        "minimum_object_mean_iou": 0.8106211514890399,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9886517090269611,
+          "e846574df9334973955c80286af47ba7": 0.9967147780816514,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.8106211514890399,
+          "146b6c1f10bd445da977424c64dbb051": 0.9084364562477498
+        }
+      },
+      "dropout/y_+15": {
+        "mean_object_iou": 0.8143722825200292,
+        "minimum_object_mean_iou": 0.4953495981864554,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9795440159619102,
+          "e846574df9334973955c80286af47ba7": 0.8226648712968562,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.4953495981864554,
+          "146b6c1f10bd445da977424c64dbb051": 0.9599306446348952
+        }
+      },
+      "dropout/z_-15": {
+        "mean_object_iou": 0.8436346441296484,
+        "minimum_object_mean_iou": 0.4221372136100516,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9868445576655414,
+          "e846574df9334973955c80286af47ba7": 0.9939006432779286,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.4221372136100516,
+          "146b6c1f10bd445da977424c64dbb051": 0.9716561619650721
+        }
+      },
+      "dropout/z_+15": {
+        "mean_object_iou": 0.8768426602541749,
+        "minimum_object_mean_iou": 0.6075201476434927,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9760533347813025,
+          "e846574df9334973955c80286af47ba7": 0.9537846978486246,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.6075201476434927,
+          "146b6c1f10bd445da977424c64dbb051": 0.9700124607432796
+        }
+      },
+      "dropout/x_-30": {
+        "mean_object_iou": 0.6474003141672386,
+        "minimum_object_mean_iou": 0.1355731279895756,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.992307324293465,
+          "e846574df9334973955c80286af47ba7": 0.7743080325110406,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.1355731279895756,
+          "146b6c1f10bd445da977424c64dbb051": 0.6874127718748732
+        }
+      },
+      "dropout/x_+30": {
+        "mean_object_iou": 0.7711153651017678,
+        "minimum_object_mean_iou": 0.4461645728601337,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9913719989534557,
+          "e846574df9334973955c80286af47ba7": 0.9545778732967904,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.6923470152966913,
+          "146b6c1f10bd445da977424c64dbb051": 0.4461645728601337
+        }
+      },
+      "dropout/y_-30": {
+        "mean_object_iou": 0.8562562468149707,
+        "minimum_object_mean_iou": 0.6941831141951579,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.8966890206069384,
+          "e846574df9334973955c80286af47ba7": 0.8996291862528383,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.6941831141951579,
+          "146b6c1f10bd445da977424c64dbb051": 0.9345236662049483
+        }
+      },
+      "dropout/y_+30": {
+        "mean_object_iou": 0.7368798768082623,
+        "minimum_object_mean_iou": 0.3731534358095678,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.8509575286109297,
+          "e846574df9334973955c80286af47ba7": 0.7716891240365893,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.3731534358095678,
+          "146b6c1f10bd445da977424c64dbb051": 0.9517194187759623
+        }
+      },
+      "dropout/z_-30": {
+        "mean_object_iou": 0.7549683653334144,
+        "minimum_object_mean_iou": 0.2069726251160886,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.9669726558174934,
+          "e846574df9334973955c80286af47ba7": 0.948134250737198,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.2069726251160886,
+          "146b6c1f10bd445da977424c64dbb051": 0.8977939296628774
+        }
+      },
+      "dropout/z_+30": {
+        "mean_object_iou": 0.6793743615005688,
+        "minimum_object_mean_iou": 0.13738629704706234,
+        "object_iou": {
+          "479bbf9062de4b3196f08e52d1c12821": 0.7094892369520042,
+          "e846574df9334973955c80286af47ba7": 0.9362874947985104,
+          "fe200ce00a5d4c298eee89de0fc15f01": 0.13738629704706234,
+          "146b6c1f10bd445da977424c64dbb051": 0.9343344172046985
+        }
+      }
+    }
+  },
+  "aligned_reference_meets_95_mean_90_each": true,
+  "rotation_tolerance": {
+    "5": {
+      "directions": {
+        "x_-5": {
+          "mean_iou_change": -0.03029702386581476,
+          "minimum_object_mean_iou": 0.9087730788440981,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.00045970351875113113,
+            "e846574df9334973955c80286af47ba7": -0.06602668040966841,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.010825554791099479,
+            "146b6c1f10bd445da977424c64dbb051": -0.043876156743740014
+          },
+          "passes_sampled_direction": false
+        },
+        "x_+5": {
+          "mean_iou_change": -0.008949053182846306,
+          "minimum_object_mean_iou": 0.9040792219354995,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.0005582477366381511,
+            "e846574df9334973955c80286af47ba7": -9.067102700910379e-05,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.01551941169969806,
+            "146b6c1f10bd445da977424c64dbb051": -0.01962788226803991
+          },
+          "passes_sampled_direction": true
+        },
+        "y_-5": {
+          "mean_iou_change": -0.0003596695371234637,
+          "minimum_object_mean_iou": 0.9214959340405164,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.0001540505389708846,
+            "e846574df9334973955c80286af47ba7": 0.0043938171122693825,
+            "fe200ce00a5d4c298eee89de0fc15f01": 0.0018973004053188802,
+            "146b6c1f10bd445da977424c64dbb051": -0.007575745127111233
+          },
+          "passes_sampled_direction": true
+        },
+        "y_+5": {
+          "mean_iou_change": -0.028521104322292767,
+          "minimum_object_mean_iou": 0.8774825736831048,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.002546789772931768,
+            "e846574df9334973955c80286af47ba7": -0.06564055303168403,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.04211605995209278,
+            "146b6c1f10bd445da977424c64dbb051": -0.00378101453246249
+          },
+          "passes_sampled_direction": false
+        },
+        "z_-5": {
+          "mean_iou_change": -0.01642552792704033,
+          "minimum_object_mean_iou": 0.8551454228546111,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.0007786002204572817,
+            "e846574df9334973955c80286af47ba7": 0.00013096082271657483,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.06445321078058641,
+            "146b6c1f10bd445da977424c64dbb051": -0.0006012615298341961
+          },
+          "passes_sampled_direction": false
+        },
+        "z_+5": {
+          "mean_iou_change": -0.0066399134339269195,
+          "minimum_object_mean_iou": 0.8982075693826368,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.0030049288849788303,
+            "e846574df9334973955c80286af47ba7": 1.9683695596017792e-05,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.021391064252560765,
+            "146b6c1f10bd445da977424c64dbb051": -0.0021833442937641
+          },
+          "passes_sampled_direction": false
+        }
+      },
+      "passes_all_sampled_directions": false
+    },
+    "15": {
+      "directions": {
+        "x_-15": {
+          "mean_iou_change": -0.18168353561657918,
+          "minimum_object_mean_iou": 0.4324976865837238,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.0012394548194732957,
+            "e846574df9334973955c80286af47ba7": -0.10291093629489811,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.4871009470514738,
+            "146b6c1f10bd445da977424c64dbb051": -0.13548280430047155
+          },
+          "passes_sampled_direction": false
+        },
+        "x_+15": {
+          "mean_iou_change": -0.03912020961277951,
+          "minimum_object_mean_iou": 0.8631316272833247,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.0015625363661793124,
+            "e846574df9334973955c80286af47ba7": -0.002465833432115594,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.05646700635187285,
+            "146b6c1f10bd445da977424c64dbb051": -0.09598546230095029
+          },
+          "passes_sampled_direction": false
+        },
+        "y_-15": {
+          "mean_iou_change": -0.04555633148702176,
+          "minimum_object_mean_iou": 0.8106211514890399,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.004896854011797402,
+            "e846574df9334973955c80286af47ba7": 0.0026206945915162594,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.10897748214615766,
+            "146b6c1f10bd445da977424c64dbb051": -0.07097168438164825
+          },
+          "passes_sampled_direction": false
+        },
+        "y_+15": {
+          "mean_iou_change": -0.15729007267834308,
+          "minimum_object_mean_iou": 0.4953495981864554,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.014004547076848284,
+            "e846574df9334973955c80286af47ba7": -0.171429212193279,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.42424903544874215,
+            "146b6c1f10bd445da977424c64dbb051": -0.01947749599450288
+          },
+          "passes_sampled_direction": false
+        },
+        "z_-15": {
+          "mean_iou_change": -0.1280277110687239,
+          "minimum_object_mean_iou": 0.4221372136100516,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.006704005373217137,
+            "e846574df9334973955c80286af47ba7": -0.0001934402122065748,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.497461420025146,
+            "146b6c1f10bd445da977424c64dbb051": -0.007751978664325976
+          },
+          "passes_sampled_direction": false
+        },
+        "z_+15": {
+          "mean_iou_change": -0.09481969494419745,
+          "minimum_object_mean_iou": 0.6075201476434927,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.017495228257455975,
+            "e846574df9334973955c80286af47ba7": -0.04030938564151054,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.31207848599170485,
+            "146b6c1f10bd445da977424c64dbb051": -0.009395679886118447
+          },
+          "passes_sampled_direction": false
+        }
+      },
+      "passes_all_sampled_directions": false
+    },
+    "30": {
+      "directions": {
+        "x_-30": {
+          "mean_iou_change": -0.32426204103113376,
+          "minimum_object_mean_iou": 0.1355731279895756,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.0012412387452934714,
+            "e846574df9334973955c80286af47ba7": -0.21978605097909454,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.784025505645622,
+            "146b6c1f10bd445da977424c64dbb051": -0.2919953687545249
+          },
+          "passes_sampled_direction": false
+        },
+        "x_+30": {
+          "mean_iou_change": -0.20054699009660454,
+          "minimum_object_mean_iou": 0.4461645728601337,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.002176564085302757,
+            "e846574df9334973955c80286af47ba7": -0.039516210193344725,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.22725161833850627,
+            "146b6c1f10bd445da977424c64dbb051": -0.5332435677692644
+          },
+          "passes_sampled_direction": false
+        },
+        "y_-30": {
+          "mean_iou_change": -0.1154061083834016,
+          "minimum_object_mean_iou": 0.6941831141951579,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.09685954243182004,
+            "e846574df9334973955c80286af47ba7": -0.0944648972372969,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.22541551944003968,
+            "146b6c1f10bd445da977424c64dbb051": -0.04488447442444976
+          },
+          "passes_sampled_direction": false
+        },
+        "y_+30": {
+          "mean_iou_change": -0.23478247839011004,
+          "minimum_object_mean_iou": 0.3731534358095678,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.14259103442782883,
+            "e846574df9334973955c80286af47ba7": -0.22240495945354588,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.5464451978256297,
+            "146b6c1f10bd445da977424c64dbb051": -0.027688721853435738
+          },
+          "passes_sampled_direction": false
+        },
+        "z_-30": {
+          "mean_iou_change": -0.21669398986495797,
+          "minimum_object_mean_iou": 0.2069726251160886,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.026575907221265127,
+            "e846574df9334973955c80286af47ba7": -0.045959832752937135,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.712626008519109,
+            "146b6c1f10bd445da977424c64dbb051": -0.08161421096652066
+          },
+          "passes_sampled_direction": false
+        },
+        "z_+30": {
+          "mean_iou_change": -0.2922879936978035,
+          "minimum_object_mean_iou": 0.13738629704706234,
+          "object_iou_change": {
+            "479bbf9062de4b3196f08e52d1c12821": -0.2840593260867543,
+            "e846574df9334973955c80286af47ba7": -0.057806588691624805,
+            "fe200ce00a5d4c298eee89de0fc15f01": -0.7822123365881353,
+            "146b6c1f10bd445da977424c64dbb051": -0.04507372342469962
+          },
+          "passes_sampled_direction": false
+        }
+      },
+      "passes_all_sampled_directions": false
+    }
+  },
+  "scope": "Four fitted identities and their reserved views, CFG 0, two sampling seeds. Engineering thresholds were fixed before results: aligned mean IoU >= .95 and each object mean >= .90; tested rotation directions lose <= .02 IoU for each object and retain >= .90. Not proof for all rotations, objects, seeds, or learned pose errors. No equivalence or generalization claim.",
+  "report_sha256": {
+    "0": "32e48b2fa6ddd7b7a49d68e5b83ced97f2a265a9b84928ef945778489b8b2a40",
+    "1": "436a9df309c43a32935e279d77dc5e1a59ca5e5756c26aa1740bed07732546f1",
+    "2": "21603b552f68f2c2333061ac4693e622d16e16ba17597fb1aa53fd65ff19c843",
+    "3": "a85c9b661ca6d5846642bd7d629b556fea3957c1792665d78c21b901d5c5fcac"
+  },
+  "validation": "Complete unique coverage, source/reference hashes, historical native replay, original sampled replay, correct input grouping and common sampling noise passed."
+}

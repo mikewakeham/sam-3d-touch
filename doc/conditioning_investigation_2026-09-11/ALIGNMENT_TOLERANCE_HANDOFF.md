@@ -1,6 +1,6 @@
 # Existing-checkpoint alignment tolerance — 12 September 2026
 
-Status: implemented and checked locally with Python syntax, pure-math rotation checks and synthetic complete/incomplete reports. GPU execution is pending; no numerical outcome is claimed. Production training and VecSetX are unchanged.
+Status: GPU execution returned; see [findings](ALIGNMENT_TOLERANCE_RETURNED_FINDINGS.md). Shards 0/1/3 passed local validation. Raw shard 2 is missing from the attachments; its aggregate is present. Do not rerun the experiment. The protocol below records the prespecified design. Production training and VecSetX are unchanged.
 
 ## Why this is the next coordinate experiment
 

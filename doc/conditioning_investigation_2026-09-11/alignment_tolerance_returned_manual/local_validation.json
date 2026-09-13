@@ -1,0 +1,17 @@
+{
+  "available_shards": [
+    0,
+    1,
+    3
+  ],
+  "missing_shards": [
+    2
+  ],
+  "scope": "Reuses original analyzer validation logic for supplied shards only. All supplied aggregate gate arithmetic checked; missing shard raw rows cannot be verified.",
+  "report_sha256": {
+    "0": "32e48b2fa6ddd7b7a49d68e5b83ced97f2a265a9b84928ef945778489b8b2a40",
+    "1": "436a9df309c43a32935e279d77dc5e1a59ca5e5756c26aa1740bed07732546f1",
+    "3": "a85c9b661ca6d5846642bd7d629b556fea3957c1792665d78c21b901d5c5fcac"
+  },
+  "validation": "Available shards: complete unique coverage, source/reference hashes, historical native replay, original sampled replay, correct input grouping and common sampling noise passed."
+}

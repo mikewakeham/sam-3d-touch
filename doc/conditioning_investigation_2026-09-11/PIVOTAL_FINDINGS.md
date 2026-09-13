@@ -20,7 +20,21 @@ Last reconciled: 12 September 2026. This is the short, governing evidence ledger
 
 Native flow loss is the actual training objective, not an arbitrary score. But it measures velocity prediction at target-derived noisy states; it is not an absolute reconstruction-quality scale. Its algebraic minimum is zero for exact velocity prediction. The fitted model's nonzero loss is not an established optimal floor. Oracle *input alignment* is also not an oracle *output prediction*. Do not translate .02 versus .06 directly into a percentage of recovered geometry, or compare direct-regression MSE, native flow MSE and sampled geometry as interchangeable errors.
 
-Decoding GT latents supplies an achievable reference through the same downstream measurement path. The earlier tiny-fit experiment used this principle at Stage 1. It does not require Stage 2 or final mesh CD. Do not use target-assisted alignment of a prediction to hide the coordinate error being tested. A new Stage-1 reconstruction check is justified when needed to promote a candidate to a reconstruction claim, not automatically for every diagnostic.
+Decoding GT latents supplies an achievable reference through the same downstream measurement path. The earlier tiny-fit experiment used this principle at Stage 1. It does not require Stage 2 or final mesh CD. Preserve raw fixed-frame results; report target-assisted rigid alignment separately when explicitly testing pose-independent shape. It cannot count as a deployed correction or erase a fixed-frame training error. A new Stage-1 reconstruction check is justified when needed to promote a candidate to a reconstruction claim, not automatically for every diagnostic.
+
+**Current governing audit/branch selection:** [EVIDENCE_AUDIT_AND_BRANCH_PLAN.md](EVIDENCE_AUDIT_AND_BRANCH_PLAN.md). The next selected branch is CPU analysis of saved predictions separating pose from shape, with registration/discretization and wrong-shape controls. This precedes any augmentation or target-frame training. Other branches are retained explicitly, not queued automatically.
+
+## F0 — Early saved predictions already demonstrated pose/shape disagreement
+
+**Reference:** independent reanalysis of 20 predictions from five deliberately selected original-model cases. Target arrays and raw metrics reproduced. Several large raw Stage-1 occupied-center distances fell substantially under proper axis rotations: shield surface .13983→.01040, knife image .20161→.00512. Different objects and seeds required different rotations, and some residual shape errors remained.
+
+**Established:** target-frame error can coexist with substantial recovered shape. A single global coordinate patch is not supported by these varying outputs.
+
+**Limits:** selected older outputs, target-assisted best alignments, no population prevalence or deployment correction. This does not prove that the latest dropout perturbations are pose-only; it makes that a necessary distinction before interpreting them.
+
+**Next-experiment consequence:** carry raw fixed-frame and separately pose-adjusted shape endpoints when diagnosing coordinate effects. This historical finding was omitted as a standalone ledger entry before the current audit; it is not a newly run experiment.
+
+Source: [geometry bundle findings](GEOMETRY_FINDINGS.md).
 
 ## F1 — No simple global coordinate bookkeeping fix is supported
 
@@ -63,6 +77,8 @@ Four objects, one training seed, 1000 updates; all factors except supplied surfa
 
 **Reference limit:** oracle is the known-alignment treatment, not a perfect reconstruction endpoint. Its reserved-view Stage-1 IoU here was only 66.95% versus camera 52.19%; its fitted IoU was 96.93%. A better oracle score does not mean this task was solved. Rotation/normalization interact; do not assign additive percentages of blame.
 
+**Audit clarification:** both the native objective and these sampled occupancy comparisons use the original fixed target frame. The experiment isolates a learning burden for that task; it does not quantify pose-independent shape damage. It also used the original visual policy, so it does not decompose the later dropout-policy gap.
+
 **Next-experiment consequence:** a rotation-handling intervention has an established geometric reference and measured task effect. It need not rediscover that effect, but must distinguish accurate alignment from improved Stage-1 reconstruction.
 
 Sources: [factorial findings](FRAME_FACTORS_RETURNED_FINDINGS.md), [analysis](frame_factors_returned_manual/analysis.json), [pose input contract](POSE_INPUT_CONTRACT.md).
@@ -94,17 +110,21 @@ The gap decreased about 98%, while fitted error also improved. Reserved loss end
 
 **Not established:** formal equivalence/invariance, accuracy of every individual object, accurate generated reconstruction for these dropout checkpoints, or generalization to new identities. No prespecified equivalence margin or target-decoded reconstruction endpoint was used to establish the dropout claim. Do not borrow the separate single-view tiny-fit experiment's 99.2% IoU for these weights/views. “Resolved view dependence” without these qualifications is too broad.
 
+**Subsequent evidence:** F9 below now directly establishes high target-referenced Stage-1 reconstruction for these dropout weights on reserved views of the four fitted identities. The preceding paragraph records what the original native-loss experiment alone established; its reconstruction uncertainty is superseded by F9, while its new-identity and formal-invariance limits remain.
+
 **Next-experiment consequence:** retain this checkpoint as a measured same-identity robustness reference, not a proven general geometric conditioner. A reconstruction claim needs an actual Stage-1 target-referenced check of the relevant checkpoint.
 
 Sources: [dropout findings](VISUAL_DROPOUT_RETURNED_FINDINGS.md), [exact aggregate](visual_dropout_returned_manual/analysis.json). Gap arithmetic rechecked from that JSON on 12 September.
 
-## F6 — The strongest tiny-task improvements did not transfer to new objects
+## F6 — The strongest tiny-task improvements did not transfer on the native objective
 
 **References:** on 32 different objects, image loss was .10540, original oracle .21229 and dropout oracle .27079. Every surface variant lost to image on all 32. In the subsequent matched 16-object training screen, oracle held-object loss was .13420 versus image .11930, again losing on all 16; oracle improved fitted identities. Correct surfaces were not reliably preferred to wrong ones on held identities.
 
 **Established:** alignment/dropout had not produced a transferable conditioning solution in these experiments. F2/F3/F5 remain true within their scopes; this is counterevidence to promoting them into a general fix.
 
 **Not established:** that the original full-data models have the same cause, that more data/full finetuning is required, or that canonicalization is impossible. Training-object identification is consistent with the pattern, not directly observed internally.
+
+**Audit clarification:** these particular 32-object and 16-object flow-model screens measured native loss, not sampled held-object shape. Their objective-level failure remains established; pose-independent generated-shape failure is not established by those numbers. The later 16-training/16-held pool is exactly the earlier 32-object probe pool (set equality checked during the audit). Held identities were excluded from fitting, but repeated investigation makes them a development set, not untouched confirmation data.
 
 **Next-experiment consequence:** rotation recovery can be investigated as its own geometric subproblem. Do not promise that approaching oracle performance solves the failures that already occur under oracle alignment.
 
@@ -130,6 +150,8 @@ Sources: [early/late controls](TRANSFER_CHECKPOINTS_RETURNED_FINDINGS.md), [cons
 
 **Not established:** every fusion architecture fails or broader finetuning is necessary. This intervention combined several changes; it does not isolate all mechanisms of previous joint models.
 
+**Audit clarification:** the rejection is against the native-loss and surface-utility criteria actually measured. Sampled held-object reconstruction up to pose was not assessed for these arms. Preserve that scope rather than promoting the rejection into a claim about every generated-shape metric.
+
 **Next-experiment consequence:** reject this candidate at its tested scope; no automatic extension, full run or another architecture follows. Return to the identified coordinate subproblem with the residual failure explicit.
 
 Source: [separate-attention findings](SEPARATE_SURFACE_RETURNED_FINDINGS.md).
@@ -146,7 +168,7 @@ Source: [separate-attention findings](SEPARATE_SURFACE_RETURNED_FINDINGS.md).
 
 Record, briefly, before handing off a run:
 
-1. **Starting evidence:** relevant F1–F8 IDs and the exact unresolved question; do not recreate completed evidence as a new discovery.
+1. **Starting evidence:** relevant F0–F10 IDs and the exact unresolved question; do not recreate completed evidence as a new discovery.
 2. **Claim being tested:** coordinate correctness, fitting, view robustness, geometry-specific use, or transfer. Name any entanglement that requires changing another factor.
 3. **Comparisons:** intervention, matched control, reference endpoint and claimed split. State whether the reference is perfect target agreement, exact alignment, a fitted-model score, or an image baseline.
 4. **Success/failure/inconclusive criteria:** justify the tolerance or effect size before results; include uncertainty/replication appropriate to the scope. A smaller scalar alone is not “resolved.” Retrospective margins cannot convert prior results into formal equivalence.
@@ -156,6 +178,28 @@ After the result, update the relevant finding, comparison and scope. Add a new f
 
 All GPU evidence above consists of returned reports with the documented validation/replay checks. No independent local GPU rerun is claimed. Noise draws and multiple views of one identity are not independent objects or training replicas.
 
-## Active continuation — prepared, not a finding
+## F9 — Oracle plus dropout reaches the Stage-1 target on reserved views of fitted identities
 
-[Alignment-tolerance handoff](ALIGNMENT_TOLERANCE_HANDOFF.md) continues F3/F5 using existing original/dropout oracle weights. It measures actual Stage-1 target agreement and residual rotation sensitivity, with predeclared references, scope and branches. GPU results are pending. It neither repeats training nor establishes new-object utility or a deployable pose correction. F6 remains an independent obstacle to promoting any full-training candidate. No overnight full run is currently justified by the returned evidence.
+**Reference:** decoded GT Stage-1 occupancy (IoU 1 is perfect agreement). Original oracle fit/reserved mean IoU is 96.93%/66.95%; dropout oracle is 97.80%/97.17%. The lowest dropout reserved object-mean is 91.96%, so it passes the prespecified ≥95% mean/≥90% each-object reference gate. Wrong surfaces give 2.49% reserved IoU. Raw shard 0 passed local validation and original sampled replay.
+
+**Established:** F5's native-loss improvement has a sampled reconstruction counterpart; we now have an accurate aligned endpoint for this coordinate-interface test. Surface identity matters to these fitted-identity outputs.
+
+**Limits:** four trained identities, three reserved views, two noise draws. Two individual reserved samples remain below 90%, minimum 88.58%. This does not distinguish geometric interpretation from memorized identity retrieval or supersede F6's new-object failure.
+
+**Next-experiment consequence:** use this actual checkpoint's target-referenced endpoint when assessing imperfect or recovered alignment. No further loss-only verification of whether the dropout reference reconstructs these objects is needed.
+
+Source: [alignment results](ALIGNMENT_TOLERANCE_RETURNED_FINDINGS.md).
+
+## F10 — The accurate aligned endpoint loses fixed-frame agreement under some small residual rotations
+
+**Intervention:** rotate oracle-aligned points before the existing VecSetX normalization/encoder; hold visuals, targets, weights and noise fixed. At 5°, reserved mean IoU spans 94.14–97.13% across six signed axes, but the worst object-mean is 85.51%; only +x and −y pass the prespecified per-object tolerance. At 30°, means span 64.74–85.63%, worst object-mean 13.56%, and no direction passes. These raw shards passed local validation. The supplied aggregate's 15° means span 79.00–93.25%, worst object 42.21%; its raw shard 2 is still missing, so those intermediate-angle values are not independently reproduced locally.
+
+**Established:** the complete current conditioning path can reconstruct near its target under exact alignment yet lose meaningful fixed-frame agreement under small residual pose errors. A coarse pose correction is not automatically adequate for that criterion.
+
+**Limits:** no universal angular bound, arbitrary-axis coverage, learned pose estimate, localization of sensitivity within VecSetX/normalization/attention, new-object transfer, or inherent incompatibility is established. Normalization responds to the perturbation too.
+
+**Interpretation correction after the user's output-frame question:** these IoU results measure agreement in the original target frame. They have not distinguished a correct shape rotated in the output from an actually distorted/wrong shape. “Coarse pose is insufficient” applies to the specified target-frame accuracy criterion, not yet to pose-independent reconstruction. F9's high aligned accuracy remains established.
+
+**Next-experiment consequence:** before launching residual-rotation augmentation, inspect the already saved perturbed predictions for rigid-pose versus shape error. Compare their raw support, known inverse-rotation compensation, and a separately identified rigid-registration diagnostic against GT, accounting for voxel discretization and registration failure. This uses the existing artifacts and does not require a new training run. Registration to GT is a diagnostic, not a deployable inference correction. Small residual-rotation augmentation remains a candidate if orientation errors actually damage shape or if fixed-frame output is required; it is not yet implemented or launched. A successful local robustness repair would still need observable frame recovery and separate held-object utility before full training.
+
+Source: [alignment results](ALIGNMENT_TOLERANCE_RETURNED_FINDINGS.md), [local validation](alignment_tolerance_returned_manual/local_validation.json).
