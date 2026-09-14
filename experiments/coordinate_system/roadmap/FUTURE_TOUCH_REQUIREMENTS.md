@@ -1,6 +1,6 @@
 # Governing scope: learned conditioning of observed touch patches
 
-The immediate task is full-surface conditioning as an upper bound. Sparse structured contacts, normals and other physical measurements are future compatibility constraints, not features to implement now. The latest priority is coordinate diagnosis while retaining pretrained VecSetX; see `COORDINATE_DIAGNOSIS_RESYNC.md`. Do not let these future requirements trigger a premature encoder replacement.
+The immediate task is full-surface conditioning as an upper bound. Sparse structured contacts, normals and other physical measurements are future compatibility constraints, not features to implement now. The latest priority is coordinate diagnosis while retaining pretrained VecSetX; see [the coordinate checklist](COORDINATE_CHECKLIST.md). Do not let these future requirements trigger a premature encoder replacement.
 
 The proposed integration of reconstructed full surfaces -> voxel grids -> SAM shape latents is withdrawn. The completed bridge experiment remains diagnostic evidence only. No bridge-conditioned training job was implemented or launched. A method requiring completion and voxelization before producing its condition bypasses the requested representation problem, even if its shape scores improve.
 

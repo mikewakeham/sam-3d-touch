@@ -20,6 +20,7 @@ from dataloader import build_dataloader, load_data_config
 from train import (
     prepare_batch, TouchTrainingModel, build_optimizer,
     disable_pointmap_conditioning, disable_visual_conditioning, load_trainable_state_dict,
+    checkpoint_train_scope,
 )
 
 
@@ -66,6 +67,7 @@ def restore_run(pipeline, checkpoint, device):
         learning_rate=0.0,
         cross_attention_learning_rate=1.0,
         cross_attention_scope=checkpoint.get("cross_attention_scope", "kv"),
+        train_scope=checkpoint_train_scope(checkpoint),
     ))
     load_trainable_state_dict(model, checkpoint["model"])
     model.load_constant_touch(checkpoint.get("constant_touch"))
@@ -901,6 +903,7 @@ def main():
                 "touch_config": checkpoint["touch_config"],
                 "mode": checkpoint["mode"],
                 "cross_attention_scope": checkpoint.get("cross_attention_scope", "kv"),
+                "train_scope": checkpoint_train_scope(checkpoint),
                 "data": run_data,
             }
         use_touch = checkpoint is not None and checkpoint["touch_config"] is not None

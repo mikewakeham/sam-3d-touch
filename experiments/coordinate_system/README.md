@@ -2,7 +2,11 @@
 
 Stage-1 full-surface conditioning in SAM3D, retaining VecSetX and a future sparse-touch path. This is the authoritative home of the former `doc/conditioning_investigation_2026-09-11` collection.
 
-**Current position:** oracle transformation and normalization arithmetic pass on the audited observations. The fully trained oracle uses real surface information but does not reach an accurate reconstruction upper bound. Coordinate-dependent learning difficulty is not comprehensively excluded. Latest oracle/no-pointmap poor performance remains user-reported without imported checkpoint assessment. No next experiment is automatically queued.
+**Before adding code or importing results, read [the current storage and organization convention](STORAGE.md#current-convention--updated-2026-09-14).** It records exact local paths, future output locations, and which cluster moves are still unconfirmed. Saved results do not belong in Git.
+
+**Current position:** oracle transformation and normalization arithmetic pass on the audited observations. The fully trained oracle uses real surface information but does not reach an accurate reconstruction upper bound. Coordinate-dependent learning difficulty is not comprehensively excluded. The refreshed no-pointmap/no-visual runs completed training without a pooled-loss breakthrough; their checkpoint reconstruction assessments are still missing. No next experiment is automatically queued.
+
+**Authorized next training:** three H100 shape-full jobs are implemented; see [run variants, controls and verification](roadmap/DECISION.md#authorized-overnight-runs-2026-09-14). Existing-checkpoint assessment is deferred until the user's GPU access tomorrow. No jobs have been submitted by the local assistant.
 
 | Read / use | Contents |
 |---|---|
@@ -43,6 +47,7 @@ This verifies original retained bytes and recalculates the 1,280 full-run occupa
 ```bash
 python experiments/coordinate_system/scripts/integration_tests/test_source_integration.py -v
 python experiments/coordinate_system/scripts/integration_tests/test_no_visual_integration.py -v
+python experiments/coordinate_system/scripts/integration_tests/test_shape_full_integration.py -v
 ```
 
-The distributed test requires local loopback socket access. Production training and `jobs/` are unchanged. Restored experiment sources are ordinary Python files under `scripts/`; see its index for experiment families and reproduction requirements.
+The distributed tests require local loopback socket access (on macOS set `GLOO_SOCKET_IFNAME=lo0`). The shape-full suite exercises the actual dense transformer at reduced width without pretrained weights; it is not a CUDA memory test. Restored experiment sources are ordinary Python files under `scripts/`; see its index for experiment families and reproduction requirements.

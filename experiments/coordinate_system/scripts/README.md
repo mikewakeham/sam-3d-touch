@@ -1,5 +1,7 @@
 # Significant experiment code
 
+Storage and future organization follow [STORAGE.md](../STORAGE.md). Keep code grouped by experiment; keep generated artifacts out of Git and retained laptop results outside the repository.
+
 Scripts are grouped by the experiment they support. Shared numerical routines and rollout helpers are in `shared/`; result utilities are in `tools/`. Each group keeps its associated analysis and tests. Imports between groups use explicit package paths, and scripts can still be invoked directly from the repository root.
 
 | Folder | Why it is retained |

@@ -1,8 +1,37 @@
 # Storage and cluster retention
 
+## Current convention — updated 2026-09-14
+
+This is the authoritative storage and organization reference for future work. Read it before creating an experiment, importing results, or reorganizing files.
+
+Repository root on the laptop: `/Users/michaelwakeham/project/visuotactile-objects/sam-3d-touch`.
+
+| Material | Location | Git policy |
+|---|---|---|
+| Significant experiment code | `experiments/coordinate_system/scripts/<experiment>/` relative to the repo root | Track code; group drivers, analyses, and tests by experiment. No loose top-level scripts. |
+| Helpers shared across experiments | `experiments/coordinate_system/scripts/shared/` | Track; preserve dependencies when retaining an experiment. |
+| Result-reading utilities / production integration tests | `scripts/tools/` / `scripts/integration_tests/` inside the investigation | Track these small Python files. |
+| Findings, history, and plans | `KEY_FINDINGS.md`, `EXPERIMENT_HISTORY.md`, and `roadmap/` inside the investigation | Track Markdown. Keep the findings document at the root, without a one-document `findings/` folder. |
+| Future diagnostic outputs on laptop or cluster | `experiments/coordinate_system/outputs/<experiment>/<run>/` relative to that checkout | Ignored; never commit reports, arrays, caches, checkpoints, or transfer ZIPs. |
+| Full training outputs | Top-level `outputs/<run>/`; existing `outputs/conditioning_investigation/stage1_*` paths may remain | Ignored; reserve top-level `outputs/` for full training going forward. |
+| Returned diagnostic evidence retained on laptop | `/Users/michaelwakeham/project/visuotactile-objects/coordinate_system_results/` | Outside the repo. Put future retained result imports here, not back under the tracked experiment folder. |
+| Cleanup records, old source snapshots, and recovery information | `/Users/michaelwakeham/project/visuotactile-objects/coordinate_system_provenance/` | Outside the repo; do not pull onto the cluster as part of the code. |
+| W&B exports on laptop | `/Users/michaelwakeham/project/visuotactile-objects/wandb-results/` | Outside `sam-3d-touch`; refresh with the sibling `export_wandb.py`. |
+
+Keep significant experiments, including informative negative controls, with the helpers needed to use them. Remove retired/uninformative or superseded code only after checking dependencies; preserve its scientific outcome in the single experiment history. Do not replace useful runnable code with an archive. Full-training job scripts belong in `jobs/`.
+
+### What actually moved
+
+- **Completed locally:** `sam-3d-touch/experiments/coordinate_system/results/` → sibling `coordinate_system_results/` (about 291 MB). Reports, figures, array ZIPs, small reference inputs, and `index.json` are there.
+- **Completed locally:** `sam-3d-touch/experiments/coordinate_system/provenance/` → sibling `coordinate_system_provenance/`.
+- **Completed locally:** the retained scripts from `doc/conditioning_investigation_2026-09-11/` now live under `experiments/coordinate_system/scripts/`, grouped by experiment. The old documentation tree is no longer the active location.
+- **Cluster moves are not confirmed.** No cluster files were moved by the assistant. Existing diagnostic folders may still be under `outputs/conditioning_investigation/`; inspect before assuming the new paths exist. Move diagnostic folders individually, while leaving full `stage1_*` training folders in top-level `outputs/`.
+
+The result reader defaults to the sibling `coordinate_system_results/`. For another location, use `SAM3D_COORDINATE_RESULTS` or its `--results-dir` argument. A Git pull transfers code/docs, not these saved results. Historical paths embedded in returned JSON remain unchanged; use `index.json` and the reader to locate the retained bytes.
+
 ## Results are outside the repository
 
-Saved results now live at `../coordinate_system_results/` relative to the repository root (291 MB). Scripts and documentation stay in Git. The tracked result files are removed from the working tree; committing these deletions removes them from the current branch, but does not erase their earlier Git history. No history rewrite was performed.
+Saved results now live at `../coordinate_system_results/` relative to the repository root (291 MB). Scripts and documentation stay in Git. After GitHub rejected the large ZIP, the three unpublished cleanup commits were consolidated into `0662fdc` on 2026-09-14, preserving the final tracked tree and excluding results from the outgoing commits. Published remote history was not rewritten. The old local tip remains recoverable through `refs/backup/pre-large-file-cleanup-20260914-8418628`; the repair record is in the external provenance directory. Ignoring files alone does not remove files that were already committed.
 
 ## What changed locally
 
@@ -12,7 +41,7 @@ The cleanup removed obsolete handoffs, caches, superseded partial reports, and s
 
 The [migration manifest](../../../coordinate_system_provenance/migration_manifest.json) records every original file's hash, disposition and retained location. A `duplicate_of` entry resolves to the exact same original bytes at another retained location. Array archives preserve bytes; returned report hashes and numbers have not been rewritten. Current Markdown links were updated separately. The external source snapshot preserves original bytes; the readable experiment code is restored under `scripts/`. Historical checks still refer to the original experiments and are not a generic assessment of arbitrary new checkpoints.
 
-This is working-tree cleanup. Existing tracked files remain recoverable from the recorded Git commit; no Git history or Git object storage was pruned. For formerly untracked recent audit files, the live documents and original audit evidence are retained here.
+Earlier tracked files remain recoverable from the recorded Git commits and local recovery reference; Git object storage was not pruned. The only history change was consolidation of the three unpublished cleanup commits described above. Live documents are retained in the investigation, with original audit evidence and source snapshots outside the repository.
 
 ## What to retain on the cluster
 

@@ -32,8 +32,12 @@ def parse_args():
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--cross-attention-learning-rate", type=float, default=1e-5)
     parser.add_argument(
-        "--cross-attention-scope", choices=["kv", "full"], default="full",
-        help="Train shape K/V only, or full shape cross-attention plus its input norm",
+        "--train-scope", choices=["shape_cross_attention", "shape_full"],
+        help="Generator weights to train (default: shape_cross_attention)",
+    )
+    parser.add_argument(
+        "--cross-attention-scope", choices=["kv", "full"],
+        help="Legacy cross-attention selection; full means shape_cross_attention, not shape_full",
     )
     parser.add_argument("--gradient-clip", type=float, default=1.0)
     parser.add_argument("--log-every", type=int, default=10)
@@ -56,7 +60,24 @@ def parse_args():
         "--local-rank", "--local_rank", type=int,
         default=int(os.environ.get("LOCAL_RANK", -1)),
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.train_scope is not None and args.cross_attention_scope is not None:
+        parser.error("Use --train-scope or legacy --cross-attention-scope, not both")
+    args.train_scope = resolve_train_scope(args.train_scope, args.cross_attention_scope or "full")
+    args.cross_attention_scope = "kv" if args.train_scope == "shape_cross_attention_kv" else "full"
+    return args
+
+
+def resolve_train_scope(train_scope=None, cross_attention_scope="kv"):
+    if train_scope is None:
+        return {"kv": "shape_cross_attention_kv", "full": "shape_cross_attention"}[cross_attention_scope]
+    if train_scope not in ("shape_cross_attention_kv", "shape_cross_attention", "shape_full"):
+        raise ValueError(f"Unknown training scope: {train_scope}")
+    return train_scope
+
+
+def checkpoint_train_scope(checkpoint):
+    return resolve_train_scope(checkpoint.get("train_scope"), checkpoint.get("cross_attention_scope", "kv"))
 
 
 def setup_distributed(args):
@@ -379,7 +400,38 @@ def make_visual_drop_mask(batch_size, probability, device, seed, step, rank):
     return torch.rand(batch_size, device=device, generator=generator) < probability
 
 
+def shape_path_module_groups(backbone):
+    """Shape-specific modules plus shared timestep/modulation used by shape.
+
+    Layout-specific modules and the visual encoder remain frozen. Fixed shape
+    positional embeddings are buffers, not optimizer parameters.
+    """
+    groups = {
+        "shape_self_attention": [],
+        "shape_mlp": [],
+        "shape_input_output": [backbone.latent_mapping["shape"]],
+        "shape_time_modulation": [backbone.t_embedder],
+    }
+    for name in ("d_embedder", "adaLN_modulation"):
+        if hasattr(backbone, name):
+            groups["shape_time_modulation"].append(getattr(backbone, name))
+    for block in backbone.blocks:
+        if "shape" not in block.self_attn.protect_modality_list:
+            raise ValueError("shape_full requires shape self-attention protected from layout")
+        for name in ("to_qkv", "to_out", "q_rms_norm", "k_rms_norm"):
+            if hasattr(block.self_attn, name):
+                groups["shape_self_attention"].append(getattr(block.self_attn, name)["shape"])
+        groups["shape_self_attention"].append(block.norm1["shape"])
+        groups["shape_mlp"].extend((block.mlp["shape"], block.norm3["shape"]))
+        if hasattr(block, "adaLN_modulation"):
+            groups["shape_time_modulation"].append(block.adaLN_modulation)
+    return groups
+
+
 def build_optimizer(touch_encoder, backbone, args):
+    scope = resolve_train_scope(getattr(args, "train_scope", None), getattr(args, "cross_attention_scope", "full"))
+    backbone.requires_grad_(False)
+    backbone.train_scope = scope
     groups = []
     if touch_encoder is not None:
         groups.append({
@@ -390,18 +442,20 @@ def build_optimizer(touch_encoder, backbone, args):
 
     if args.cross_attention_learning_rate > 0:
         modules = [block.cross_attn["shape"].to_kv for block in backbone.blocks]
-        if args.cross_attention_scope == "full":
+        if scope != "shape_cross_attention_kv":
             modules = [
                 module
                 for block in backbone.blocks
                 for module in (block.cross_attn["shape"], block.norm2["shape"])
             ]
+        if scope == "shape_full":
+            modules.extend(module for group in shape_path_module_groups(backbone).values() for module in group)
         for module in modules:
             module.requires_grad_(True)
         groups.append({
-            "params": [parameter for module in modules for parameter in module.parameters()],
+            "params": list(dict.fromkeys(parameter for module in modules for parameter in module.parameters())),
             "lr": args.cross_attention_learning_rate,
-            "name": "cross_attention",
+            "name": "shape_full" if scope == "shape_full" else "cross_attention",
         })
 
     if not groups:
@@ -443,6 +497,7 @@ def gradient_norm(parameters):
 
 
 def component_gradient_norms(model):
+    backbone = model.generator.reverse_fn.backbone
     groups = {
         "shape_cross_attention_kv": (
             parameter
@@ -456,6 +511,11 @@ def component_gradient_norms(model):
             for parameter in module.parameters()
         ),
     }
+    if getattr(backbone, "train_scope", None) == "shape_full":
+        groups.update({
+            name: (parameter for module in modules for parameter in module.parameters())
+            for name, modules in shape_path_module_groups(backbone).items()
+        })
     if model.touch_encoder is not None:
         groups.update({
             "touch_output_projection": model.touch_encoder.output_projection.parameters(),
@@ -483,7 +543,7 @@ def load_trainable_state_dict(model, state_dict):
 
 
 def save_checkpoint(
-    path, model, optimizer, epoch, step, best_loss, mode, cross_attention_scope="kv"
+    path, model, optimizer, epoch, step, best_loss, mode, cross_attention_scope="kv", train_scope=None
 ):
     torch.save({
         "model": trainable_state_dict(model),
@@ -500,18 +560,19 @@ def save_checkpoint(
             if model.constant_touch_features is not None else None
         ),
         "cross_attention_scope": cross_attention_scope,
+        "train_scope": resolve_train_scope(train_scope, cross_attention_scope),
         "touch_config": (
             model.touch_encoder.get_config() if model.touch_encoder is not None else None
         ),
     }, path)
 
 
-def load_checkpoint(path, model, optimizer, mode, cross_attention_scope="kv"):
+def load_checkpoint(path, model, optimizer, mode, cross_attention_scope="kv", train_scope=None):
     checkpoint = torch.load(path, map_location="cpu", weights_only=False)
     if checkpoint.get("conditioning_config", {"no_pointmap": False, "oracle_point_frame": False}) != model.conditioning_config:
         raise ValueError("Checkpoint conditioning configuration does not match this run")
-    if checkpoint.get("cross_attention_scope", "kv") != cross_attention_scope:
-        raise ValueError("Checkpoint cross-attention scope does not match this run")
+    if checkpoint_train_scope(checkpoint) != resolve_train_scope(train_scope, cross_attention_scope):
+        raise ValueError("Checkpoint training scope does not match this run; --resume cannot change scope")
     if checkpoint.get("training_config", {"visual_dropout": 0.0, "constant_touch": False}) != model.training_config:
         raise ValueError("Checkpoint visual dropout or constant touch setting does not match this run")
     touch_config = (
@@ -753,7 +814,7 @@ def main():
     start_epoch, step, best_loss = 0, 0, float("inf")
     if args.resume:
         start_epoch, step, best_loss = load_checkpoint(
-            args.resume, model, optimizer, mode, args.cross_attention_scope
+            args.resume, model, optimizer, mode, args.cross_attention_scope, args.train_scope
         )
     elif args.constant_touch:
         initialize_constant_touch(model, pipeline, train_loader.dataset, device, args.precision)
@@ -795,7 +856,7 @@ def main():
                 )
 
         print(f"mode: {mode}")
-        print(f"cross-attention scope: {args.cross_attention_scope}")
+        print(f"training scope: {args.train_scope}")
         print(f"precision: {args.precision}")
         print(f"visual dropout: {args.visual_dropout} per sample (training only)")
         if args.no_visual:
@@ -869,12 +930,14 @@ def main():
                 args.output_dir / "last.pt", raw_model, optimizer,
                 epoch + 1, step, best_loss, mode,
                 args.cross_attention_scope,
+                args.train_scope,
             )
             if improved:
                 save_checkpoint(
                     args.output_dir / "best.pt", raw_model, optimizer,
                     epoch + 1, step, best_loss, mode,
                     args.cross_attention_scope,
+                    args.train_scope,
                 )
 
         if distributed:

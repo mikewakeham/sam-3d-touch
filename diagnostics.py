@@ -17,6 +17,7 @@ from train import (
     build_optimizer,
     build_stage1_pipeline,
     load_trainable_state_dict,
+    checkpoint_train_scope,
     prepare_batch,
 )
 
@@ -640,14 +641,17 @@ def main():
             )
         touch_encoder = TouchEncoder(**touch_config).to(device)
 
-    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, **conditioning_config)
+    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, **conditioning_config,
+                               **checkpoint.get("training_config", {}))
     cross_attention_scope = checkpoint.get("cross_attention_scope", "kv")
+    train_scope = checkpoint_train_scope(checkpoint)
     build_optimizer(
         touch_encoder,
         pipeline.backbone,
         argparse.Namespace(
             learning_rate=0.0, cross_attention_learning_rate=1.0,
             cross_attention_scope=cross_attention_scope,
+            train_scope=train_scope,
         ),
     )
     reference_state = {
@@ -661,12 +665,13 @@ def main():
             torch.load(initial_adapter_path, map_location="cpu", weights_only=False)
         )
     load_trainable_state_dict(model, checkpoint["model"])
+    model.load_constant_touch(checkpoint.get("constant_touch"))
 
     heading("Run")
     print(f"checkpoint: {args.checkpoint}")
     print(f"conditioning_config: {conditioning_config}")
     print(f"mode: {checkpoint['mode']}")
-    print(f"cross-attention scope: {cross_attention_scope}")
+    print(f"training scope: {train_scope}")
     print(f"touch_config: {checkpoint['touch_config']}")
     print(f"device: {device} (one process, one GPU)")
     print(f"split: {args.split}")

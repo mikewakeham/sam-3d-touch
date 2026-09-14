@@ -49,7 +49,25 @@ Evidence: [paired losses](../../../coordinate_system_results/full_training/fixed
 
 - Native VecSetX decoding retained substantial but imperfect geometry in the reported 32-object probe. It does not guarantee access through the current projector. [Report](../../../coordinate_system_results/coordinate_contract/native_vecsetx/analysis.json).
 - Shared-camera targets and broader shape adaptation could fit four identities, but did not establish transferable conditioning. The severely underexposed rotation augmentation was inconclusive; its outcome remains in history, not as an impossibility claim. [Scope](../../../coordinate_system_results/shared_frame/scope/summary.json), [coverage exposure](../../../coordinate_system_results/shared_frame/coverage/learning_and_exposure.json).
-- No-PM training must be distinguished from the old camera/no-PM baseline, and inference-only visual removal from no-visual training. The newest runs have no imported scientific result here.
+- No-PM training must be distinguished from the old camera/no-PM baseline, and inference-only visual removal from no-visual training. Updated W&B training results are recorded below; new checkpoint reconstruction assessments are still missing.
 - Sparse touch needs retained location/scale information or an explicit transform. Full-surface normalization arguments do not apply to an isolated touch patch. [Future constraints](roadmap/FUTURE_TOUCH_REQUIREMENTS.md).
 
 **Stopping boundary:** do not repeat passed transform checks without a changed code/data path or a concrete counterexample. The unresolved normalization, visual-interaction and pretrained-convention questions remain explicitly named in the roadmap; they are not all ruled out by the oracle audit.
+
+## 7. W&B refresh on 2026-09-14: the modality-removal runs finished
+
+All three new runs finished 20 epochs / 14,660 updates with frozen VecSetX and full shape cross-attention adaptation (not full-backbone finetuning).
+
+| Run | W&B ID | Final validation loss |
+|---|---|---:|
+| Oracle, no pointmap, 50% visual dropout | `ssmsddtg` | 0.0894794014 |
+| Constant oracle surface, no pointmap, 50% visual dropout | `pg4413ls` | 0.0890264520 |
+| Oracle, permanently no visual conditioning | `8zpws0ez` | 0.1046997821 |
+
+Original oracle+pointmap/dropout was 0.0893984329. Thus no-pointmap did not produce the hoped-for improvement in the logged pooled objective. The no-visual objective is worse, but its validation conditioning differs; this is not evidence that visual conflict is required or that geometry is unused. All three logged nonzero surface-projector and shape-cross-attention gradients. These establish gradient activity, not useful reconstruction.
+
+The no-visual export records `no_visual=true`, `no_pointmap=false`, and `visual_dropout=0`. These are consistent: permanent disabling suppresses all visual modalities, including pointmap, independently of the stochastic dropout setting. Metadata records source commit `1c5208b`; the inspected implementation and existing CPU fixtures support that intended policy. Actual new checkpoint boundary tensors have not been inspected on GPU.
+
+No paired native-time/noise probe or noise-only Stage-1 reconstruction assessment for these three checkpoints was imported. Do not assign the earlier oracle checkpoint's generation results to these runs. The next checkpoint-assessment round should reuse the audited bank and retain these distinctions; no retraining or repeated target encoding is needed simply to obtain the missing outcome.
+
+Evidence: [W&B refresh analysis](../../../coordinate_system_results/full_training/wandb_refresh_20260914.json), with input hashes, recorded commits, configs, validation histories, and gradient summaries.

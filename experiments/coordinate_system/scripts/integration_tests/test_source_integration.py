@@ -203,6 +203,7 @@ class SourceIntegrationTests(unittest.TestCase):
                 else:
                     # Emulate an old checkpoint predating both optional fields.
                     saved = torch.load(path, weights_only=False)
+                    saved.pop('train_scope')  # Emulate a checkpoint before explicit train-scope metadata.
                     saved.pop('training_config'); saved.pop('constant_touch'); torch.save(saved, path)
                     old_model = make_model()
                     train.load_checkpoint(path, old_model, optimizer(old_model), 'image_touch', 'full')
