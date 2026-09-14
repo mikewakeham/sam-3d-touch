@@ -4,13 +4,14 @@ Stage-1 full-surface conditioning in SAM3D, retaining VecSetX and a future spars
 
 **Before adding code or importing results, read [the current storage and organization convention](STORAGE.md#current-convention--updated-2026-09-14).** It records exact local paths, future output locations, and which cluster moves are still unconfirmed. Saved results do not belong in Git.
 
-**Current position:** oracle transformation and normalization arithmetic pass on the audited observations. The fully trained oracle uses real surface information but does not reach an accurate reconstruction upper bound. Coordinate-dependent learning difficulty is not comprehensively excluded. The refreshed no-pointmap/no-visual runs completed training without a pooled-loss breakthrough; their checkpoint reconstruction assessments are still missing. No next experiment is automatically queued.
+**Current position:** oracle transformation and normalization arithmetic pass on the audited observations. The fully trained oracle uses real surface information but does not reach an accurate reconstruction upper bound. Coordinate-dependent learning difficulty is not comprehensively excluded. The refreshed no-pointmap/no-visual runs completed training without a pooled-loss breakthrough; their checkpoint reconstruction assessments are still missing. Further experiments are paused at the user’s request; no next experiment is authorized.
 
-**Authorized next training:** three H100 shape-full jobs are implemented; see [run variants, controls and verification](roadmap/DECISION.md#authorized-overnight-runs-2026-09-14). Existing-checkpoint assessment is deferred until the user's GPU access tomorrow. No jobs have been submitted by the local assistant.
+**Status, 2026-09-14:** the user stopped further experimentation and requested removal of the newly prepared surface-only assessment. The roadmap below retains earlier proposals as reference, not active instructions. The three H100 shape-full runs finished and their W&B curves are recorded; further training-scope/dropout analysis is deferred on the [roadmap TODO list](roadmap/DECISION.md#current-priority-after-the-refreshed-overnight-results). No new checkpoint reconstruction was supplied by the W&B sync.
 
 | Read / use | Contents |
 |---|---|
 | [Key findings](KEY_FINDINGS.md) | Established results and their limitations |
+| [Reference conventions](roadmap/CONVENTION_SURVEY.md) | Paper/code comparison: asset axes, semantic up/front, cameras, and normalization |
 | [Experiment history](EXPERIMENT_HISTORY.md) | What each experiment tested and found |
 | [Decision](roadmap/DECISION.md) and [checklist](roadmap/COORDINATE_CHECKLIST.md) | Remaining questions and stopping rules |
 | [Scripts](scripts/README.md) | Restored experiments, their helpers, analyses, and tests |

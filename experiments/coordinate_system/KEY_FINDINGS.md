@@ -2,6 +2,10 @@
 
 The [roadmap](roadmap/COORDINATE_CHECKLIST.md) governs inference and next decisions. The [history](EXPERIMENT_HISTORY.md) records other experiments and limitations. No new scientific result was produced by reorganizing these files.
 
+## Reference-convention clarification, 2026-09-14
+
+The [cross-project convention survey](roadmap/CONVENTION_SURVEY.md) distinguishes asset-local axes, semantic up/front, and camera coordinates. **Our oracle supplies the target orientation through the surface; an unknown camera rotation is not still missing from that input.** It does not align all visual streams or eliminate the separate normalization/learned-interface questions. No new transform bug or successful upper bound was established. Keep the existing numerical audit and E15 checkpoint assessment; do not restart axis probes based on the word “canonical.”
+
 ## 1. The explicit oracle transform is consistent on the audited bank
 
 Actual oracle points agree with independently reconstructed source points within about `1.6e-7` object units. All 32 exact-bank target latents regenerate exactly. Actual VecSetX normalization on 64 observations reproduces within `1.42e-7`. This supports the existing camera inverse, source-axis convention and normalization arithmetic on those observations. It does not certify every dataset record or pretrained semantic orientation preference.
@@ -71,3 +75,21 @@ The no-visual export records `no_visual=true`, `no_pointmap=false`, and `visual_
 No paired native-time/noise probe or noise-only Stage-1 reconstruction assessment for these three checkpoints was imported. Do not assign the earlier oracle checkpoint's generation results to these runs. The next checkpoint-assessment round should reuse the audited bank and retain these distinctions; no retraining or repeated target encoding is needed simply to obtain the missing outcome.
 
 Evidence: [W&B refresh analysis](../../../coordinate_system_results/full_training/wandb_refresh_20260914.json), with input hashes, recorded commits, configs, validation histories, and gradient summaries.
+
+## 8. Shape-full W&B refresh: logged deterioration, separate from coordinate closure
+
+All three newly exported shape-full runs finished 20 epochs / 14,660 updates. They are not the cross-attention checkpoints awaiting the E15 coordinate assessment.
+
+| Run | ID | Best validation loss (epoch) | Final validation loss |
+|---|---|---:|---:|
+| Image, no PM, dropout 0 | `aikgqmzc` | 0.0889387 (3) | 0.1074300 |
+| Oracle full surface, no PM, dropout 0.5 | `7zt1syig` | 0.0888329 (3) | 0.1026889 |
+| Constant surface, no PM, dropout 0.5 | `xqoi250e` | 0.0886795 (2) | 0.1024156 |
+
+The means of the last 50 training-log windows are 0.05382, 0.06274 and 0.07272 respectively; these training objectives differ in conditioning policy. Falling training loss with rising validation loss is consistent with overfitting, not a demonstrated causal mechanism or a generated-shape result.
+
+**Dropout is not a sufficient explanation for all three deteriorating curves:** the image-only run used none and also deteriorated. This does not establish that dropout is harmless to the oracle run. A matched oracle/no-PM shape-full dropout-0 run is absent, so “would it have worked without dropout?” remains unanswered. The earlier tiny-task dropout benefit was fitted-identity view robustness, not evidence for an optimal full-data dropout rate.
+
+At the user's direction, broader-scope/checkpoint-trajectory/dropout analysis is deferred. The active task remains the roadmap's existing no-PM/no-visual checkpoint assessment. No coordinate hypothesis was newly closed by this W&B refresh.
+
+Evidence: [curve summary and input hashes](../../../coordinate_system_results/full_training/wandb_shape_full_refresh_20260914.json).

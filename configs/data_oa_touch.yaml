@@ -1,0 +1,14 @@
+seed: 29
+dataset:
+  root: /n/netscratch/qianqian_lab/Lab/mwakeham/objaverse-oa
+  manifest: generated_data/samples.jsonl
+  split_file: generated_data/splits.json
+  split: train
+touch:
+  source: touch
+  contacts:
+    count: 32
+  neighborhood:
+    max_geodesic_distance: 0.10
+  point_sampling:
+    points_per_contact: 256

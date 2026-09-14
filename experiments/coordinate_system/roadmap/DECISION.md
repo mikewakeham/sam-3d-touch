@@ -1,5 +1,30 @@
 # What would justify stopping the coordinate investigation?
 
+**Status, 2026-09-14:** further experiments are paused at the user’s request. The newly prepared surface-only assessment was removed. The proposals below are retained for reference, not queued or authorized work.
+
+## Reference-convention survey, 2026-09-14
+
+The user requested a code/supplementary comparison before further experiments. [CONVENTION_SURVEY.md](CONVENTION_SURVEY.md) records that work, its precise source coverage, and unreleased-code limitations. It clarifies C2–C8 without changing the numerical audit status: oracle orientation is supplied, semantic canonicalization is a separate data convention, and the remaining mixed-stream/shared-normalization questions are not equivalent to an unknown inverse rotation. E15 below remains the next checkpoint assessment; no new full training or repeated transform bank is justified by this survey alone.
+
+## Current priority after the refreshed overnight results
+
+**User direction, 2026-09-14: resume the existing coordinate roadmap; defer further shape-full/dropout diagnosis.** The three overnight runs finished. Their W&B curves were inspected, but no new checkpoint reconstruction was supplied. This changes scheduling, not the earlier coordinate findings.
+
+Active next experiment is still **E15 / Gates A and C / C0, C5, C6, C10**: assess the completed cross-attention `ssmsddtg` oracle/no-PM, `pg4413ls` constant/no-PM, and `8zpws0ez` oracle/no-visual checkpoints on the same audited 16 training + 16 validation objects. Inspect the new restored modality boundaries once, measure paired correct/wrong-surface denoising and noise-only Stage-1 reconstruction. Reuse source/target evidence and sampler settings. Do not repeat inverse/axis checks or retrain these variants. Training reconstruction is the fitting question; validation is a separate transfer question.
+
+If poor reconstruction persists without PM, PM conflict is not necessary for that residual. If it persists without all visual information, visual/surface disagreement is not necessary either. These are scoped exclusions, not proof that normalization units or pretrained coordinate preferences cannot affect learning. Accurate reconstruction would instead preserve a working recipe and redirect the corresponding branch. C4b and C7/C8 remain explicitly open; see the existing checklist for the optional, controlled normalization/convention treatment. Do not silently substitute more training-scope runs for that treatment.
+
+Execution note: retained `full_checkpoints/checkpoint_probe_gpu.py` and `checkpoint_rollout_gpu.py` currently validate the original oracle/constant **with-PM** modes. They need a bounded extension for E15 and compact output handling before handing over commands; do not run them unchanged on the new checkpoints or remove their checks indiscriminately. Cluster reference locations after cleanup remain unconfirmed in STORAGE.md. No GPU assessment was performed in this refresh.
+
+Deferred training TODOs (resume after the coordinate assessment):
+
+- [ ] Assess shape-full best versus last checkpoints using paired Stage-1 denoising and generated reconstructions; training and validation separately.
+- [ ] Compare real versus constant geometry at matched dropout; compare image-only as a separate complete recipe.
+- [ ] Determine whether broader adaptation overfits or degrades useful pretrained behavior. Falling training loss/rising validation loss is a symptom, not that diagnosis.
+- [ ] If warranted, compare oracle/no-PM shape-full with dropout 0 versus 0.5 at matched conditions. No such paired full-scope comparison exists. No-dropout image-only also deteriorated, so dropout is not necessary for the observed validation deterioration.
+
+Results and exact curve summaries: [W&B shape-full refresh](../../../../coordinate_system_results/full_training/wandb_shape_full_refresh_20260914.json). Keep these raw results outside Git. Best validation checkpoints are at epoch 3 for image/real oracle and epoch 2 for constant; preserve both best and last for the deferred analysis.
+
 ## Authorized overnight runs, 2026-09-14
 
 This supersedes the earlier continuation scheduling proposal below. The user authorized minimal source integration and three **fresh-from-pretrained** shape-full runs, with checkpoint assessment deferred until GPU access tomorrow. No cluster jobs have been submitted locally.
