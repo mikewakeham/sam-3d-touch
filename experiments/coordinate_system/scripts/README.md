@@ -42,3 +42,7 @@ For example, the relocated tiny-fit driver is `experiments/coordinate_system/scr
 Historical sequential experiments still enforce their recorded reference-bank, source-hash, initialization, and checkpoint checks. Do not disable those checks to run against different sources or checkpoints. Old paths inside returned JSON identify historical artifacts; use the result reader/index for their retained locations. Grouping code does not recreate cluster-only weights or establish that an old protocol applies to a new run.
 
 The file moves change imports and source-file lookup, not experiment settings, objectives, or acceptance checks. GPU experiments have not been rerun as part of this organization.
+
+## Current formal rerun
+
+[`camera_frame_formal/`](camera_frame_formal/README.md) contains per-view target preparation, transformation figures, three-arm training with shared pointmap normalization, and CPU checks. User authorized implementation on September 14; GPU execution pending. Loss validation only during training; reconstruction afterward. Run directly in an interactive GPU allocation; optional experiment-local three-job submission script; no W&B integration. Results go in the ignored `experiments/coordinate_system/outputs/camera_frame_formal/`.
