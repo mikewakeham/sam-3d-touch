@@ -1,9 +1,11 @@
 #!/bin/bash
-# Run from the repository root: bash experiments/coordinate_system/scripts/camera_frame_formal/submit.sh PREPARATION_DIR
+# Run from the repository root: bash experiments/coordinate_system/scripts/camera_frame_target_latent/submit.sh PREPARATION_DIR
 set -e
 
-PREP=$1
-RUN=experiments/coordinate_system/outputs/camera_frame_formal/quick_fit_$(date +%Y%m%d_%H%M%S)
+PREP=${1:?Pass the completed preparation directory}
+PREP=$(cd "$PREP" && pwd)
+test -f "$PREP/preparation.json"
+RUN=experiments/coordinate_system/outputs/camera_frame_target_latent/quick_fit_$(date +%Y%m%d_%H%M%S)
 mkdir -p "$RUN"
 
 for arm in object_stock camera_stock camera_shared; do
@@ -24,7 +26,7 @@ export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python \\
-  experiments/coordinate_system/scripts/camera_frame_formal/fit_camera_frame_gpu.py \\
+  experiments/coordinate_system/scripts/camera_frame_target_latent/fit_camera_frame_gpu.py \\
   --preparation-dir "$PREP" \\
   --arm "$arm" \\
   --output-dir "$RUN/$arm" \\

@@ -78,8 +78,8 @@ def restore_for_evaluation(checkpoint_path, device, pipeline_config=None):
     import torch
     from train import load_trainable_state_dict
     checkpoint = torch.load(checkpoint_path, map_location='cpu', weights_only=False)
-    if checkpoint.get('format') != 'camera_frame_formal_v1':
-        raise ValueError('Not a camera-frame formal checkpoint')
+    if checkpoint.get('format') != 'camera_frame_target_latent_v1':
+        raise ValueError('Not a camera-frame target latent checkpoint')
     settings = dict(checkpoint['metadata']['settings'])
     if pipeline_config is not None: settings['pipeline_config'] = str(pipeline_config)
     pipeline, model, optimizer, _ = build_model(settings, device)
@@ -98,7 +98,7 @@ def main():
     from torch.utils.data import DataLoader, Subset
     from dataloader import TouchDataset, collate_touch_batch
     from train import amp, make_visual_drop_mask, trainable_state_dict
-    from experiments.coordinate_system.scripts.camera_frame_formal.training_runtime import (
+    from experiments.coordinate_system.scripts.camera_frame_target_latent.training_runtime import (
         ARMS, fixed_rng, prepare_batch, training_indices, validation_indices, accumulate_update)
     if not torch.cuda.is_available(): raise RuntimeError('Run on a cluster GPU')
     device = torch.device('cuda', 0)
@@ -197,7 +197,7 @@ def main():
         # One rolling weights file; overwrite atomically. No repeated optimizer/frozen-weight copies.
         metadata['checkpoint_step'] = step
         temp = out/'checkpoint.tmp'
-        torch.save(dict(format='camera_frame_formal_v1', metadata=metadata,
+        torch.save(dict(format='camera_frame_target_latent_v1', metadata=metadata,
                         trainable_state=trainable_state_dict(model)), temp)
         temp.replace(out/('final.pt' if final else 'latest.pt'))
         if final and (out/'latest.pt').exists(): (out/'latest.pt').unlink()

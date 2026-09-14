@@ -60,6 +60,10 @@ The saved W&B export for the existing camera full-surface run `mpd9bbwh` reports
 
 Target preparation is separate and has not been timed. It now processes 192 selected views rather than 2,560. Hardware, filesystem throughput and startup can change these estimates; use the printed measured update times after launch. Older 4-object timing results used a different cached experiment path and are not the primary estimate.
 
+## Existing prepared data
+
+The source folder was renamed from `camera_frame_formal` to `camera_frame_target_latent`. Existing preparation outputs under the OLD output folder remain valid: pass their actual directory to `submit.sh`. Do not re-encode targets just because the source folder was renamed. The submission script requires a nonempty preparation directory, resolves it to an absolute path and checks for `preparation.json` before requesting GPUs.
+
 ## Interactive commands
 
 First prepare the SMALL selection. Do not pass the old 128-object preparation to this quick test.
@@ -68,8 +72,8 @@ First prepare the SMALL selection. Do not pass the old 128-object preparation to
 (
 set -euo pipefail
 export OMP_NUM_THREADS=1 PYTHONUNBUFFERED=1
-PREP=experiments/coordinate_system/outputs/camera_frame_formal/quick_preparation_$(date +%Y%m%d_%H%M%S)
-python experiments/coordinate_system/scripts/camera_frame_formal/prepare_camera_frame_gpu.py \
+PREP=experiments/coordinate_system/outputs/camera_frame_target_latent/quick_preparation_$(date +%Y%m%d_%H%M%S)
+python experiments/coordinate_system/scripts/camera_frame_target_latent/prepare_camera_frame_gpu.py \
   --data-config configs/data_full_surface.yaml --pipeline-config checkpoints/hf/pipeline.yaml \
   --train-objects 16 --train-views 8 --held-views 4 --val-objects 0 --seed 29 \
   --output-dir "$PREP"
@@ -80,8 +84,8 @@ printf 'Preparation directory: %s\n' "$PREP"
 To submit three separate one-H100 training jobs after preparation, from the repository root:
 
 ```bash
-PREP=experiments/coordinate_system/outputs/camera_frame_formal/quick_preparation_YYYYMMDD_HHMMSS
-bash experiments/coordinate_system/scripts/camera_frame_formal/submit.sh "$PREP"
+PREP=experiments/coordinate_system/outputs/camera_frame_target_latent/quick_preparation_YYYYMMDD_HHMMSS
+bash experiments/coordinate_system/scripts/camera_frame_target_latent/submit.sh "$PREP"
 ```
 
 Set `PREP` to the completed preparation directory if using a new shell. `submit.sh` only submits training; preparation must already be complete. It requests the existing Kempner H100 partition/account, one GPU, 16 CPU cores, 64 GiB RAM and two hours per job. Each job runs the same Python command with its arm. Logs and results go in the printed `quick_fit_<timestamp>` experiment directory. No W&B. Slurm decides when each job starts.
@@ -94,15 +98,15 @@ Then set `PREP` to the directory printed above. For THREE already allocated GPUs
 (
 set -euo pipefail
 export OMP_NUM_THREADS=1 PYTHONUNBUFFERED=1
-PREP=experiments/coordinate_system/outputs/camera_frame_formal/quick_preparation_YYYYMMDD_HHMMSS
-RUN=experiments/coordinate_system/outputs/camera_frame_formal/quick_fit_$(date +%Y%m%d_%H%M%S)
+PREP=experiments/coordinate_system/outputs/camera_frame_target_latent/quick_preparation_YYYYMMDD_HHMMSS
+RUN=experiments/coordinate_system/outputs/camera_frame_target_latent/quick_fit_$(date +%Y%m%d_%H%M%S)
 mkdir -p "$RUN"
 IFS=',' read -r -a devices <<< "${CUDA_VISIBLE_DEVICES:-0,1,2}"
 if [ "${#devices[@]}" -lt 3 ]; then echo "This command needs three allocated GPUs"; exit 1; fi
 pids=()
 gpu=0
 for arm in object_stock camera_stock camera_shared; do
-  CUDA_VISIBLE_DEVICES="${devices[$gpu]}" python experiments/coordinate_system/scripts/camera_frame_formal/fit_camera_frame_gpu.py \
+  CUDA_VISIBLE_DEVICES="${devices[$gpu]}" python experiments/coordinate_system/scripts/camera_frame_target_latent/fit_camera_frame_gpu.py \
     --preparation-dir "$PREP" --arm "$arm" --output-dir "$RUN/$arm" \
     --steps 1000 --batch-size 4 --global-batch-size 4 --validate-every 100 \
     --workers 4 --train-scope shape_cross_attention --visual-dropout 0.5 \
@@ -120,11 +124,11 @@ The command preserves assigned GPU IDs/UUIDs. With ONE GPU, run the same Python 
 
 ## Files and checkpoints
 
-Code lives here; outputs stay in ignored `experiments/coordinate_system/outputs/camera_frame_formal/`. New target means require about **24 MiB uncompressed for 192 views**, shared across arms; no bulk feature caches or automatic ZIPs.
+Code lives here; outputs stay in ignored `experiments/coordinate_system/outputs/camera_frame_target_latent/`. New target means require about **24 MiB uncompressed for 192 views**, shared across arms; no bulk feature caches or automatic ZIPs.
 
 Per arm: `config.json` (IDs/settings/source and initialization hashes), `metrics.jsonl`, `results.json` (loss curves/completion), and ONE rolling `latest.pt` trainable-weights checkpoint every 100 updates. At the end, `final.pt` replaces it. No optimizer history or frozen-model copies. Atomic replacement temporarily needs room for both files. Checkpoint size depends on trainable scope, not dataset size; keep weights/targets on cluster and return small JSON/selected figures.
 
-Checkpoints use `camera_frame_formal_v1`. They need this experiment's conditioning wrapper, not vanilla `evaluate.py`. `fit_camera_frame_gpu.restore_for_evaluation()` restores weights/components; use `training_runtime.prepare_batch()` with the saved arm and appropriate target manifest. Reconstruction scoring is deferred until after training. Resume optimization is not implemented; interrupted weights remain evaluable. Existing directories are never overwritten.
+Checkpoints use `camera_frame_target_latent_v1`. They need this experiment's conditioning wrapper, not vanilla `evaluate.py`. `fit_camera_frame_gpu.restore_for_evaluation()` restores weights/components; use `training_runtime.prepare_batch()` with the saved arm and appropriate target manifest. Reconstruction scoring is deferred until after training. Resume optimization is not implemented; interrupted weights remain evaluable. Existing directories are never overwritten.
 
 ## Checks
 

@@ -14,9 +14,9 @@ import numpy as np
 
 REPO = next(p for p in Path(__file__).resolve().parents if (p/'train.py').is_file())
 sys.path.insert(0, str(REPO))
-from experiments.coordinate_system.scripts.camera_frame_formal.camera_frame_geometry import (
+from experiments.coordinate_system.scripts.camera_frame_target_latent.camera_frame_geometry import (
     affine, digest, make_frames, select_records)
-from experiments.coordinate_system.scripts.camera_frame_formal.camera_frame_plot import plot_transformations
+from experiments.coordinate_system.scripts.camera_frame_target_latent.camera_frame_plot import plot_transformations
 
 
 def sha(path):

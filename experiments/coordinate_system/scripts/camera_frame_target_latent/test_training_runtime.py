@@ -14,7 +14,7 @@ import torch
 
 REPO = next(p for p in Path(__file__).resolve().parents if (p/'train.py').is_file())
 sys.path.insert(0, str(REPO))
-from experiments.coordinate_system.scripts.camera_frame_formal.training_runtime import (
+from experiments.coordinate_system.scripts.camera_frame_target_latent.training_runtime import (
     SurfaceNormalizer, preprocess_inputs, fixed_rng, training_indices, accumulate_update)
 
 
