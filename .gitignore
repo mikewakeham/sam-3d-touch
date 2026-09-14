@@ -4,3 +4,4 @@ outputs
 logs
 old
 data_generation
+experiments/coordinate_system/results
