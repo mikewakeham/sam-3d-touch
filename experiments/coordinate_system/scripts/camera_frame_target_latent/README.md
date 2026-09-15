@@ -1,6 +1,6 @@
 # Camera-frame experiment — quick same-object / held-view test
 
-Status: experiment code implemented and CPU-tested; GPU execution pending. No production edits or W&B. The user subsequently requested `submit.sh`, which submits three separate one-H100 jobs. The user replaced the earlier 128-object/5,000-step proposal with this quick test on September 14.
+Status: three cluster runs completed. [Results and interpretation](RESULTS_20260914.md): shared pointmap normalization gives no clear loss benefit; final reconstruction evaluation remains outstanding. No production edits or W&B. The user subsequently requested `submit.sh`, which submits three separate one-H100 jobs. The user replaced the earlier 128-object/5,000-step proposal with this quick test on September 14.
 
 ## Question and splits
 

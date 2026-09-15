@@ -93,3 +93,17 @@ The means of the last 50 training-log windows are 0.05382, 0.06274 and 0.07272 r
 At the user's direction, broader-scope/checkpoint-trajectory/dropout analysis is deferred. The active task remains the roadmap's existing no-PM/no-visual checkpoint assessment. No coordinate hypothesis was newly closed by this W&B refresh.
 
 Evidence: [curve summary and input hashes](../../../coordinate_system_results/full_training/wandb_shape_full_refresh_20260914.json).
+
+## 9. Camera-target rerun: shared pointmap normalization did not improve fixed-bank loss
+
+The 16-object, 8-training/4-held-view, 1,000-update comparison completed. Final training-reference / held-view losses: object target + stock PM **0.06707 / 0.06273**; camera target + stock PM **0.12502 / 0.11681**; camera target + shared PM **0.12439 / 0.11809**. Recorded data, initialization, training order, code and settings are matched.
+
+The camera/stock and camera/shared curves nearly overlap: shared normalization has no clear benefit under shape cross-attention training with 50% visual dropout. Camera-target loss is higher even on fitted views, but target distributions differ and this is not a reconstruction-quality comparison. Curves still improve over the second half of training, so no architectural limit or complete coordinate exclusion is established. Held-view loss below train-reference loss is not a controlled view-dependence finding because samples/noise banks differ.
+
+Keep stock PM normalization as default pending final Stage-1 reconstruction assessment. No further training is justified by a shared-normalization advantage here. [Analysis and evidence locations](scripts/camera_frame_target_latent/RESULTS_20260914.md).
+
+## 10. The full oracle run without visual dropout already exists
+
+W&B run `fd2yiktq` (`stage1_full_surface_oracle`) completed 20 epochs / 14,660 updates with oracle full surfaces, pointmap present, visual dropout 0 and `shape_cross_attention` scope. Its best/final validation losses are **0.0888749 / 0.0892673**. The matched camera-frame, no-dropout run `act988rs` reports **0.0888587 / 0.0894101**; the oracle, 50%-dropout run `cps50h2l` reports **0.0889772 / 0.0893984**. These differences are very small and do not show a pooled-loss rescue from either oracle alignment or removing dropout.
+
+This fills the oracle + pointmap + dropout-0 cell. The only missing cell in the oracle pointmap/dropout 2x2 is oracle + no pointmap + dropout 0. Checkpoint-level paired denoising and Stage-1 reconstruction remain required before interpreting geometric success or failure.

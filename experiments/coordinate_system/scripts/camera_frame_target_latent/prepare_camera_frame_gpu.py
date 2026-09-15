@@ -7,8 +7,11 @@ import copy
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import sys
+
+os.environ.setdefault("LIDRA_SKIP_INIT", "true")
 
 import numpy as np
 
