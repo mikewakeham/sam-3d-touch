@@ -85,7 +85,7 @@ def rotation_figures(root, output, summary):
             for name in names:
                 points = (np.argwhere(data[name])+.5)/64-.5
                 plot(output/f"{example.stem}_{name}.png", [(points, "#337bc4", .9)],
-                     np.zeros(3), .55, grid_spacing=.5, object_axes=None)
+                     np.zeros(3), .55, grid_spacing=.5, object_axes=None, vertical_axis="z")
             axis = str(data["axis"].item()).upper() if "axis" in data else "Z"
             angle = int(data["degrees"].item()) if "degrees" in data else 90
             captions = ["Original encoder input", f"Same input, exact {axis} {angle}°", "Known inverse restored"]
@@ -97,6 +97,27 @@ def rotation_figures(root, output, summary):
             ax.set_title(caption)
             ax.text(.5, -.03, f"Encoded mean MSE: {score:.6g}", transform=ax.transAxes, ha="center")
         save_figure(fig, output/f"{example.stem}_rotation_comparison")
+
+    # One strip per axis: identical plotting camera/bounds for every angle.
+    for example in (root/"examples"/"angles").glob("*.npz"):
+        with np.load(example) as data:
+            for i, axis in enumerate(data["axes"]):
+                axis = str(axis).upper()
+                angles = data["degrees"]
+                fig, panels = plt.subplots(1, len(angles), figsize=(3*len(angles), 3.7), squeeze=False)
+                for j, angle in enumerate(angles):
+                    path = output/f"{example.stem}_{axis}_{int(angle)}deg.png"
+                    points = (np.argwhere(data["grids"][i, j])+.5)/64-.5
+                    plot(path, [(points, "#337bc4", .9)], np.zeros(3), .55,
+                         grid_spacing=.5, object_axes=None, vertical_axis="z")
+                    ax = panels[0, j]
+                    ax.imshow(Image.open(path))
+                    ax.set_axis_off()
+                    ax.set_title(f"{axis} {int(angle)}°")
+                    ax.text(.5, -.03, f"Latent MSE {data['latent_mse'][i, j]:.4f}",
+                            transform=ax.transAxes, ha="center", fontsize=10)
+                fig.suptitle("Same shape, fixed padded scale; Z-up plotting view")
+                save_figure(fig, output/f"{example.stem}_{axis}_rotation_angles")
 
 
 def checkpoint_figures(root, output, summary):

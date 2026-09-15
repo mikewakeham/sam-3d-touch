@@ -20,7 +20,7 @@ def affine(points, transform):
     return points @ transform[:3, :3].T + transform[:3, 3]
 
 
-def plot(path, layers, center, limit, mesh=None, face_colors=None, frame='SAM camera frame', grid_spacing=.5, object_axes=None, vertical_axis='y'):
+def plot(path, layers, center, limit, mesh=None, face_colors=None, frame='SAM camera frame', grid_spacing=.5, object_axes=None, vertical_axis='z'):
     fig = plt.figure(figsize=(6,6), facecolor='white')
     ax = fig.add_subplot(111, projection='3d')
     ax.set_proj_type('ortho')
@@ -162,7 +162,7 @@ def main():
 
 Views 004, 005, 006 are above the object equator. Each view has RGB, colored/uncolored full surface, colored/uncolored pointmap, and an overlay (blue = full surface; orange = pointmap).
 
-All geometry is plotted directly in the saved SAM camera frame, BEFORE SAM preprocessing or VecSetX normalization. Across ALL views, camera plots share X/Y limits [-0.55, 0.55], Z limits [1.45, 2.55], the same Y-up display viewpoint, equal XYZ scale, and 0.5-unit grid spacing. Target plots use the same viewpoint, axis span and grid spacing, with all axes [-0.55, 0.55] because their origin is different. Coordinates are not translated or rotated for plotting. Units are dataset coordinate units, not a claim of meters. The overlay demonstrates the raw inputs share a frame; it does not show their separately normalized encoder inputs.
+All geometry is plotted directly in the saved SAM camera frame, BEFORE SAM preprocessing or VecSetX normalization. Across ALL views, camera plots share X/Y limits [-0.55, 0.55], Z limits [1.45, 2.55], the same Z-up display viewpoint, equal XYZ scale, and 0.5-unit grid spacing. Target plots use the same viewpoint, axis span and grid spacing, with all axes [-0.55, 0.55] because their origin is different. Coordinates are not translated or rotated for plotting. Units are dataset coordinate units, not a claim of meters. The overlay demonstrates the raw inputs share a frame; it does not show their separately normalized encoder inputs.
 
 Surface colors come from source material face colors, used only for visualization. Pointmap colors come from corresponding RGB pixels. Each plotted cloud contains at most 5000 deterministically selected points, with fully opaque markers. Full surface data still contains 8192 points; subsampling is for display only. No geometry is synthesized.
 

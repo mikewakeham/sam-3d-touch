@@ -138,6 +138,8 @@ python experiments/coordinate_system/scripts/rotation_loss/plot_rotation_loss.py
   --output-dir experiments/coordinate_system/outputs/rotation_loss/encoder_val64_figures
 ```
 
+The exporter also saves all measured padded rotations (0, 5, 15, 30, 60, 90, 180 degrees on XYZ by default) for the selected objects and the named example object. The plotter creates one comparison strip per axis plus individual panels. All rotation geometry uses the same Z-up plotting camera and fixed XYZ bounds [-0.55, 0.55], matching the upright target figures; arrays are not relabeled or permuted for display. Angle strips compare against the padded zero-angle latent, while exact native rotation examples compare against the original target-scale latent.
+
 These commands need the original dataset but no GPU/model weights. Small boolean
 grids go in `examples/`; figures use the actual axis/angle and measured GPU MSE.
 `high_error_examples.json` records the selection. These are explicitly selected

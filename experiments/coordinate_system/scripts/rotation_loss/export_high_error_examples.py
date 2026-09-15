@@ -11,8 +11,35 @@ sys.path.insert(0, str(REPO))
 import numpy as np
 from dataloader import load_data_config
 from experiments.coordinate_system.scripts.rotation_loss.rotation_utils import (
-    load_mesh, voxelize, native_rotations, rotate_grid,
+    load_mesh, voxelize, native_rotations, rotate_grid, rotation,
 )
+
+
+def save_angle_examples(mesh, rows, path):
+    """Recreate the padded-angle encoder inputs; reuse their measured scores."""
+    rows = [r for r in rows if r["part"] == "padded"]
+    angles = sorted({int(float(r["degrees"])) for r in rows})
+    zero = next(r for r in rows if float(r["degrees"]) == 0)
+    padded = mesh.copy()
+    padded.vertices = np.asarray(mesh.vertices)*float(zero["scale"])
+    grids, scores = [], []
+    for axis in "xyz":
+        axis_grids, axis_scores = [], []
+        for angle in angles:
+            row = zero if angle == 0 else next(r for r in rows
+                if r["axis"] == axis and float(r["degrees"]) == angle)
+            transformed = padded.copy()
+            transformed.vertices = np.asarray(padded.vertices)@np.asarray(rotation(axis, angle)).T
+            grid = voxelize(transformed)
+            assert int(grid.sum()) == int(row["occupied"])
+            axis_grids.append(grid)
+            axis_scores.append(float(row["latent_mse"]))
+        grids.append(axis_grids)
+        scores.append(axis_scores)
+    path.parent.mkdir(exist_ok=True)
+    np.savez_compressed(path, grids=np.asarray(grids), latent_mse=np.asarray(scores),
+                        axes=np.asarray(list("xyz")), degrees=np.asarray(angles),
+                        scale=float(zero["scale"]))
 
 
 def export_examples(probe_dir, data_config, count):
@@ -46,10 +73,18 @@ def export_examples(probe_dir, data_config, count):
                             restored=restored, axis=axis, degrees=angle,
                             latent_mse=float(row["latent_mse"]), restored_latent_mse=floor)
         print(f"{oid}: {axis.upper()} {angle} degrees, latent MSE {float(row['latent_mse']):.6f}")
+    angle_ids = [r["object_id"] for r in selected]
+    example_id = report["settings"].get("example_object")
+    if example_id and example_id not in angle_ids:
+        angle_ids.append(example_id)
+    for oid in angle_ids:
+        save_angle_examples(load_mesh(root, oid), [r for r in rows if r["object_id"] == oid],
+                            folder/"angles"/f"{oid}.npz")
     (probe_dir/"high_error_examples.json").write_text(json.dumps({
         "selection": "Largest native 90/180-degree target latent MSE per validation object; top distinct identities. Selected extremes, not representative examples.",
         "geometry": "Rebuilt using original target voxelizer, then exact grid permutations. Scores copied from completed GPU probe; no model encoding or decoding here.",
         "examples": selected,
+        "angle_examples": angle_ids,
     }, indent=2)+"\n")
 
 
