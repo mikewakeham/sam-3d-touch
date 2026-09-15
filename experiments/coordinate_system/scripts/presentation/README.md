@@ -20,14 +20,20 @@ The 3D geometry plots have no triad. `render_triads.py` exports separate square 
 
 `render_target_voxels.py OBJECT_DIR OUTPUT_DIR` reruns the actual data-generation voxelization function (Open3D, CPU) and renders the 64³ surface occupancy. The target output folder includes both the matching input-plot viewpoint and clearly named upright viewing references. These are encoder-input voxels, not decoded latent predictions.
 
-## Axis labels versus viewing camera (2026-09-15)
+## Latest display convention (2026-09-15)
 
-The input plots pass raw XYZ coordinates directly to scatter, use X/Y/Z labels on the matching numeric dimensions, and originally set Matplotlib vertical_axis='y'. The input plots were regenerated with vertical_axis='z' on September 15 to match the target viewing camera. Upright target mesh/voxel plots pass unchanged object XYZ geometry and set vertical_axis='z'. This changes the viewing camera, not the arrays or labels. Camera Z appears along the screen's horizontal grid edge in the input plots; its physical meaning remains camera depth.
+Input figures retain the upright appearance used in the slides. They display camera (Z,X,Y) as plot (X,Y,Z), with the same Z-up plotting camera as target figures. This cyclic display-only conversion preserves the original screen projection to numerical precision (tested maximum difference 6.8e-17) while putting grid X along the horizontal edge, Y along the receding edge and Z upward. Colors, point selection, numeric values and model inputs are unchanged.
 
-The boxed input triads show the target/object basis transformed by T_sam_from_object, not the camera grid basis. Object +Z maps to SAM XYZ [0, 0.987725, -0.156205] in view 005, so its blue Z arrow points close to camera +Y. Target triads show the untransformed object basis. The old green-arrow presentation convention additionally reverses object Y; *_plus_y markers instead show native +Y.
+Grid labels denote this display frame, not native SAM camera axes: plot X = camera Z, plot Y = camera X, plot Z = camera Y. Use a slide footnote “Camera inputs shown in a Z-up display convention.” Target plots retain native object XYZ. This is not oracle alignment or evidence of a training defect.
 
-Consequently grid and triad letters should not be made to match by relabeling: they refer to different frames on the input figures. Use explicit slide captions: input grid = camera coordinates; input inset = object axes expressed in camera coordinates; target grid/inset = object coordinates. This is visualization/convention clarification, not evidence of a training defect or proof that oracle is needed.
+The original input triad files 004.png/005.png/006.png (and their *_plus_y.png variants) again match the restored screen orientation. They show object axes, not grid axes. The intermediate *_z_up.png input triads do not match this latest converted display. Target uses target_plus_y_z_up.png.
 
-## Common plotting viewpoint, 2026-09-15
+## Shared normalization overlay
 
-The shared plot function now defaults to Z-up at elevation 12 and azimuth -65, matching the upright target and rotation figures. Raw inputs and both normalization stages were rerendered using existing coordinates, colors, point selection and bounds. Raw inputs remain in camera XYZ; target figures remain in object XYZ. A common plotting camera standardizes the axis layout without numerically aligning these frames. Existing standalone input triads were not regenerated and use the earlier Y-up plotting view; they must not be overlaid as matching-view markers on the new Z-up plots.
+`render_shared_normalization.py OBJECT_DIR NORMALIZATION_DIR` writes shared/004–006/surface_and_pointmap.png. It reuses SurfacePointmapNormalizer's actual initializer/normalize methods and TouchEncoder's normalization method without loading model weights. Both clouds use the same raw-surface bounding-box midpoint and maximum Euclidean radius. It keeps the existing normalized-stage plot bounds and latest display convention. The overlay shows geometric inputs before crop/resize/token embedding, not the final model tokens.
+
+## Inverse-transform figures
+
+`render_oracle.py --object-dir OBJECT_DIR --rotation-dir ROTATION_PROBE_DIR --output-dir OUTPUT_DIR --view 005` makes two separate figures. `inverse_rotation_latent_mse.png` uses saved exact Z90 occupancy arrays and cluster-measured frozen Stage-1 encoder scores (octopus: 0 → 0.358552 → 0). Restored occupancy is exactly identical to the original; its score uses the measured repeat-encoding floor. This is a controlled rotation example, not an observed generator prediction or the actual camera rotation.
+
+`camera_to_object_oracle.png` compares blue camera surface against green target-mesh surface samples before and after the inverse transform, then shows the target alone. The before panel subtracts only camera translation so both clouds share an origin; camera rotation is retained. All three panels use native XYZ, identical bounds and viewpoint, with no camera display permutation. This isolates orientation and differs from the upright display convention of earlier input figures. It precedes VecSetX normalization. No camera-view latent MSE has been measured by this rendering script. Figures and their numerical metadata live under ignored `outputs/slide_visuals/OBJECT_ID/oracle/`.

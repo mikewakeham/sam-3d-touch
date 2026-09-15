@@ -20,20 +20,22 @@ def affine(points, transform):
     return points @ transform[:3, :3].T + transform[:3, 3]
 
 
-def plot(path, layers, center, limit, mesh=None, face_colors=None, frame='SAM camera frame', grid_spacing=.5, object_axes=None, vertical_axis='z'):
+def plot(path, layers, center, limit, mesh=None, face_colors=None, frame='SAM camera frame', grid_spacing=.5, object_axes=None, vertical_axis='z', coordinate_order=(0,1,2), marker_size=.9):
     fig = plt.figure(figsize=(6,6), facecolor='white')
     ax = fig.add_subplot(111, projection='3d')
     ax.set_proj_type('ortho')
     ax.view_init(elev=12, azim=-65, vertical_axis=vertical_axis)
+    center=np.asarray(center)[list(coordinate_order)]
     for points, colors, size in layers:
+        points=np.asarray(points)[:,list(coordinate_order)]
         # Display-only subset; keep point/color correspondence.
         indices = np.random.default_rng(42).choice(len(points), min(5000,len(points)), replace=False)
         points = points[indices]
         if not isinstance(colors,str):
             colors = np.asarray(colors)[indices]
-        ax.scatter(*points.T, c=colors, s=.9, linewidths=0, depthshade=False, alpha=1.)
+        ax.scatter(*points.T, c=colors, s=marker_size, linewidths=0, depthshade=False, alpha=1.)
     if mesh is not None:
-        ax.add_collection3d(Poly3DCollection(mesh.triangles,facecolors=face_colors,
+        ax.add_collection3d(Poly3DCollection(mesh.triangles[:,:,list(coordinate_order)],facecolors=face_colors,
                                            edgecolors='none',linewidths=0))
     for dim, (setter, axis, label, color) in enumerate(zip(
             [ax.set_xlim,ax.set_ylim,ax.set_zlim], [ax.xaxis,ax.yaxis,ax.zaxis],
@@ -53,7 +55,7 @@ def plot(path, layers, center, limit, mesh=None, face_colors=None, frame='SAM ca
     if object_axes is not None:
         # Presentation convention: green Y points toward the octopus's face
         # (target -Y), while the plot grid retains native positive Y.
-        basis=np.asarray(object_axes)@np.diag([1.,-1.,1.])
+        basis=np.asarray(object_axes)[list(coordinate_order),:]@np.diag([1.,-1.,1.])
         inset=fig.add_axes([.14,.56,.24,.23],projection='3d',facecolor='none',zorder=5)
         inset.set_proj_type('ortho')
         inset.view_init(elev=12,azim=-65,vertical_axis=vertical_axis)
@@ -140,13 +142,13 @@ def main():
         center=np.array([0.,0.,2.]);limit=.55
         assert np.all(np.abs(xyz-center)<=limit) and np.all(np.abs(q-center)<=limit)
         shutil.copyfile(src/'image.png',dest/'rgb.png')
-        plot(dest/'surface_colored.png',[(xyz,fc[faces],.65)],center,limit,object_axes=None)
-        plot(dest/'surface_uncolored.png',[(xyz,'#657385',.65)],center,limit,object_axes=None)
-        plot(dest/'pointmap_colored.png',[(q,rgb,.35)],center,limit,object_axes=None)
-        plot(dest/'pointmap_uncolored.png',[(q,'#657385',.35)],center,limit,object_axes=None)
-        plot(dest/'surface_and_pointmap.png',[(xyz,'#337bc4',.65),(q,'#f18b32',.45)],center,limit,object_axes=None)
+        plot(dest/'surface_colored.png',[(xyz,fc[faces],.65)],center,limit,object_axes=None,coordinate_order=(2,0,1))
+        plot(dest/'surface_uncolored.png',[(xyz,'#657385',.65)],center,limit,object_axes=None,coordinate_order=(2,0,1))
+        plot(dest/'pointmap_colored.png',[(q,rgb,.35)],center,limit,object_axes=None,coordinate_order=(2,0,1))
+        plot(dest/'pointmap_uncolored.png',[(q,'#657385',.35)],center,limit,object_axes=None,coordinate_order=(2,0,1))
+        plot(dest/'surface_and_pointmap.png',[(xyz,'#337bc4',.65),(q,'#f18b32',.45)],center,limit,object_axes=None,coordinate_order=(2,0,1))
         # One actual sampled surface point expressed in two coordinate systems.
-        records.append(dict(view=view,raw_surface_frame='sam_camera',pointmap_frame='sam_camera',
+        records.append(dict(view=view,raw_surface_frame='sam_camera',pointmap_frame='sam_camera',display_coordinate_order=[2,0,1],
             replay_max_error=replay_error,object_point=obj[0].tolist(),camera_point=xyz[0].tolist(),
             plotted_surface_count=min(5000,len(xyz)),plotted_pointmap_count=len(q),valid_pointmap_count=int(valid.sum()),
             display_center=center.tolist(),display_limit=limit))
@@ -162,7 +164,7 @@ def main():
 
 Views 004, 005, 006 are above the object equator. Each view has RGB, colored/uncolored full surface, colored/uncolored pointmap, and an overlay (blue = full surface; orange = pointmap).
 
-All geometry is plotted directly in the saved SAM camera frame, BEFORE SAM preprocessing or VecSetX normalization. Across ALL views, camera plots share X/Y limits [-0.55, 0.55], Z limits [1.45, 2.55], the same Z-up display viewpoint, equal XYZ scale, and 0.5-unit grid spacing. Target plots use the same viewpoint, axis span and grid spacing, with all axes [-0.55, 0.55] because their origin is different. Coordinates are not translated or rotated for plotting. Units are dataset coordinate units, not a claim of meters. The overlay demonstrates the raw inputs share a frame; it does not show their separately normalized encoder inputs.
+All geometry is plotted directly in the saved SAM camera frame, BEFORE SAM preprocessing or VecSetX normalization. Across ALL views, camera plots share X/Y limits [-0.55, 0.55], Z limits [1.45, 2.55], the same Z-up display viewpoint, equal XYZ scale, and 0.5-unit grid spacing. Target plots use the same viewpoint, axis span and grid spacing, with all axes [-0.55, 0.55] because their origin is different. For plotting only, camera (Z,X,Y) is displayed as (X,Y,Z). This preserves the former upright view with target-style grid labels; model input arrays are unchanged. Units are dataset coordinate units, not a claim of meters. The overlay demonstrates the raw inputs share a frame; it does not show their separately normalized encoder inputs.
 
 Surface colors come from source material face colors, used only for visualization. Pointmap colors come from corresponding RGB pixels. Each plotted cloud contains at most 5000 deterministically selected points, with fully opaque markers. Full surface data still contains 8192 points; subsampling is for display only. No geometry is synthesized.
 

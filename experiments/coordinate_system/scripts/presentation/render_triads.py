@@ -86,8 +86,10 @@ def main():
         cv=np.load(args.object_dir/'views'/view/'camera.npz')['T_camera_from_object']
         sam=np.diag([-1.,-1.,1.,1.])@cv
         render(out/(view+'.png'),sam[:3,:3])
+        render(out/(view+'_z_up.png'),sam[:3,:3],vertical_axis='z')
         # Cancel render()'s presentation-only Y flip to show native target +Y.
         render(out/(view+'_plus_y.png'),sam[:3,:3]@np.diag([1.,-1.,1.]))
+        render(out/(view+'_plus_y_z_up.png'),sam[:3,:3]@np.diag([1.,-1.,1.]),vertical_axis='z')
     (out/'README.md').write_text('''Standalone boxed object-orientation markers. target.png uses the presentation convention where green Y points toward the octopus face (target -Y). target_plus_y.png shows the target frame's native +Y with the old Y-up plotting view. target_plus_y_z_up.png shows the same native axes with object +Z displayed upward and matches the upright target mesh/voxel figures. Red X and blue Z are target +X and +Z. 004.png, 005.png, and 006.png use the old -Y presentation convention. 004_plus_y.png, 005_plus_y.png, and 006_plus_y.png show the native target basis transformed into each saved SAM camera frame and match the camera-coordinate plots. All PNGs use square boxes. Drag each onto slides independently.\n''')
     print(out.resolve())
 

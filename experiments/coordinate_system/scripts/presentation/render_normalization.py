@@ -49,9 +49,9 @@ def main():
             rotation=(np.diag([-1.,-1.,1.,1.])@np.load(root/'views'/view/'camera.npz')['T_camera_from_object'])[:3,:3]
             (s,q),sc,qc=data[view][0][stage],data[view][1],data[view][2]
             shutil.copyfile(root/'views'/view/'image.png',dest/'rgb.png')
-            plot(dest/'surface_colored.png',[(s,sc,.9)],stage_center,stage_limit,grid_spacing=tick_spacing,object_axes=None,frame='Camera XYZ directions — '+stage)
-            plot(dest/'pointmap_colored.png',[(q,qc,.9)],stage_center,stage_limit,grid_spacing=tick_spacing,object_axes=None,frame='Camera XYZ directions — '+('sam3d' if stage=='vecsetx' else stage))
-            plot(dest/'surface_and_pointmap.png',[(s,'#337bc4',.9),(q,'#f18b32',.9)],stage_center,stage_limit,grid_spacing=tick_spacing,object_axes=None,frame='Camera XYZ directions — '+stage)
+            plot(dest/'surface_colored.png',[(s,sc,.9)],stage_center,stage_limit,grid_spacing=tick_spacing,object_axes=None,frame='Camera XYZ directions — '+stage,coordinate_order=(2,0,1))
+            plot(dest/'pointmap_colored.png',[(q,qc,.9)],stage_center,stage_limit,grid_spacing=tick_spacing,object_axes=None,frame='Camera XYZ directions — '+('sam3d' if stage=='vecsetx' else stage),coordinate_order=(2,0,1))
+            plot(dest/'surface_and_pointmap.png',[(s,'#337bc4',.9),(q,'#f18b32',.9)],stage_center,stage_limit,grid_spacing=tick_spacing,object_axes=None,frame='Camera XYZ directions — '+stage,coordinate_order=(2,0,1))
         fig,axs=plt.subplots(3,4,figsize=(20,15))
         for row,view in enumerate(views):
             for col,name in enumerate(names):
@@ -71,7 +71,7 @@ def main():
 - `vecsetx/contact_sheet.png`: surface additionally bbox-centered and divided by maximum Euclidean radius; pointmap remains SAM-normalized.
 - `normalization_comparison.png`: the overlay for all three views at all three stages.
 
-All plots share the same viewpoint, XYZ directions, opaque markers, and sampled point identities. Raw inputs use a closer view (X/Y [-0.55,0.55], Z [1.45,2.55]). The two normalized stages share identical numeric bounds and scale. XYZ scale is equal within every plot. Tick spacing is 0.5 for raw and 2 for normalized plots. XYZ values remain in each stage's units; fixed plotting scale exposes rather than removes normalization. These are coordinate-transform visualizations, NOT final cropped/resized encoder input grids. RGB is the original reference image at every stage. No oracle rotation is applied.
+All plots share the same viewpoint, display XYZ directions, opaque markers, and sampled point identities. For plotting only, camera (Z,X,Y) is displayed as (X,Y,Z); this retains the upright appearance with Z-up grid labels. Model input coordinates are unchanged. Raw inputs use a closer view (X/Y [-0.55,0.55], Z [1.45,2.55]). The two normalized stages share identical numeric bounds and scale. XYZ scale is equal within every plot. Tick spacing is 0.5 for raw and 2 for normalized plots. XYZ values remain in each stage's units; fixed plotting scale exposes rather than removes normalization. These are coordinate-transform visualizations, NOT final cropped/resized encoder input grids. RGB is the original reference image at every stage. No oracle rotation is applied.
 
 The normalization helper executes the actual repository ObjectCentricSSI moment method and TouchEncoder normalization method on CPU, using use_scene_scale=True, scale_factor=1, as configured in the locally available sam-3d-objects/checkpoints/hf/pipeline.yaml. Same-size mask resizing is identity. The SSI inverse affine is evaluated explicitly as (p-shift)/scale. Normalization uses complete clouds, before display subsampling. Saved normalization.json records every shift and scale. Colors are for display only.
 ''')
