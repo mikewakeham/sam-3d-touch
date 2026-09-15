@@ -141,8 +141,20 @@ Next: evaluate these eight best checkpoints on the same validation identities/vi
 
 Evidence: exported run.json/history.csv in ../wandb-results and local ignored [refresh summary](outputs/rotation_loss/wandb_refresh_20260915.json). Evaluation commands are provided in chat; no new job script or production change is needed.
 
-## 13. Generated-view diagnostic replaced: test the known camera inverse
+## 13. Pending generated-prediction rotation-fit diagnostic
 
-The rotated-target, seven-orientation shortlist was discarded at the user's direction. Its selected examples do not establish that predictions retain their input camera orientation and are not the intended presentation evidence. That generated-example selection code has been removed.
+The earlier generated-output diagnostics based on a seven-orientation target search and the known input-camera inverse were discarded at the user’s direction. They answered different questions and are not retained as evidence for the intended claim.
 
-The replacement in `scripts/generated_rotation_examples/` retains fixed metadata-selected validation views and all their actual generated predictions, copies each input image and raw surface/pointmap display clouds, and compares decoded prediction with the stored target before/after applying that view's known inverse camera rotation about the origin. No camera translation, rotation search, target re-encoding or score-based selection. Latent MSE is measured only against the stored training target. Defaults are eight validation objects, three views, one draw (24 predictions); no replacement GPU result is available yet. All three output plots share native XYZ axes. Raw input plots retain the documented display-only camera ZXY convention.
+The replacement under `scripts/generated_rotation_examples/` uses fixed validation views and unchanged model generation. It decodes each actual prediction and stored target, fits a continuous proper rotation between their decoded occupied points about the fixed origin, and fits no translation, scale, reflection, camera transform or deformation. Both the unaligned and aligned predicted geometries are rasterized and passed through the same frozen SS target encoder. Their MSEs are compared with the unchanged stored target latent. Decoding and re-encoding the stored target provides the round-trip floor. The original generated-to-target latent MSE remains separately reported.
+
+This can establish an actual generated example whose decoded shape becomes close after rotation and whose re-encoded target MSE falls after the same correction. It cannot show that the raw latent itself supports direct rotation or that oracle conditioning solves training. Defaults are 32 validation objects, four fixed views and two draws; all 256 outcomes are retained before post-hoc example selection. No GPU result exists yet.
+
+## 14. Common Stage-2 evaluation: no clear full-surface advantage
+
+The common evaluation contains 95 paired validation samples for each of ten conditions, with zero failed rows. After the evaluator's independent mesh normalization and PCA/ICP alignment, decoded-GT gives mean F@0.01 **69.28%** and Chamfer **0.00984**. Official SAM3D gives **24.05% / 0.06499**. The trained image+pointmap baseline gives **33.52% / 0.03591**.
+
+Adding camera surface to image+pointmap gives **33.12% / 0.03717**, a paired F-score change of **-0.40 percentage points** and Chamfer worsening of **0.00125**. Under shared pointmap normalization, image control is **33.14% / 0.03399** and surface is **33.60% / 0.03527**: F-score **+0.46 points**, Chamfer worse by **0.00128**. Without pointmap, image is **30.47% / 0.04442** and camera surface **31.62% / 0.04043**: F-score **+1.15 points**, Chamfer better by **0.00399**, but only 53.7% of paired samples improve in F-score.
+
+Oracle alignment provides no rescue. With pointmap, camera/oracle surface give **33.12% / 32.86%** F-score and **0.03717 / 0.03734** Chamfer. Without pointmap, camera/oracle surface give **31.62% / 30.38%** and **0.04043 / 0.04178**. Highest trained mean F-score is shared-normalized surface (**33.60%**), only **0.08 points** above ordinary image+pointmap; lowest trained Chamfer is the shared-normalized image control (**0.03399**). No one condition dominates metrics.
+
+These are aligned Stage-2/mesh results, not Stage-1 training loss and not raw orientation metrics. The decoded-GT gap to the best-F trained condition is **35.68 F-score points** and **0.02543 Chamfer**, so considerable headroom remains. Evidence supplied in the September 15 `metrics.csv` and `summary.yaml`; all means and paired comparison signs were independently recomputed from the CSV.
