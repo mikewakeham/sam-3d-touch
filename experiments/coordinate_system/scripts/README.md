@@ -20,6 +20,7 @@ Scripts are grouped by the experiment they support. Shared numerical routines an
 | `rotation_coverage/` | The successful unaugmented continuation control and its paired, underexposed augmentation treatment (E10c) |
 | `full_checkpoints/` | Completed full-run fixed-state probes, rollouts, geometry bounds, and W&B analysis (E11–E13) |
 | `full_frame_comparison/` | Matched full-trained camera/oracle comparison and independent coordinate reference (E14) |
+| `rotation_loss/` | Current encoder-only orientation penalty and paired checkpoint latent/velocity-loss comparisons |
 | `integration_tests/` | Current production dropout/constant/no-visual training plumbing (E15) |
 | `shared/` | Geometry, sampling, dropout, packaging, and source-location helpers imported by several groups |
 | `tools/` | Read/verify compressed results and inventory training checkpoints |
@@ -46,3 +47,9 @@ The file moves change imports and source-file lookup, not experiment settings, o
 ## Current formal rerun
 
 [`camera_frame_target_latent/`](camera_frame_target_latent/README.md) contains per-view target preparation, transformation figures, three-arm training with shared pointmap normalization, and CPU checks. User authorized implementation on September 14; GPU execution pending. Loss validation only during training; reconstruction afterward. Run directly in an interactive GPU allocation; optional experiment-local three-job submission script; no W&B integration. Results go in the ignored `experiments/coordinate_system/outputs/camera_frame_target_latent/`.
+
+## Rotation loss
+
+`rotation_loss/` contains the current encoder-only rotation probe, paired Stage-1
+checkpoint latent/loss probe, and plotting commands. It does not use a decoder
+or change `evaluate.py`. See [commands and definitions](rotation_loss/README.md).
