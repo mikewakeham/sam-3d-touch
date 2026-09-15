@@ -114,6 +114,8 @@ The frozen SS target encoder probe completed on 16 training and 16 validation id
 
 Averaged over objects and XYZ axes, original-scale target mean MSE is **0.19631 / 0.32430** (train/validation) at 90 degrees and **0.15714 / 0.26786** at 180 degrees. At a separate fixed padded scale, 5-degree rotations give **0.07731 / 0.12949**, with larger penalties through 60 degrees and lower means again at 90/180 degrees. Do not claim monotonic growth with rotation angle. The padded curve includes mesh-to-voxel discretization; the exact original-scale control independently establishes rotation sensitivity.
 
+The presentation chart now shows validation only, with its legend below. The 16-object intervals reflect substantial object variation: padded X60 MSE ranges from 0.0701 to 0.6634, median 0.2867 and mean 0.2947. A fixed 64-validation-object rerun is recommended for more precise population means; it is not needed to establish sensitivity, and smaller intervals are not guaranteed.
+
 This proves that the encoded target is orientation sensitive before decoding. It does **not** prove camera-frame conditioning is invalid, that oracle is required, or that orientation explains the actual generator residual. Actual checkpoint native velocity loss and fixed-prediction latent comparisons remain a separate experiment. Analytical velocity columns in the CSV are derived endpoint conversions, not observed checkpoint losses.
 
 Evidence: local ignored [encoder report](outputs/rotation_loss/encoder/results.json), [measurements](outputs/rotation_loss/encoder/measurements.csv), and [plot summary](outputs/rotation_loss/encoder_figures/summary.json). These output files are not tracked in Git.

@@ -124,6 +124,26 @@ All outputs stay in the ignored experiment outputs directory. Retained laptop
 copies belong in `../coordinate_system_results/rotation_loss/`. Source scripts
 are under this folder; no production source is changed.
 
+### High-error validation examples
+
+After the encoder probe, export the three distinct validation objects with the
+largest native 90/180-degree latent penalties, then run the existing plotter:
+
+```bash
+python experiments/coordinate_system/scripts/rotation_loss/export_high_error_examples.py \
+  --probe-dir experiments/coordinate_system/outputs/rotation_loss/encoder_val64 \
+  --top 3
+python experiments/coordinate_system/scripts/rotation_loss/plot_rotation_loss.py \
+  --rotation-dir experiments/coordinate_system/outputs/rotation_loss/encoder_val64 \
+  --output-dir experiments/coordinate_system/outputs/rotation_loss/encoder_val64_figures
+```
+
+These commands need the original dataset but no GPU/model weights. Small boolean
+grids go in `examples/`; figures use the actual axis/angle and measured GPU MSE.
+`high_error_examples.json` records the selection. These are explicitly selected
+extremes, not representative objects. Native rotations preserve geometry exactly;
+the angle chart instead uses the separate padded-scale protocol.
+
 ## Verification
 
 ```bash

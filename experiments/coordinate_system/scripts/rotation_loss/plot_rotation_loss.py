@@ -58,8 +58,8 @@ def rotation_figures(root, output, summary):
     summary["rotation_targets"] = table
     summary["numerical_floor"] = metadata["checks"]
     summary["different_object_reference"] = metadata["different_object_reference"]
-    splits = sorted({r["split"] for r in table})
-    fig, axes = plt.subplots(1, len(splits), figsize=(6*len(splits), 4), squeeze=False)
+    splits = ["val"] if any(r["split"] == "val" for r in table) else ["train"]
+    fig, axes = plt.subplots(1, len(splits), figsize=(6.6, 4.8), squeeze=False)
     for ax, split in zip(axes[0], splits):
         for axis, color in zip("xyz", ["#c74a46", "#27864b", "#3478bd"]):
             cells = sorted([r for r in table if r["split"] == split and r["part"] == "padded"
@@ -71,7 +71,8 @@ def rotation_figures(root, output, summary):
         ax.axhline(np.mean(floor), color="gray", linestyle=":", label="Repeat-zero floor")
         ax.set(title=f"{split}: same shape, fixed padded scale", xlabel="Rotation (degrees)", ylabel="SS target mean MSE")
         ax.set_ylim(bottom=0)
-        ax.legend(frameon=False)
+        ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(.5, -.22),
+                  ncol=4, fontsize=9)
         ax.grid(alpha=.15)
     save_figure(fig, output/"rotation_angle_mse")
     summary["native_controls"] = [r for r in table if r["part"] == "native"]
@@ -85,7 +86,9 @@ def rotation_figures(root, output, summary):
                 points = (np.argwhere(data[name])+.5)/64-.5
                 plot(output/f"{example.stem}_{name}.png", [(points, "#337bc4", .9)],
                      np.zeros(3), .55, grid_spacing=.5, object_axes=None)
-            captions = ["Original encoder input", "Same input, exact Z 90°", "Known inverse restored"]
+            axis = str(data["axis"].item()).upper() if "axis" in data else "Z"
+            angle = int(data["degrees"].item()) if "degrees" in data else 90
+            captions = ["Original encoder input", f"Same input, exact {axis} {angle}°", "Known inverse restored"]
             scores = [0., float(data["latent_mse"]), float(data["restored_latent_mse"])]
         fig, axes = plt.subplots(1, 3, figsize=(13, 4.8))
         for ax, name, caption, score in zip(axes, names, captions, scores):
