@@ -27,7 +27,7 @@ from experiments.coordinate_system.scripts.rotation_loss.rotation_utils import (
 )
 
 
-def run(args, on_prediction=None, endpoints_only=False):
+def run(args):
     data = load_data_config(args.data_config)
     groups = select_groups(data, args.train_objects, args.val_objects, args.views, args.seed)
     selected = {r["object_id"]: r for _, records in groups for r in records}
@@ -54,7 +54,7 @@ def run(args, on_prediction=None, endpoints_only=False):
               else str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
               "selection": [{"split": split, "sample_ids": [r["sample_id"] for r in records],
                              "object_ids": [r["object_id"] for r in records]} for split, records in groups],
-              "models": [], "endpoints_only": endpoints_only, "definitions": {
+              "models": [], "definitions": {
                   "velocity_mse": "Observed native shape flow loss with paired time/noise; no visual dropout or CFG",
                   "endpoint_mse": "Direct MSE of a fixed sampled latent against separately encoded native-scale targets",
                   "best_rotation": "Minimum over seven tested orientations; not a continuous alignment optimum",
@@ -114,7 +114,7 @@ def run(args, on_prediction=None, endpoints_only=False):
                     with amp(device, args.precision):
                         tokens = model.get_touch_tokens(xyz, mask)
                     seed = stable_seed(args.seed, "|".join(batch["sample_id"]))
-                    bank = [] if endpoints_only else make_bank(gen, targets, seed)
+                    bank = make_bank(gen, targets, seed)
                     # Flip only CFG's branch flag; backbone/encoders remain eval.
                     gen.reverse_fn.training = True
                     token_conditions = [("correct", tokens)]
@@ -145,13 +145,7 @@ def run(args, on_prediction=None, endpoints_only=False):
                                 object_id=record["object_id"], sample_id=record["sample_id"], draw=draw,
                                 seed=sample_seed, identity_mse=scores["identity"], best_rotation=best,
                                 best_mse=scores[best], **{f"mse_{name}": value for name, value in scores.items()}))
-                            if on_prediction is not None:
-                                on_prediction(dict(model=run_dir.name, split=split,
-                                    object_id=record['object_id'], sample_id=record['sample_id'],
-                                    draw=draw, seed=sample_seed),
-                                    prediction[i].float().cpu().numpy(), scores,
-                                    candidates[record['object_id']])
-                            if on_prediction is None and gi == 0 and i == 0 and draw == 0:
+                            if gi == 0 and i == 0 and draw == 0:
                                 example_dir = args.output_dir/"examples"
                                 example_dir.mkdir(exist_ok=True)
                                 np.savez_compressed(example_dir/f"{run_dir.name}_{record['sample_id']}.npz",

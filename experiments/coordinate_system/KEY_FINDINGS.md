@@ -140,3 +140,9 @@ No clear pooled-validation-loss rescue is observed. Shared normalization with re
 Next: evaluate these eight best checkpoints on the same validation identities/views/seeds with existing evaluate.py (Stage-2 aligned mesh CD and decoded-GT reference). This evaluates generated shape quality; it does not itself establish Stage-1 latent orientation error. The already implemented Stage-1 latent checkpoint probe addresses that separately. Do not rerun training from these pooled losses alone. Broader shape-full/dropout studies remain deferred.
 
 Evidence: exported run.json/history.csv in ../wandb-results and local ignored [refresh summary](outputs/rotation_loss/wandb_refresh_20260915.json). Evaluation commands are provided in chat; no new job script or production change is needed.
+
+## 13. Generated-view diagnostic replaced: test the known camera inverse
+
+The rotated-target, seven-orientation shortlist was discarded at the user's direction. Its selected examples do not establish that predictions retain their input camera orientation and are not the intended presentation evidence. That generated-example selection code has been removed.
+
+The replacement in `scripts/generated_rotation_examples/` retains fixed metadata-selected validation views and all their actual generated predictions, copies each input image and raw surface/pointmap display clouds, and compares decoded prediction with the stored target before/after applying that view's known inverse camera rotation about the origin. No camera translation, rotation search, target re-encoding or score-based selection. Latent MSE is measured only against the stored training target. Defaults are eight validation objects, three views, one draw (24 predictions); no replacement GPU result is available yet. All three output plots share native XYZ axes. Raw input plots retain the documented display-only camera ZXY convention.
