@@ -16,6 +16,7 @@ REPO = next(p for p in Path(__file__).resolve().parents if (p/'train.py').is_fil
 sys.path.insert(0, str(REPO))
 from experiments.coordinate_system.scripts.camera_frame_target_latent.training_runtime import (
     SurfaceNormalizer, preprocess_inputs, fixed_rng, training_indices, accumulate_update)
+from train import preprocess_batch as preprocess_production_batch
 
 
 def source_class(path, name, namespace):
@@ -88,6 +89,10 @@ class RuntimeTests(unittest.TestCase):
                      pointmap=pm[None], touch_xyz=surface[None], touch_mask=torch.ones((1, 3), dtype=torch.bool))
         before = preprocess_inputs(Pipeline(), batch, False)
         shared = preprocess_inputs(Pipeline(), batch, True)
+        production = preprocess_production_batch(
+            Pipeline(), batch['image'], batch['pointmap'],
+            batch['touch_xyz'], batch['touch_mask'], True,
+        )
         after = preprocess_inputs(Pipeline(), batch, False)
         center = (surface.min(0).values+surface.max(0).values)/2
         radius = torch.linalg.vector_norm(surface-center, dim=1).max()
@@ -95,6 +100,7 @@ class RuntimeTests(unittest.TestCase):
         torch.testing.assert_close(shared['pointmap'][0], expected[:, 1:, 1:])
         torch.testing.assert_close(shared['rgb_pointmap'][0], expected)
         for key in before: torch.testing.assert_close(before[key], after[key])
+        for key in shared: torch.testing.assert_close(shared[key], production[key])
         for key in ('image', 'rgb_image', 'mask', 'rgb_image_mask'):
             torch.testing.assert_close(before[key], shared[key])
         torch.testing.assert_close(surface, batch['touch_xyz'][0])

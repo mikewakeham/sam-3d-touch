@@ -571,7 +571,8 @@ def write_metrics(path, rows):
 
 def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                        completed, metrics_path, args, joint_pointmap=False,
-                       oracle_point_frame=False, use_gt_latent=False, touch_token_fn=None):
+                       oracle_point_frame=False, use_gt_latent=False, touch_token_fn=None,
+                       shared_pointmap_normalization=False):
     from sam3d_objects.pipeline.inference_utils import downsample_sparse_structure, prune_sparse_structure
 
     rows = []
@@ -601,6 +602,7 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                         pipeline, batch, torch.device(args.device),
                         "fp32" if args.no_amp else "bf16", encoder is not None,
                         joint_pointmap, oracle_point_frame,
+                        shared_pointmap_normalization,
                     )
                 stage2_inputs = preprocess_stage2(pipeline, batch["image"])
                 torch.manual_seed(seed)
@@ -907,8 +909,12 @@ def main():
                 "data": run_data,
             }
         use_touch = checkpoint is not None and checkpoint["touch_config"] is not None
+        shared_pointmap_normalization = conditioning.get(
+            "shared_pointmap_normalization", False
+        )
         loader = build_dataloader(
-            run_data, 1, args.workers, shuffle=False, include_touch=use_touch,
+            run_data, 1, args.workers, shuffle=False,
+            include_touch=use_touch or shared_pointmap_normalization,
             oracle_point_frame=conditioning["oracle_point_frame"],
         )
         run_records = {record["sample_id"]: record for record in loader.dataset.records}
@@ -924,6 +930,7 @@ def main():
             joint_pointmap=checkpoint is not None and checkpoint["mode"] == "image_touch_joint",
             oracle_point_frame=conditioning["oracle_point_frame"],
             touch_token_fn=model.get_touch_tokens if model is not None else None,
+            shared_pointmap_normalization=shared_pointmap_normalization,
         )
         for row in new_rows:
             rows_by_key[(row["condition"], row["sample_id"])] = row

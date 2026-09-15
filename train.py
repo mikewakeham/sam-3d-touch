@@ -1,4 +1,5 @@
 import argparse
+import copy
 import os
 import random
 import time
@@ -44,6 +45,11 @@ def parse_args():
     parser.add_argument("--precision", choices=["bf16", "fp32"], default="bf16")
     parser.add_argument("--no-touch", action="store_true")
     parser.add_argument("--no-pointmap", action="store_true")
+    parser.add_argument(
+        "--shared-pointmap-normalization",
+        action="store_true",
+        help="Normalize both pointmap branches with the full surface center and radius",
+    )
     parser.add_argument("--no-visual", action="store_true",
                         help="Permanently zero image, mask and pointmap conditioning, including validation")
     parser.add_argument("--oracle-point-frame", action="store_true")
@@ -182,7 +188,8 @@ def build_stage1_preprocessor(config_path):
 
 class TouchTrainingModel(torch.nn.Module):
     def __init__(self, generator, touch_encoder=None, no_pointmap=False, oracle_point_frame=False,
-                 visual_dropout=0.0, constant_touch=False, no_visual=False):
+                 visual_dropout=0.0, constant_touch=False, no_visual=False,
+                 shared_pointmap_normalization=False):
         super().__init__()
         self.generator = generator
         self.touch_encoder = touch_encoder
@@ -193,6 +200,8 @@ class TouchTrainingModel(torch.nn.Module):
         # Omit the default to preserve legacy checkpoint metadata.
         if no_visual:
             self.conditioning_config["no_visual"] = True
+        if shared_pointmap_normalization:
+            self.conditioning_config["shared_pointmap_normalization"] = True
         self.training_config = {"visual_dropout": visual_dropout, "constant_touch": constant_touch}
         self.register_buffer("constant_touch_features", None, persistent=False)
         self.constant_touch_sample_id = None
@@ -247,15 +256,45 @@ def amp(device, precision):
     )
 
 
-def preprocess_batch(pipeline, images, pointmaps):
-    items = [
-        pipeline.preprocess_image(
-            image.numpy(),
-            pipeline.ss_preprocessor,
-            pointmap=pointmap.permute(2, 0, 1),
-        )
-        for image, pointmap in zip(images, pointmaps)
-    ]
+class SurfacePointmapNormalizer:
+    """Use the full surface's VecSetX center/radius for pointmap normalization."""
+
+    def __init__(self, surface):
+        center = (surface.max(dim=0).values + surface.min(dim=0).values) / 2
+        radius = torch.linalg.vector_norm(surface - center, dim=-1).max()
+        if not torch.isfinite(radius) or radius <= 0:
+            raise ValueError("Full surface must have a positive finite radius")
+        self.center = center
+        self.radius = radius
+
+    def normalize(self, pointmap, mask, scale=None, shift=None):
+        center = self.center.to(pointmap)
+        radius = self.radius.to(pointmap)
+        normalized = (pointmap - center[:, None, None]) / radius
+        return normalized, radius.expand(3), center
+
+
+def preprocess_batch(
+    pipeline, images, pointmaps, touch_xyz=None, touch_mask=None,
+    shared_pointmap_normalization=False,
+):
+    if shared_pointmap_normalization and (touch_xyz is None or touch_mask is None):
+        raise ValueError("Shared pointmap normalization requires full-surface points")
+
+    items = []
+    for index, (image, pointmap) in enumerate(zip(images, pointmaps)):
+        preprocessor = pipeline.ss_preprocessor
+        if shared_pointmap_normalization:
+            preprocessor = copy.copy(preprocessor)
+            normalizer = SurfacePointmapNormalizer(
+                touch_xyz[index, touch_mask[index]]
+            )
+            preprocessor.normalize_pointmap = True
+            preprocessor.pointmap_normalizer = normalizer
+            preprocessor.rgb_pointmap_normalizer = normalizer
+        items.append(pipeline.preprocess_image(
+            image.numpy(), preprocessor, pointmap=pointmap.permute(2, 0, 1)
+        ))
     return {key: torch.cat([item[key] for item in items]) for key in items[0]}
 
 
@@ -331,9 +370,13 @@ def make_targets(shape, backbone):
 
 def prepare_batch(
     pipeline, batch, device, precision, use_touch, joint_pointmap=False,
-    oracle_point_frame=False,
+    oracle_point_frame=False, shared_pointmap_normalization=False,
 ):
-    inputs = preprocess_batch(pipeline, batch["image"], batch["pointmap"])
+    inputs = preprocess_batch(
+        pipeline, batch["image"], batch["pointmap"],
+        batch.get("touch_xyz"), batch.get("touch_mask"),
+        shared_pointmap_normalization,
+    )
     with torch.no_grad(), amp(device, precision):
         condition_args, condition_kwargs = pipeline.get_condition_input(
             pipeline.ss_condition_embedder,
@@ -353,7 +396,7 @@ def prepare_batch(
                 transform = batch["object_from_camera"].to(device)
                 touch_xyz = touch_xyz @ transform[:, :3, :3].transpose(1, 2) + transform[:, None, :3, 3]
                 touch_xyz = touch_xyz.masked_fill(~touch_mask[..., None], 0)
-            else:
+            elif not shared_pointmap_normalization:
                 touch_xyz = normalize_touch_to_pointmap_frame(
                     touch_xyz, touch_mask, inputs, pipeline.ss_preprocessor,
                 )
@@ -613,6 +656,7 @@ def train_epoch(
             raw_model.touch_encoder is not None,
             args.joint_pointmap,
             args.oracle_point_frame,
+            getattr(args, "shared_pointmap_normalization", False),
         )
         optimizer.zero_grad(set_to_none=True)
         drop_mask = make_visual_drop_mask(
@@ -722,6 +766,7 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
                     model.touch_encoder is not None,
                     args.joint_pointmap,
                     args.oracle_point_frame,
+                    getattr(args, "shared_pointmap_normalization", False),
                 )
                 with amp(device, args.precision):
                     loss = model(*prepared)
@@ -745,6 +790,12 @@ def main():
         raise ValueError("--visual-dropout must be between 0 and 1")
     if args.no_visual and (args.no_touch or args.joint_pointmap):
         raise ValueError("--no-visual requires surface conditioning without --joint-pointmap")
+    if args.shared_pointmap_normalization and (
+        args.no_pointmap or args.no_visual or args.oracle_point_frame or args.joint_pointmap
+    ):
+        raise ValueError(
+            "--shared-pointmap-normalization requires camera-frame pointmap conditioning"
+        )
     if args.constant_touch and (
         not args.oracle_point_frame or args.train_vecsetx or args.vecsetx_learn
     ):
@@ -776,14 +827,16 @@ def main():
 
     train_loader = build_dataloader(
         data_config, args.batch_size, args.workers,
-        distributed=distributed, include_touch=not args.no_touch,
+        distributed=distributed,
+        include_touch=not args.no_touch or args.shared_pointmap_normalization,
         oracle_point_frame=args.oracle_point_frame,
     )
     val_config = load_data_config(args.data_config)
     val_config["dataset"]["split"] = "val"
     val_loader = build_dataloader(
         val_config, args.batch_size, args.val_workers,
-        shuffle=False, distributed=distributed, include_touch=not args.no_touch,
+        shuffle=False, distributed=distributed,
+        include_touch=not args.no_touch or args.shared_pointmap_normalization,
         oracle_point_frame=args.oracle_point_frame,
     )
 
@@ -802,8 +855,12 @@ def main():
             position_scale="log",
         ).to(device)
 
-    model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, args.no_pointmap, args.oracle_point_frame,
-                               args.visual_dropout, args.constant_touch, no_visual=args.no_visual)
+    model = TouchTrainingModel(
+        pipeline.ss_generator, touch_encoder, args.no_pointmap,
+        args.oracle_point_frame, args.visual_dropout, args.constant_touch,
+        no_visual=args.no_visual,
+        shared_pointmap_normalization=args.shared_pointmap_normalization,
+    )
     optimizer, parameters = build_optimizer(touch_encoder, pipeline.backbone, args)
     if args.no_touch:
         mode = "image"
@@ -859,6 +916,8 @@ def main():
         print(f"training scope: {args.train_scope}")
         print(f"precision: {args.precision}")
         print(f"visual dropout: {args.visual_dropout} per sample (training only)")
+        if args.shared_pointmap_normalization:
+            print("pointmap normalization: full-surface center and radius")
         if args.no_visual:
             print("visual conditioning: permanently disabled (training and validation)")
         if args.constant_touch:
