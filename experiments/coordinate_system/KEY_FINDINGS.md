@@ -106,4 +106,35 @@ Keep stock PM normalization as default pending final Stage-1 reconstruction asse
 
 W&B run `fd2yiktq` (`stage1_full_surface_oracle`) completed 20 epochs / 14,660 updates with oracle full surfaces, pointmap present, visual dropout 0 and `shape_cross_attention` scope. Its best/final validation losses are **0.0888749 / 0.0892673**. The matched camera-frame, no-dropout run `act988rs` reports **0.0888587 / 0.0894101**; the oracle, 50%-dropout run `cps50h2l` reports **0.0889772 / 0.0893984**. These differences are very small and do not show a pooled-loss rescue from either oracle alignment or removing dropout.
 
-This fills the oracle + pointmap + dropout-0 cell. The only missing cell in the oracle pointmap/dropout 2x2 is oracle + no pointmap + dropout 0. Checkpoint-level paired denoising and Stage-1 reconstruction remain required before interpreting geometric success or failure.
+This fills the oracle + pointmap + dropout-0 cell. At that export, oracle + no pointmap + dropout 0 was missing; it completed on September 15 (see finding 12). Checkpoint-level paired denoising and Stage-1 reconstruction remain required before interpreting geometric success or failure.
+
+## 11. Target latent rotation sensitivity is now directly measured, 2026-09-15
+
+The frozen SS target encoder probe completed on 16 training and 16 validation identities, plus one separate octopus example. Original-scale zero encodings exactly reproduce all stored means; repeated encodings have MSE 0. Exact 90/180-degree occupancy rotations retain occupied counts and inverse-grid IoU 1, eliminating clipping and mesh revoxelization as explanations for this control.
+
+Averaged over objects and XYZ axes, original-scale target mean MSE is **0.19631 / 0.32430** (train/validation) at 90 degrees and **0.15714 / 0.26786** at 180 degrees. At a separate fixed padded scale, 5-degree rotations give **0.07731 / 0.12949**, with larger penalties through 60 degrees and lower means again at 90/180 degrees. Do not claim monotonic growth with rotation angle. The padded curve includes mesh-to-voxel discretization; the exact original-scale control independently establishes rotation sensitivity.
+
+This proves that the encoded target is orientation sensitive before decoding. It does **not** prove camera-frame conditioning is invalid, that oracle is required, or that orientation explains the actual generator residual. Actual checkpoint native velocity loss and fixed-prediction latent comparisons remain a separate experiment. Analytical velocity columns in the CSV are derived endpoint conversions, not observed checkpoint losses.
+
+Evidence: local ignored [encoder report](outputs/rotation_loss/encoder/results.json), [measurements](outputs/rotation_loss/encoder/measurements.csv), and [plot summary](outputs/rotation_loss/encoder_figures/summary.json). These output files are not tracked in Git.
+
+## 12. Oracle/no-PM/dropout-0 and shared-normalization full runs completed
+
+All three September 15 runs finished 20 epochs / 14,660 updates with shape cross-attention training and visual dropout 0.
+
+| Matched condition | W&B ID | Best validation loss | Final validation loss |
+|---|---|---:|---:|
+| Image + stock PM | xun3al7m | 0.0885780 | 0.0890978 |
+| Image + shared-normalized PM | 460qbbvq | 0.0884645 | 0.0890844 |
+| Image + stock PM + camera surface | act988rs | 0.0888587 | 0.0894101 |
+| Image + shared-normalized PM + camera surface | p8i307r8 | 0.0889002 | 0.0895893 |
+| Image, no PM + camera surface | nouqb3mh | 0.0890146 | 0.0896528 |
+| Image, no PM + oracle surface | uvzaqbuf | 0.0893191 | 0.0902257 |
+| Image, no PM baseline | fl7b2znc | 0.0892078 | 0.0898082 |
+| Image + stock PM + oracle surface | fd2yiktq | 0.0888749 | 0.0892673 |
+
+No clear pooled-validation-loss rescue is observed. Shared normalization with real surfaces is slightly worse by this metric, and the oracle/no-PM condition also does not improve it. These single-run, best-epoch differences do not establish statistical equivalence or generated shape quality. The oracle/no-PM run is nevertheless the needed controlled test without PM/surface conflict and without dropout.
+
+Next: evaluate these eight best checkpoints on the same validation identities/views/seeds with existing evaluate.py (Stage-2 aligned mesh CD and decoded-GT reference). This evaluates generated shape quality; it does not itself establish Stage-1 latent orientation error. The already implemented Stage-1 latent checkpoint probe addresses that separately. Do not rerun training from these pooled losses alone. Broader shape-full/dropout studies remain deferred.
+
+Evidence: exported run.json/history.csv in ../wandb-results and local ignored [refresh summary](outputs/rotation_loss/wandb_refresh_20260915.json). Evaluation commands are provided in chat; no new job script or production change is needed.
