@@ -210,9 +210,7 @@ def report_raw_coordinates(record, dataset, verbose=True):
         tolerance = float(json.loads(touch["method_args"].item())["tolerance"])
 
     depth = np.load(dataset.resolve_path(record["depth_path"]), allow_pickle=False)
-    pointmap = np.load(
-        dataset.resolve_path(record["pointmap_path"]), allow_pickle=False
-    )
+    pointmap = dataset.load_pointmap(record)
     with np.load(
         dataset.resolve_path(record["camera_path"]), allow_pickle=False
     ) as camera:

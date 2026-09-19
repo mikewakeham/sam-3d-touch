@@ -16,6 +16,9 @@ from torch.utils.data import (
 )
 
 
+from data_generation.general.pointmaps import depth_to_pointmap
+
+
 def load_data_config(path):
     with open(path) as file:
         return yaml.safe_load(file)
@@ -140,15 +143,20 @@ class TouchDataset(Dataset):
             raise ValueError(f"Expected finite float32 surface [N,3] in {path}")
         return np.ascontiguousarray(points)
 
+    def load_pointmap(self, record):
+        if record.get("pointmap_path"):
+            return np.load(self.resolve_path(record["pointmap_path"]), allow_pickle=False).astype(np.float32, copy=False)
+        depth = np.load(self.resolve_path(record["depth_path"]), allow_pickle=False)
+        with np.load(self.resolve_path(record["camera_path"]), allow_pickle=False) as camera:
+            return depth_to_pointmap(depth, camera["K"])
+
     def __getitem__(self, index):
         record = self.records[index]
 
         with Image.open(self.resolve_path(record["image_path"])) as image:
             image = np.array(image.convert("RGBA"), dtype=np.uint8)
 
-        pointmap = np.load(
-            self.resolve_path(record["pointmap_path"]), allow_pickle=False
-        ).astype(np.float32, copy=False)
+        pointmap = self.load_pointmap(record)
         target_shape = self.load_target(self.resolve_path(record["target_path"]))
 
         sample = {
