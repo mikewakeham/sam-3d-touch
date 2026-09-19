@@ -13,12 +13,10 @@
 
 set -euo pipefail
 cd /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch
-module purge
-source activate sam3d-data
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
 
 # Create data_generation/general/logs before submitting; Slurm opens logs before running this script.
-python -u data_generation/general/make_data.py \
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-data/bin/python -u data_generation/general/make_data.py \
     --objects-root /n/netscratch/qianqian_lab/Lab/mwakeham/zeroverse_5000 \
     --data-root /n/netscratch/qianqian_lab/Lab/mwakeham/zeroverse_5000_sam3d_trellis2 \
     --pattern '**/*.glb' \
