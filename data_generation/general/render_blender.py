@@ -540,7 +540,7 @@ def main():
     rng = np.random.RandomState(args.seed)
     offset = (rng.rand(), rng.rand())
     # TRELLIS.2 data_toolkit/render_cond.py samples inverse squared distance.
-    # Use the same schedule for every object; add 5% framing margin.
+    # Use the same schedule for every object.
     camera_rng = np.random.RandomState(args.seed)
     light_rng = np.random.RandomState(args.seed)
     radius_min = np.sqrt(3) / 2 / np.sin(np.deg2rad(70 / 2))
@@ -555,7 +555,7 @@ def main():
             offset,
         )
 
-        radius = radii[view_index] * 1.05 if args.camera_mode == "trellis2" else args.camera_radius
+        radius = radii[view_index] if args.camera_mode == "trellis2" else args.camera_radius
         fov = fovs[view_index] if args.camera_mode == "trellis2" else args.fov_degrees
         K = camera_intrinsics(args.resolution, fov)
         if args.lighting == "trellis2":

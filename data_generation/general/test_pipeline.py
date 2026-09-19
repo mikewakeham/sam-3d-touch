@@ -201,6 +201,11 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
             with np.load(self.output / record['camera_path']) as camera:
                 pointmap = depth_to_pointmap(np.load(self.output / record['depth_path']), camera['K'])
                 T = np.diag([-1, -1, 1, 1]) @ camera['T_camera_from_object']
+                # The saved camera must frame the unit cube's enclosing sphere,
+                # using TRELLIS.2's distance/FOV relation without extra padding.
+                half_fov = np.arctan(pointmap.shape[1] / (2 * camera['K'][0, 0]))
+                radius = np.linalg.norm(T[:3, 3])
+                self.assertAlmostEqual(radius * np.sin(half_fov), np.sqrt(3) / 2, places=6)
                 previous_K = intrinsics.setdefault(record['view_id'], camera['K'])
                 np.testing.assert_array_equal(camera['K'], previous_K)
                 previous = cameras.setdefault(record['view_id'], T)
