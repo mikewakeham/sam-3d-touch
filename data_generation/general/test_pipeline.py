@@ -50,6 +50,18 @@ class GeometryTests(unittest.TestCase):
             self.assertEqual(sum(map(len, splits.values())), 3)
             self.assertFalse(set(splits['train']) & set(splits['test']))
 
+    def test_splits_do_not_depend_on_arrival_order(self):
+        objects = [{'object_id': f'object-{i}'} for i in range(100)]
+        first = make_splits(objects[:70], 29, .8, .1)
+        grown = make_splits(objects, 29, .8, .1, first)
+        self.assertEqual(grown, make_splits(list(reversed(objects)), 29, .8, .1))
+        for split in first:
+            self.assertTrue(set(first[split]).issubset(grown[split]))
+        # Preserve existing published assignments, including datasets made before hash splitting.
+        preserved = make_splits(objects, 29, .8, .1, {'train': ['object-0'], 'val': ['object-1'], 'test': ['object-2']})
+        for split, object_id in [('train', 'object-0'), ('val', 'object-1'), ('test', 'object-2')]:
+            self.assertIn(object_id, preserved[split])
+
     def test_invalid_latent_is_not_published(self):
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / 'target_latent.npz'
@@ -267,6 +279,56 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
         self.assertEqual(len(manifest.read_text().splitlines()), 16)
         self.assertEqual(image.stat().st_mtime_ns, mtime)
         self.assertEqual((output / 'generated_data/splits.json').read_bytes(), splits)
+
+    def test_growing_inputs_and_failed_import_retry(self):
+        import shutil
+        inputs = self.root / 'growing_inputs'
+        inputs.mkdir()
+        source = self.inputs / 'hierarchy.glb'
+        for name, status in [('first', 'complete'), ('later', 'generating')]:
+            shutil.copy2(source, inputs / f'{name}.glb')
+            (inputs / f'{name}_generation.json').write_text(json.dumps({'status': status}))
+        output = self.root / 'growing_dataset'
+        command = list(self.command)
+        command[command.index('--objects-root') + 1] = str(inputs)
+        command[command.index('--data-root') + 1] = str(output)
+        command += ['--ready-marker', '{stem}_generation.json']
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        manifest = output / 'generated_data/samples_rendered.jsonl'
+        rows = [json.loads(line) for line in manifest.read_text().splitlines()]
+        self.assertEqual(len(rows), 2)
+        old_image = output / rows[0]['image_path']
+        old_mtime = old_image.stat().st_mtime_ns
+        old_split = rows[0]['split']
+        target = old_image.parents[2] / 'target_latent.npz'
+        # Synthetic target checks retention/publication only.
+        save_target(np.zeros((8, 16, 16, 16), dtype=np.float32), target)
+        target_mtime = target.stat().st_mtime_ns
+        (inputs / 'later_generation.json').write_text(json.dumps({'status': 'complete'}))
+        (inputs / 'broken.glb').write_bytes(b'incomplete GLB')
+        (inputs / 'broken_generation.json').write_text(json.dumps({'status': 'complete'}))
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertEqual(len(manifest.read_text().splitlines()), 4)
+        # A failed import can be replaced with its finished source and retried.
+        shutil.copy2(source, inputs / 'broken.glb')
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        rows_after = [json.loads(line) for line in manifest.read_text().splitlines()]
+        self.assertEqual(len(rows_after), 6)
+        self.assertEqual(old_image.stat().st_mtime_ns, old_mtime)
+        self.assertEqual(target.stat().st_mtime_ns, target_mtime)
+        self.assertEqual(next(row['split'] for row in rows_after if row['sample_id'] == rows[0]['sample_id']), old_split)
+        ready = output / 'generated_data/samples.jsonl'
+        self.assertEqual(len(ready.read_text().splitlines()), 2)
+        # Mutating an already rendered source must not silently mix old and new geometry.
+        with (inputs / 'first.glb').open('ab') as file:
+            file.write(b'changed')
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Previously rendered input changed', result.stderr)
+        self.assertEqual(old_image.stat().st_mtime_ns, old_mtime)
 
     def test_fixed_scene_and_repeatable_lighting(self):
         outputs = []

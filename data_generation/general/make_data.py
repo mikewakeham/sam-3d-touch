@@ -6,7 +6,6 @@ import hashlib
 import json
 import multiprocessing as mp
 import os
-import random
 import re
 import subprocess
 import time
@@ -28,7 +27,7 @@ FORMATS = {".glb", ".gltf", ".obj", ".fbx", ".ply", ".stl", ".blend",
            ".usd", ".usda", ".usdc", ".usdz", ".dae", ".abc"}
 SETTING_NAMES = ("num_views", "resolution", "seed", "camera_radius", "fov_degrees",
                  "samples", "frame", "rotation", "num_points", "visibility_tolerance",
-                 "train_fraction", "val_fraction", "render_device", "camera_mode", "lighting")
+                 "train_fraction", "val_fraction", "render_device", "camera_mode", "lighting", "ready_marker")
 
 
 def pipeline_sha256():
@@ -42,6 +41,7 @@ def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--objects-root", type=Path, help="Input directory (or one mesh file)")
     parser.add_argument("--pattern", default="**/*", help="Relative glob, e.g. '**/*.glb' for Zeroverse")
+    parser.add_argument("--ready-marker", help="Only use objects whose adjacent JSON marker has status=complete, e.g. '{stem}_generation.json'")
     parser.add_argument("--data-root", type=Path, required=True, help="Output dataset root")
     parser.add_argument("--stage", choices=["all", "render", "latents"], default="all",
                         help="render includes depth and full surfaces; all also encodes targets")
@@ -91,7 +91,7 @@ def parse_args(argv=None):
     return args
 
 
-def get_objects(objects_root, pattern="**/*"):
+def get_objects(objects_root, pattern="**/*", ready_marker=None):
     objects_root = objects_root.expanduser().resolve()
     if objects_root.is_file():
         paths, root = [objects_root], objects_root.parent
@@ -104,6 +104,13 @@ def get_objects(objects_root, pattern="**/*"):
         raise ValueError(f"No supported object files under {objects_root} matching {pattern!r}")
     objects = []
     for path in paths:
+        if ready_marker:
+            marker = path.parent / ready_marker.format(stem=path.stem, name=path.name)
+            try:
+                if json.loads(marker.read_text()).get("status") != "complete":
+                    continue
+            except (OSError, ValueError):
+                continue
         if path.suffix.lower() not in FORMATS:
             raise ValueError(f"Unsupported object format: {path}")
         relative = path.relative_to(root).as_posix()
@@ -113,6 +120,8 @@ def get_objects(objects_root, pattern="**/*"):
         objects.append({"object_id": f"{name}-{digest}", "model_path": str(path),
                         "source_relative_path": relative,
                         "source_size": path.stat().st_size, "source_mtime_ns": path.stat().st_mtime_ns})
+    if not objects:
+        raise ValueError("No completed objects found; rerun after generation finishes an object")
     if len({obj["object_id"] for obj in objects}) != len(objects):
         raise ValueError("Duplicate object IDs")
     return objects
@@ -124,20 +133,30 @@ def save_json(value, path):
     temporary.replace(path)
 
 
-def make_splits(objects, seed, train_fraction, val_fraction):
-    object_ids = [obj["object_id"] for obj in objects]
+def make_splits(objects, seed, train_fraction, val_fraction, existing=None):
+    # Keep published assignments; new objects are assigned independently of arrival order.
+    splits = {name: list((existing or {}).get(name, [])) for name in ("train", "val", "test")}
+    assigned = {object_id for ids in splits.values() for object_id in ids}
+    for obj in objects:
+        object_id = obj["object_id"]
+        if object_id in assigned:
+            continue
+        digest = hashlib.sha256(f"{seed}:{object_id}".encode()).hexdigest()
+        value = int(digest[:16], 16) / 2**64
+        split = "train" if value < train_fraction else "val" if value < train_fraction + val_fraction else "test"
+        splits[split].append(object_id)
+    return {name: sorted(ids) for name, ids in splits.items()}
 
-    random.Random(seed).shuffle(object_ids)
 
-    num_objects = len(object_ids)
-    num_train = int(train_fraction * num_objects)
-    num_val = int(val_fraction * num_objects)
-
-    return {
-        "train": sorted(object_ids[:num_train]),
-        "val": sorted(object_ids[num_train:num_train + num_val]),
-        "test": sorted(object_ids[num_train + num_val:]),
-    }
+def check_existing_objects(objects, previous, generated):
+    current = {obj["object_id"]: obj for obj in objects}
+    for old in previous:
+        obj = current.get(old["object_id"])
+        if obj is None:
+            raise ValueError(f"Previously registered object is missing or no longer ready: {old['model_path']}")
+        if obj != old and (generated / old["object_id"] / "render_complete.json").is_file():
+            raise ValueError(f"Previously rendered input changed: {old['model_path']}; use a new --data-root")
+        # Failed/incomplete imports may have been captured while their source was being written.
 
 
 def format_time(seconds):
@@ -257,6 +276,9 @@ def process_object(obj, split, args, gpu_slots):
             gpu_id = gpu_slots.get()
             try:
                 render_object(obj, object_dir, args, gpu_id)
+                source = Path(obj["model_path"]).stat()
+                if source.st_size != obj["source_size"] or source.st_mtime_ns != obj["source_mtime_ns"]:
+                    raise ValueError("Input changed during rendering; rerun after generation finishes")
                 save_json({"num_views": args.num_views}, object_dir / "render_complete.json")
             finally:
                 gpu_slots.put(gpu_id)
@@ -305,7 +327,7 @@ def run(args):
     else:
         if args.objects_root is None:
             raise ValueError("--objects-root is required for render/all")
-        objects = get_objects(args.objects_root, args.pattern)
+        objects = get_objects(args.objects_root, args.pattern, args.ready_marker)
         if args.data_root == args.objects_root.resolve() or args.objects_root.resolve() in args.data_root.parents:
             raise ValueError("Keep --data-root outside --objects-root to avoid discovering generated files")
         version = subprocess.check_output([args.blender, "--version"], text=True)
@@ -317,13 +339,16 @@ def run(args):
                         camera_schedule="shared_hammersley", color_transform="Filmic",
                         normalization="evaluated_blender_world_centered_unit_cube")
         settings["pipeline_sha256"] = pipeline_sha256()
-        for path, value in ((settings_path, settings), (objects_path, objects)):
-            if path.exists() and json.loads(path.read_text()) != value:
-                raise ValueError(f"Inputs/settings differ from {path}; use a new --data-root")
+        if settings_path.exists() and json.loads(settings_path.read_text()) != settings:
+            raise ValueError(f"Inputs/settings differ from {settings_path}; use a new --data-root")
+        if objects_path.exists():
+            check_existing_objects(objects, json.loads(objects_path.read_text()), generated)
         save_json(settings, settings_path)
         save_json(objects, objects_path)
-    splits = make_splits(objects, args.seed, args.train_fraction, args.val_fraction)
-    save_json(splits, generated / "splits.json")
+    splits_path = generated / "splits.json"
+    existing_splits = json.loads(splits_path.read_text()) if splits_path.exists() else None
+    splits = make_splits(objects, args.seed, args.train_fraction, args.val_fraction, existing_splits)
+    save_json(splits, splits_path)
     lookup = {object_id: split for split, ids in splits.items() for object_id in ids}
     selected = objects
     if args.object_id:
@@ -382,7 +407,7 @@ def main(argv=None):
     if args.dry_run:
         if args.objects_root is None:
             raise ValueError("--dry-run requires --objects-root")
-        objects = get_objects(args.objects_root, args.pattern)
+        objects = get_objects(args.objects_root, args.pattern, args.ready_marker)
         print(json.dumps({"objects": len(objects), "examples": objects[:5],
                           "settings": {key: getattr(args, key) for key in SETTING_NAMES}}, indent=2))
         return
