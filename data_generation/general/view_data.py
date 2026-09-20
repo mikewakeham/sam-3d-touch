@@ -1,17 +1,20 @@
 import argparse
+import json
 import time
 from pathlib import Path
 
 import numpy as np
 from pointmaps import depth_to_pointmap
 from generate_target_latents import load_normalized_mesh
+from sample_full_surface import sam_camera_transform, transform_points, transform_normals
+from surface_pool import validate_surface_pool
 from PIL import Image
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-root", type=Path, required=True)
-    parser.add_argument("--object-id", required=True)
+    parser.add_argument("--object-id", help="Defaults to the first object with a saved surface pool")
     parser.add_argument("--view-id", type=int, default=0)
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--pointmap-stride", type=int, default=2)
@@ -19,6 +22,13 @@ def parse_args():
 
 
 def load_view(args):
+    if args.object_id is None:
+        generated = args.data_root / "generated_data"
+        objects = json.loads((generated / "objects.json").read_text())
+        args.object_id = next((obj["object_id"] for obj in objects
+                               if (generated / obj["object_id"] / "surface_pool.npz").is_file()), None)
+        if args.object_id is None:
+            raise ValueError("No surface pools found. Run backfill_normals.py on a few objects first.")
     generated_dir = args.data_root / "generated_data" / args.object_id
     view_dir = generated_dir / "views" / f"{args.view_id:03d}"
 
@@ -35,7 +45,15 @@ def load_view(args):
     with np.load(view_dir / "full_surface.npz") as data:
         surface = dict(data)
 
-    return mesh, rgba, pointmap, surface, K
+    pool = None
+    pool_path = generated_dir / "surface_pool.npz"
+    if pool_path.is_file():
+        with np.load(pool_path, allow_pickle=False) as data:
+            validate_surface_pool(data)
+            transform = sam_camera_transform(view_dir / "camera.npz")
+            pool = {"points_camera": transform_points(data["points_object"], transform).astype(np.float32),
+                    "normals_camera": transform_normals(data["normals_object"], transform)}
+    return mesh, rgba, pointmap, surface, K, pool
 
 
 def add_toggle(server, label, handle):
@@ -46,9 +64,29 @@ def add_toggle(server, label, handle):
         handle.visible = checkbox.value
 
 
-def build_viewer(server, args, mesh, rgba, pointmap, surface, K):
+def add_normals(server, name, label, points, normals, visible):
+    # Thin only the display, leaving the saved cloud untouched.
+    stride = max(1, int(np.ceil(len(points) / 512)))
+    starts = points[::stride]
+    ends = starts + .025 * normals[::stride]
+    lines = server.scene.add_line_segments(
+        name, points=np.stack([starts, ends], axis=1),
+        colors=(240, 100, 50), line_width=1.5, visible=visible,
+    )
+    tips = server.scene.add_point_cloud(
+        name + "_tips", points=ends, colors=(255, 230, 80),
+        point_size=.004, point_shape="circle", visible=visible,
+    )
+    toggle = server.gui.add_checkbox(label, initial_value=visible)
+
+    @toggle.on_update
+    def update(_):
+        lines.visible = tips.visible = toggle.value
+
+
+def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
     server.scene.set_up_direction("+y")
-    server.gui.add_image(rgba, label=f"View {args.view_id:03d}")
+    server.gui.add_image(rgba, label=f"{args.object_id} / view {args.view_id:03d}")
 
     mesh_handle = server.scene.add_mesh_simple(
         "/mesh", vertices=mesh.vertices, faces=mesh.faces,
@@ -63,7 +101,8 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K):
     valid = np.isfinite(points).all(axis=-1) & (pixels[..., 3] > 0)
     pointmap_handle = server.scene.add_point_cloud(
         "/pointmap", points=points[valid], colors=pixels[..., :3][valid],
-        point_size=0.003, point_shape="circle", precision="float32",
+        point_size=0.003, point_shape="circle",
+        visible=pool is None,
     )
     add_toggle(server, "Pointmap", pointmap_handle)
 
@@ -82,18 +121,23 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K):
     colors[labels == 1] = (60, 200, 90)
     handle = server.scene.add_point_cloud(
         "/full_surface", points=points, colors=colors, point_size=0.003,
-        point_shape="circle", precision="float32",
+        point_shape="circle",
+        visible=pool is None,
     )
     add_toggle(server, "Full surface (green visible / blue hidden)", handle)
     if "normals_camera" in surface:
-        stride = max(1, len(points) // 512)
-        starts = points[::stride]
-        ends = starts + .025 * surface["normals_camera"][::stride]
-        normal_handle = server.scene.add_line_segments(
-            "/surface_normals", points=np.stack([starts, ends], axis=1),
-            colors=(240, 100, 50), line_width=1.5, visible=False,
+        add_normals(server, "/surface_normals", "Original cloud normals", points,
+                    surface["normals_camera"], visible=False)
+    if pool is not None:
+        pool_points, normals = pool["points_camera"], pool["normals_camera"]
+        pool_handle = server.scene.add_point_cloud(
+            "/surface_pool", points=pool_points,
+            colors=np.clip((normals + 1) * 127.5, 0, 255).astype(np.uint8),
+            point_size=.003, point_shape="circle",
         )
-        add_toggle(server, "Surface normals", normal_handle)
+        add_toggle(server, f"Shared cloud ({len(pool_points):,} points; normal colors)", pool_handle)
+        add_normals(server, "/pool_normals", "Shared cloud normals (yellow tips)",
+                    pool_points, normals, visible=True)
 
     target = mesh.bounds.mean(axis=0)
 
@@ -121,6 +165,7 @@ def main():
         raise ValueError("--pointmap-stride must be at least 1")
 
     data = load_view(args)
+    print(f"Object: {args.object_id}; view: {args.view_id:03d}", flush=True)
     server = viser.ViserServer(host="127.0.0.1", port=args.port)
     build_viewer(server, args, *data)
 
