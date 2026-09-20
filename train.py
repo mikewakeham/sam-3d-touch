@@ -1,5 +1,6 @@
 import argparse
 import copy
+from contextlib import contextmanager
 import os
 import random
 import time
@@ -563,7 +564,7 @@ def gradient_norm(parameters):
     return 0.0 if total is None else total.sqrt().item()
 
 
-def component_gradient_norms(model):
+def component_gradient_norms(model, include_parameters=False):
     backbone = model.generator.reverse_fn.backbone
     groups = {
         "shape_cross_attention_kv": (
@@ -590,10 +591,49 @@ def component_gradient_norms(model):
             "touch_embedding": (model.touch_encoder.touch_embedding,),
             f"{model.touch_encoder.encoder_name}_encoder": model.touch_encoder.encoder.parameters(),
         })
-    return {
-        f"gradients/{name}": gradient_norm(parameters)
-        for name, parameters in groups.items()
-    }
+    metrics = {}
+    for name, parameters in groups.items():
+        parameters = list(parameters)
+        metrics[f"gradients/{name}"] = gradient_norm(parameters)
+        if include_parameters:
+            trainable = [parameter for parameter in parameters if parameter.requires_grad]
+            if trainable:
+                total = sum(parameter.detach().float().square().sum() for parameter in trainable)
+                metrics[f"parameters/{name}_trainable_norm"] = total.sqrt().item()
+    return metrics
+
+
+@contextmanager
+def token_magnitudes(model, prepared, drop_mask=None, enabled=True):
+    """Scalar RMS on logging steps only; hooks never change or retain activations."""
+    metrics = {}
+    handles = []
+
+    def record(name, tensor):
+        metrics[f"tokens/{name}_rms"] = tensor.detach().float().square().mean().sqrt().item()
+
+    def projection_hook(module, inputs, output):
+        record("surface_before_projection", inputs[0])
+        record("surface_after_projection", output)
+
+    def encoder_hook(module, inputs, output):
+        record("surface_conditioning", output)
+
+    try:
+        if enabled:
+            condition_args = prepared[1]
+            if len(condition_args) == 1 and torch.is_tensor(condition_args[0]) and condition_args[0].ndim == 3:
+                visual = condition_args[0]
+                record("visual", visual)
+                if drop_mask is not None:
+                    record("visual_after_dropout", visual.masked_fill(drop_mask[:, None, None], 0))
+            if model.touch_encoder is not None:
+                handles.append(model.touch_encoder.output_projection.register_forward_hook(projection_hook))
+                handles.append(model.touch_encoder.register_forward_hook(encoder_hook))
+        yield metrics
+    finally:
+        for handle in handles:
+            handle.remove()
 
 
 def load_trainable_state_dict(model, state_dict):
@@ -688,16 +728,17 @@ def train_epoch(
             len(batch["target_shape"]), raw_model.training_config["visual_dropout"],
             device, seed, step, dist.get_rank() if distributed else 0,
         )
-        with amp(device, args.precision):
-            loss = model(*prepared, visual_drop_mask=drop_mask)
-        loss.backward()
         should_log = (
             step == 0
             or (step + 1) % args.log_every == 0
             or batch_index + 1 == len(loader)
         )
+        with token_magnitudes(raw_model, prepared, drop_mask, main_process and should_log) as token_metrics:
+            with amp(device, args.precision):
+                loss = model(*prepared, visual_drop_mask=drop_mask)
+        loss.backward()
         component_gradients = (
-            component_gradient_norms(raw_model)
+            component_gradient_norms(raw_model, include_parameters=True)
             if main_process and should_log
             else {}
         )
@@ -756,6 +797,7 @@ def train_epoch(
                 if gradient_norm is not None:
                     metrics["optimization/gradient_norm"] = gradient_norm.item()
                 metrics.update(component_gradients)
+                metrics.update(token_metrics)
                 for group in optimizer.param_groups:
                     metrics[f"learning_rate/{group['name']}"] = group["lr"]
                 run.log(metrics)

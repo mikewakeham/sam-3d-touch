@@ -142,8 +142,11 @@ class ExperimentTests(unittest.TestCase):
         script.write_text(text)
         for variant in ['image', *[f'{name}_{mode}' for name in ['vecsetx', 'craftsman', 'triposg'] for mode in ['frozen', 'scratch']]]:
             for stage, steps in [('overfit', '200'), ('small', '1024')]:
-                result = subprocess.run(['bash', str(script), variant, stage], check=True, capture_output=True, text=True)
+                gpus = '1' if stage == 'overfit' else '4'
+                result = subprocess.run(['bash', str(script), variant, stage], check=True, capture_output=True, text=True,
+                                        env={**os.environ, 'SLURM_GPUS_ON_NODE': gpus})
                 flags = json.loads(result.stdout)
+                self.assertIn(f'--nproc_per_node={gpus}', flags)
                 self.assertEqual(flags[flags.index('--max-steps') + 1], steps)
                 self.assertIn(f'experiments/encoders/outputs/{stage}_{variant}', flags)
                 self.assertEqual('--point-encoder-from-scratch' in flags, variant.endswith('_scratch'))
