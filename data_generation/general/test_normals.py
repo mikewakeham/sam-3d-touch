@@ -68,7 +68,7 @@ class NormalsTests(unittest.TestCase):
         (self.object_dir / 'surface_pool.npz').unlink()
 
     def test_default_generation_and_triangle_alignment(self):
-        self.assertEqual(parse_args(['--data-root', str(self.root)]).surface_pool_points, 16384)
+        self.assertEqual(parse_args(['--data-root', str(self.root)]).surface_pool_points, 20480)
         self.assertTrue(object_complete(self.object_dir, self.args))
         reference_points = reference_normals = None
         for path in self.paths:
@@ -269,15 +269,95 @@ class NormalsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'replay differs'):
             validate_surface_pool(pool, self.mesh, self.mesh_hash)
 
-    def test_backfill_default_is_16384(self):
+    def test_backfill_default_is_20480(self):
         self.downgrade()
         result = backfill_object(self.object_dir)
-        self.assertEqual(result['pool_points'], 16384)
+        self.assertEqual(result['pool_points'], 20480)
         with np.load(self.object_dir / 'surface_pool.npz') as pool:
-            self.assertEqual(pool['points_object'].shape, (16384, 3))
-            self.assertEqual(pool['normals_object'].shape, (16384, 3))
+            self.assertEqual(pool['points_object'].shape, (20480, 3))
+            self.assertEqual(pool['normals_object'].shape, (20480, 3))
             validate_surface_pool(pool, self.mesh, self.mesh_hash)
         backfill_object(self.object_dir, check_only=True)
+
+    def test_resample_pool_only_preserves_other_files_and_resumes(self):
+        pool_path = self.object_dir / 'surface_pool.npz'
+        # Start with the previous production pool size.
+        from surface_pool import save_surface_pool
+        with np.load(pool_path) as saved:
+            seed = int(saved['source_sample_seed'])
+        save_surface_pool(pool_path, make_surface_pool(self.mesh, 16384, seed, self.mesh_hash))
+        before = {path: path.read_bytes() for path in self.root.rglob('*') if path.is_file()}
+        with self.assertRaisesRegex(ValueError, 'use --resample-pool'):
+            backfill_object(self.object_dir)
+        result = backfill_object(self.object_dir, resample_pool=True, dry_run=True)
+        self.assertTrue(result['pool_pending'])
+        self.assertEqual(before, {path: path.read_bytes() for path in before})
+        result = backfill_object(self.object_dir, resample_pool=True)
+        self.assertEqual(result['updated'], 0)
+        self.assertTrue(result['pool_updated'])
+        for path in before:
+            if path != pool_path:
+                self.assertEqual(path.read_bytes(), before[path])
+        with np.load(pool_path) as saved:
+            self.assertEqual(saved['points_object'].shape, (20480, 3))
+            validate_surface_pool(saved, self.mesh, self.mesh_hash)
+            for count in (16384, 20480):
+                points, normals, faces = select_surface_pool(saved, count, 29)
+                self.assertEqual(len(points), count)
+                np.testing.assert_allclose(normals, self.mesh.face_normals[faces], atol=1e-6)
+        timestamp = pool_path.stat().st_mtime_ns
+        self.assertFalse(backfill_object(self.object_dir, resample_pool=True)['pool_updated'])
+        self.assertEqual(timestamp, pool_path.stat().st_mtime_ns)
+        backfill_object(self.object_dir, check_only=True)
+
+    def test_resample_interruption_preserves_old_pool(self):
+        from surface_pool import save_surface_pool
+        pool_path = self.object_dir / 'surface_pool.npz'
+        before = pool_path.read_bytes()
+        def interrupted_compression(temporary, **arrays):
+            Path(temporary).write_bytes(b'partial larger pool')
+            raise OSError('interrupted pool resize')
+        def interrupted(path, arrays):
+            with patch('surface_pool.np.savez_compressed', side_effect=interrupted_compression):
+                save_surface_pool(path, arrays)
+        with patch('backfill_normals.save_surface_pool', side_effect=interrupted):
+            with self.assertRaisesRegex(OSError, 'interrupted pool resize'):
+                backfill_object(self.object_dir, resample_pool=True)
+        self.assertEqual(before, pool_path.read_bytes())
+        backfill_object(self.object_dir, resample_pool=True)
+        self.assertFalse(pool_path.with_suffix('.tmp.npz').exists())
+        backfill_object(self.object_dir, check_only=True)
+
+    def test_resample_does_not_upgrade_old_views(self):
+        self.downgrade()
+        before = [path.read_bytes() for path in self.paths]
+        result = backfill_object(self.object_dir, resample_pool=True)
+        self.assertEqual(result['updated'], 0)
+        self.assertTrue(result['pool_created'])
+        self.assertEqual(before, [path.read_bytes() for path in self.paths])
+
+    def test_resample_rejects_wrong_mesh_and_conflicting_modes(self):
+        for options in ({'overwrite_normals': True}, {'check_only': True}, {'pool_points': 0}):
+            with self.assertRaisesRegex(ValueError, '--resample-pool requires'):
+                backfill_object(self.object_dir, resample_pool=True, **options)
+        path = self.object_dir / 'surface_pool.npz'
+        with np.load(path) as saved:
+            arrays = dict(saved)
+        arrays['mesh_sha256'] = 'different mesh'
+        np.savez_compressed(path, **arrays)
+        before = path.read_bytes()
+        with self.assertRaisesRegex(ValueError, 'different mesh'):
+            backfill_object(self.object_dir, resample_pool=True)
+        self.assertEqual(before, path.read_bytes())
+
+    def test_resample_cli_progress_and_resume(self):
+        command = [sys.executable, str(Path(__file__).with_name('backfill_normals.py')),
+                   '--data-root', str(self.root), '--workers', '2', '--resample-pool']
+        for expected in ('resampled to 20480 points', 'already complete'):
+            result = subprocess.run(command, capture_output=True, text=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('[1/1] box:', result.stdout)
+            self.assertIn(expected, result.stdout)
 
     def test_inverse_transpose_and_translation(self):
         transform = np.diag([2., 3., 4., 1.])

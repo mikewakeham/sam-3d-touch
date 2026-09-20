@@ -57,9 +57,12 @@ def parse_args():
                         help="Per-sample probability of zeroing image and pointmap tokens during training")
     parser.add_argument("--constant-touch", action="store_true",
                         help="Use one fixed training surface's VecSetX features for every example")
-    parser.add_argument("--train-vecsetx", action="store_true")
-    parser.add_argument("--vecsetx-from-scratch", action="store_true",
-                        help="Skip VecSetX pretrained weights; requires --train-vecsetx")
+    parser.add_argument("--point-encoder", choices=["vecsetx", "craftsman", "triposg"], default="vecsetx")
+    parser.add_argument("--point-encoder-checkpoint", type=Path,
+                        help="Local official encoder/VAE checkpoint instead of the default pretrained file")
+    parser.add_argument("--train-point-encoder", "--train-vecsetx", dest="train_vecsetx", action="store_true")
+    parser.add_argument("--point-encoder-from-scratch", "--vecsetx-from-scratch", dest="vecsetx_from_scratch", action="store_true",
+                        help="Skip pretrained weights; requires --train-point-encoder")
     parser.add_argument("--vecsetx-learn", action="store_true",
                         help="Use frozen VecSetX decoder features before touch projection")
     parser.add_argument("--joint-pointmap", action="store_true")
@@ -74,7 +77,11 @@ def parse_args():
     )
     args = parser.parse_args()
     if args.vecsetx_from_scratch and (not args.train_vecsetx or args.no_touch or args.vecsetx_learn):
-        parser.error("--vecsetx-from-scratch requires --train-vecsetx, surface conditioning, and no --vecsetx-learn")
+        parser.error("--point-encoder-from-scratch requires --train-point-encoder, surface conditioning, and no --vecsetx-learn")
+    if args.vecsetx_from_scratch and args.point_encoder_checkpoint:
+        parser.error("Random initialization cannot load --point-encoder-checkpoint")
+    if args.point_encoder != "vecsetx" and (args.vecsetx_learn or args.joint_pointmap or args.constant_touch or args.no_touch):
+        parser.error("CraftsMan/TripoSG require full surfaces with normals; joint pointmap, constant touch, decoder features and --no-touch are unsupported")
     if args.train_scope is not None and args.cross_attention_scope is not None:
         parser.error("Use --train-scope or legacy --cross-attention-scope, not both")
     args.train_scope = resolve_train_scope(args.train_scope, args.cross_attention_scope or "full")
@@ -378,7 +385,7 @@ def make_targets(shape, backbone):
 
 def prepare_batch(
     pipeline, batch, device, precision, use_touch, joint_pointmap=False,
-    oracle_point_frame=False, shared_pointmap_normalization=False,
+    oracle_point_frame=False, shared_pointmap_normalization=False, use_normals=False,
 ):
     inputs = preprocess_batch(
         pipeline, batch["image"], batch["pointmap"],
@@ -398,13 +405,19 @@ def prepare_batch(
         touch_mask = batch["touch_mask"].to(device, non_blocking=True)
         with torch.no_grad():
             touch_xyz = batch["touch_xyz"].to(device, non_blocking=True)
+            normals = batch["touch_normals"].to(device, non_blocking=True) if use_normals else None
+            if use_normals and joint_pointmap:
+                raise ValueError("Joint pointmap does not provide surface normals")
             if oracle_point_frame:
                 if joint_pointmap:
                     raise ValueError("Oracle point frame cannot use joint pointmap")
                 transform = batch["object_from_camera"].to(device)
                 touch_xyz = touch_xyz @ transform[:, :3, :3].transpose(1, 2) + transform[:, None, :3, 3]
                 touch_xyz = touch_xyz.masked_fill(~touch_mask[..., None], 0)
-            elif not shared_pointmap_normalization:
+                if normals is not None:
+                    normals = normals @ torch.linalg.inv(transform[:, :3, :3])
+                    normals = torch.nn.functional.normalize(normals, dim=-1)
+            elif not shared_pointmap_normalization and not use_normals:
                 touch_xyz = normalize_touch_to_pointmap_frame(
                     touch_xyz, touch_mask, inputs, pipeline.ss_preprocessor,
                 )
@@ -412,6 +425,9 @@ def prepare_batch(
                 touch_xyz, touch_mask = combine_pointmap_and_touch(
                     inputs, touch_xyz, touch_mask
                 )
+            if normals is not None:
+                # Keep the existing five-item batch interface; the new encoders take XYZ+normal.
+                touch_xyz = torch.cat((touch_xyz, normals), dim=-1)
 
     return make_targets(shape, pipeline.backbone), condition_args, condition_kwargs, touch_xyz, touch_mask
 
@@ -572,7 +588,7 @@ def component_gradient_norms(model):
             "touch_output_projection": model.touch_encoder.output_projection.parameters(),
             "touch_position_projection": model.touch_encoder.position_projection.parameters(),
             "touch_embedding": (model.touch_encoder.touch_embedding,),
-            "vecsetx_encoder": model.touch_encoder.encoder.parameters(),
+            f"{model.touch_encoder.encoder_name}_encoder": model.touch_encoder.encoder.parameters(),
         })
     return {
         f"gradients/{name}": gradient_norm(parameters)
@@ -665,6 +681,7 @@ def train_epoch(
             args.joint_pointmap,
             args.oracle_point_frame,
             getattr(args, "shared_pointmap_normalization", False),
+            use_normals=bool(raw_model.touch_encoder is not None and getattr(raw_model.touch_encoder, "requires_normals", False)),
         )
         optimizer.zero_grad(set_to_none=True)
         drop_mask = make_visual_drop_mask(
@@ -775,6 +792,7 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
                     args.joint_pointmap,
                     args.oracle_point_frame,
                     getattr(args, "shared_pointmap_normalization", False),
+                    use_normals=bool(model.touch_encoder is not None and getattr(model.touch_encoder, "requires_normals", False)),
                 )
                 with amp(device, args.precision):
                     loss = model(*prepared)
@@ -790,6 +808,19 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
         total_loss, total_samples, device, distributed
     )
     return total_loss / total_samples
+
+
+def configure_encoder_data(config, encoder_name):
+    if encoder_name == "vecsetx":
+        return config
+    touch = config.setdefault("touch", {})
+    if touch.get("source") != "full_surface":
+        raise ValueError("CraftsMan/TripoSG require touch.source: full_surface")
+    touch["include_normals"] = True
+    touch.setdefault("pool_points", {"craftsman": 16384, "triposg": 20480}[encoder_name])
+    if int(touch["pool_points"]) < {"craftsman": 768, "triposg": 2048}[encoder_name]:
+        raise ValueError("Surface pool must contain at least as many points as encoder queries")
+    return config
 
 
 def main():
@@ -827,7 +858,7 @@ def main():
     else:
         import wandb
 
-    data_config = load_data_config(args.data_config)
+    data_config = configure_encoder_data(load_data_config(args.data_config), args.point_encoder)
     seed = int(data_config.get("seed", 0))
     random.seed(seed + rank)
     np.random.seed(seed + rank)
@@ -839,7 +870,7 @@ def main():
         include_touch=not args.no_touch or args.shared_pointmap_normalization,
         oracle_point_frame=args.oracle_point_frame,
     )
-    val_config = load_data_config(args.data_config)
+    val_config = copy.deepcopy(data_config)
     val_config["dataset"]["split"] = "val"
     val_loader = build_dataloader(
         val_config, args.batch_size, args.val_workers,
@@ -855,10 +886,11 @@ def main():
     if not args.no_touch:
         from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
         touch_encoder = TouchEncoder(
-            encoder_name="vecsetx",
+            encoder_name=args.point_encoder,
             output_dim=pipeline.backbone.cond_channels,
             trainable=args.train_vecsetx,
             pretrained=not args.vecsetx_from_scratch,
+            encoder_checkpoint=args.point_encoder_checkpoint,
             use_learn=args.vecsetx_learn,
             use_position=not args.no_touch_position,
             position_scale="log",
@@ -925,6 +957,8 @@ def main():
         print(f"training scope: {args.train_scope}")
         print(f"precision: {args.precision}")
         print(f"touch position: {touch_encoder is not None and touch_encoder.use_position}")
+        if touch_encoder is not None:
+            print(f"point encoder: {args.point_encoder}; pretrained={touch_encoder.pretrained}; trainable={touch_encoder.encoder_trainable}")
         print(f"visual dropout: {args.visual_dropout} per sample (training only)")
         if args.shared_pointmap_normalization:
             print("pointmap normalization: full-surface center and radius")

@@ -8,9 +8,9 @@ except ImportError:
     from sample_full_surface import NORMAL_METHOD
 
 
-# CraftsMan v1.5's released encoder input count.
-# https://huggingface.co/craftsman3d/craftsman/blob/df4ddf7544cc2e75c5d24cb8605d8e91f0fa4abc/config.yaml
-DEFAULT_POOL_POINTS = 16384
+# TripoSG's VAE training input count; CraftsMan selects 16384 from this shared pool.
+# https://arxiv.org/html/2502.06608v3#S5.SS1
+DEFAULT_POOL_POINTS = 20480
 
 
 def make_surface_pool(mesh, count, sample_seed, mesh_hash):

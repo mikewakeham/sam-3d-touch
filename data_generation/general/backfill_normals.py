@@ -26,9 +26,11 @@ def require_backfilled(arrays, settings, path):
 
 
 def backfill_object(object_dir, dry_run=False, check_only=False, pool_points=DEFAULT_POOL_POINTS,
-                    overwrite_normals=False):
+                    overwrite_normals=False, resample_pool=False):
     if overwrite_normals and check_only:
         raise ValueError("--overwrite-normals cannot be combined with --check-only")
+    if resample_pool and (overwrite_normals or check_only or pool_points < 1):
+        raise ValueError("--resample-pool requires positive --pool-points and cannot be combined with --overwrite-normals or --check-only")
     object_dir = Path(object_dir)
     mesh_path = object_dir / "mesh.npz"
     mesh = load_normalized_mesh(mesh_path)
@@ -104,8 +106,8 @@ def backfill_object(object_dir, dry_run=False, check_only=False, pool_points=DEF
             if overwrite_normals:
                 pending.append((path, arrays))
             continue
-        if overwrite_normals:
-            continue  # This mode only replaces existing normals; regular resume fills missing data.
+        if overwrite_normals or resample_pool:
+            continue  # These modes leave per-view v1 files untouched; regular resume adds normals.
         if check_only:
             raise ValueError(f"Normals have not been backfilled: {path}")
         arrays.update(format_version=np.int64(2), normals_camera=normals_camera,
@@ -133,9 +135,13 @@ def backfill_object(object_dir, dry_run=False, check_only=False, pool_points=DEF
                 arrays["normals_object"] = mesh.face_normals[faces].astype(np.float32)
                 pool = arrays
             validate_surface_pool(arrays, mesh, mesh_hash)
-            if (len(arrays["points_object"]) != pool_points
-                    or int(arrays["source_sample_seed"]) != first_seed):
-                raise ValueError("Existing pool size/seed differs; keep the same --pool-points on resume")
+            if int(arrays["source_sample_seed"]) != first_seed:
+                raise ValueError("Existing pool seed differs from the per-view surface")
+            if len(arrays["points_object"]) != pool_points:
+                if not resample_pool:
+                    raise ValueError("Existing pool size differs; use --resample-pool to replace only the shared pool")
+                pool = make_surface_pool(mesh, pool_points, first_seed, mesh_hash)
+                pool["normal_source"] = "backfill_normals"
         elif check_only:
             raise ValueError(f"Missing surface pool: {pool_path}")
         elif not overwrite_normals:
@@ -153,13 +159,14 @@ def backfill_object(object_dir, dry_run=False, check_only=False, pool_points=DEF
             "watertight": bool(mesh.is_watertight), "winding_consistent": bool(mesh.is_winding_consistent),
             "signed_volume": float(mesh.volume),
             "pool_created": pool is not None and not pool_existed and not dry_run,
-            "pool_updated": pool is not None and pool_existed and not dry_run, "dry_run": dry_run}
+            "pool_updated": pool is not None and pool_existed and not dry_run,
+            "pool_pending": pool is not None, "dry_run": dry_run}
 
 
 def process_object(arguments):
-    object_dir, dry_run, check_only, pool_points, overwrite_normals = arguments
+    object_dir, dry_run, check_only, pool_points, overwrite_normals, resample_pool = arguments
     try:
-        return backfill_object(object_dir, dry_run, check_only, pool_points, overwrite_normals)
+        return backfill_object(object_dir, dry_run, check_only, pool_points, overwrite_normals, resample_pool)
     except Exception as error:
         return {"object_id": object_dir.name, "error": f"{type(error).__name__}: {error}"}
 
@@ -173,6 +180,9 @@ def main():
     parser.add_argument("--overwrite-normals", action="store_true",
                         help="Replace only existing backfilled normal arrays; preserve all other data. "
                              "Missing normals/pools are skipped; use regular resume to create them.")
+    parser.add_argument("--resample-pool", action="store_true",
+                        help="Create/resize only surface_pool.npz, with aligned XYZ/normals/triangle indices. "
+                             "Already-valid pools at the requested size are preserved on resume.")
     parser.add_argument("--pool-points", type=int, default=DEFAULT_POOL_POINTS,
                         help="Additional shared point/normal pool; 0 only backfills existing points")
     mode = parser.add_mutually_exclusive_group()
@@ -181,6 +191,8 @@ def main():
     args = parser.parse_args()
     if args.overwrite_normals and args.check_only:
         parser.error("--overwrite-normals cannot be combined with --check-only")
+    if args.resample_pool and (args.overwrite_normals or args.check_only or args.pool_points < 1):
+        parser.error("--resample-pool requires positive --pool-points and cannot be combined with --overwrite-normals or --check-only")
     if args.workers < 1 or args.pool_points < 0 or (args.limit is not None and args.limit < 1):
         parser.error("Workers and limit must be positive; pool points must be nonnegative")
     generated = args.data_root.expanduser().resolve() / "generated_data"
@@ -201,7 +213,7 @@ def main():
     # Share the builder's lock so packaging and backfill cannot overwrite each other.
     with (generated / ".build.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        arguments = [(path, args.dry_run, args.check_only, args.pool_points, args.overwrite_normals)
+        arguments = [(path, args.dry_run, args.check_only, args.pool_points, args.overwrite_normals, args.resample_pool)
                      for path in directories]
         with ProcessPoolExecutor(max_workers=args.workers) as pool:
             futures = [pool.submit(process_object, argument) for argument in arguments]
@@ -213,9 +225,13 @@ def main():
                 elif args.dry_run:
                     verified += 1
                     status = f"replay OK; {result['updated']} views would be updated"
+                    if result["pool_pending"]:
+                        status += f"; pool would be written ({args.pool_points} points)"
                 elif result["updated"] or result["pool_created"] or result["pool_updated"]:
                     updated += 1
                     pool_status = 'normals overwritten' if result['pool_updated'] else 'created' if result['pool_created'] else 'unchanged'
+                    if args.resample_pool and result['pool_updated']:
+                        pool_status = f"resampled to {args.pool_points} points"
                     status = f"updated {result['updated']} views; pool {pool_status}"
                 else:
                     verified += 1

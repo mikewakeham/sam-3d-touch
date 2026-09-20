@@ -20,7 +20,7 @@ from dataloader import build_dataloader, load_data_config
 from train import (
     prepare_batch, TouchTrainingModel, build_optimizer,
     disable_pointmap_conditioning, disable_visual_conditioning, load_trainable_state_dict,
-    checkpoint_train_scope,
+    checkpoint_train_scope, configure_encoder_data,
 )
 
 
@@ -603,6 +603,7 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                         "fp32" if args.no_amp else "bf16", encoder is not None,
                         joint_pointmap, oracle_point_frame,
                         shared_pointmap_normalization,
+                        use_normals=bool(encoder is not None and getattr(encoder, "requires_normals", False)),
                     )
                 stage2_inputs = preprocess_stage2(pipeline, batch["image"])
                 torch.manual_seed(seed)
@@ -623,7 +624,7 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     )
 
                 touch_centers = (
-                    touch_xyz[0, touch_mask[0]].cpu().numpy()
+                    touch_xyz[0, touch_mask[0], :3].cpu().numpy()
                     if touch_xyz is not None else np.empty((0, 3), dtype=np.float32)
                 )
 
@@ -909,6 +910,8 @@ def main():
                 "data": run_data,
             }
         use_touch = checkpoint is not None and checkpoint["touch_config"] is not None
+        if use_touch:
+            run_data = configure_encoder_data(run_data, checkpoint["touch_config"]["encoder_name"])
         shared_pointmap_normalization = conditioning.get(
             "shared_pointmap_normalization", False
         )
