@@ -34,6 +34,7 @@ class TouchEncoder(nn.Module):
         use_position=True,
         position_scale="raw",
         use_learn=False,
+        pretrained=True,
     ):
         super().__init__()
 
@@ -45,6 +46,9 @@ class TouchEncoder(nn.Module):
         self.encoder_name = encoder_name
         self.output_dim = output_dim
         self.use_learn = bool(use_learn)
+        self.pretrained = bool(pretrained)
+        if not self.pretrained and (not trainable or self.use_learn):
+            raise ValueError("Scratch VecSetX requires a trainable encoder without frozen decoder features")
         self.use_position = bool(use_position)
         self.position_scale = position_scale
         if self.position_scale not in ("raw", "log"):
@@ -52,10 +56,11 @@ class TouchEncoder(nn.Module):
         self.encoder = config["constructor"]()
         self.num_points = getattr(self.encoder, "num_inputs", None)
 
-        checkpoint_path = "/n/home12/mwakeham/.cache/huggingface/hub/models--Zbalpha--VecSetX/snapshots/5fb84917189d2bee8392404f833f42ca5c067e0b/learnable_vec1024x32_dim1024_depth24_sdf_nb/checkpoint-125.pth"
-        checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
-        state_dict = checkpoint.get("model", checkpoint)
-        self.encoder.load_state_dict(state_dict, strict=True)
+        if self.pretrained:
+            checkpoint_path = "/n/home12/mwakeham/.cache/huggingface/hub/models--Zbalpha--VecSetX/snapshots/5fb84917189d2bee8392404f833f42ca5c067e0b/learnable_vec1024x32_dim1024_depth24_sdf_nb/checkpoint-125.pth"
+            checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+            state_dict = checkpoint.get("model", checkpoint)
+            self.encoder.load_state_dict(state_dict, strict=True)
 
         latent_dim = self.encoder.bottleneck.pre_bottleneck_proj.out_features
         if self.use_learn:
@@ -114,6 +119,8 @@ class TouchEncoder(nn.Module):
             config["position_scale"] = "log"
         if self.use_learn:
             config["use_learn"] = True
+        if not self.pretrained:
+            config["pretrained"] = False
         return config
 
     def forward(self, points, point_mask=None):

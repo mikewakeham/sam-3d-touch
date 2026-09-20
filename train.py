@@ -58,6 +58,8 @@ def parse_args():
     parser.add_argument("--constant-touch", action="store_true",
                         help="Use one fixed training surface's VecSetX features for every example")
     parser.add_argument("--train-vecsetx", action="store_true")
+    parser.add_argument("--vecsetx-from-scratch", action="store_true",
+                        help="Skip VecSetX pretrained weights; requires --train-vecsetx")
     parser.add_argument("--vecsetx-learn", action="store_true",
                         help="Use frozen VecSetX decoder features before touch projection")
     parser.add_argument("--joint-pointmap", action="store_true")
@@ -67,6 +69,8 @@ def parse_args():
         default=int(os.environ.get("LOCAL_RANK", -1)),
     )
     args = parser.parse_args()
+    if args.vecsetx_from_scratch and (not args.train_vecsetx or args.no_touch or args.vecsetx_learn):
+        parser.error("--vecsetx-from-scratch requires --train-vecsetx, surface conditioning, and no --vecsetx-learn")
     if args.train_scope is not None and args.cross_attention_scope is not None:
         parser.error("Use --train-scope or legacy --cross-attention-scope, not both")
     args.train_scope = resolve_train_scope(args.train_scope, args.cross_attention_scope or "full")
@@ -850,6 +854,7 @@ def main():
             encoder_name="vecsetx",
             output_dim=pipeline.backbone.cond_channels,
             trainable=args.train_vecsetx,
+            pretrained=not args.vecsetx_from_scratch,
             use_learn=args.vecsetx_learn,
             use_position=not args.no_touch_position,
             position_scale="log",
