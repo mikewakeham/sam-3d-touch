@@ -18,21 +18,23 @@ from PIL import Image
 
 from generate_target_latents import (
     DEFAULT_ENCODER_CHECKPOINT, encode_objects,
-    load_normalized_mesh, save_metadata, validate_target,
+    load_normalized_mesh, save_metadata, validate_target, checkpoint_sha256,
 )
-from sample_full_surface import sample_full_surface, save_surface
+from sample_full_surface import sample_full_surface, save_surface, validate_surface
+from surface_pool import DEFAULT_POOL_POINTS, make_surface_pool, save_surface_pool, validate_surface_pool
 
 
 FORMATS = {".glb", ".gltf", ".obj", ".fbx", ".ply", ".stl", ".blend",
            ".usd", ".usda", ".usdc", ".usdz", ".dae", ".abc"}
 SETTING_NAMES = ("num_views", "resolution", "seed", "camera_radius", "fov_degrees",
                  "samples", "frame", "rotation", "num_points", "visibility_tolerance",
-                 "train_fraction", "val_fraction", "render_device", "camera_mode", "lighting", "ready_marker")
+                 "train_fraction", "val_fraction", "render_device", "camera_mode", "lighting", "ready_marker",
+                 "surface_pool_points")
 
 
 def pipeline_sha256():
     digest = hashlib.sha256()
-    for name in ("make_data.py", "render_blender.py", "sample_full_surface.py", "generate_target_latents.py", "pointmaps.py", "sparse_structure_vae.py", "vae_utils.py"):
+    for name in ("make_data.py", "render_blender.py", "sample_full_surface.py", "surface_pool.py", "generate_target_latents.py", "pointmaps.py", "sparse_structure_vae.py", "vae_utils.py"):
         digest.update(Path(__file__).with_name(name).read_bytes())
     return digest.hexdigest()
 
@@ -67,12 +69,16 @@ def parse_args(argv=None):
     parser.add_argument("--rotation", type=float, nargs=3, default=[0, 0, 0],
                         help="XYZ degrees applied after Blender's format-aware import")
     parser.add_argument("--num-points", type=int, default=8192)
+    parser.add_argument("--surface-pool-points", type=int, default=DEFAULT_POOL_POINTS,
+                        help="Shared XYZ/normal pool per object; 0 disables the optional larger pool")
     parser.add_argument("--visibility-tolerance", type=float, default=0.005)
     parser.add_argument("--train-fraction", type=float, default=0.8)
     parser.add_argument("--val-fraction", type=float, default=0.1)
     parser.add_argument("--encoder-checkpoint", type=Path, default=DEFAULT_ENCODER_CHECKPOINT)
     parser.add_argument("--dry-run", action="store_true", help="Discover inputs and print settings without generating data")
     args = parser.parse_args(argv)
+    if args.surface_pool_points < 0:
+        parser.error("--surface-pool-points must be nonnegative")
     if min(args.workers, args.render_workers_per_gpu, args.blender_threads,
            args.num_views, args.resolution, args.samples, args.num_points) < 1:
         parser.error("Worker, view, resolution, sample and point counts must be positive")
@@ -211,7 +217,12 @@ def package_object(obj, split, args):
     mesh = load_normalized_mesh(object_dir / "mesh.npz")
     seed_parts = [args.seed, int(hashlib.sha256(obj["object_id"].encode()).hexdigest()[:8], 16)]
     sample_seed = int(np.random.default_rng(seed_parts).integers(2**31))
-    points, _ = trimesh.sample.sample_surface(mesh, args.num_points, seed=sample_seed)
+    points, face_indices = trimesh.sample.sample_surface(mesh, args.num_points, seed=sample_seed)
+    normals = mesh.face_normals[face_indices]
+    mesh_hash = checkpoint_sha256(object_dir / "mesh.npz")
+    if args.surface_pool_points:
+        pool = make_surface_pool(mesh, args.surface_pool_points, sample_seed, mesh_hash)
+        save_surface_pool(object_dir / "surface_pool.npz", pool)
     records = []
     for index in range(args.num_views):
         view_id = f"{index:03d}"
@@ -232,9 +243,10 @@ def package_object(obj, split, args):
             raise ValueError(f"No finite foreground depth: {view_dir}")
         np.save(view_dir / "depth.npy", depth)
         arrays = sample_full_surface(points, view_dir / "camera.npz", view_dir / "depth.npy",
-                                     args.visibility_tolerance)
+                                     args.visibility_tolerance, normals, face_indices)
         arrays.update(requested_point_count=args.num_points, sample_seed_parts=seed_parts,
-                      sample_seed=sample_seed, surface_area=mesh.area)
+                      sample_seed=sample_seed, surface_area=mesh.area, mesh_sha256=mesh_hash,
+                      normal_numpy_version=np.__version__, normal_trimesh_version=str(trimesh.__version__ or "unknown"))
         save_surface(view_dir / "full_surface.npz", arrays, overwrite=True)
         record = {"sample_id": f"{obj['object_id']}_{view_id}", "object_id": obj["object_id"],
                   "view_id": view_id, "split": split, "touch_path": None, "target_path": None}
@@ -246,6 +258,8 @@ def package_object(obj, split, args):
         }.items():
             record[key] = str(path.relative_to(args.data_root))
         records.append(record)
+        if args.surface_pool_points:
+            record["surface_pool_path"] = str((object_dir / "surface_pool.npz").relative_to(args.data_root))
     save_json(records, object_dir / "samples.json")
     return records
 
@@ -255,11 +269,24 @@ def object_complete(object_dir, args):
         return False
     try:
         records = json.loads((object_dir / "samples.json").read_text())
-        return len(records) == args.num_views and all(
+        complete = len(records) == args.num_views and all(
             (args.data_root / record[key]).is_file()
             for record in records for key in ("depth_path", "camera_path", "full_surface_path")
         )
-    except (ValueError, KeyError):
+        if not complete:
+            return False
+        if args.surface_pool_points:
+            with np.load(object_dir / "surface_pool.npz", allow_pickle=False) as pool:
+                validate_surface_pool(pool)
+                if len(pool["points_object"]) != args.surface_pool_points:
+                    return False
+        for record in records:
+            with np.load(args.data_root / record["full_surface_path"], allow_pickle=False) as surface:
+                validate_surface(surface, require_normals=True)
+                if len(surface["points_camera"]) != args.num_points:
+                    return False
+        return True
+    except (ValueError, KeyError, OSError, EOFError):
         return False
 
 
@@ -334,6 +361,7 @@ def run(args):
         blender_version = next(line for line in version.splitlines() if line.startswith("Blender "))
         settings = {name: getattr(args, name) for name in SETTING_NAMES}
         settings.update(format_version=2, pointmap_storage="reconstruct_from_depth",
+                        full_surface_format_version=2, normal_method="triangle_face_winding",
                         persistent_data=True, blender_version=blender_version,
                         voxel_resolution=64, latent_shape=[8, 16, 16, 16],
                         camera_schedule="shared_hammersley", color_transform="Filmic",

@@ -63,7 +63,11 @@ def parse_args():
     parser.add_argument("--vecsetx-learn", action="store_true",
                         help="Use frozen VecSetX decoder features before touch projection")
     parser.add_argument("--joint-pointmap", action="store_true")
-    parser.add_argument("--no-touch-position", action="store_true")
+    parser.add_argument("--touch-position", dest="no_touch_position", action="store_false",
+                        help="Enable touch position embeddings (disabled by default)")
+    parser.add_argument("--no-touch-position", action="store_true",
+                        help="Disable touch position embeddings (the default; kept for existing jobs)")
+    parser.set_defaults(no_touch_position=True)
     parser.add_argument(
         "--local-rank", "--local_rank", type=int,
         default=int(os.environ.get("LOCAL_RANK", -1)),
@@ -805,7 +809,7 @@ def main():
     ):
         raise ValueError("--constant-touch requires oracle full surfaces and frozen raw VecSetX features")
     if args.oracle_point_frame and (args.no_touch or args.joint_pointmap or not args.no_touch_position):
-        raise ValueError("Oracle point frame requires touch, --no-touch-position, and no joint pointmap")
+        raise ValueError("Oracle point frame requires touch, disabled touch position, and no joint pointmap")
     if args.no_touch and args.train_vecsetx:
         raise ValueError("--train-vecsetx cannot be used with --no-touch")
     if args.no_touch and args.vecsetx_learn:
@@ -920,6 +924,7 @@ def main():
         print(f"mode: {mode}")
         print(f"training scope: {args.train_scope}")
         print(f"precision: {args.precision}")
+        print(f"touch position: {touch_encoder is not None and touch_encoder.use_position}")
         print(f"visual dropout: {args.visual_dropout} per sample (training only)")
         if args.shared_pointmap_normalization:
             print("pointmap normalization: full-surface center and radius")

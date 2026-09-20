@@ -15,7 +15,7 @@ from PIL import Image
 from generate_target_latents import load_normalized_mesh, save_target, validate_target, voxelize_mesh
 from make_data import get_objects, make_splits, parse_args, render_object
 from pointmaps import depth_to_pointmap
-from sample_full_surface import classify_visibility, transform_points
+from sample_full_surface import classify_visibility, transform_points, transform_normals, validate_surface
 
 HERE = Path(__file__).resolve().parent
 BLENDER = os.environ.get("BLENDER_BIN")
@@ -216,11 +216,19 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
             _, distance, _ = trimesh.proximity.closest_point_naive(mesh, object_points[::4])
             self.assertLess(np.percentile(distance, 95), .001, record['sample_id'])
             with np.load(self.output / record['full_surface_path']) as data:
+                validate_surface(data, require_normals=True)
                 self.assertEqual(data['points_camera'].dtype, np.float32)
                 self.assertEqual(data['points_camera'].shape, (256, 3))
                 object_surface = transform_points(data['points_camera'], np.linalg.inv(T))
                 _, distance, _ = trimesh.proximity.closest_point_naive(mesh, object_surface)
                 self.assertLess(distance.max(), 1e-5)
+                object_normals = transform_normals(data['normals_camera'], np.linalg.inv(T))
+                np.testing.assert_allclose(object_normals, mesh.face_normals[data['face_indices']], atol=1e-6)
+            from surface_pool import validate_surface_pool
+            from generate_target_latents import checkpoint_sha256
+            with np.load(self.output / record['surface_pool_path']) as pool:
+                self.assertEqual(pool['points_object'].shape, (16384, 3))
+                validate_surface_pool(pool, mesh, checkpoint_sha256(self.output / record['mesh_path']))
         self.assertFalse(np.array_equal(intrinsics['000'], intrinsics['001']))
         self.assertEqual((self.output / 'generated_data/samples.jsonl').read_text(), '')
         self.assertFalse(list(self.output.rglob('touches.npz')))

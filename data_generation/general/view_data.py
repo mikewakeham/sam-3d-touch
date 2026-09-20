@@ -85,6 +85,15 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K):
         point_shape="circle", precision="float32",
     )
     add_toggle(server, "Full surface (green visible / blue hidden)", handle)
+    if "normals_camera" in surface:
+        stride = max(1, len(points) // 512)
+        starts = points[::stride]
+        ends = starts + .025 * surface["normals_camera"][::stride]
+        normal_handle = server.scene.add_line_segments(
+            "/surface_normals", points=np.stack([starts, ends], axis=1),
+            colors=(240, 100, 50), line_width=1.5, visible=False,
+        )
+        add_toggle(server, "Surface normals", normal_handle)
 
     target = mesh.bounds.mean(axis=0)
 

@@ -1,4 +1,5 @@
 import json
+import hashlib
 from pathlib import Path
 
 import numpy as np
@@ -17,6 +18,8 @@ from torch.utils.data import (
 
 
 from data_generation.general.pointmaps import depth_to_pointmap
+from data_generation.general.sample_full_surface import validate_surface, sam_camera_transform, transform_points, transform_normals
+from data_generation.general.surface_pool import select_surface_pool
 
 
 def load_data_config(path):
@@ -34,6 +37,15 @@ class TouchDataset(Dataset):
         self.include_touch = include_touch
         self.oracle_point_frame = oracle_point_frame
         self.point_source = config.get("touch", {}).get("source", "touch")
+        self.include_normals = bool(config.get("touch", {}).get("include_normals", False))
+        self.surface_pool_count = config.get("touch", {}).get("pool_points")
+        self.surface_subset_seed = int(config.get("seed", 0))
+        if (self.include_normals or self.surface_pool_count is not None) and self.point_source != "full_surface":
+            raise ValueError("Normals and surface pools require full-surface data")
+        if self.surface_pool_count is not None:
+            self.surface_pool_count = int(self.surface_pool_count)
+            if self.surface_pool_count < 1:
+                raise ValueError("touch.pool_points must be positive")
         if oracle_point_frame and (not include_touch or self.point_source != "full_surface"):
             raise ValueError("Oracle point frame requires full-surface conditioning")
         if self.point_source not in ("touch", "full_surface"):
@@ -127,21 +139,27 @@ class TouchDataset(Dataset):
 
         return np.ascontiguousarray(mean.transpose(1, 2, 3, 0).reshape(4096, 8))
 
-    def load_full_surface(self, path):
+    def load_full_surface(self, path, include_normals=False):
         with np.load(path, allow_pickle=False) as data:
-            if (
-                int(data["format_version"]) != 1
-                or data["data_kind"].item() != "full_surface"
-                or data["coordinate_frame"].item() != "sam_camera"
-            ):
-                raise ValueError(f"Unsupported full-surface format in {path}")
+            validate_surface(data, require_normals=include_normals)
             points = data["points_camera"]
-        if (
-            points.ndim != 2 or points.shape[1] != 3 or len(points) == 0
-            or points.dtype != np.float32 or not np.isfinite(points).all()
-        ):
-            raise ValueError(f"Expected finite float32 surface [N,3] in {path}")
+            if include_normals:
+                return np.ascontiguousarray(points), np.ascontiguousarray(data["normals_camera"])
         return np.ascontiguousarray(points)
+
+    def load_surface_pool(self, record):
+        # Backfilled datasets keep their original manifests; the pool is beside mesh.npz.
+        path = (self.resolve_path(record["surface_pool_path"]) if record.get("surface_pool_path")
+                else self.resolve_path(record["mesh_path"]).with_name("surface_pool.npz"))
+        if not path.is_file():
+            raise FileNotFoundError(f"Missing {path}; run data_generation/general/backfill_normals.py")
+        object_seed = int(hashlib.sha256(record["object_id"].encode()).hexdigest()[:8], 16)
+        # Same fixed random subset for all views of an object and for every epoch.
+        with np.load(path, allow_pickle=False) as pool:
+            points, normals, _ = select_surface_pool(pool, self.surface_pool_count,
+                                                     [self.surface_subset_seed, object_seed])
+        transform = sam_camera_transform(self.resolve_path(record["camera_path"]))
+        return transform_points(points, transform).astype(np.float32), transform_normals(normals, transform)
 
     def load_pointmap(self, record):
         if record.get("pointmap_path"):
@@ -167,7 +185,14 @@ class TouchDataset(Dataset):
         }
         if self.include_touch:
             if self.point_source == "full_surface":
-                touch_xyz = self.load_full_surface(self.resolve_path(record["full_surface_path"]))
+                if self.surface_pool_count is not None:
+                    touch_xyz, normals = self.load_surface_pool(record)
+                elif self.include_normals:
+                    touch_xyz, normals = self.load_full_surface(self.resolve_path(record["full_surface_path"]), True)
+                else:
+                    touch_xyz = self.load_full_surface(self.resolve_path(record["full_surface_path"]))
+                if self.include_normals:
+                    sample["touch_normals"] = torch.from_numpy(np.ascontiguousarray(normals))
             else:
                 touch_xyz = self.load_touch(self.resolve_path(record["touch_path"]))
             sample["touch_xyz"] = torch.from_numpy(touch_xyz)
@@ -191,11 +216,16 @@ def collate_touch_batch(samples):
 
     batch = default_collate(
         [
-            {key: value for key, value in sample.items() if key != "touch_xyz"}
+            {key: value for key, value in sample.items() if key not in ("touch_xyz", "touch_normals")}
             for sample in samples
         ]
     )
     batch["touch_xyz"] = pad_sequence(touch_xyz, batch_first=True)
+    if "touch_normals" in samples[0]:
+        normals = [sample["touch_normals"] for sample in samples]
+        if any(normal.shape != points.shape for normal, points in zip(normals, touch_xyz)):
+            raise ValueError("Normals must align with surface points")
+        batch["touch_normals"] = pad_sequence(normals, batch_first=True)
     batch["touch_mask"] = (
         torch.arange(batch["touch_xyz"].shape[1])[None] < lengths[:, None]
     )
