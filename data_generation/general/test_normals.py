@@ -1,6 +1,7 @@
 """CPU geometry, migration and training-loader checks for surface normals/pools."""
 
 import json
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -49,11 +50,12 @@ class NormalsTests(unittest.TestCase):
         (self.object_dir / 'render_complete.json').write_text('{}')
         (self.object_dir / 'render_metadata.json').write_text('{}')
         np.savez(self.object_dir / 'object_transform.npz', transform=np.eye(4))
-        (self.generated / 'settings.json').write_text(json.dumps({'num_views': 2}))
+        (self.generated / 'settings.json').write_text(json.dumps({'num_views': 2, 'full_surface_format_version': 2}))
         (self.generated / 'objects.json').write_text(json.dumps([{'object_id': 'box'}]))
         self.paths = [self.root / row['full_surface_path'] for row in self.records]
 
     def downgrade(self):
+        (self.generated / 'settings.json').write_text(json.dumps({'num_views': 2}))
         for path in self.paths:
             with np.load(path) as data:
                 arrays = dict(data)
@@ -116,6 +118,78 @@ class NormalsTests(unittest.TestCase):
         self.assertEqual(before, [path.read_bytes() for path in self.paths])
         self.assertFalse((self.object_dir / 'surface_pool.npz').exists())
 
+    def test_overwrite_changes_only_normal_arrays(self):
+        self.downgrade()
+        backfill_object(self.object_dir, pool_points=1024)
+        paths = self.paths + [self.object_dir / 'surface_pool.npz']
+        for legacy in (False, True):
+            saved = {}
+            for path in paths:
+                with np.load(path) as data:
+                    arrays = dict(data)
+                if legacy:
+                    arrays.pop('normal_source')
+                key = 'normals_object' if path.name == 'surface_pool.npz' else 'normals_camera'
+                arrays[key][:] = np.nan
+                np.savez_compressed(path, **arrays)
+                saved[path] = arrays
+            before = {path: path.read_bytes() for path in self.root.rglob('*') if path.is_file()}
+            backfill_object(self.object_dir, pool_points=1024, overwrite_normals=True, dry_run=True)
+            self.assertEqual(before, {path: path.read_bytes() for path in before})
+            result = backfill_object(self.object_dir, pool_points=1024, overwrite_normals=True)
+            self.assertEqual(result['updated'], 2)
+            self.assertTrue(result['pool_updated'])
+            self.assertFalse(result['pool_created'])
+            for path, old in saved.items():
+                with np.load(path) as data:
+                    self.assertEqual(set(data), set(old))
+                    for key, value in old.items():
+                        if key not in ('normals_camera', 'normals_object'):
+                            np.testing.assert_array_equal(data[key], value)
+            for path in before.keys() - saved.keys():
+                self.assertEqual(path.read_bytes(), before[path])
+            backfill_object(self.object_dir, check_only=True, pool_points=1024)
+
+    def test_overwrite_rejects_new_generation_and_unknown_provenance(self):
+        for settings_present in (True, False):
+            if not settings_present:
+                (self.generated / 'settings.json').unlink()
+            before = [path.read_bytes() for path in self.paths]
+            with self.assertRaisesRegex(ValueError, 'Cannot identify normals'):
+                backfill_object(self.object_dir, pool_points=1024, overwrite_normals=True)
+            self.assertEqual(before, [path.read_bytes() for path in self.paths])
+
+    def test_overwrite_skips_missing_data_and_rejects_changed_geometry(self):
+        self.downgrade()
+        before = [path.read_bytes() for path in self.paths]
+        result = backfill_object(self.object_dir, pool_points=1024, overwrite_normals=True)
+        self.assertEqual(result['updated'], 0)
+        self.assertEqual(before, [path.read_bytes() for path in self.paths])
+        self.assertFalse((self.object_dir / 'surface_pool.npz').exists())
+        backfill_object(self.object_dir, pool_points=1024)
+        pool_path = self.object_dir / 'surface_pool.npz'
+        with np.load(pool_path) as data:
+            arrays = dict(data)
+        arrays['points_object'] += np.float32(.001)
+        np.savez_compressed(pool_path, **arrays)
+        before = [path.read_bytes() for path in self.paths + [pool_path]]
+        with self.assertRaises(ValueError):
+            backfill_object(self.object_dir, pool_points=1024, overwrite_normals=True)
+        self.assertEqual(before, [path.read_bytes() for path in self.paths + [pool_path]])
+
+    def test_cli_progress_resume_overwrite_and_check(self):
+        self.downgrade()
+        command = [sys.executable, str(Path(__file__).with_name('backfill_normals.py')),
+                   '--data-root', str(self.root), '--workers', '2', '--pool-points', '1024']
+        for flags, expected in (([], 'updated 2 views'), ([], 'already complete'),
+                                (['--overwrite-normals'], 'pool normals overwritten'),
+                                (['--check-only'], 'already complete')):
+            result = subprocess.run(command + flags, capture_output=True, text=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('[1/1] box:', result.stdout)
+            self.assertIn(expected, result.stdout)
+            self.assertIn('0 failed', result.stdout)
+
     def test_corrupted_normals_and_faces_are_detected(self):
         for key in ('normals_camera', 'face_indices'):
             with np.load(self.paths[0]) as data:
@@ -142,6 +216,44 @@ class NormalsTests(unittest.TestCase):
                 backfill_object(self.object_dir, pool_points=1024)
         self.assertEqual(backfill_object(self.object_dir, pool_points=1024)['updated'], 1)
         backfill_object(self.object_dir, check_only=True, pool_points=1024)
+
+    def test_interrupted_compression_preserves_original_and_resumes(self):
+        self.downgrade()
+        before = [path.read_bytes() for path in self.paths]
+        def interrupted(path, **arrays):
+            Path(path).write_bytes(b'partial compressed file')
+            raise OSError('interrupted during compression')
+        with patch('sample_full_surface.np.savez_compressed', side_effect=interrupted):
+            with self.assertRaisesRegex(OSError, 'interrupted during compression'):
+                backfill_object(self.object_dir, pool_points=1024)
+        self.assertEqual(before, [path.read_bytes() for path in self.paths])
+        self.assertTrue(self.paths[0].with_suffix('.tmp.npz').exists())
+        backfill_object(self.object_dir, pool_points=1024)
+        backfill_object(self.object_dir, check_only=True, pool_points=1024)
+        self.assertFalse(self.paths[0].with_suffix('.tmp.npz').exists())
+
+    def test_interrupted_pool_write_resumes_after_views_completed(self):
+        from surface_pool import save_surface_pool
+        self.downgrade()
+        def interrupted_compression(temporary, **arrays):
+            Path(temporary).write_bytes(b'partial pool')
+            raise OSError('interrupted pool')
+        def interrupted(path, arrays):
+            with patch('surface_pool.np.savez_compressed', side_effect=interrupted_compression):
+                save_surface_pool(path, arrays)
+        with patch('backfill_normals.save_surface_pool', side_effect=interrupted):
+            with self.assertRaisesRegex(OSError, 'interrupted pool'):
+                backfill_object(self.object_dir, pool_points=1024)
+        for path in self.paths:
+            with np.load(path) as data:
+                validate_surface(data, require_normals=True)
+        self.assertFalse((self.object_dir / 'surface_pool.npz').exists())
+        self.assertTrue((self.object_dir / 'surface_pool.tmp.npz').exists())
+        result = backfill_object(self.object_dir, pool_points=1024)
+        self.assertEqual(result['updated'], 0)
+        self.assertTrue(result['pool_created'])
+        backfill_object(self.object_dir, check_only=True, pool_points=1024)
+        self.assertFalse((self.object_dir / 'surface_pool.tmp.npz').exists())
 
     def test_pool_replay_subsets_and_corruption(self):
         pool = make_surface_pool(self.mesh, 4096, 42, self.mesh_hash)
