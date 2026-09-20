@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=64
 #SBATCH --mem=256G
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:1
 #SBATCH --time=04:00:00
 #SBATCH --output=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/experiments/encoders/logs/%x-%j.out
 #SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/experiments/encoders/logs/%x-%j.err
@@ -35,7 +35,7 @@ case "$stage" in
   *) echo "Unknown stage: $stage" >&2; exit 1 ;;
 esac
 
-/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 experiments/encoders/run.py \
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node="${SLURM_GPUS_ON_NODE:-1}" experiments/encoders/run.py \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config "experiments/encoders/data/$stage.yaml" \
   --output-dir "experiments/encoders/outputs/${stage}_${variant}" \

@@ -1,2 +1,0 @@
-# Plotting only; use the existing sam3d-objects environment and encoder dependencies.
-matplotlib==3.9.4
