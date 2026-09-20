@@ -232,6 +232,87 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
         rgba = np.asarray(Image.open(self.output / record['image_path']))
         self.assertGreater(np.sum((rgba[..., 0].astype(float) > rgba[..., 1] * 1.5) & (rgba[..., 3] == 255)), 30)
 
+    def test_eight_view_data_and_metadata_contract(self):
+        import hashlib
+        import torch
+        from generate_target_latents import generate_target, save_metadata
+        from make_data import write_manifests
+        from sparse_structure_vae import SparseStructureEncoderTdfyWrapper
+        sys.path.insert(0, str(HERE.parents[1]))
+        from dataloader import TouchDataset
+
+        output = self.root / 'eight_views'
+        command = list(self.command)
+        command[command.index('--data-root') + 1] = str(output)
+        command += ['--limit', '1', '--num-views', '8', '--resolution', '768',
+                    '--samples', '32', '--num-points', '8192',
+                    '--train-fraction', '1', '--val-fraction', '0']
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        generated = output / 'generated_data'
+        settings = json.loads((generated / 'settings.json').read_text())
+        self.assertEqual([settings[key] for key in ('num_views', 'resolution', 'samples', 'num_points')],
+                         [8, 768, 32, 8192])
+        self.assertEqual(len(settings['pipeline_sha256']), 64)
+        objects = json.loads((generated / 'objects.json').read_text())
+        rows = [json.loads(line) for line in (generated / 'samples_rendered.jsonl').read_text().splitlines()]
+        self.assertEqual(len(rows), 8)
+        self.assertEqual({row['view_id'] for row in rows}, {f'{i:03d}' for i in range(8)})
+        reference_surface = None
+        for row in rows:
+            for key in ('image_path', 'depth_path', 'camera_path', 'full_surface_path',
+                        'object_transform_path', 'mesh_path'):
+                self.assertTrue((output / row[key]).is_file(), key)
+            rgba = np.asarray(Image.open(output / row['image_path']))
+            depth = np.load(output / row['depth_path'])
+            self.assertEqual(rgba.shape, (768, 768, 4))
+            self.assertEqual(depth.dtype, np.float32)
+            self.assertTrue(np.isnan(depth[rgba[..., 3] == 0]).all())
+            with np.load(output / row['camera_path']) as camera, np.load(output / row['full_surface_path']) as surface:
+                self.assertEqual(surface['points_camera'].shape, (8192, 3))
+                self.assertEqual(surface['coordinate_frame'].item(), 'sam_camera')
+                self.assertEqual(surface['point_visibility'].shape, (8192,))
+                self.assertTrue(np.isin(surface['point_visibility'], [-1, 0, 1]).all())
+                np.testing.assert_array_equal(surface['point_ids'], np.arange(8192))
+                transform = np.diag([-1., -1., 1., 1.]) @ camera['T_camera_from_object']
+                points = transform_points(surface['points_camera'], np.linalg.inv(transform))
+                if reference_surface is None:
+                    reference_surface = points
+                np.testing.assert_allclose(points, reference_surface, atol=2e-6)
+
+        # Exercise mesh -> encoder -> saved target -> manifest -> training loader.
+        # Random small CPU weights verify the contract, not pretrained accuracy.
+        torch.set_num_threads(1)
+        encoder = SparseStructureEncoderTdfyWrapper(
+            in_channels=1, latent_channels=8, channels=[32, 32, 32],
+            num_res_blocks=1, num_res_blocks_middle=1,
+            sample_posterior=False, return_raw=True,
+        ).eval()
+        checkpoint = self.root / 'audit_encoder.ckpt'
+        torch.save(encoder.state_dict(), checkpoint)
+        save_metadata(generated, checkpoint)
+        metadata = json.loads((generated / 'target_latents.json').read_text())
+        self.assertEqual(metadata['encoder_checkpoint_sha256'], hashlib.sha256(checkpoint.read_bytes()).hexdigest())
+        target, created = generate_target(rows[0]['object_id'], output, encoder, 'cpu', False)
+        self.assertTrue(created)
+        before = target.stat().st_mtime_ns
+        self.assertFalse(generate_target(rows[0]['object_id'], output, encoder, 'cpu', False)[1])
+        self.assertEqual(target.stat().st_mtime_ns, before)
+        rendered, ready = write_manifests(parse_args(command[2:]), objects)
+        self.assertEqual((len(rendered), len(ready)), (8, 8))
+        self.assertEqual(len({row['target_path'] for row in ready}), 1)
+        dataset = TouchDataset({'dataset': {'root': str(output), 'manifest': 'generated_data/samples.jsonl',
+                                           'split_file': 'generated_data/splits.json', 'split': 'train'},
+                                'touch': {'source': 'full_surface'}})
+        self.assertEqual(len(dataset), 8)
+        sample = dataset[0]
+        self.assertEqual(tuple(sample['target_shape'].shape), (4096, 8))
+        self.assertEqual(tuple(sample['touch_xyz'].shape), (8192, 3))
+        self.assertEqual(tuple(sample['pointmap'].shape), (768, 768, 3))
+        checkpoint.write_bytes(b'different checkpoint')
+        with self.assertRaisesRegex(ValueError, 'does not match'):
+            save_metadata(generated, checkpoint)
+
     def test_resume_repair_and_settings_guard(self):
         record = self.records[0]
         image = self.output / record['image_path']
