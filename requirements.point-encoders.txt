@@ -1,0 +1,5 @@
+# Optional CraftsMan/TripoSG ports. Reuse the existing Torch/CUDA/PyTorch3D environment.
+diffusers==0.32.2
+huggingface-hub>=0.27.0,<1.0
+safetensors>=0.4.3
+einops>=0.6.0
