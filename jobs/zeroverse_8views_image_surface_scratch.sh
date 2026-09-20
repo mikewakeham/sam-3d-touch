@@ -25,7 +25,6 @@ export PYTHONUNBUFFERED=1
   --val-workers 2 \
   --epochs 20 \
   --max-steps 20000 \
-  --no-touch-position \
   --train-scope shape_cross_attention \
   --train-vecsetx \
   --vecsetx-from-scratch "$@"

@@ -24,5 +24,4 @@ export PYTHONUNBUFFERED=1
   --workers 8 \
   --val-workers 2 \
   --epochs 20 \
-  --no-touch-position \
   --shared-pointmap-normalization

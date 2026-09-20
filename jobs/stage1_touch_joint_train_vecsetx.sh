@@ -25,5 +25,4 @@ export PYTHONUNBUFFERED=1
   --val-workers 2 \
   --epochs 20 \
   --joint-pointmap \
-  --no-touch-position \
   --train-vecsetx

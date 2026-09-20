@@ -24,7 +24,6 @@ export PYTHONUNBUFFERED=1
   --workers 8 \
   --val-workers 2 \
   --epochs 20 \
-  --no-touch-position \
   --cross-attention-scope full \
   --no-pointmap \
   --resume outputs/stage1_full_surface_no_pointmap_full_cross_attention/last.pt \

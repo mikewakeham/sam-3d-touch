@@ -24,7 +24,6 @@ export PYTHONUNBUFFERED=1
   --workers 8 \
   --val-workers 2 \
   --epochs 20 \
-  --no-touch-position \
   --visual-dropout 0.5 \
   --oracle-point-frame \
   --constant-touch

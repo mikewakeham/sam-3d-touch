@@ -24,5 +24,4 @@ export PYTHONUNBUFFERED=1
   --workers 8 \
   --val-workers 2 \
   --epochs 20 \
-  --train-scope shape_full \
-  --no-touch-position
+  --train-scope shape_full

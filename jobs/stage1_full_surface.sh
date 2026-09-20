@@ -23,5 +23,4 @@ export PYTHONUNBUFFERED=1
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
-  --epochs 20 \
-  --no-touch-position
+  --epochs 20

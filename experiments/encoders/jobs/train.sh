@@ -48,5 +48,4 @@ esac
   --cross-attention-learning-rate 1e-5 \
   --log-every 10 \
   --precision bf16 \
-  --no-touch-position \
   --train-scope shape_cross_attention "${flags[@]}" "$@"

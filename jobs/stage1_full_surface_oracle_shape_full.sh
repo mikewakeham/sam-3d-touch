@@ -25,5 +25,4 @@ export PYTHONUNBUFFERED=1
   --val-workers 2 \
   --epochs 20 \
   --train-scope shape_full \
-  --no-touch-position \
   --oracle-point-frame
