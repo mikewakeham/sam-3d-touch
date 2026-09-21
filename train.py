@@ -780,8 +780,13 @@ def train_epoch(
                 / samples_per_second
             )
             if main_process:
+                progress = (
+                    f"step {step}/{args.max_steps} epoch {epoch + 1}"
+                    if args.max_steps
+                    else f"epoch {epoch + 1}/{args.epochs} step {step}"
+                )
                 print(
-                    f"epoch {epoch + 1}/{args.epochs} step {step} "
+                    f"{progress} "
                     f"loss {mean_loss:.6f} "
                     f"throughput {samples_per_second:.2f} samples/s "
                     f"train_eta {time.strftime('%H:%M:%S', time.gmtime(eta_seconds))}",
@@ -1066,8 +1071,13 @@ def main():
 
         if main_process:
             run.log({"global_step": step, "loss/val": val_loss})
+            progress = (
+                f"step {step}/{args.max_steps} epoch {epoch + 1}"
+                if args.max_steps
+                else f"epoch {epoch + 1}/{args.epochs}"
+            )
             print(
-                f"epoch {epoch + 1}/{args.epochs} val_loss {val_loss:.6f}"
+                f"{progress} val_loss {val_loss:.6f}"
                 f"{' best' if improved else ''}",
                 flush=True,
             )
