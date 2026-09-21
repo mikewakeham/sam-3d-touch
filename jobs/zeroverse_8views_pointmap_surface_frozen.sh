@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=s1_full_surface_position_full_ca
+#SBATCH --job-name=zv_pointmap_surface_frozen
 #SBATCH --partition=kempner_h200
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
@@ -8,21 +8,22 @@
 #SBATCH --mem=256G
 #SBATCH --gres=gpu:4
 #SBATCH --time=12:00:00
-#SBATCH --output=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/objaverse/%x-%j.out
-#SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/objaverse/%x-%j.err
+#SBATCH --output=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/zeroverse/%x-%j.out
+#SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/zeroverse/%x-%j.err
 
 set -e
 cd /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch
 export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
-export WANDB_RUN_GROUP=objaverse
+export WANDB_RUN_GROUP=zeroverse
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 train.py \
   --pipeline-config checkpoints/hf/pipeline.yaml \
-  --data-config configs/data_full_surface.yaml \
-  --output-dir outputs/objaverse/stage1_full_surface_position_full_cross_attention \
+  --data-config configs/data_zeroverse_5000_8views_full_surface.yaml \
+  --output-dir outputs/zeroverse/zeroverse_8views_pointmap_surface_frozen \
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
   --epochs 20 \
-  --cross-attention-scope full
+  --max-steps 20000 \
+  --train-scope shape_cross_attention "$@"

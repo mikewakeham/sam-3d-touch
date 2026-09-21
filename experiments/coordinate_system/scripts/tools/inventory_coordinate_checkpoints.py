@@ -15,11 +15,11 @@ from pathlib import Path
 
 
 DEFAULT_RUNS = {
-    'camera': 'outputs/stage1_full_surface_full_cross_attention',
-    'oracle': 'outputs/stage1_full_surface_oracle_full_cross_attention',
-    'image': 'outputs/stage1_image_full_cross_attention',
-    'camera_no_pointmap': 'outputs/stage1_full_surface_no_pointmap_full_cross_attention',
-    'oracle_no_pointmap': 'outputs/stage1_full_surface_oracle_no_pointmap_full_cross_attention',
+    'camera': 'outputs/objaverse/stage1_full_surface_full_cross_attention',
+    'oracle': 'outputs/objaverse/stage1_full_surface_oracle_full_cross_attention',
+    'image': 'outputs/objaverse/stage1_image_full_cross_attention',
+    'camera_no_pointmap': 'outputs/objaverse/stage1_full_surface_no_pointmap_full_cross_attention',
+    'oracle_no_pointmap': 'outputs/objaverse/stage1_full_surface_oracle_no_pointmap_full_cross_attention',
 }
 IGNORED_ARGUMENTS = {
     'output_dir', 'wandb_id', 'workers', 'val_workers', 'local_rank',

@@ -210,7 +210,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--probe-root',type=Path,required=True)
     parser.add_argument('--rollout-root',type=Path,required=True)
-    parser.add_argument('--run-dir',type=Path,default=Path('outputs/conditioning_investigation/stage1_full_surface_dropout'))
+    parser.add_argument('--run-dir',type=Path,default=Path('outputs/objaverse/conditioning_investigation/stage1_full_surface_dropout'))
     parser.add_argument('--encoder-checkpoint',type=Path,default=Path('checkpoints/hf/ss_encoder.ckpt'))
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--resume-geometry-from', type=Path, help='Reuse the independently audited170408 reference; no mesh queries or target encoding')

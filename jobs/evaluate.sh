@@ -8,8 +8,8 @@
 #SBATCH --mem=64G
 #SBATCH --gres=gpu:1
 #SBATCH --time=12:00:00
-#SBATCH --output=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/%x-%j.out
-#SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/%x-%j.err
+#SBATCH --output=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/objaverse/%x-%j.out
+#SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/objaverse/%x-%j.err
 
 set -e
 cd /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch
@@ -18,17 +18,17 @@ export PYTHONUNBUFFERED=1
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python evaluate.py \
   --run-dirs \
-  outputs/stage1_image_full_cross_attention \
-  outputs/stage1_full_surface_full_cross_attention \
-  outputs/stage1_image_shared_normalization \
-  outputs/stage1_full_surface_shared_normalization \
-  outputs/stage1_image_no_pointmap_full_cross_attention \
-  outputs/stage1_full_surface_no_pointmap_full_cross_attention \
-  outputs/stage1_full_surface_oracle_no_pointmap \
-  outputs/stage1_full_surface_oracle \
+  outputs/objaverse/stage1_image_full_cross_attention \
+  outputs/objaverse/stage1_full_surface_full_cross_attention \
+  outputs/objaverse/stage1_image_shared_normalization \
+  outputs/objaverse/stage1_full_surface_shared_normalization \
+  outputs/objaverse/stage1_image_no_pointmap_full_cross_attention \
+  outputs/objaverse/stage1_full_surface_no_pointmap_full_cross_attention \
+  outputs/objaverse/stage1_full_surface_oracle_no_pointmap \
+  outputs/objaverse/stage1_full_surface_oracle \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --selection-data-config configs/data_full_surface.yaml \
-  --output-dir outputs/evaluation_coordinate_system \
+  --output-dir outputs/objaverse/evaluation_coordinate_system \
   --split val \
   --max-samples 0 \
   --selection hidden \

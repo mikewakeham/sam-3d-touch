@@ -65,7 +65,7 @@ class Evidence:
         import numpy as np
         historical = 'doc/conditioning_investigation_2026-09-11/oracle_upper_bound/'
         roots = [historical+'rollouts_returned_20260913_143515/'+arm for arm in ('oracle','constant')]
-        roots += ['outputs/conditioning_investigation/full_frame_probe_20260913_172925/camera']
+        roots += ['outputs/objaverse/conditioning_investigation/full_frame_probe_20260913_172925/camera']
         count = 0
         cells = {}
         for root in roots:

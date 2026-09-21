@@ -85,7 +85,7 @@ def main():
         raise ValueError('Object count must be a positive multiple of four')
     if args.output.exists():
         raise FileExistsError(f'{args.output}: use a new output directory')
-    run_dir = args.run_dir or Path('outputs/conditioning_investigation') / ARMS[args.arm]
+    run_dir = args.run_dir or Path('outputs/objaverse/conditioning_investigation') / ARMS[args.arm]
     checkpoint_path = run_dir / 'last.pt'
     run_config_path = run_dir / 'config.yaml'
     config = yaml.safe_load(run_config_path.read_text())

@@ -8,8 +8,8 @@
 #SBATCH --mem=64G
 #SBATCH --gres=gpu:1
 #SBATCH --time=12:00:00
-#SBATCH --output=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/%x-%j.out
-#SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/%x-%j.err
+#SBATCH --output=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/objaverse/%x-%j.out
+#SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/objaverse/%x-%j.err
 
 set -e
 cd /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch
@@ -17,31 +17,31 @@ export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
-  --checkpoint outputs/stage1_touch/best.pt \
+  --checkpoint outputs/objaverse/stage1_touch/best.pt \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data1.yaml
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
-  --checkpoint outputs/stage1_touch_train_vecsetx/best.pt \
+  --checkpoint outputs/objaverse/stage1_touch_train_vecsetx/best.pt \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data1.yaml
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
-  --checkpoint outputs/stage1_touch_joint/best.pt \
+  --checkpoint outputs/objaverse/stage1_touch_joint/best.pt \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data1.yaml
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
-  --checkpoint outputs/stage1_touch_joint_train_vecsetx/best.pt \
+  --checkpoint outputs/objaverse/stage1_touch_joint_train_vecsetx/best.pt \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data1.yaml
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
-  --checkpoint outputs/stage1_touch_position/best.pt \
+  --checkpoint outputs/objaverse/stage1_touch_position/best.pt \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data1.yaml
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python diagnostics.py \
-  --checkpoint outputs/stage1_touch_position_train_vecsetx/best.pt \
+  --checkpoint outputs/objaverse/stage1_touch_position_train_vecsetx/best.pt \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data1.yaml
