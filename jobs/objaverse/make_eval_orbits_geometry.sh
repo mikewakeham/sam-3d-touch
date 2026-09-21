@@ -44,7 +44,7 @@ sample_ids=(
 
 for sample_id in "${sample_ids[@]}"
 do
-  /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python make_eval_orbit.py \
+  /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python -m evaluation.make_orbit \
     --evaluation-dir outputs/objaverse/evaluation \
     --output-dir outputs/objaverse/evaluation/orbits_camera \
     --sample-id "$sample_id" \

@@ -16,7 +16,7 @@ cd /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch
 export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 
-/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python evaluate.py \
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python -m evaluation.evaluate \
   --run-dirs \
   outputs/objaverse/stage1_image_full_cross_attention \
   outputs/objaverse/stage1_full_surface_full_cross_attention \
