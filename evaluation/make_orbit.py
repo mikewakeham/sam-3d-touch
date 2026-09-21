@@ -18,6 +18,9 @@ if sys.platform.startswith('linux'):
     os.environ.setdefault('EGL_PLATFORM', 'surfaceless')
 
 from evaluation.geometry import add_input_arguments, load_inputs, load_reference_camera, camera_fit, scene_bounds
+from evaluation.row_scene import (
+    prepare_row, row_camera, row_eye, spin_transform, add_row_floor, initialize_row_lighting,
+)
 
 
 def mesh_geometry(mesh):
@@ -157,14 +160,31 @@ def render(items, center, radius, args, output, scale, reference_camera=None):
     try:
         renderer.scene.set_background((1., 1., 1., 1.))
         renderer.scene.show_skybox(False)
-        initialize_lighting(renderer, args.light_strength, center, scale, args.up)
+        row = getattr(args, 'row', False)
+        if row:
+            initialize_row_lighting(renderer, args.light_strength, args.up)
+            add_row_floor(renderer, len(items), args.up)
+        else:
+            initialize_lighting(renderer, args.light_strength, center, scale, args.up)
         for index, item in enumerate(items):
             add_geometry(renderer, item, index, args, scale)
         frames = []
         up = (0., 0., 1.) if args.up == 'z' else (0., 1., 0.)
+        if row:
+            eye = row_eye(center, radius, args.up)
+            renderer.setup_camera(args.fov, center, eye, up)
+            half_height = radius * np.tan(np.radians(args.fov) / 2)
+            half_width = half_height * args.width / args.height
+            renderer.scene.camera.set_projection(
+                o3d.visualization.rendering.Camera.Projection.Ortho,
+                -half_width, half_width, -half_height, half_height, .01, radius + scale + 4.,
+            )
         for frame in range(args.frames):
             angle = 2 * np.pi * frame / args.frames
-            if reference_camera is None:
+            if row:
+                for index, item in enumerate(items):
+                    renderer.scene.set_geometry_transform(str(index), spin_transform(item['pivot'], angle, args.up))
+            elif reference_camera is None:
                 eye = orbit_eye(center, radius, args.orbit_height, angle, args.up)
                 renderer.setup_camera(args.fov, center, eye, up)
             else:
@@ -172,7 +192,8 @@ def render(items, center, radius, args, output, scale, reference_camera=None):
                 renderer.setup_camera(np.asarray(reference_camera['intrinsics']),
                                       input_orbit_extrinsic(reference_camera, angle), args.width, args.height)
             image = np.asarray(renderer.render_to_image())[..., :3].copy()
-            image[np.asarray(renderer.render_to_depth_image()) >= 1.] = 255
+            if not row:
+                image[np.asarray(renderer.render_to_depth_image()) >= 1.] = 255
             frames.append(image)
             print(f'{output.name}: [{frame + 1}/{args.frames}]', end='\r', flush=True)
         print()
@@ -185,7 +206,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     add_input_arguments(parser)
     parser.add_argument('--all-samples', action='store_true', help='Render every completed sample in --evaluation-dir')
-    parser.add_argument('--max-samples', type=int, default=0, help='Random subset for --all-samples; 0 uses every sample')
+    parser.add_argument('--max-samples', type=int, default=0,
+                        help='Random subset for --all-samples or --row; 0 uses every sample')
     parser.add_argument('--selection-seed', type=int, default=29, help='Seed for the random sample subset')
     parser.add_argument('--with-inputs', action='store_true', help='Also render the eight input mesh/pointmap/surface combinations')
     parser.add_argument('--blender', default='blender', help='Blender used to export and verify the original textured asset')
@@ -194,9 +216,9 @@ def parse_args():
     parser.add_argument('--frames', type=int, default=120)
     parser.add_argument('--fps', type=int, default=20)
     parser.add_argument('--gif-fps', type=int, default=10)
-    parser.add_argument('--gif-size', type=int, default=768)
-    parser.add_argument('--width', type=int, default=768)
-    parser.add_argument('--height', type=int, default=768)
+    parser.add_argument('--gif-size', type=int, help='GIF maximum dimension (default: 768, or row width)')
+    parser.add_argument('--width', type=int, help='Output width (default: 768, automatic for --row)')
+    parser.add_argument('--height', type=int, help='Output height (default: 768, or 640 for --row)')
     parser.add_argument('--fit-camera', action='store_true', help='Fit a generic orbit instead of matching the saved input camera')
     parser.add_argument('--fov', type=float, default=40., help='FOV for raw files or --fit-camera')
     parser.add_argument('--orbit-radius', type=float)
@@ -209,8 +231,28 @@ def parse_args():
     parser.add_argument('--textured', action='store_true', help='Use original mesh materials where available')
     parser.add_argument('--normal-colors', action='store_true')
     parser.add_argument('--overlay', action='store_true', help='Render all inputs together instead of separate orbits')
+    parser.add_argument('--row', action='store_true',
+                        help='Arrange --inputs meshes in a row and spin each in place; fixed camera, floor, shadows and dividers')
     parser.add_argument('--overwrite', action='store_true')
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.row and (not args.inputs or args.overlay or args.with_inputs or args.all_samples):
+        parser.error('--row requires --inputs and cannot be combined with --overlay, --with-inputs or --all-samples')
+    if args.row and (args.orbit_radius is not None or args.orbit_height != 0):
+        parser.error('--row fits a fixed camera automatically; omit --orbit-radius and --orbit-height')
+    if args.max_samples < 0:
+        parser.error('--max-samples must be nonnegative')
+    if args.row and 0 < args.max_samples < len(args.inputs):
+        # Select before loading meshes or sizing the output. Keep the supplied
+        # left-to-right order within the reproducibly sampled subset.
+        indices = sorted(random.Random(args.selection_seed).sample(range(len(args.inputs)), args.max_samples))
+        args.inputs = [args.inputs[index] for index in indices]
+    if args.width is None:
+        args.width = max(768, min(3840, 320 * len(args.inputs))) if args.row else 768
+    if args.height is None:
+        args.height = 640 if args.row else 768
+    if args.gif_size is None:
+        args.gif_size = args.width if args.row else 768
+    return args
 
 
 def render_all(args, arguments):
@@ -266,10 +308,14 @@ def main():
         render_all(args, sys.argv[1:])
         return
     items, images = load_inputs(args)
+    if args.row:
+        items = prepare_row(items, args.up)
     output = args.output_dir or (args.evaluation_dir / 'orbits' if args.evaluation_dir else Path('outputs/orbits'))
     if args.evaluation_dir:
         output = output / args.sample_id
     groups = [('overlay', items)] if args.overlay else [(item['name'], [item]) for item in items]
+    if args.row:
+        groups = [('row', items)]
     input_details = None
     if args.with_inputs:
         from evaluation.input_visualizations import load_input_visualizations
@@ -280,7 +326,9 @@ def main():
     scale = max(float(np.max(np.ptp(scene_bounds(items), axis=0))), 1e-3)
     center, radius = camera_fit(items, args.fov, args.width / args.height)
     radius = args.orbit_radius or radius
-    reference_camera = None if args.fit_camera else load_reference_camera(args)
+    if args.row:
+        center, radius = row_camera(len(items), args.up, args.fov, args.width / args.height)
+    reference_camera = None if args.fit_camera or args.row else load_reference_camera(args)
     if reference_camera is not None:
         if args.orbit_radius is not None or args.orbit_height != 0:
             raise ValueError('Custom orbit radius/height requires --fit-camera; input-camera mode preserves the saved pose')
@@ -305,6 +353,9 @@ def main():
     settings.update(center=center.tolist(), radius=float(radius), geometry_names=[name for name, _ in groups],
                     input_details=input_details, reference_camera=reference_camera,
                     voxel_source='full decoded Stage-1 occupancy')
+    if args.row:
+        settings['row_objects'] = [dict(name=item['name'], pivot=item['pivot'].tolist(),
+                                       transform=item['transform'].tolist()) for item in items]
     (output / 'orbit_settings.json').write_text(json.dumps(settings, indent=2) + '\n')
     print(f'Saved orbits to {output}')
 
