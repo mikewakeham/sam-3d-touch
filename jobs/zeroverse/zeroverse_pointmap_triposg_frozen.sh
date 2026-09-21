@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=zv_image_surface_scratch
+#SBATCH --job-name=zv_triposg_frozen
 #SBATCH --partition=kempner_h200
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
@@ -20,13 +20,11 @@ export WANDB_RUN_GROUP=zeroverse
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 train.py \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data_zeroverse_5000_8views_full_surface.yaml \
-  --output-dir outputs/zeroverse/zeroverse_8views_image_surface_scratch \
+  --output-dir outputs/zeroverse/zeroverse_pointmap_triposg_frozen \
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
   --epochs 20 \
   --max-steps 20000 \
-  --no-pointmap \
-  --train-scope shape_cross_attention \
-  --train-vecsetx \
-  --vecsetx-from-scratch "$@"
+  --point-encoder triposg \
+  --train-scope shape_cross_attention "$@"
