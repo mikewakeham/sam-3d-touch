@@ -102,7 +102,7 @@ def add_geometry(renderer, item, index, args, scale):
             colors = np.clip((item['normals'] + 1) * 127.5, 0, 255)
         if item.get('spheres'):
             colors = colors if colors is not None else np.array([45, 125, 210])
-            geometry = particles(item['points'], colors, .003 * scale)
+            geometry = particles(item['points'], colors, args.particle_size * scale)
         else:
             geometry = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(item['points']))
             if colors is not None:
@@ -181,7 +181,7 @@ def parse_args():
     parser.add_argument('--frames', type=int, default=120)
     parser.add_argument('--fps', type=int, default=20)
     parser.add_argument('--gif-fps', type=int, default=10)
-    parser.add_argument('--gif-size', type=int, default=512)
+    parser.add_argument('--gif-size', type=int, default=768)
     parser.add_argument('--width', type=int, default=768)
     parser.add_argument('--height', type=int, default=768)
     parser.add_argument('--fov', type=float, default=40.)
@@ -189,6 +189,8 @@ def parse_args():
     parser.add_argument('--orbit-height', type=float, default=0.)
     parser.add_argument('--light-strength', type=float, default=1.)
     parser.add_argument('--point-size', type=float, default=4.)
+    parser.add_argument('--particle-size', type=float, default=.009,
+                        help='Sphere diameter as a fraction of scene extent for input point visualizations')
     parser.add_argument('--mp4', action='store_true')
     parser.add_argument('--textured', action='store_true', help='Use original mesh materials where available')
     parser.add_argument('--normal-colors', action='store_true')
@@ -239,7 +241,8 @@ def main():
     args = parse_args()
     if args.with_inputs and (args.evaluation_dir is None or args.overlay or args.labels):
         raise ValueError('--with-inputs requires evaluation mode, without --overlay or --labels')
-    if min(args.frames, args.fps, args.gif_fps, args.gif_size, args.width, args.height, args.point_size) <= 0:
+    if min(args.frames, args.fps, args.gif_fps, args.gif_size, args.width, args.height,
+           args.point_size, args.particle_size) <= 0:
         raise ValueError('Frame counts, rates, dimensions and point size must be positive')
     if not 0 < args.fov < 180 or (args.orbit_radius is not None and args.orbit_radius <= 0):
         raise ValueError('FOV must be in (0, 180) and orbit radius must be positive')
