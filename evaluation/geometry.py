@@ -145,12 +145,14 @@ def load_evaluation(evaluation_dir, sample_id, conditions=None, modes=('mesh',))
     if 'voxel' in modes:
         for name in conditions:
             row = rows[name]
-            # Exact Stage-2 support, copied from make_eval_orbit.aligned_stage1_voxels.
+            # Show the actual decoded Stage-1 output, before Stage-2 pruning/downsampling.
             with np.load(resolve(root, row['stage1_path']), allow_pickle=False) as data:
-                if int(data['downsample_factor']) == 1:
-                    points = np.argwhere(data['prediction']).astype(np.float64) / 64 - .5
-                else:
-                    points = data['coords'][:, 1:].astype(np.float64) / 64 - .5
+                grid = data['prediction']
+                if grid.shape != (64, 64, 64):
+                    raise ValueError(f"Invalid Stage-1 occupancy shape: {grid.shape}")
+                points = np.argwhere(grid).astype(np.float64) / 64 - .5
+                if not len(points):
+                    raise ValueError(f"Empty Stage-1 occupancy: {row['condition']}")
             with np.load(resolve(root, row['alignment_path']), allow_pickle=False) as data:
                 transform = data['icp_transform'] @ data['prediction_normalization']
             points = trimesh.transform_points(points, transform)

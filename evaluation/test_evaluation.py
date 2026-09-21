@@ -3,11 +3,13 @@ import argparse
 import csv
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 from PIL import Image
@@ -145,6 +147,176 @@ class GeometryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             load_evaluation(self.root, 'box_000', conditions=['missing'])
 
+    def test_batch_orbits_use_unique_completed_samples(self):
+        from evaluation.make_orbit import render_all
+
+        row = self.make_evaluation()
+        with (self.root / 'metrics.csv').open('a', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=list(row))
+            writer.writerow(dict(row, condition='official'))
+            writer.writerow(dict(row, sample_id='other_001'))
+            writer.writerow(dict(row, sample_id='failed_000', error='No mesh'))
+        args = argparse.Namespace(evaluation_dir=self.root, sample_id=None, conditions=None,
+                                  max_samples=0, selection_seed=29, output_dir=None)
+        arguments = ['--evaluation-dir', str(self.root), '--all-samples', '--frames', '12']
+        with patch('evaluation.make_orbit.subprocess.run') as run:
+            render_all(args, arguments)
+        self.assertEqual(run.call_count, 2)
+        self.assertEqual([call.args[0][-1] for call in run.call_args_list], ['box_000', 'other_001'])
+        for call in run.call_args_list:
+            self.assertNotIn('--all-samples', call.args[0])
+            self.assertEqual(call.args[0][-4:-2], ['--frames', '12'])
+            self.assertTrue(call.kwargs['check'])
+        args.sample_id = 'box_000'
+        with self.assertRaises(ValueError):
+            render_all(args, arguments)
+
+    def test_batch_orbits_random_subset_is_reproducible(self):
+        from evaluation.make_orbit import render_all
+
+        row = self.make_evaluation()
+        with (self.root / 'metrics.csv').open('a', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=list(row))
+            for index in range(99):
+                writer.writerow(dict(row, sample_id=f'object_{index:03d}'))
+            writer.writerow(dict(row, condition='official'))
+            writer.writerow(dict(row, sample_id='failed', error='No mesh'))
+        args = argparse.Namespace(evaluation_dir=self.root, sample_id=None, conditions=None,
+                                  max_samples=10, selection_seed=29, output_dir=None)
+        arguments = ['--evaluation-dir', str(self.root), '--all-samples', '--max-samples', '10']
+        selections = []
+        for count in (10, 10, 20):
+            args.max_samples = count
+            with patch('evaluation.make_orbit.subprocess.run') as run:
+                render_all(args, arguments)
+            ids = [call.args[0][-1] for call in run.call_args_list]
+            self.assertEqual(len(ids), count)
+            self.assertEqual(len(set(ids)), count)
+            self.assertNotIn('failed', ids)
+            saved = json.loads((self.root / 'orbits' / 'selected_samples.json').read_text())
+            self.assertEqual(saved['sample_ids'], ids)
+            self.assertEqual(saved['available_samples'], 100)
+            selections.append(ids)
+        self.assertEqual(selections[0], selections[1])
+        self.assertEqual(selections[0], selections[2][:10])
+        self.assertNotEqual(selections[0], sorted(selections[0]))
+
+    def test_voxel_orbits_show_decoded_output_before_downsampling(self):
+        self.make_evaluation()
+        grid = np.zeros((64, 64, 64), dtype=bool)
+        grid[16, 32, 48] = True
+        np.savez(self.root / 'stage1.npz', prediction=grid, downsample_factor=2, coords=[[0, 32, 32, 32]])
+        items, _ = load_evaluation(self.root, 'box_000', modes=('voxel',))
+        np.testing.assert_allclose(items[0]['mesh'].bounds.mean(axis=0), [-.25, 0., .25])
+
+    def test_input_orbits_use_actual_surface_cloud_and_shared_frame(self):
+        import yaml
+        from evaluation.input_visualizations import load_input_visualizations
+        from data_generation.general.sample_full_surface import sample_full_surface
+
+        row = self.make_evaluation()
+        with (self.root / 'metrics.csv').open('a', newline='') as file:
+            csv.DictWriter(file, fieldnames=list(row)).writerow(dict(row, condition='scratch'))
+        object_dir = self.root / 'generated_data' / 'box'
+        view = object_dir / 'views' / '000'
+        view.mkdir(parents=True)
+        (object_dir / 'mesh.npz').write_bytes(self.mesh_path.read_bytes())
+        camera = trimesh.transformations.rotation_matrix(.3, [0, 1, 0])
+        camera[:3, 3] = [.1, -.2, 3]
+        np.savez(view / 'camera.npz', K=np.eye(3), T_camera_from_object=camera)
+        rgba = np.full((2, 2, 4), 255, dtype=np.uint8)
+        rgba[0, 0, 3] = 0
+        Image.fromarray(rgba).save(view / 'image.png')
+        np.save(view / 'depth.npy', np.ones((2, 2), dtype=np.float32))
+        points, faces = trimesh.sample.sample_surface(self.mesh, 8192, seed=29)
+        surface = sample_full_surface(points, view / 'camera.npz', view / 'depth.npy', .01,
+                                      self.mesh.face_normals[faces], faces)
+        np.savez(view / 'full_surface.npz', **surface)
+        # A newer/larger pool exists, but these VecSetX checkpoints never used it.
+        np.savez(object_dir / 'surface_pool.npz', points_object=np.ones((20480, 3)))
+        grid = np.zeros((64, 64, 64), dtype=bool)
+        grid[32, 32, 32] = True
+        np.savez(self.root / 'stage1.npz', touch_centers=surface['points_camera'] * 2 + 1,
+                 prediction=grid, downsample_factor=1)
+        normalization = np.diag([2., 2., 2., 1.])
+        np.savez(self.root / 'points.npz', evaluation_normalization=normalization)
+        target = self.mesh.copy()
+        target.apply_transform(normalization)
+        target.export(self.root / 'mesh.ply')
+        record = {'sample_id': 'box_000', 'object_id': 'box', 'view_id': '000',
+                  'mesh_path': str(object_dir / 'mesh.npz'), 'camera_path': str(view / 'camera.npz'),
+                  'image_path': str(view / 'image.png'), 'depth_path': str(view / 'depth.npy'),
+                  'full_surface_path': str(view / 'full_surface.npz')}
+        (self.root / 'samples.jsonl').write_text(json.dumps(record) + '\n')
+        (self.root / 'splits.json').write_text(json.dumps({'val': ['box'], 'train': [], 'test': []}))
+        data = {'dataset': {'root': str(self.root), 'manifest': 'samples.jsonl', 'split_file': 'splits.json', 'split': 'val'},
+                'touch': {'source': 'full_surface'}}
+        run = {'data': data, 'touch_config': {'encoder_name': 'vecsetx'}, 'mode': 'image_touch'}
+        config = {'selection_data_config': data, 'runs': {'frozen': run, 'scratch': run}}
+        (self.root / 'config.yaml').write_text(yaml.safe_dump(config))
+        args = argparse.Namespace(evaluation_dir=self.root, sample_id='box_000', conditions=None,
+                                  input_device='cpu', blender='unused')
+        with patch('evaluation.input_visualizations.textured_mesh_path', return_value=self.root / 'textured.glb'):
+            groups, images, details = load_input_visualizations(args)
+        self.assertEqual({name for name, _ in groups}, {
+            'input_mesh_textured', 'input_mesh', 'input_mesh_pointmap', 'input_mesh_surface',
+            'input_mesh_pointmap_surface', 'input_pointmap', 'input_surface', 'input_pointmap_surface'})
+        surface_item = dict(groups)['input_surface'][0]
+        np.testing.assert_allclose(surface_item['points'], points * 2, atol=5e-7)
+        self.assertEqual(len(surface_item['points']), 8192)
+        self.assertEqual(details['surface_groups'], [['frozen', 'scratch']])
+        self.assertEqual(details['frozen']['encoder_valid_points'], 8192)
+        self.assertEqual(len(dict(groups)['input_pointmap'][0]['points']), 3)
+        self.assertEqual(images, [view / 'image.png'])
+        np.testing.assert_allclose(dict(groups)['input_mesh_textured'][0]['transform'], normalization)
+        from evaluation.make_orbit import main
+        argv = ['make_orbit', '--evaluation-dir', str(self.root), '--sample-id', 'box_000',
+                '--with-inputs', '--modes', 'mesh', 'voxel', '--input-device', 'cpu']
+        with patch('sys.argv', argv), patch('evaluation.make_orbit.render') as render, patch(
+            'evaluation.input_visualizations.textured_mesh_path', return_value=self.root / 'textured.glb'
+        ):
+            main()
+        self.assertEqual(render.call_count, 12)  # Eight inputs + mesh/voxel for two conditions.
+        first_center = render.call_args_list[0].args[1]
+        first_radius = render.call_args_list[0].args[2]
+        for call in render.call_args_list:
+            np.testing.assert_array_equal(call.args[1], first_center)
+            self.assertEqual(call.args[2], first_radius)
+        output = self.root / 'orbits' / 'box_000'
+        self.assertEqual((output / 'input_view.png').read_bytes(), (view / 'image.png').read_bytes())
+        settings = json.loads((output / 'orbit_settings.json').read_text())
+        self.assertEqual(settings['input_details']['frozen']['encoder_valid_points'], 8192)
+        self.assertIn('voxel_frozen', settings['geometry_names'])
+
+    def test_encoder_surface_selection_keeps_context_count(self):
+        from evaluation.input_visualizations import surface_indices
+
+        for name, count in [('vecsetx', 8192), ('craftsman', 16384), ('triposg', 20480)]:
+            np.testing.assert_array_equal(surface_indices(np.zeros((count, 3)), name, 'cpu'), np.arange(count))
+        with self.assertRaises(ValueError):
+            surface_indices(np.zeros((100, 3)), 'unknown')
+
+    def test_surface_fps_uses_saved_encoder_coordinates(self):
+        import types
+        import torch
+        from evaluation.input_visualizations import surface_indices
+
+        points = np.random.default_rng(29).normal(size=(9000, 3)).astype(np.float32)
+        expected = np.arange(8999, 807, -1)
+        def fps(normalized, lengths, K, random_start_point):
+            centered = torch.from_numpy(points) - (torch.from_numpy(points).amax(0) + torch.from_numpy(points).amin(0)) / 2
+            centered *= 1 / torch.linalg.vector_norm(centered, dim=1).amax()
+            torch.testing.assert_close(normalized[0], centered, rtol=0, atol=0)
+            self.assertEqual(K, 8192)
+            self.assertFalse(random_start_point)
+            self.assertEqual(lengths.tolist(), [9000])
+            return normalized[:, expected], torch.from_numpy(expected)[None]
+        ops = types.ModuleType('pytorch3d.ops')
+        ops.sample_farthest_points = fps
+        with patch.dict(sys.modules, {'pytorch3d.ops': ops}):
+            selected = surface_indices(points, 'vecsetx', 'cpu')
+        np.testing.assert_array_equal(selected, expected)
+
     def test_rescore_saved_outputs_without_inference(self):
         self.make_evaluation()
         result = subprocess.run([sys.executable, '-m', 'evaluation.metrics', '--evaluation-dir', str(self.root),
@@ -206,6 +378,12 @@ class GeometryTests(unittest.TestCase):
         selected = [{'sample_id': 'box_000'}]
         validate_resume(args, checkpoints, data, selected, 0)
         validate_resume(args, checkpoints, data, selected, 0)
+        # Changing parallelism is safe when resuming the same selected evaluation.
+        with patch.dict(os.environ, WORLD_SIZE='4', LOCAL_RANK='1'):
+            args.device = 'cuda:1'
+            args.workers = 4
+            args.metric_workers = 16
+            validate_resume(args, checkpoints, data, selected, 1)
         args.inference_steps = 30
         with self.assertRaisesRegex(ValueError, 'changed'):
             validate_resume(args, checkpoints, data, selected, 0)

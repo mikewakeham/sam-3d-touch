@@ -7,6 +7,7 @@ import os
 import random
 import re
 import shutil
+from datetime import timedelta
 from pathlib import Path
 
 os.environ.setdefault("LIDRA_SKIP_INIT", "true")
@@ -702,7 +703,8 @@ def main():
         local_rank = int(os.environ["LOCAL_RANK"])
         torch.cuda.set_device(local_rank)
         args.device = f"cuda:{local_rank}"
-        torch.distributed.init_process_group(backend="nccl")
+        # Independent samples can take very different times before the final merge.
+        torch.distributed.init_process_group(backend="nccl", timeout=timedelta(hours=12))
         rank = torch.distributed.get_rank()
     if args.metric_workers <= 0:
         cpu_count = int(os.environ.get("SLURM_CPUS_PER_TASK", os.cpu_count() or 1))
@@ -779,6 +781,9 @@ def main():
     completed = {key for key, row in rows_by_key.items() if artifacts_complete(row, args.output_dir)}
     if rows_by_key:
         print(f"resume: found {len(completed)} completed evaluations", flush=True)
+    if distributed:
+        # Finish reading old rank files before any rank starts writing new results.
+        torch.distributed.barrier()
 
     target_cache = {}
     for index, record in enumerate(selected):

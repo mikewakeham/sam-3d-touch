@@ -4,9 +4,9 @@
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=64G
-#SBATCH --gres=gpu:1
+#SBATCH --cpus-per-task=64
+#SBATCH --mem=256G
+#SBATCH --gres=gpu:4
 #SBATCH --time=12:00:00
 #SBATCH --output=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/zeroverse/%x-%j.out
 #SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/zeroverse/%x-%j.err
@@ -16,7 +16,7 @@ cd /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch
 export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 
-/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python -m evaluation.evaluate \
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 -m evaluation.evaluate \
   --run-dirs \
   outputs/zeroverse/zeroverse_pointmap_lr1e4 \
   outputs/zeroverse/zeroverse_pointmap_surface_frozen_lr1e4 \
@@ -25,7 +25,7 @@ export PYTHONUNBUFFERED=1
   --selection-data-config configs/data_zeroverse_5000_8views_full_surface.yaml \
   --output-dir outputs/zeroverse/evaluation_lr1e4 \
   --split val \
-  --max-samples 50 \
+  --max-samples 100 \
   --selection random \
   --workers 4 \
   --inference-steps 25 \
