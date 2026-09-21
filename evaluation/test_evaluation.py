@@ -9,7 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import numpy as np
 from PIL import Image
@@ -17,10 +17,10 @@ import trimesh
 
 from evaluation.geometry import (
     load_mesh, load_geometry, load_dataset_mesh, load_dataset_view,
-    load_evaluation, camera_fit, scene_bounds,
+    load_evaluation, load_reference_camera, camera_fit, scene_bounds,
 )
 from evaluation.metrics import sample_surface, mesh_metrics, normalize_mesh, align_mesh
-from evaluation.make_orbit import orbit_eye, save_frames
+from evaluation.make_orbit import orbit_eye, input_orbit_extrinsic, save_frames
 
 
 class GeometryTests(unittest.TestCase):
@@ -120,6 +120,12 @@ class GeometryTests(unittest.TestCase):
         np.testing.assert_allclose(items[2]['normals'], normals @ sam[:3, :3].T)
         np.testing.assert_allclose(items[1]['points'][1], [-1, 0, 1])
         self.assertTrue(images[0].exists())
+        args = argparse.Namespace(inputs=None, evaluation_dir=None, data_root=self.root,
+                                  object_id='box', view_id=0, width=768, height=768)
+        camera = load_reference_camera(args)
+        projected = trimesh.transform_points(items[1]['points'], input_orbit_extrinsic(camera, 0))
+        pixels = projected @ np.asarray(camera['intrinsics']).T
+        np.testing.assert_allclose(pixels[:, :2] / pixels[:, 2:], [[0, 0], [384, 0], [0, 384], [384, 384]])
 
     def make_evaluation(self):
         self.mesh.export(self.root / 'mesh.ply')
@@ -221,9 +227,12 @@ class GeometryTests(unittest.TestCase):
         view = object_dir / 'views' / '000'
         view.mkdir(parents=True)
         (object_dir / 'mesh.npz').write_bytes(self.mesh_path.read_bytes())
-        camera = trimesh.transformations.rotation_matrix(.3, [0, 1, 0])
+        # Include roll, off-center intrinsics and translated normalization: a
+        # symmetric, axis-aligned fixture would miss camera flips/frame errors.
+        camera = trimesh.transformations.euler_matrix(.2, .3, .4)
         camera[:3, 3] = [.1, -.2, 3]
-        np.savez(view / 'camera.npz', K=np.eye(3), T_camera_from_object=camera)
+        K = np.array([[2.4, 0, .7], [0, 2.7, .9], [0, 0, 1]])
+        np.savez(view / 'camera.npz', K=K, T_camera_from_object=camera)
         rgba = np.full((2, 2, 4), 255, dtype=np.uint8)
         rgba[0, 0, 3] = 0
         Image.fromarray(rgba).save(view / 'image.png')
@@ -239,6 +248,7 @@ class GeometryTests(unittest.TestCase):
         np.savez(self.root / 'stage1.npz', touch_centers=surface['points_camera'] * 2 + 1,
                  prediction=grid, downsample_factor=1)
         normalization = np.diag([2., 2., 2., 1.])
+        normalization[:3, 3] = [.4, -.3, .2]
         np.savez(self.root / 'points.npz', evaluation_normalization=normalization)
         target = self.mesh.copy()
         target.apply_transform(normalization)
@@ -262,13 +272,39 @@ class GeometryTests(unittest.TestCase):
             'input_mesh_textured', 'input_mesh', 'input_mesh_pointmap', 'input_mesh_surface',
             'input_mesh_pointmap_surface', 'input_pointmap', 'input_surface', 'input_pointmap_surface'})
         surface_item = dict(groups)['input_surface'][0]
-        np.testing.assert_allclose(surface_item['points'], points * 2, atol=5e-7)
+        np.testing.assert_allclose(surface_item['points'], trimesh.transform_points(points, normalization), atol=5e-7)
         self.assertEqual(len(surface_item['points']), 8192)
         self.assertEqual(details['surface_groups'], [['frozen', 'scratch']])
         self.assertEqual(details['frozen']['encoder_valid_points'], 8192)
         self.assertEqual(len(dict(groups)['input_pointmap'][0]['points']), 3)
         self.assertEqual(images, [view / 'image.png'])
         np.testing.assert_allclose(dict(groups)['input_mesh_textured'][0]['transform'], normalization)
+        args.inputs = None
+        args.width, args.height = 768, 768
+        reference = load_reference_camera(args)
+        extrinsic = input_orbit_extrinsic(reference, 0)
+        projection = np.asarray(reference['intrinsics'])
+        # Every visible point must land back on its own source pixel, including
+        # the SAM left/up -> OpenCV right/down conversion.
+        pointmap = dict(groups)['input_pointmap'][0]['points']
+        pixels = trimesh.transform_points(pointmap, extrinsic) @ projection.T
+        np.testing.assert_allclose(pixels[:, :2] / pixels[:, 2:], [[384, 0], [0, 384], [384, 384]], atol=1e-4)
+        # Full surface and mesh vertices use the very same input projection.
+        for original, displayed in [(points, surface_item['points']),
+                                    (self.mesh.vertices, target.vertices)]:
+            expected = trimesh.transform_points(original, camera) @ K.T
+            actual = trimesh.transform_points(displayed, extrinsic) @ projection.T
+            np.testing.assert_allclose(actual[:, :2] / actual[:, 2:],
+                                       384 * expected[:, :2] / expected[:, 2:], atol=1e-4)
+        # Camera motion closes after one turn and preserves object-Z elevation.
+        initial_pose = np.linalg.inv(extrinsic)
+        pivot = np.asarray(reference['pivot'])
+        for angle in [0, np.pi / 2, np.pi, 2 * np.pi]:
+            pose = np.linalg.inv(input_orbit_extrinsic(reference, angle))
+            np.testing.assert_allclose(pose[:3, :3].T @ pose[:3, :3], np.eye(3), atol=1e-7)
+            self.assertAlmostEqual(np.linalg.norm(pose[:3, 3] - pivot), np.linalg.norm(initial_pose[:3, 3] - pivot))
+            self.assertAlmostEqual(pose[2, 3], initial_pose[2, 3])
+        np.testing.assert_allclose(input_orbit_extrinsic(reference, 2 * np.pi), extrinsic, atol=1e-7)
         from evaluation.make_orbit import main
         argv = ['make_orbit', '--evaluation-dir', str(self.root), '--sample-id', 'box_000',
                 '--with-inputs', '--modes', 'mesh', 'voxel', '--input-device', 'cpu']
@@ -282,11 +318,20 @@ class GeometryTests(unittest.TestCase):
         for call in render.call_args_list:
             np.testing.assert_array_equal(call.args[1], first_center)
             self.assertEqual(call.args[2], first_radius)
+            self.assertEqual(call.kwargs['reference_camera'], reference)
         output = self.root / 'orbits' / 'box_000'
         self.assertEqual((output / 'input_view.png').read_bytes(), (view / 'image.png').read_bytes())
         settings = json.loads((output / 'orbit_settings.json').read_text())
         self.assertEqual(settings['input_details']['frozen']['encoder_valid_points'], 8192)
         self.assertIn('voxel_frozen', settings['geometry_names'])
+        self.assertEqual(settings['reference_camera'], reference)
+        # Explicit generic framing still works, even for a moved evaluation
+        # whose source camera/dataset is no longer available.
+        (view / 'camera.npz').unlink()
+        with patch('sys.argv', ['make_orbit', '--evaluation-dir', str(self.root), '--sample-id', 'box_000',
+                                '--fit-camera', '--overwrite']), patch('evaluation.make_orbit.render') as render:
+            main()
+        self.assertTrue(all(call.kwargs['reference_camera'] is None for call in render.call_args_list))
 
     def test_encoder_surface_selection_keeps_context_count(self):
         from evaluation.input_visualizations import surface_indices
@@ -295,6 +340,28 @@ class GeometryTests(unittest.TestCase):
             np.testing.assert_array_equal(surface_indices(np.zeros((count, 3)), name, 'cpu'), np.arange(count))
         with self.assertRaises(ValueError):
             surface_indices(np.zeros((100, 3)), 'unknown')
+
+    def test_renderer_passes_saved_intrinsics_and_pose_to_open3d(self):
+        from evaluation.make_orbit import render
+
+        camera = dict(intrinsics=[[700., 0, 383.5], [0, 710., 383.5], [0, 0, 1]],
+                      camera_to_world=trimesh.transformations.translation_matrix([1., -3., 2.]).tolist(),
+                      pivot=[0., 0., 0.], up=[0., 0., 1.])
+        args = argparse.Namespace(width=768, height=768, light_strength=1., up='y', frames=2)
+        renderer = MagicMock()
+        renderer.render_to_image.return_value = np.zeros((2, 2, 3), dtype=np.uint8)
+        renderer.render_to_depth_image.return_value = np.zeros((2, 2))
+        open3d = MagicMock()
+        open3d.visualization.rendering.OffscreenRenderer.return_value = renderer
+        with patch.dict(sys.modules, open3d=open3d), patch('evaluation.make_orbit.initialize_lighting'), \
+             patch('evaluation.make_orbit.save_frames'):
+            render([], np.zeros(3), 3., args, self.root / 'orbit', 1., reference_camera=camera)
+        calls = renderer.setup_camera.call_args_list
+        self.assertEqual(len(calls), 2)
+        np.testing.assert_allclose(calls[0].args[0], camera['intrinsics'])
+        np.testing.assert_allclose(calls[0].args[1], np.linalg.inv(camera['camera_to_world']))
+        self.assertEqual(calls[0].args[2:], (768, 768))
+        self.assertFalse(np.allclose(calls[1].args[1], calls[0].args[1]))
 
     def test_surface_fps_uses_saved_encoder_coordinates(self):
         import types

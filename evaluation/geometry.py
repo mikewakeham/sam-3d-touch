@@ -1,5 +1,6 @@
 """Geometry loading shared by SAM3D evaluation, orbits and the browser viewer."""
 import csv
+import json
 from pathlib import Path
 
 import numpy as np
@@ -126,6 +127,65 @@ def camera_fit(items, fov=40., aspect=1.):
 def resolve(root, path):
     path = Path(path)
     return path if path.is_absolute() else Path(root) / path
+
+
+def find_record(config, sample_id):
+    root = Path(config['dataset']['root'])
+    with resolve(root, config['dataset']['manifest']).open() as file:
+        for line in file:
+            record = json.loads(line)
+            if record['sample_id'] == sample_id:
+                return root, record
+    raise ValueError(f'Sample {sample_id} is missing from the saved dataset manifest')
+
+
+def load_reference_camera(args):
+    """Saved OpenCV camera expressed in the same frame as the displayed geometry."""
+    from PIL import Image
+
+    if args.inputs:
+        return None
+    if args.evaluation_dir:
+        import yaml
+
+        root = args.evaluation_dir
+        with (root / 'config.yaml').open() as file:
+            config = yaml.safe_load(file)
+        dataset_root, record = find_record(config['selection_data_config'], args.sample_id)
+        camera_path = resolve(dataset_root, record['camera_path'])
+        image_path = resolve(dataset_root, record['image_path'])
+        with (root / 'metrics.csv').open(newline='') as file:
+            row = next(row for row in csv.DictReader(file)
+                       if row['sample_id'] == args.sample_id and row.get('error') == ''
+                       and (not args.conditions or row['condition'] in args.conditions))
+        with np.load(resolve(root, row['target_points_path']), allow_pickle=False) as data:
+            world_from_object = data['evaluation_normalization'].astype(np.float64)
+    else:
+        view = args.data_root / 'generated_data' / args.object_id / 'views' / f'{args.view_id:03d}'
+        camera_path, image_path = view / 'camera.npz', view / 'image.png'
+        with np.load(camera_path, allow_pickle=False) as data:
+            # load_dataset_view displays geometry in SAM camera coordinates.
+            world_from_object = np.diag([-1., -1., 1., 1.]) @ data['T_camera_from_object']
+    with np.load(camera_path, allow_pickle=False) as data:
+        K = data['K'].astype(np.float64)
+        pose = world_from_object @ np.linalg.inv(data['T_camera_from_object'])
+    # Evaluation normalization scales both camera position and geometry. Camera
+    # axes must remain orthonormal for Open3D's rigid world-to-camera extrinsic.
+    scale = np.cbrt(np.linalg.det(pose[:3, :3]))
+    if not np.isfinite(pose).all() or scale <= 0:
+        raise ValueError(f'Invalid input camera transform: {camera_path}')
+    pose[:3, :3] /= scale
+    if not np.allclose(pose[:3, :3].T @ pose[:3, :3], np.eye(3), atol=1e-5):
+        raise ValueError('Input camera requires a rigid pose and uniform geometry normalization')
+    with Image.open(image_path) as image:
+        width, height = image.size
+    K[0] *= args.width / width
+    K[1] *= args.height / height
+    up = world_from_object[:3, 2]
+    up = up / np.linalg.norm(up)
+    return dict(intrinsics=K.tolist(), camera_to_world=pose.tolist(),
+                pivot=world_from_object[:3, 3].tolist(), up=up.tolist(),
+                source=str(camera_path), first_frame='input camera')
 
 
 def load_evaluation(evaluation_dir, sample_id, conditions=None, modes=('mesh',)):

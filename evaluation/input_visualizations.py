@@ -10,7 +10,7 @@ import trimesh
 import yaml
 from PIL import Image
 
-from evaluation.geometry import load_mesh, resolve
+from evaluation.geometry import load_mesh, resolve, find_record
 
 
 def surface_indices(pre_encoder_points, encoder_name, device='cuda'):
@@ -66,16 +66,6 @@ def textured_mesh_path(object_dir, cache_dir, blender):
         raise RuntimeError(f'Textured export failed; see {log}')
     stamp.write_text(json.dumps(identity, indent=2) + '\n')
     return output
-
-
-def find_record(config, sample_id):
-    root = Path(config['dataset']['root'])
-    with resolve(root, config['dataset']['manifest']).open() as file:
-        for line in file:
-            record = json.loads(line)
-            if record['sample_id'] == sample_id:
-                return root, record
-    raise ValueError(f'Sample {sample_id} is missing from the saved dataset manifest')
 
 
 def input_groups(mesh, textured, pointmap, surfaces):

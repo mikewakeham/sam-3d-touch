@@ -17,7 +17,7 @@ from PIL import Image
 if sys.platform.startswith('linux'):
     os.environ.setdefault('EGL_PLATFORM', 'surfaceless')
 
-from evaluation.geometry import add_input_arguments, load_inputs, camera_fit, scene_bounds
+from evaluation.geometry import add_input_arguments, load_inputs, load_reference_camera, camera_fit, scene_bounds
 
 
 def mesh_geometry(mesh):
@@ -119,6 +119,13 @@ def orbit_eye(center, radius, height, angle, up):
     return center + np.array([radius * np.sin(angle), height, -radius * np.cos(angle)])
 
 
+def input_orbit_extrinsic(camera, angle):
+    import trimesh
+
+    rotation = trimesh.transformations.rotation_matrix(angle, camera['up'], camera['pivot'])
+    return np.linalg.inv(rotation @ np.asarray(camera['camera_to_world']))
+
+
 def save_frames(frames, output, args):
     # GIF/MP4 export copied from make_eval_orbit.py; preserve non-square aspect ratios.
     if args.mp4:
@@ -143,7 +150,7 @@ def save_frames(frames, output, args):
     Image.fromarray(frames[0]).save(output.with_suffix('.png'))
 
 
-def render(items, center, radius, args, output, scale):
+def render(items, center, radius, args, output, scale, reference_camera=None):
     import open3d as o3d
 
     renderer = o3d.visualization.rendering.OffscreenRenderer(args.width, args.height)
@@ -156,8 +163,14 @@ def render(items, center, radius, args, output, scale):
         frames = []
         up = (0., 0., 1.) if args.up == 'z' else (0., 1., 0.)
         for frame in range(args.frames):
-            eye = orbit_eye(center, radius, args.orbit_height, 2 * np.pi * frame / args.frames, args.up)
-            renderer.setup_camera(args.fov, center, eye, up)
+            angle = 2 * np.pi * frame / args.frames
+            if reference_camera is None:
+                eye = orbit_eye(center, radius, args.orbit_height, angle, args.up)
+                renderer.setup_camera(args.fov, center, eye, up)
+            else:
+                # Open3D's calibrated overload takes OpenCV world-to-camera axes.
+                renderer.setup_camera(np.asarray(reference_camera['intrinsics']),
+                                      input_orbit_extrinsic(reference_camera, angle), args.width, args.height)
             image = np.asarray(renderer.render_to_image())[..., :3].copy()
             image[np.asarray(renderer.render_to_depth_image()) >= 1.] = 255
             frames.append(image)
@@ -184,7 +197,8 @@ def parse_args():
     parser.add_argument('--gif-size', type=int, default=768)
     parser.add_argument('--width', type=int, default=768)
     parser.add_argument('--height', type=int, default=768)
-    parser.add_argument('--fov', type=float, default=40.)
+    parser.add_argument('--fit-camera', action='store_true', help='Fit a generic orbit instead of matching the saved input camera')
+    parser.add_argument('--fov', type=float, default=40., help='FOV for raw files or --fit-camera')
     parser.add_argument('--orbit-radius', type=float)
     parser.add_argument('--orbit-height', type=float, default=0.)
     parser.add_argument('--light-strength', type=float, default=1.)
@@ -266,6 +280,13 @@ def main():
     scale = max(float(np.max(np.ptp(scene_bounds(items), axis=0))), 1e-3)
     center, radius = camera_fit(items, args.fov, args.width / args.height)
     radius = args.orbit_radius or radius
+    reference_camera = None if args.fit_camera else load_reference_camera(args)
+    if reference_camera is not None:
+        if args.orbit_radius is not None or args.orbit_height != 0:
+            raise ValueError('Custom orbit radius/height requires --fit-camera; input-camera mode preserves the saved pose')
+        center = np.asarray(reference_camera['pivot'])
+        radius = np.linalg.norm(np.asarray(reference_camera['camera_to_world'])[:3, 3] - center)
+        print('Orbit frame 0 matches the saved input camera; rotating around object Z.', flush=True)
     names = [re.sub(r'[^A-Za-z0-9_-]+', '_', name) for name, _ in groups]
     if len(set(names)) != len(names):
         names = [f'{index:02d}_{name}' for index, name in enumerate(names)]
@@ -278,11 +299,12 @@ def main():
     for image in images:
         shutil.copy2(image, output / 'input_view.png')
     for name, (_, group) in zip(names, groups):
-        render(group, center, radius, args, output / name, scale)
+        render(group, center, radius, args, output / name, scale, reference_camera=reference_camera)
     settings = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
     settings['inputs'] = [str(path) for path in args.inputs] if args.inputs else None
     settings.update(center=center.tolist(), radius=float(radius), geometry_names=[name for name, _ in groups],
-                    input_details=input_details, voxel_source='full decoded Stage-1 occupancy')
+                    input_details=input_details, reference_camera=reference_camera,
+                    voxel_source='full decoded Stage-1 occupancy')
     (output / 'orbit_settings.json').write_text(json.dumps(settings, indent=2) + '\n')
     print(f'Saved orbits to {output}')
 
