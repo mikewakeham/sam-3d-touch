@@ -24,7 +24,6 @@ export WANDB_RUN_GROUP=zeroverse
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
-  --epochs 20 \
   --max-steps 20000 \
   --no-touch \
   --train-scope shape_cross_attention "$@"

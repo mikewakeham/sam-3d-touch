@@ -30,8 +30,8 @@ case "$variant" in
   *) echo "Unknown variant: $variant" >&2; exit 1 ;;
 esac
 case "$stage" in
-  overfit) steps=200; epochs=200 ;;
-  small) steps=1024; epochs=8 ;;
+  overfit) steps=200 ;;
+  small) steps=1024 ;;
   *) echo "Unknown stage: $stage" >&2; exit 1 ;;
 esac
 
@@ -42,7 +42,6 @@ esac
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
-  --epochs "$epochs" \
   --max-steps "$steps" \
   --learning-rate 1e-4 \
   --cross-attention-learning-rate 1e-5 \

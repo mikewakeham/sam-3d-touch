@@ -29,8 +29,10 @@ def parse_args():
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--val-workers", type=int, default=2)
-    parser.add_argument("--epochs", type=int, default=20)
-    parser.add_argument("--max-steps", type=int, default=0)
+    parser.add_argument("--epochs", type=int, default=20,
+                        help="Number of epochs when --max-steps is not set")
+    parser.add_argument("--max-steps", type=int, default=0,
+                        help="Total optimizer steps, including resumed steps; overrides --epochs")
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--cross-attention-learning-rate", type=float, default=1e-5)
     parser.add_argument(
@@ -77,6 +79,12 @@ def parse_args():
         default=int(os.environ.get("LOCAL_RANK", -1)),
     )
     args = parser.parse_args()
+    if args.max_steps < 0:
+        parser.error("--max-steps must be nonnegative")
+    if args.max_steps:
+        args.epochs = None
+    elif args.epochs < 1:
+        parser.error("--epochs must be positive when --max-steps is not set")
     if args.vecsetx_from_scratch and (not args.train_vecsetx or args.no_touch or args.vecsetx_learn):
         parser.error("--point-encoder-from-scratch requires --train-point-encoder, surface conditioning, and no --vecsetx-learn")
     if args.vecsetx_from_scratch and args.point_encoder_checkpoint:
@@ -917,6 +925,8 @@ def main():
         include_touch=not args.no_touch or args.shared_pointmap_normalization,
         oracle_point_frame=args.oracle_point_frame,
     )
+    if len(train_loader) == 0:
+        raise ValueError("Training loader has no batches")
     val_config = copy.deepcopy(data_config)
     val_config["dataset"]["split"] = "val"
     val_loader = build_dataloader(
@@ -1052,11 +1062,10 @@ def main():
         run.define_metric("global_step")
         run.define_metric("*", step_metric="global_step")
 
-    total_train_steps = args.epochs * len(train_loader)
-    if args.max_steps:
-        total_train_steps = min(total_train_steps, args.max_steps)
+    total_train_steps = args.max_steps or args.epochs * len(train_loader)
 
-    for epoch in range(start_epoch, args.epochs):
+    epoch = start_epoch
+    while (step < args.max_steps if args.max_steps else epoch < args.epochs):
         step = train_epoch(
             pipeline, model, raw_model, train_loader, optimizer, parameters,
             device, args, epoch, step, total_train_steps, world_size,
@@ -1097,8 +1106,7 @@ def main():
 
         if distributed:
             dist.barrier()
-        if args.max_steps and step >= args.max_steps:
-            break
+        epoch += 1
 
     if main_process:
         run.finish()
