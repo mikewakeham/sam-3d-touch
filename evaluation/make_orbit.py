@@ -268,6 +268,12 @@ def orbits_complete(output, args, conditions):
         settings = json.loads((output / 'orbit_settings.json').read_text())
     except (OSError, ValueError):
         return False
+    if not isinstance(settings, dict):
+        return False
+    if not args.fit_camera:
+        camera = settings.get('reference_camera') or {}
+        if camera.get('orbit_axis') != 'input_camera_up':
+            return False  # Regenerate older object-axis orbits after the camera fix.
     for key in ('with_inputs', 'modes', 'conditions', 'frames', 'fps', 'gif_fps', 'gif_size',
                 'width', 'height', 'fit_camera', 'fov', 'orbit_radius', 'orbit_height',
                 'light_strength', 'point_size', 'particle_size', 'mp4', 'textured',
@@ -303,7 +309,6 @@ def render_all(args, arguments):
     available = len(sample_ids)
     if args.max_samples:
         random.Random(args.selection_seed).shuffle(sample_ids)
-    if args.max_samples:
         sample_ids = sample_ids[:args.max_samples]
     output = args.output_dir or args.evaluation_dir / 'orbits'
     output.mkdir(parents=True, exist_ok=True)
@@ -375,7 +380,7 @@ def main():
             raise ValueError('Custom orbit radius/height requires --fit-camera; input-camera mode preserves the saved pose')
         center = np.asarray(reference_camera['pivot'])
         radius = np.linalg.norm(np.asarray(reference_camera['camera_to_world'])[:3, 3] - center)
-        print('Orbit frame 0 matches the saved input camera; rotating around object Z.', flush=True)
+        print('Orbit frame 0 matches the saved input camera; rotating around input-camera up.', flush=True)
     names = orbit_names([name for name, _ in groups])
     for name in names:
         for extension in ('.gif', '.png', '.mp4'):

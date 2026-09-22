@@ -181,11 +181,13 @@ def load_reference_camera(args):
         width, height = image.size
     K[0] *= args.width / width
     K[1] *= args.height / height
-    up = world_from_object[:3, 2]
+    # OpenCV camera +Y points down the image. Orbit around screen-up so even
+    # a top-down input travels around the object instead of circling its pole.
+    up = -pose[:3, 1]
     up = up / np.linalg.norm(up)
     return dict(intrinsics=K.tolist(), camera_to_world=pose.tolist(),
                 pivot=world_from_object[:3, 3].tolist(), up=up.tolist(),
-                source=str(camera_path), first_frame='input camera')
+                source=str(camera_path), first_frame='input camera', orbit_axis='input_camera_up')
 
 
 def load_evaluation(evaluation_dir, sample_id, conditions=None, modes=('mesh',)):
