@@ -255,6 +255,36 @@ def parse_args():
     return args
 
 
+def orbit_names(names):
+    filenames = [re.sub(r'[^A-Za-z0-9_-]+', '_', name) for name in names]
+    if len(set(filenames)) != len(filenames):
+        filenames = [f'{index:02d}_{name}' for index, name in enumerate(filenames)]
+    return filenames
+
+
+def orbits_complete(output, args, conditions):
+    # Written only after all variants finish. A directory alone is not completion.
+    try:
+        settings = json.loads((output / 'orbit_settings.json').read_text())
+    except (OSError, ValueError):
+        return False
+    for key in ('with_inputs', 'modes', 'conditions', 'frames', 'fps', 'gif_fps', 'gif_size',
+                'width', 'height', 'fit_camera', 'fov', 'orbit_radius', 'orbit_height',
+                'light_strength', 'point_size', 'particle_size', 'mp4', 'textured',
+                'normal_colors', 'overlay', 'up'):
+        if settings.get(key) != getattr(args, key):
+            return False
+    names = settings.get('geometry_names', [])
+    required = {f'{mode}_{condition}' for mode in args.modes for condition in conditions}
+    if not names or (not args.overlay and not required.issubset(names)):
+        return False
+    files = [output / (name + extension) for name in orbit_names(names)
+             for extension in (('.gif', '.png', '.mp4') if args.mp4 else ('.gif', '.png'))]
+    if args.with_inputs:
+        files.append(output / 'input_view.png')
+    return all(path.is_file() and path.stat().st_size > 0 for path in files)
+
+
 def render_all(args, arguments):
     if args.evaluation_dir is None or args.sample_id:
         raise ValueError('--all-samples requires --evaluation-dir and no --sample-id')
@@ -273,23 +303,34 @@ def render_all(args, arguments):
     available = len(sample_ids)
     if args.max_samples:
         random.Random(args.selection_seed).shuffle(sample_ids)
+    if args.max_samples:
         sample_ids = sample_ids[:args.max_samples]
     output = args.output_dir or args.evaluation_dir / 'orbits'
     output.mkdir(parents=True, exist_ok=True)
     selection = dict(sample_ids=sample_ids, available_samples=available, selection_seed=args.selection_seed)
     (output / 'selected_samples.json').write_text(json.dumps(selection, indent=2) + '\n')
-    print(f'Rendering {len(sample_ids)} of {available} evaluated samples; selection saved to {output}.', flush=True)
+    pending = []
+    for sample_id in sample_ids:
+        conditions = {row['condition'] for row in rows if row['sample_id'] == sample_id
+                      and row.get('error') == '' and (not args.conditions or row['condition'] in args.conditions)}
+        if args.overwrite or not orbits_complete(output / sample_id, args, conditions):
+            pending.append(sample_id)
+    print(f'Selected {len(sample_ids)} of {available}; skipping {len(sample_ids) - len(pending)} completed, '
+          f'rendering {len(pending)}. Selection saved to {output}.', flush=True)
     # Same per-object process loop as the existing make_eval_orbits_geometry.sh job.
     command = [sys.executable, '-m', 'evaluation.make_orbit',
                *[argument for argument in arguments if argument != '--all-samples']]
+    # Restart incomplete samples, including any files left by an interrupted render.
+    if '--overwrite' not in command:
+        command.append('--overwrite')
     started = time.perf_counter()
-    for index, sample_id in enumerate(sample_ids, 1):
+    for index, sample_id in enumerate(pending, 1):
         sample_started = time.perf_counter()
-        print(f'Orbit sample [{index}/{len(sample_ids)}]: {sample_id}', flush=True)
+        print(f'Orbit sample [{index}/{len(pending)}]: {sample_id}', flush=True)
         subprocess.run([*command, '--sample-id', sample_id], check=True)
         elapsed = time.perf_counter() - started
-        remaining = elapsed / index * (len(sample_ids) - index)
-        print(f'Completed [{index}/{len(sample_ids)}] in {(time.perf_counter() - sample_started) / 60:.1f} min; '
+        remaining = elapsed / index * (len(pending) - index)
+        print(f'Completed [{index}/{len(pending)}] in {(time.perf_counter() - sample_started) / 60:.1f} min; '
               f'elapsed {elapsed / 60:.1f} min, estimated remaining {remaining / 60:.1f} min.', flush=True)
 
 
@@ -335,15 +376,14 @@ def main():
         center = np.asarray(reference_camera['pivot'])
         radius = np.linalg.norm(np.asarray(reference_camera['camera_to_world'])[:3, 3] - center)
         print('Orbit frame 0 matches the saved input camera; rotating around object Z.', flush=True)
-    names = [re.sub(r'[^A-Za-z0-9_-]+', '_', name) for name, _ in groups]
-    if len(set(names)) != len(names):
-        names = [f'{index:02d}_{name}' for index, name in enumerate(names)]
+    names = orbit_names([name for name, _ in groups])
     for name in names:
         for extension in ('.gif', '.png', '.mp4'):
             path = output / (name + extension)
             if path.exists() and not args.overwrite:
                 raise FileExistsError(f'{path} already exists; use --overwrite to replace')
     output.mkdir(parents=True, exist_ok=True)
+    (output / 'orbit_settings.json').unlink(missing_ok=True)
     for image in images:
         shutil.copy2(image, output / 'input_view.png')
     for name, (_, group) in zip(names, groups):
@@ -356,7 +396,9 @@ def main():
     if args.row:
         settings['row_objects'] = [dict(name=item['name'], pivot=item['pivot'].tolist(),
                                        transform=item['transform'].tolist()) for item in items]
-    (output / 'orbit_settings.json').write_text(json.dumps(settings, indent=2) + '\n')
+    temporary = output / 'orbit_settings.tmp.json'
+    temporary.write_text(json.dumps(settings, indent=2) + '\n')
+    temporary.replace(output / 'orbit_settings.json')
     print(f'Saved orbits to {output}')
 
 
