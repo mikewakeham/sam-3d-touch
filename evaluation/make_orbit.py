@@ -192,8 +192,8 @@ def render(items, center, radius, args, output, scale, reference_camera=None):
                 renderer.setup_camera(np.asarray(reference_camera['intrinsics']),
                                       input_orbit_extrinsic(reference_camera, angle), args.width, args.height)
             image = np.asarray(renderer.render_to_image())[..., :3].copy()
-            if not row:
-                image[np.asarray(renderer.render_to_depth_image()) >= 1.] = 255
+            # Keep empty background pixels pure white after tone mapping.
+            image[np.asarray(renderer.render_to_depth_image()) >= 1.] = 255
             frames.append(image)
             print(f'{output.name}: [{frame + 1}/{args.frames}]', end='\r', flush=True)
         print()

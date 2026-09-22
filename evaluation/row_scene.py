@@ -6,7 +6,7 @@ import trimesh
 
 
 SPACING = 1.35
-ELEVATION = np.radians(25.)
+ELEVATION = np.radians(18.)
 
 
 def prepare_row(items, up):
