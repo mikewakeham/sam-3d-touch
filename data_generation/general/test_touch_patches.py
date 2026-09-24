@@ -172,7 +172,7 @@ class IntegrationTests(unittest.TestCase):
         path = (self.root / self.records[0]['full_surface_path']).with_name('simulated_touches.npz')
         for count, per_contact in [(32, 256), (16, 512), (8, 1024)]:
             args = viewer_args(['--data-root', str(self.root), '--object-id', 'box',
-                                '--touch-name', 'simulated_touches', '--contacts', str(count)])
+                                '--contacts', str(count)])
             points, colors, centers, lines = load_touch_view(args)
             dataset = object.__new__(TouchDataset)
             dataset.contact_count, dataset.points_per_contact = count, per_contact

@@ -17,39 +17,38 @@ from PIL import Image
 def parse_args(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-root", type=Path, required=True)
-    parser.add_argument("--object-id", help="Defaults to the first object with the requested touch bank or surface pool")
+    parser.add_argument("--object-id", help="Defaults to the first object with simulated touches, then full-surface data")
     parser.add_argument("--view-id", type=int, default=0)
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--pointmap-stride", type=int, default=2)
-    parser.add_argument('--touch-name', help='Show NAME.npz, e.g. simulated_touches')
     parser.add_argument('--contacts', type=int, choices=[32, 16, 8], default=32)
     parser.add_argument('--joint-input', type=Path, help='Evaluated joint run stage1.npz: show its input after encoder FPS')
     parser.add_argument('--input-device', default='cpu', choices=['cpu', 'cuda'])
     return parser.parse_args(argv)
 
 
-def touch_file(view_dir, name):
-    path = view_dir / f'{name}.npz'
+def touch_file(view_dir):
+    path = view_dir / 'simulated_touches.npz'
     # Keep already-generated pilot files readable under the corrected name.
-    old_name = 'adaptive_v1' if name == 'simulated_touches' else name
-    return path if path.is_file() else view_dir / f'touches_{old_name}.npz'
+    old_path = view_dir / 'touches_adaptive_v1.npz'
+    return old_path if not path.is_file() and old_path.is_file() else path
 
 
 def load_view(args):
     if args.object_id is None:
         generated = args.data_root / "generated_data"
         objects = json.loads((generated / "objects.json").read_text())
-        for obj in objects:
-            object_dir = generated / obj['object_id']
-            path = (touch_file(object_dir / 'views' / f'{args.view_id:03d}', args.touch_name)
-                    if args.touch_name else object_dir / 'surface_pool.npz')
-            if path.is_file():
-                args.object_id = obj['object_id']
-                break
+        views = [(obj['object_id'], generated / obj['object_id'] / 'views' / f'{args.view_id:03d}')
+                 for obj in objects]
+        args.object_id = next((oid for oid, view in views if touch_file(view).is_file()), None)
         if args.object_id is None:
-            raise ValueError('No objects with the requested touches or surface pool; generate data first or specify --object-id')
+            args.object_id = next((oid for oid, view in views if (view / 'full_surface.npz').is_file()), None)
+        if args.object_id is None:
+            raise ValueError('No objects with saved data for this view; generate data first or specify --object-id')
     generated_dir = args.data_root / "generated_data" / args.object_id
     view_dir = generated_dir / "views" / f"{args.view_id:03d}"
+    if args.joint_input and not touch_file(view_dir).is_file():
+        raise ValueError('--joint-input requires simulated touches for this object/view')
 
     with np.load(view_dir / "camera.npz") as data:
         K = data["K"]
@@ -105,7 +104,7 @@ def add_normals(server, name, label, points, normals, visible):
 
 def load_touch_view(args):
     view = args.data_root / 'generated_data' / args.object_id / 'views' / f'{args.view_id:03d}'
-    with np.load(touch_file(view, args.touch_name), allow_pickle=False) as saved:
+    with np.load(touch_file(view), allow_pickle=False) as saved:
         data = dict(saved)
     count = args.contacts
     per_contact = 8192 // count
@@ -150,7 +149,8 @@ def load_joint_view(args, touch_points):
 
 
 def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
-    touch_name = getattr(args, 'touch_name', None)
+    view = args.data_root / 'generated_data' / args.object_id / 'views' / f'{args.view_id:03d}'
+    has_touches = touch_file(view).is_file()
     joint_input = getattr(args, 'joint_input', None)
     server.scene.set_up_direction("+y")
     server.gui.add_image(rgba, label=f"{args.object_id} / view {args.view_id:03d}")
@@ -169,7 +169,7 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
     pointmap_handle = server.scene.add_point_cloud(
         "/pointmap", points=points[valid], colors=pixels[..., :3][valid],
         point_size=0.003, point_shape="circle",
-        visible=pool is None and not touch_name,
+        visible=pool is None and not has_touches,
     )
     add_toggle(server, "Pointmap", pointmap_handle)
 
@@ -189,10 +189,10 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
     handle = server.scene.add_point_cloud(
         "/full_surface", points=points, colors=colors, point_size=0.003,
         point_shape="circle",
-        visible=pool is None and not touch_name,
+        visible=pool is None and not has_touches,
     )
     add_toggle(server, "Full surface (green visible / blue hidden)", handle)
-    if touch_name:
+    if has_touches:
         budgets = {f'{count} x {8192 // count} = 8192': count for count in (32, 16, 8)}
         selection = server.gui.add_dropdown(
             'Touch patch budget', options=list(budgets),
@@ -238,11 +238,11 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
         pool_handle = server.scene.add_point_cloud(
             "/surface_pool", points=pool_points,
             colors=np.clip((normals + 1) * 127.5, 0, 255).astype(np.uint8),
-            point_size=.003, point_shape="circle", visible=not bool(touch_name),
+            point_size=.003, point_shape="circle", visible=not has_touches,
         )
         add_toggle(server, f"Shared cloud ({len(pool_points):,} points; normal colors)", pool_handle)
         add_normals(server, "/pool_normals", "Shared cloud normals (yellow tips)",
-                    pool_points, normals, visible=not bool(touch_name))
+                    pool_points, normals, visible=not has_touches)
 
     target = mesh.bounds.mean(axis=0)
 
@@ -268,8 +268,6 @@ def main():
     args = parse_args()
     if args.pointmap_stride < 1:
         raise ValueError("--pointmap-stride must be at least 1")
-    if args.joint_input and not args.touch_name:
-        raise ValueError('--joint-input requires --touch-name and the matching --contacts')
 
     data = load_view(args)
     print(f"Object: {args.object_id}; view: {args.view_id:03d}", flush=True)
