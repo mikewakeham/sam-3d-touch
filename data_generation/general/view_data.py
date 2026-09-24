@@ -2,6 +2,7 @@ import argparse
 import colorsys
 import json
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -22,7 +23,11 @@ def parse_args(argv=None):
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--pointmap-stride", type=int, default=2)
     parser.add_argument('--contacts', type=int, choices=[32, 16, 8], default=32)
-    parser.add_argument('--joint-input', type=Path, help='Evaluated joint run stage1.npz: show its input after encoder FPS')
+    joint = parser.add_mutually_exclusive_group()
+    joint.add_argument('--joint-input', type=Path, help='Evaluated joint run stage1.npz: show its input after encoder FPS')
+    joint.add_argument('--joint-pointmap', action='store_true', help='Preview joint pointmap/touch FPS directly from this view')
+    parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'),
+                        help='Training pipeline preprocessing for --joint-pointmap; model weights are not loaded')
     parser.add_argument('--input-device', default='cpu', choices=['cpu', 'cuda'])
     return parser.parse_args(argv)
 
@@ -47,8 +52,8 @@ def load_view(args):
             raise ValueError('No objects with saved data for this view; generate data first or specify --object-id')
     generated_dir = args.data_root / "generated_data" / args.object_id
     view_dir = generated_dir / "views" / f"{args.view_id:03d}"
-    if args.joint_input and not touch_file(view_dir).is_file():
-        raise ValueError('--joint-input requires simulated touches for this object/view')
+    if (args.joint_input or args.joint_pointmap) and not touch_file(view_dir).is_file():
+        raise ValueError('Joint preview requires simulated touches for this object/view')
 
     with np.load(view_dir / "camera.npz") as data:
         K = data["K"]
@@ -126,25 +131,70 @@ def load_touch_view(args):
     return data['points_camera'][indices], colors, centers, np.concatenate(lines)
 
 
-def load_joint_view(args, touch_points):
+def prepare_joint_preview(args, rgba, pointmap):
+    """Use the training preprocessor without constructing or loading any model."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import torch
+    from train import build_stage1_preprocessor, preprocess_pointmap_batch
+
+    preprocessor = build_stage1_preprocessor(args.pipeline_config)
+    with torch.no_grad():
+        inputs = preprocess_pointmap_batch(
+            preprocessor, torch.from_numpy(rgba.copy())[None],
+            torch.from_numpy(np.ascontiguousarray(pointmap))[None], args.input_device,
+        )
+    return preprocessor, inputs
+
+
+def load_joint_cloud(args, touch_points, prepared=None):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
     from evaluation.input_visualizations import surface_indices
-    with np.load(args.joint_input, allow_pickle=False) as saved:
-        if 'encoder_input_camera' not in saved:
-            raise ValueError('--joint-input needs a newly evaluated joint stage1.npz')
-        camera = saved['encoder_input_camera']
-        pre_encoder = saved['touch_centers']
-        count = int(saved['touch_count'])
+    if prepared is None:
+        with np.load(args.joint_input, allow_pickle=False) as saved:
+            if 'encoder_input_camera' not in saved:
+                raise ValueError('--joint-input needs a newly evaluated joint stage1.npz')
+            camera = saved['encoder_input_camera']
+            pre_encoder = saved['touch_centers']
+            count = int(saved['touch_count'])
+    else:
+        import torch
+        from train import combine_pointmap_and_touch, normalize_touch_to_pointmap_frame
+        from evaluation.input_visualizations import joint_camera_points
+
+        preprocessor, inputs = prepared
+        count = len(touch_points)
+        with torch.no_grad():
+            touch = torch.as_tensor(touch_points, device=args.input_device)[None]
+            mask = torch.ones(touch.shape[:2], dtype=torch.bool, device=touch.device)
+            touch = normalize_touch_to_pointmap_frame(touch, mask, inputs, preprocessor)
+            cloud, valid = combine_pointmap_and_touch(inputs, touch, mask)
+            cloud = cloud[0, valid[0]]
+            camera = joint_camera_points(cloud, inputs, preprocessor)
+            pre_encoder = cloud.float().cpu().numpy()
     if count != len(touch_points) or not np.allclose(camera[-count:], touch_points, atol=1e-5, rtol=1e-5):
         raise ValueError('Joint input does not match this object/view/contact selection')
+    print(f'Computing joint FPS for {args.contacts} patches: {len(camera):,} candidates -> 8192 points '
+          f'({args.input_device})', flush=True)
     indices = surface_indices(pre_encoder, 'vecsetx', args.input_device)
     pointmap_count = len(camera) - count
+    return camera, indices, pointmap_count
+
+
+def joint_counts(args, indices, pointmap_count):
     patch_ids = np.full(len(indices), -1, dtype=np.int64)
     touch = indices >= pointmap_count
     patch_ids[touch] = (indices[touch] - pointmap_count) // (8192 // args.contacts)
     retained = np.bincount(patch_ids[touch], minlength=args.contacts)
     print(f'Joint FPS: {touch.sum()} touch + {(~touch).sum()} pointmap = {len(indices)}', flush=True)
     print(f'Touch points per patch after FPS: {retained.tolist()}', flush=True)
+    return (f'**Before FPS:** {pointmap_count:,} pointmap + 8,192 touch points.\n\n'
+            f'**After FPS:** {(~touch).sum():,} pointmap + {touch.sum():,} touch = {len(indices):,}.\n\n'
+            f'**Touch points retained per patch (FPS order):** {retained.tolist()}')
+
+
+def load_joint_view(args, touch_points):
+    camera, indices, pointmap_count = load_joint_cloud(args, touch_points)
+    joint_counts(args, indices, pointmap_count)
     return camera[indices], indices - pointmap_count
 
 
@@ -152,6 +202,8 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
     view = args.data_root / 'generated_data' / args.object_id / 'views' / f'{args.view_id:03d}'
     has_touches = touch_file(view).is_file()
     joint_input = getattr(args, 'joint_input', None)
+    joint_preview = getattr(args, 'joint_pointmap', False)
+    show_joint = bool(joint_input or joint_preview)
     server.scene.set_up_direction("+y")
     server.gui.add_image(rgba, label=f"{args.object_id} / view {args.view_id:03d}")
 
@@ -201,35 +253,74 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
         )
         points, colors, centers, boundaries = load_touch_view(args)
         touch_handle = server.scene.add_point_cloud('/touch', points=points, colors=colors,
-                                                    point_size=.003, point_shape='circle', visible=not bool(joint_input))
+                                                    point_size=.003, point_shape='circle', visible=not show_joint)
         add_toggle(server, 'Simulated touches', touch_handle)
         centers_handle = server.scene.add_point_cloud('/touch_centers', points=centers,
                                                       colors=(255, 255, 255), point_size=.008,
-                                                      point_shape='circle', visible=not bool(joint_input))
+                                                      point_shape='circle', visible=not show_joint)
         add_toggle(server, 'Patch centers (FPS order)', centers_handle)
         regions = server.scene.add_line_segments('/touch_regions', points=boundaries,
                                                  colors=(255, 220, 80), line_width=1., visible=False)
         add_toggle(server, 'Patch ellipsoid boundaries', regions)
 
+        if show_joint:
+            prepared = prepare_joint_preview(args, rgba, pointmap) if joint_preview else None
+            cache = {}
+            counts = server.gui.add_markdown('Computing joint FPS…')
+
+            def joint_data(points, colors):
+                if args.contacts not in cache:
+                    cache[args.contacts] = load_joint_cloud(args, points, prepared)
+                camera, indices, pointmap_count = cache[args.contacts]
+                joint_colors = np.concatenate([
+                    np.tile(np.array([60, 200, 90], np.uint8), (pointmap_count, 1)), colors,
+                ])
+                counts.content = joint_counts(args, indices, pointmap_count)
+                return camera, joint_colors, indices
+
+            camera, joint_colors, indices = joint_data(points, colors)
+            before_handle = server.scene.add_point_cloud(
+                '/joint_before', points=camera, colors=joint_colors, point_size=.003,
+                point_shape='circle', visible=False,
+            )
+            add_toggle(server, 'Joint before FPS (green pointmap / colored touch)', before_handle)
+            joint_handle = server.scene.add_point_cloud(
+                '/joint_fps', points=camera[indices], colors=joint_colors[indices],
+                point_size=.003, point_shape='circle',
+            )
+            add_toggle(server, 'Joint after FPS (8192 points)', joint_handle)
+
+        budget_lock = threading.Lock()
+
         @selection.on_update
         def update_touch_budget(_):
-            args.contacts = budgets[selection.value]
-            points, colors, centers, boundaries = load_touch_view(args)
-            with server.atomic():
-                touch_handle.points = points
-                touch_handle.colors = colors
-                centers_handle.points = centers
-                regions.points = boundaries
-
-        if joint_input:
-            joint_points, touch_indices = load_joint_view(args, points)
-            joint_colors = np.tile(np.array([60, 200, 90], np.uint8), (len(joint_points), 1))
-            is_touch = touch_indices >= 0
-            joint_colors[is_touch] = colors[touch_indices[is_touch]]
-            joint_handle = server.scene.add_point_cloud('/joint_fps', points=joint_points,
-                                                         colors=joint_colors, point_size=.003,
-                                                         point_shape='circle')
-            add_toggle(server, 'Joint FPS (green pointmap / colored touch)', joint_handle)
+            with budget_lock:
+                previous = args.contacts
+                args.contacts = budgets[selection.value]
+                selection.disabled = True
+                try:
+                    points, colors, centers, boundaries = load_touch_view(args)
+                    if show_joint:
+                        counts.content = 'Computing joint FPS…'
+                        camera, joint_colors, indices = joint_data(points, colors)
+                    with server.atomic():
+                        touch_handle.points = points
+                        touch_handle.colors = colors
+                        centers_handle.points = centers
+                        regions.points = boundaries
+                        if show_joint:
+                            before_handle.points = camera
+                            before_handle.colors = joint_colors
+                            joint_handle.points = camera[indices]
+                            joint_handle.colors = joint_colors[indices]
+                except Exception as error:
+                    args.contacts = previous
+                    selection.value = f'{previous} x {8192 // previous} = 8192'
+                    if show_joint:
+                        counts.content = f'Joint preview failed: {error}'
+                    raise
+                finally:
+                    selection.disabled = bool(joint_input)
     if "normals_camera" in surface:
         add_normals(server, "/surface_normals", "Original cloud normals", surface['points_camera'],
                     surface["normals_camera"], visible=False)

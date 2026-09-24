@@ -1,6 +1,7 @@
 """CPU checks for geometry, saved data, and the existing 8192-point training input."""
 
 import ast
+from contextlib import nullcontext
 import fcntl
 import json
 import os
@@ -12,7 +13,7 @@ import tempfile
 import time
 from types import ModuleType, SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import numpy as np
 from PIL import Image
@@ -237,6 +238,76 @@ class IntegrationTests(unittest.TestCase):
         np.savez_compressed(path, **arrays)
         with self.assertRaisesRegex(ValueError, 'Sampling replay differs'):
             make_object((self.args, self.records))
+
+    def test_live_joint_viewer_budgets_toggles_and_cache(self):
+        import torch
+        import view_data
+        make_object((self.args, self.records))
+        before = {path: path.read_bytes() for path in self.root.rglob('*') if path.is_file()}
+        args = view_data.parse_args(['--data-root', str(self.root), '--object-id', 'box',
+                                     '--joint-pointmap'])
+        mesh, rgba, pointmap, surface, K, pool = view_data.load_view(args)
+        # Supply a small processed pointmap, exercising the real combination and CPU FPS.
+        inputs = dict(pointmap=torch.from_numpy(pointmap[::4, ::4].copy()).permute(2, 0, 1)[None],
+                      mask=torch.from_numpy((rgba[::4, ::4, 3] / 255).copy())[None, None])
+        inputs['pointmap'][0, :, 1, 1] = float('nan')
+        prepared = (SimpleNamespace(normalize_pointmap=False), inputs)
+        valid = (inputs['mask'][0, 0] > .5) & inputs['pointmap'][0].isfinite().all(dim=0)
+        expected_pointmap = inputs['pointmap'][0].permute(1, 2, 0)[valid].numpy()
+
+        class Handle(SimpleNamespace):
+            def on_update(self, callback):
+                self.callback = callback
+                return callback
+
+            def on_click(self, callback):
+                return callback
+
+        gui, scene = {}, {}
+
+        def add_gui(label, **kwargs):
+            handle = Handle(value=kwargs.pop('initial_value', None), **kwargs)
+            gui[label] = handle
+            return handle
+
+        def add_scene(name, **kwargs):
+            handle = Handle(**{'visible': True, **kwargs})
+            scene[name] = handle
+            return handle
+
+        server = Mock()
+        server.atomic.side_effect = nullcontext
+        for method in ('add_checkbox', 'add_dropdown', 'add_button'):
+            getattr(server.gui, method).side_effect = add_gui
+        server.gui.add_markdown.side_effect = lambda text: add_gui('counts', content=text)
+        for method in ('add_mesh_simple', 'add_point_cloud', 'add_line_segments', 'add_camera_frustum'):
+            getattr(server.scene, method).side_effect = add_scene
+        # This unnormalized fixture never calls SSI; avoid its unavailable local GPU dependencies.
+        transforms = ModuleType('sam3d_objects.data.dataset.tdfy.img_and_mask_transforms')
+        transforms._apply_metric_to_ssi = Mock(side_effect=AssertionError('Unexpected SSI call'))
+        with patch.dict(sys.modules, {transforms.__name__: transforms}), \
+                patch.object(view_data, 'prepare_joint_preview', return_value=prepared) as prepare, \
+                patch.object(view_data, 'load_joint_cloud', wraps=view_data.load_joint_cloud) as compute:
+            view_data.build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool)
+            selection = gui['Touch patch budget']
+            for count in (32, 16, 8, 32):
+                selection.value = f'{count} x {8192 // count} = 8192'
+                selection.callback(None)
+                expected_touch = view_data.load_touch_view(args)[0]
+                np.testing.assert_array_equal(scene['/joint_before'].points[:len(expected_pointmap)], expected_pointmap)
+                np.testing.assert_array_equal(scene['/joint_before'].points[-8192:], expected_touch)
+                self.assertEqual(scene['/joint_fps'].points.shape, (8192, 3))
+                self.assertEqual(scene['/joint_fps'].colors.shape, (8192, 3))
+                self.assertIn('= 8,192', gui['counts'].content)
+                self.assertFalse(selection.disabled)
+            self.assertEqual(compute.call_count, 3)
+            prepare.assert_called_once()
+        toggle = gui['Joint after FPS (8192 points)']
+        toggle.value = False
+        toggle.callback(None)
+        self.assertFalse(scene['/joint_fps'].visible)
+        for path, content in before.items():
+            self.assertEqual(path.read_bytes(), content)
 
     def test_cli_parallel_worker_reproducibility(self):
         main(['--data-root', str(self.root)])
