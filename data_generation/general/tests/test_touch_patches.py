@@ -1,14 +1,19 @@
 """CPU checks for geometry, saved data, and the existing 8192-point training input."""
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+
 import ast
 from contextlib import nullcontext
 import fcntl
 import json
 import os
-from pathlib import Path
 import signal
 import subprocess
-import sys
 import tempfile
 import time
 from types import ModuleType, SimpleNamespace
@@ -24,7 +29,7 @@ from make_touch_data import main, make_object, parse_args
 from sample_full_surface import sam_camera_transform, transform_points
 from sample_touch_patches import adaptive_region, farthest_centers, sample_region, select_patch_indices
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
 
 
@@ -375,7 +380,7 @@ class IntegrationTests(unittest.TestCase):
         main(['--data-root', str(self.root)])
         rows = make_object((self.args, self.records))
         before = [(self.root / row['touch_path']).read_bytes() for row in rows]
-        subprocess.run([sys.executable, str(Path(__file__).with_name('make_touch_data.py')),
+        subprocess.run([sys.executable, str(Path(__file__).resolve().parent.parent / 'make_touch_data.py'),
                         '--data-root', str(self.root), '--workers', '2'], check=True, capture_output=True)
         self.assertEqual(before, [(self.root / row['touch_path']).read_bytes() for row in rows])
 
@@ -387,7 +392,7 @@ from pathlib import Path
 import signal
 import sys
 import time
-sys.path.insert(0, {str(Path(__file__).resolve().parent)!r})
+sys.path.insert(0, {str(Path(__file__).resolve().parent.parent)!r})
 import make_touch_data as generator
 
 def initialize():
@@ -427,13 +432,13 @@ if __name__ == "__main__":
             with (self.generated / '.build.lock').open('a') as lock:
                 fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
                 blocked = subprocess.run(
-                    [sys.executable, str(Path(__file__).with_name('make_touch_data.py')),
+                    [sys.executable, str(Path(__file__).resolve().parent.parent / 'make_touch_data.py'),
                      '--data-root', str(self.root)], capture_output=True, text=True, timeout=15)
                 self.assertNotEqual(blocked.returncode, 0)
                 self.assertIn('Dataset is locked', blocked.stderr)
                 self.assertNotIn('Traceback', blocked.stderr)
             # Reuse the actual CLI after cancellation, including manifest publication.
-            subprocess.run([sys.executable, str(Path(__file__).with_name('make_touch_data.py')),
+            subprocess.run([sys.executable, str(Path(__file__).resolve().parent.parent / 'make_touch_data.py'),
                             '--data-root', str(self.root), '--workers', '2'],
                            check=True, capture_output=True, timeout=30)
             self.assertTrue((self.generated / 'samples_simulated_touches.jsonl').exists())

@@ -1,9 +1,14 @@
 """CPU geometry, migration and training-loader checks for surface normals/pools."""
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+
 import json
 import subprocess
-from pathlib import Path
-import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -179,7 +184,7 @@ class NormalsTests(unittest.TestCase):
 
     def test_cli_progress_resume_overwrite_and_check(self):
         self.downgrade()
-        command = [sys.executable, str(Path(__file__).with_name('backfill_normals.py')),
+        command = [sys.executable, str(Path(__file__).resolve().parent.parent / 'backfill_normals.py'),
                    '--data-root', str(self.root), '--workers', '2', '--pool-points', '1024']
         for flags, expected in (([], 'updated 2 views'), ([], 'already complete'),
                                 (['--overwrite-normals'], 'pool normals overwritten'),
@@ -351,7 +356,7 @@ class NormalsTests(unittest.TestCase):
         self.assertEqual(before, path.read_bytes())
 
     def test_resample_cli_progress_and_resume(self):
-        command = [sys.executable, str(Path(__file__).with_name('backfill_normals.py')),
+        command = [sys.executable, str(Path(__file__).resolve().parent.parent / 'backfill_normals.py'),
                    '--data-root', str(self.root), '--workers', '2', '--resample-pool']
         for expected in ('resampled to 20480 points', 'already complete'):
             result = subprocess.run(command, capture_output=True, text=True, timeout=60)
@@ -372,7 +377,7 @@ class NormalsTests(unittest.TestCase):
             transform_normals(np.zeros((1, 3)), transform)
 
     def test_loader_both_formats_and_aligned_normals(self):
-        sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+        sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
         from dataloader import TouchDataset, collate_touch_batch
         for row in self.records:
             row['target_path'] = 'target.npz'

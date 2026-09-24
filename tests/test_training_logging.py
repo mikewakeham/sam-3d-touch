@@ -1,4 +1,10 @@
 """CPU checks that scalar diagnostics preserve forwards, gradients, and RNG state."""
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import copy
 from types import SimpleNamespace
 import unittest
@@ -35,6 +41,52 @@ def model_fixture():
 
 
 class LoggingTests(unittest.TestCase):
+    def test_pointmap_branches_shared_embedder_and_final_tokens(self):
+        class Fuser(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.encoder = nn.Linear(3, 4)
+                self.embedder_list = [(self.encoder, [('image', None), ('pointmap', None), ('rgb_pointmap', None)])]
+                self.compression_projection_multiplier = 0
+
+            def forward(self, image, pointmap, rgb_pointmap):
+                # Simulate fuser projection/position and forced dropout of one branch.
+                return torch.cat((self.encoder(image), self.encoder(pointmap) * 2 + 1,
+                                  self.encoder(rgb_pointmap) * 0), dim=1)
+
+        torch.manual_seed(29)
+        fuser = Fuser()
+        reference = copy.deepcopy(fuser)
+        values = [torch.randn(2, n, 3) for n in (2, 3, 4)]
+        pipeline = SimpleNamespace(ss_condition_embedder=fuser)
+        model = model_fixture()
+        rng = torch.get_rng_state().clone()
+        with token_magnitudes(model, pipeline=pipeline) as metrics:
+            actual = fuser(*values)
+        expected = reference(*values)
+        torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+        torch.testing.assert_close(torch.get_rng_state(), rng, rtol=0, atol=0)
+        actual.sum().backward()
+        expected.sum().backward()
+        for a, b in zip(fuser.parameters(), reference.parameters()):
+            torch.testing.assert_close(a.grad, b.grad, rtol=0, atol=0)
+        raw = reference.encoder(values[1])
+        final = expected[:, 2:5]
+        self.assertAlmostEqual(metrics['tokens/pointmap_before_projection_rms'], raw.square().mean().sqrt().item())
+        self.assertAlmostEqual(metrics['tokens/pointmap_conditioning_rms'], final.square().mean().sqrt().item())
+        self.assertAlmostEqual(metrics['tokens/pointmap_conditioning_mean_token_norm'], final.norm(dim=-1).mean().item())
+        self.assertEqual(metrics['tokens/rgb_pointmap_conditioning_rms'], 0.)
+        self.assertFalse(fuser._forward_hooks)
+        self.assertFalse(fuser.encoder._forward_hooks)
+        with token_magnitudes(model, pipeline=pipeline, enabled=False) as disabled:
+            fuser(*values)
+        self.assertEqual(disabled, {})
+        with self.assertRaisesRegex(RuntimeError, 'stop'):
+            with token_magnitudes(model, pipeline=pipeline):
+                raise RuntimeError('stop')
+        self.assertFalse(fuser._forward_hooks)
+        self.assertFalse(fuser.encoder._forward_hooks)
+
     def test_training_loop_logs_scalars_at_existing_intervals(self):
         import train
         fixture = model_fixture()
@@ -51,8 +103,11 @@ class LoggingTests(unittest.TestCase):
                                log_every=3, gradient_clip=1., batch_size=2, epochs=1, max_steps=0)
         prepared = ({}, (torch.ones(2, 7, 4),), {}, torch.randn(2, 5, 3), torch.ones(2, 5, dtype=torch.bool))
         rows = []
-        with patch('train.prepare_batch', return_value=prepared):
-            step = train.train_epoch(None, model, model, [{'target_shape': torch.zeros(2, 1)}] * 4,
+        fuser = nn.Sequential(nn.Identity())
+        fuser.embedder_list = [(fuser[0], [('pointmap', None)])]
+        pipeline = SimpleNamespace(ss_condition_embedder=fuser)
+        with patch('train.prepare_batch', side_effect=lambda *args, **kwargs: (fuser(prepared[1][0]), prepared)[1]):
+            step = train.train_epoch(pipeline, model, model, [{'target_shape': torch.zeros(2, 1)}] * 4,
                                      optimizer, parameters, torch.device('cpu'), args, 0, 0, 4, 1,
                                      False, True, SimpleNamespace(log=rows.append))
         self.assertEqual(step, 4)
@@ -61,6 +116,9 @@ class LoggingTests(unittest.TestCase):
             self.assertIn('tokens/surface_before_projection_rms', row)
             self.assertIn('tokens/surface_after_projection_rms', row)
             self.assertIn('tokens/visual_rms', row)
+            self.assertEqual(row['tokens/pointmap_conditioning_rms'], 1.)
+            self.assertEqual(row['tokens/pointmap_conditioning_mean_token_norm'], 2.)
+            self.assertIn('tokens/surface_to_pointmap_rms_ratio', row)
             self.assertIn('parameters/touch_output_projection_trainable_norm', row)
             self.assertIn('gradients/touch_output_projection', row)
         self.assertFalse(model.touch_encoder._forward_hooks)
@@ -109,7 +167,7 @@ class LoggingTests(unittest.TestCase):
         model.touch_encoder = None
         with token_magnitudes(model, prepared) as metrics:
             pass
-        self.assertEqual(metrics, {'tokens/visual_rms': 1.})
+        self.assertEqual(metrics, {'tokens/visual_rms': 1., 'tokens/visual_mean_token_norm': 2.})
 
     def test_parameter_norms_match_trainable_weights_and_gradients(self):
         model = model_fixture()

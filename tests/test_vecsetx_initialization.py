@@ -1,6 +1,11 @@
 """CPU checks of encoder initialization and saved trainable weights."""
-import ast
+
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+import ast
 from typing import Optional
 import unittest
 from unittest.mock import patch
@@ -10,7 +15,7 @@ from torch import nn
 import torch.nn.functional as F
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def load_touch_class(constructor=None):

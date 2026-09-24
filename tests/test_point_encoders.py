@@ -4,14 +4,18 @@ Set POINT_ENCODER_REFERENCES to external CraftsMan3D/ and TripoSG/ checkouts
 for upstream numerical parity. Set POINT_ENCODER_WEIGHTS to a directory with
 craftsman-model.ckpt and triposg-vae.safetensors to also check released weights.
 """
+
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import ast
 import contextlib
 import io
 import json
 import math
 import os
-from pathlib import Path
-import sys
 import tempfile
 import types
 from typing import Any, Dict, Optional
@@ -212,7 +216,7 @@ class PointEncoderTests(unittest.TestCase):
 
     def test_generated_pool_through_loader_training_and_checkpoint(self):
         # Reuse the existing synthetic mesh/camera/normal fixture, without Blender or GPU.
-        general = Path(__file__).parent / 'data_generation/general'
+        general = Path(__file__).resolve().parent.parent / 'data_generation/general/tests'
         with patch.object(sys, 'path', [str(general), *sys.path]):
             from test_normals import NormalsTests
             fixture = NormalsTests('test_default_generation_and_triangle_alignment')

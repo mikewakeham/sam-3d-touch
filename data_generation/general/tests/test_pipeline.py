@@ -1,10 +1,15 @@
 """CPU tests; set BLENDER_BIN to include real Blender import/render checks."""
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+
 import json
 import os
-from pathlib import Path
 import subprocess
-import sys
 import tempfile
 import unittest
 
@@ -17,7 +22,7 @@ from make_data import get_objects, make_splits, parse_args, render_object
 from pointmaps import depth_to_pointmap
 from sample_full_surface import classify_visibility, transform_points, transform_normals, validate_surface
 
-HERE = Path(__file__).resolve().parent
+HERE = Path(__file__).resolve().parent.parent
 BLENDER = os.environ.get("BLENDER_BIN")
 
 

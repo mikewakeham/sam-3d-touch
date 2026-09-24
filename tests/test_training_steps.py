@@ -1,17 +1,22 @@
 """Exercise the actual training-loop control flow without loading GPU models."""
 
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+
 import argparse
 import ast
 import contextlib
 import io
 import os
-from pathlib import Path
 from types import SimpleNamespace
 import unittest
 from unittest.mock import Mock, patch
 
 
-SOURCE = ast.parse(Path(__file__).with_name("train.py").read_text())
+SOURCE = ast.parse((Path(__file__).resolve().parent.parent / "train.py").read_text())
 
 
 class TrainingStepsTests(unittest.TestCase):

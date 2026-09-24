@@ -624,29 +624,67 @@ def component_gradient_norms(model, include_parameters=False):
 
 
 @contextmanager
-def token_magnitudes(model, prepared, drop_mask=None, enabled=True):
-    """Scalar RMS on logging steps only; hooks never change or retain activations."""
-    metrics = {}
-    handles = []
+def token_magnitudes(model, prepared=None, drop_mask=None, enabled=True, pipeline=None):
+    """Observe conditioning preparation and the model forward without retaining activations."""
+    metrics, handles, calls = {}, [], []
+    fuser = getattr(pipeline, 'ss_condition_embedder', None)
+    if fuser is None:
+        fuser = getattr(getattr(pipeline, 'backbone', None), 'condition_embedder', None)
 
     def record(name, tensor):
-        metrics[f"tokens/{name}_rms"] = tensor.detach().float().square().mean().sqrt().item()
+        value = tensor.detach().float()
+        metrics[f"tokens/{name}_rms"] = value.square().mean().sqrt().item()
+        metrics[f"tokens/{name}_mean_token_norm"] = value.norm(dim=-1).mean().item()
+
+    def visual_metrics(condition_args, mask):
+        if len(condition_args) == 1 and torch.is_tensor(condition_args[0]) and condition_args[0].ndim == 3:
+            visual = condition_args[0]
+            record('visual', visual)
+            if mask is not None:
+                record('visual_after_dropout', visual.masked_fill(mask[:, None, None], 0))
+
+    def model_hook(module, inputs, kwargs):
+        visual_metrics(inputs[1], kwargs.get('visual_drop_mask'))
 
     def projection_hook(module, inputs, output):
-        record("surface_before_projection", inputs[0])
-        record("surface_after_projection", output)
+        record('surface_before_projection', inputs[0])
+        record('surface_after_projection', output)
 
     def encoder_hook(module, inputs, output):
-        record("surface_conditioning", output)
+        record('surface_conditioning', output)
+
+    def fuser_hook(module, inputs, output):
+        # Channel compression mixes modalities, so separate final tokens no longer exist.
+        if getattr(module, 'compression_projection_multiplier', 0) > 0:
+            return
+        if not torch.is_tensor(output) or output.ndim != 3 or sum(n for _, n in calls) != output.shape[1]:
+            return
+        offset = 0
+        for name, count in calls:
+            if name in ('pointmap', 'rgb_pointmap'):
+                record(name + '_conditioning', output[:, offset:offset + count])
+            offset += count
 
     try:
         if enabled:
-            condition_args = prepared[1]
-            if len(condition_args) == 1 and torch.is_tensor(condition_args[0]) and condition_args[0].ndim == 3:
-                visual = condition_args[0]
-                record("visual", visual)
-                if drop_mask is not None:
-                    record("visual_after_dropout", visual.masked_fill(drop_mask[:, None, None], 0))
+            if hasattr(fuser, 'embedder_list'):
+                modules = {}
+                for module, arguments in fuser.embedder_list:
+                    modules.setdefault(module, []).extend(name for name, _ in arguments)
+                for module, names in modules.items():
+                    def observe(module, inputs, output, names=names, counter=[0]):
+                        name = names[counter[0] % len(names)]
+                        counter[0] += 1
+                        if torch.is_tensor(output) and output.ndim == 3:
+                            calls.append((name, output.shape[1]))
+                            if name in ('pointmap', 'rgb_pointmap'):
+                                record(name + '_before_projection', output)
+                    handles.append(module.register_forward_hook(observe))
+                handles.append(fuser.register_forward_hook(fuser_hook))
+            if prepared is not None:
+                visual_metrics(prepared[1], drop_mask)
+            elif isinstance(model, torch.nn.Module):
+                handles.append(model.register_forward_pre_hook(model_hook, with_kwargs=True))
             if model.touch_encoder is not None:
                 handles.append(model.touch_encoder.output_projection.register_forward_hook(projection_hook))
                 handles.append(model.touch_encoder.register_forward_hook(encoder_hook))
@@ -735,25 +773,25 @@ def train_epoch(
     total_dropped = 0
     log_start_time = time.perf_counter()
     for batch_index, batch in enumerate(loader):
-        prepared = prepare_batch(
-            pipeline, batch, device, args.precision,
-            raw_model.touch_encoder is not None,
-            args.joint_pointmap,
-            args.oracle_point_frame,
-            getattr(args, "shared_pointmap_normalization", False),
-            use_normals=bool(raw_model.touch_encoder is not None and getattr(raw_model.touch_encoder, "requires_normals", False)),
-        )
-        optimizer.zero_grad(set_to_none=True)
-        drop_mask = make_visual_drop_mask(
-            len(batch["target_shape"]), raw_model.training_config["visual_dropout"],
-            device, seed, step, dist.get_rank() if distributed else 0,
-        )
         should_log = (
             step == 0
             or (step + 1) % args.log_every == 0
             or batch_index + 1 == len(loader)
         )
-        with token_magnitudes(raw_model, prepared, drop_mask, main_process and should_log) as token_metrics:
+        with token_magnitudes(raw_model, enabled=main_process and should_log, pipeline=pipeline) as token_metrics:
+            prepared = prepare_batch(
+                pipeline, batch, device, args.precision,
+                raw_model.touch_encoder is not None,
+                args.joint_pointmap,
+                args.oracle_point_frame,
+                getattr(args, "shared_pointmap_normalization", False),
+                use_normals=bool(raw_model.touch_encoder is not None and getattr(raw_model.touch_encoder, "requires_normals", False)),
+            )
+            optimizer.zero_grad(set_to_none=True)
+            drop_mask = make_visual_drop_mask(
+                len(batch["target_shape"]), raw_model.training_config["visual_dropout"],
+                device, seed, step, dist.get_rank() if distributed else 0,
+            )
             with amp(device, args.precision):
                 loss = model(*prepared, visual_drop_mask=drop_mask)
         loss.backward()
@@ -823,6 +861,18 @@ def train_epoch(
                     metrics["optimization/gradient_norm"] = gradient_norm.item()
                 metrics.update(component_gradients)
                 metrics.update(token_metrics)
+                surface_rms = token_metrics.get('tokens/surface_conditioning_rms')
+                for branch in ('pointmap', 'rgb_pointmap'):
+                    branch_rms = token_metrics.get(f'tokens/{branch}_conditioning_rms')
+                    if surface_rms is not None and branch_rms is not None and branch_rms > 0:
+                        metrics[f'tokens/surface_to_{branch}_rms_ratio'] = surface_rms / branch_rms
+                pointmap_metrics = {key: value for key, value in token_metrics.items()
+                                    if key in ('tokens/pointmap_conditioning_rms', 'tokens/rgb_pointmap_conditioning_rms')}
+                if pointmap_metrics:
+                    print('conditioning ' + ' '.join(
+                        f'{name}={value:.4g}' for name, value in pointmap_metrics.items()
+                        if name.endswith('_conditioning_rms')
+                    ), flush=True)
                 for group in optimizer.param_groups:
                     metrics[f"learning_rate/{group['name']}"] = group["lr"]
                 run.log(metrics)
