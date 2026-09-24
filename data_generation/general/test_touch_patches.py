@@ -1,11 +1,15 @@
 """CPU checks for geometry, saved data, and the existing 8192-point training input."""
 
 import ast
+import fcntl
 import json
+import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import tempfile
+import time
 from types import ModuleType, SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -241,6 +245,71 @@ class IntegrationTests(unittest.TestCase):
         subprocess.run([sys.executable, str(Path(__file__).with_name('make_touch_data.py')),
                         '--data-root', str(self.root), '--workers', '2'], check=True, capture_output=True)
         self.assertEqual(before, [(self.root / row['touch_path']).read_bytes() for row in rows])
+
+    def test_interrupt_stops_workers_releases_lock_and_allows_restart(self):
+        # Exercise the real pool/lock lifecycle with one busy and one idle worker.
+        driver = self.root / 'interrupt_driver.py'
+        driver.write_text(f'''import os
+from pathlib import Path
+import signal
+import sys
+import time
+sys.path.insert(0, {str(Path(__file__).resolve().parent)!r})
+import make_touch_data as generator
+
+def initialize():
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    Path({str(self.root)!r}, f"worker-{{os.getpid()}}").touch()
+
+def slow_object(task):
+    Path({str(self.root)!r}, "busy").touch()
+    time.sleep(60)
+    raise RuntimeError("Test should interrupt before this point")
+
+generator.initialize_worker = initialize
+generator.make_object = slow_object
+if __name__ == "__main__":
+    try:
+        generator.main()
+    except KeyboardInterrupt:
+        raise SystemExit(130)
+''')
+        command = [sys.executable, str(driver), '--data-root', str(self.root), '--workers', '2']
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                   text=True, start_new_session=True)
+        try:
+            deadline = time.monotonic() + 20
+            while len(list(self.root.glob('worker-*'))) < 2 or not (self.root / 'busy').exists():
+                self.assertIsNone(process.poll(), 'Generator exited before workers started')
+                self.assertLess(time.monotonic(), deadline, 'Workers did not start')
+                time.sleep(.05)
+            worker_pids = [int(path.name.split('-')[1]) for path in self.root.glob('worker-*')]
+            os.killpg(process.pid, signal.SIGINT)
+            stdout, stderr = process.communicate(timeout=15)
+            self.assertEqual(process.returncode, 130, stdout + stderr)
+            for pid in worker_pids:
+                with self.assertRaises(ProcessLookupError):
+                    os.kill(pid, 0)
+            self.assertFalse((self.generated / 'samples_simulated_touches.jsonl').exists())
+            with (self.generated / '.build.lock').open('a') as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                blocked = subprocess.run(
+                    [sys.executable, str(Path(__file__).with_name('make_touch_data.py')),
+                     '--data-root', str(self.root)], capture_output=True, text=True, timeout=15)
+                self.assertNotEqual(blocked.returncode, 0)
+                self.assertIn('Dataset is locked', blocked.stderr)
+                self.assertNotIn('Traceback', blocked.stderr)
+            # Reuse the actual CLI after cancellation, including manifest publication.
+            subprocess.run([sys.executable, str(Path(__file__).with_name('make_touch_data.py')),
+                            '--data-root', str(self.root), '--workers', '2'],
+                           check=True, capture_output=True, timeout=30)
+            self.assertTrue((self.generated / 'samples_simulated_touches.jsonl').exists())
+        finally:
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            process.communicate(timeout=15)
 
 
 class JointInputTests(unittest.TestCase):

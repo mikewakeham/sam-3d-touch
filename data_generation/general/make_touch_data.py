@@ -1,11 +1,12 @@
 """Add adaptive touch banks to an existing rendered/encoded dataset."""
 
 import argparse
-from concurrent.futures import ProcessPoolExecutor
 import fcntl
 import hashlib
 import json
+import multiprocessing as mp
 from pathlib import Path
+import signal
 
 import numpy as np
 import trimesh
@@ -13,6 +14,11 @@ import trimesh
 from generate_target_latents import checkpoint_sha256, load_normalized_mesh
 from sample_full_surface import classify_visibility, sam_camera_transform, transform_points, validate_surface
 from sample_touch_patches import make_patch_bank, save_patches
+
+
+def initialize_worker():
+    # The parent handles Ctrl+C and terminates the pool, including idle workers.
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 
 def parse_args(argv=None):
@@ -99,7 +105,11 @@ def main(argv=None):
     if output.resolve() == manifest.resolve():
         raise ValueError('Input and output manifests must differ')
     with (generated / '.build.lock').open('a') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise SystemExit(f'Dataset is locked by another generation process: {generated}. '
+                             'Stop that process before restarting; do not delete .build.lock.')
         records = [json.loads(line) for line in manifest.read_text().splitlines() if line.strip()]
         groups = {}
         for record in records:
@@ -108,17 +118,29 @@ def main(argv=None):
         if not groups or args.object_id and set(args.object_id) - set(groups):
             raise ValueError('Requested objects are absent from the input manifest')
         tasks = [(args, rows) for rows in groups.values()]
+        print(f'Generating simulated touches for {len(tasks)} objects with {args.workers} workers.', flush=True)
         completed = []
         if args.workers == 1:
-            for task in tasks:
+            for index, task in enumerate(tasks, 1):
                 rows = make_object(task)
                 completed.extend(rows)
-                print(f"{rows[0]['object_id']}: {len(rows)} views", flush=True)
+                print(f"[{index}/{len(tasks)}] {rows[0]['object_id']}: {len(rows)} views", flush=True)
         else:
-            with ProcessPoolExecutor(max_workers=args.workers) as pool:
-                for rows in pool.map(make_object, tasks):
+            # Match make_data.py's spawn context: workers must not inherit the dataset lock.
+            pool = mp.get_context('spawn').Pool(args.workers, initializer=initialize_worker)
+            try:
+                for index, rows in enumerate(pool.imap_unordered(make_object, tasks), 1):
                     completed.extend(rows)
-                    print(f"{rows[0]['object_id']}: {len(rows)} views", flush=True)
+                    print(f"[{index}/{len(tasks)}] {rows[0]['object_id']}: {len(rows)} views", flush=True)
+            finally:
+                # Public Pool shutdown API also handles interruption and worker errors.
+                # Finish cleanup even if Ctrl+C is pressed again; keep the lock until then.
+                previous_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
+                try:
+                    pool.terminate()
+                    pool.join()
+                finally:
+                    signal.signal(signal.SIGINT, previous_handler)
         # A pilot subset must never replace a previously complete training manifest.
         if args.object_id is not None:
             print(f'Saved simulated touches for {len(completed)} pilot views.', flush=True)
@@ -136,4 +158,8 @@ def main(argv=None):
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('\nStopped. Finished touch files are preserved; rerun the same command to continue.', flush=True)
+        raise SystemExit(130)
