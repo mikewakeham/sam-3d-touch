@@ -56,7 +56,7 @@ def main():
     from hydra.utils import instantiate
     from omegaconf import OmegaConf
     from dataloader import TouchDataset, collate_touch_batch
-    from evaluate import read_run, restore_run, stable_seed
+    from evaluation.evaluate import read_run, restore_run, stable_seed
     from train import amp, build_stage1_pipeline, prepare_batch
     from sam3d_objects.model.io import load_model_from_checkpoint
     from experiments.coordinate_system.scripts.full_checkpoints.protocol import evaluation_groups

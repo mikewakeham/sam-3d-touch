@@ -27,7 +27,7 @@ import numpy as np
 import torch
 import yaml
 from dataloader import TouchDataset, collate_touch_batch
-from evaluate import restore_run
+from evaluation.evaluate import restore_run
 from train import amp, build_stage1_pipeline, prepare_batch
 from experiments.coordinate_system.scripts.full_checkpoints.checkpoint_probe_gpu import make_bank, sha, write
 from experiments.coordinate_system.scripts.full_checkpoints.checkpoint_probe_core import condition_tokens, paired_loss, tensor_sha

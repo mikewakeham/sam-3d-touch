@@ -25,7 +25,7 @@ import torch
 import yaml
 from dataloader import TouchDataset, collate_touch_batch
 from train import amp, build_stage1_pipeline, prepare_batch
-from evaluate import restore_run
+from evaluation.evaluate import restore_run
 from experiments.coordinate_system.scripts.full_checkpoints.protocol import check_splits, evaluation_groups
 from experiments.coordinate_system.scripts.full_checkpoints.checkpoint_probe_core import condition_tokens, paired_loss, tensor_sha
 
@@ -117,7 +117,7 @@ def main():
                  'Wrong surfaces are cyclic distractors from three other identities in the batch.',
     }
     source_paths = [Path(__file__), _source_path(HERE, 'checkpoint_probe_core.py'), _source_path(HERE, 'protocol.py'),
-                    _source_path(REPO, 'train.py'), _source_path(REPO, 'evaluate.py'), _source_path(REPO, 'dataloader.py'),
+                    _source_path(REPO, 'train.py'), _source_path(REPO, 'evaluation/evaluate.py'), _source_path(REPO, 'dataloader.py'),
                     _source_path(REPO, 'sam3d_objects/model/backbone/dit/embedder/touch.py'),
                     _source_path(REPO, 'sam3d_objects/model/backbone/generator/shortcut/model.py'),
                     _source_path(REPO, 'sam3d_objects/model/backbone/generator/flow_matching/model.py')]

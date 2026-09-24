@@ -158,7 +158,7 @@ class ExperimentTests(unittest.TestCase):
         # Exercise the comparison driver without pretending to run unavailable SAM3D weights.
         import csv
         import dataloader
-        import evaluate
+        from evaluation import evaluate
         import train
         class Dataset(torch.utils.data.Dataset):
             def __init__(self):

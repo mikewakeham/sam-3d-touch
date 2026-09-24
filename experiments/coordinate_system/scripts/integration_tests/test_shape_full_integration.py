@@ -150,7 +150,7 @@ class ShapeFullTests(unittest.TestCase):
                     self.assertGreater(train.gradient_norm(p for m in modules for p in m.parameters()), 0, name)
 
     def test_all_three_variants_checkpoint_and_evaluation_restoration(self):
-        import evaluate
+        from evaluation import evaluate
         for image, constant in [(True, False), (False, False), (False, True)]:
             model, opt, _ = setup(constant=constant, image=image)
             data = batch()

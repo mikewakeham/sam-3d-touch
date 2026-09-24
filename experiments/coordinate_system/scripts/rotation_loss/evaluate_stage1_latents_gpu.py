@@ -17,7 +17,7 @@ import numpy as np
 import torch
 from omegaconf import OmegaConf
 from dataloader import TouchDataset, collate_touch_batch, load_data_config
-from evaluate import read_run, restore_run, stable_seed
+from evaluation.evaluate import read_run, restore_run, stable_seed
 from train import amp, build_stage1_pipeline, prepare_batch, checkpoint_train_scope
 from experiments.coordinate_system.scripts.full_checkpoints.checkpoint_probe_gpu import make_bank
 from experiments.coordinate_system.scripts.full_checkpoints.checkpoint_probe_core import paired_loss, tensor_sha

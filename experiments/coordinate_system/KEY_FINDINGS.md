@@ -137,7 +137,7 @@ All three September 15 runs finished 20 epochs / 14,660 updates with shape cross
 
 No clear pooled-validation-loss rescue is observed. Shared normalization with real surfaces is slightly worse by this metric, and the oracle/no-PM condition also does not improve it. These single-run, best-epoch differences do not establish statistical equivalence or generated shape quality. The oracle/no-PM run is nevertheless the needed controlled test without PM/surface conflict and without dropout.
 
-Next: evaluate these eight best checkpoints on the same validation identities/views/seeds with existing evaluate.py (Stage-2 aligned mesh CD and decoded-GT reference). This evaluates generated shape quality; it does not itself establish Stage-1 latent orientation error. The already implemented Stage-1 latent checkpoint probe addresses that separately. Do not rerun training from these pooled losses alone. Broader shape-full/dropout studies remain deferred.
+Next: evaluate these eight best checkpoints on the same validation identities/views/seeds with existing evaluation/evaluate.py (Stage-2 aligned mesh CD and decoded-GT reference). This evaluates generated shape quality; it does not itself establish Stage-1 latent orientation error. The already implemented Stage-1 latent checkpoint probe addresses that separately. Do not rerun training from these pooled losses alone. Broader shape-full/dropout studies remain deferred.
 
 Evidence: exported run.json/history.csv in ../wandb-results and local ignored [refresh summary](outputs/rotation_loss/wandb_refresh_20260915.json). Evaluation commands are provided in chat; no new job script or production change is needed.
 

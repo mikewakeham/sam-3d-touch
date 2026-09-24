@@ -28,7 +28,7 @@ import torch
 from omegaconf import OmegaConf
 
 from dataloader import build_dataloader
-from evaluate import read_run, restore_run
+from evaluation.evaluate import read_run, restore_run
 from experiments.noisy_target.evaluate import select_samples, tensor_digest
 from train import amp, build_stage1_pipeline, prepare_batch
 
@@ -69,7 +69,7 @@ def main():
                          "gpu": torch.cuda.get_device_name(), "python": sys.version}
     repo = next(p for p in Path(__file__).resolve().parents if (_source_path(p, 'train.py')).is_file() and (p / 'sam3d_objects').is_dir())
     result["source_sha256"] = {name: hashlib.sha256((_source_path(repo, name)).read_bytes()).hexdigest()
-        for name in ["train.py", "evaluate.py", "dataloader.py",
+        for name in ["train.py", "evaluation/evaluate.py", "dataloader.py",
                      "sam3d_objects/model/backbone/dit/embedder/touch.py",
                      "sam3d_objects/model/backbone/generator/classifier_free_guidance.py",
                      "sam3d_objects/model/backbone/generator/shortcut/model.py"]}

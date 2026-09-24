@@ -120,7 +120,7 @@ def main():
             'settings': {k: d['config'].get(k, 'not recorded') for k in [
                 'oracle_point_frame', 'no_pointmap', 'no_visual', 'visual_dropout', 'constant_touch']},
             'step': d['summary'].get('global_step'), 'val_loss': d['summary'].get('loss/val')})
-    source_files = [_source_path(REPO, p) for p in ['train.py', 'dataloader.py', 'evaluate.py',
+    source_files = [_source_path(REPO, p) for p in ['train.py', 'dataloader.py', 'evaluation/evaluate.py',
         'sam3d_objects/model/backbone/dit/embedder/touch.py',
         'sam3d_objects/model/backbone/dit/embedder/vecsetx/autoencoder.py',
         'sam3d_objects/model/backbone/tdfy_dit/models/mot_sparse_structure_flow.py',

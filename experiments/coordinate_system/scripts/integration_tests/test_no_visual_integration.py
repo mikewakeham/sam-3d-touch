@@ -24,9 +24,7 @@ import torch.nn.functional as F
 
 from experiments.coordinate_system.scripts.integration_tests.test_source_integration import REPO, SmallGenerator, SmallTouch, optimizer, prepared
 import train
-import evaluate
-
-
+from evaluation import evaluate
 def native_nodes(relative_path, names, namespace, parent=None):
     tree = ast.parse((_source_path(REPO, relative_path)).read_text())
     nodes = tree.body
@@ -154,7 +152,7 @@ class NoVisualTests(unittest.TestCase):
                     backbone.weight.requires_grad_(True)
                     backbone.bias.requires_grad_(True)
                 with patch.dict(sys.modules, {touch_stub.__name__: touch_stub}), patch.object(
-                        evaluate, 'build_optimizer', side_effect=enable):
+                        train, 'build_optimizer', side_effect=enable):
                     restored = evaluate.restore_run(pipeline, checkpoint, torch.device('cpu'))
                 after = pipeline.condition(self.inputs)[0]
                 if no_visual:

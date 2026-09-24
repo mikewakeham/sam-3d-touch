@@ -70,7 +70,7 @@ def build_model(settings, device):
 
 
 def restore_for_evaluation(checkpoint_path, device, pipeline_config=None):
-    """Restore with this experiment's prepare_batch, never vanilla evaluate.py.
+    """Restore with this experiment's prepare_batch, never vanilla evaluation/evaluate.py.
 
     Returns pipeline, model, metadata; caller uses metadata['settings']['arm'].
     No optimizer state or frozen pretrained weights are duplicated in the file.

@@ -30,7 +30,7 @@ from omegaconf import OmegaConf
 from scipy.spatial import cKDTree
 
 from dataloader import build_dataloader
-from evaluate import read_run, restore_run, stable_seed
+from evaluation.evaluate import read_run, restore_run, stable_seed
 from experiments.noisy_target.evaluate import tensor_digest
 from train import build_stage1_pipeline, prepare_batch
 

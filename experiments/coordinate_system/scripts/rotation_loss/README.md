@@ -1,7 +1,7 @@
 # Rotation penalty in SS target latents
 
 Two independent GPU commands and one CPU plotting command. No optimization,
-Stage 2, decoder, W&B or submission jobs. `evaluate.py` remains the separate
+Stage 2, decoder, W&B or submission jobs. `evaluation/evaluate.py` remains the separate
 Stage-2/CD evaluator. Run from the repository root in the existing environment.
 
 ## 1. Same shape, different target orientation

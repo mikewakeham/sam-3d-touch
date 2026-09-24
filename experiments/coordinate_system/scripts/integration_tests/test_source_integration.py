@@ -234,7 +234,7 @@ class SourceIntegrationTests(unittest.TestCase):
         torch.testing.assert_close(torch.random.get_rng_state(), torch_state, rtol=0, atol=0)
 
     def test_evaluation_restores_constant_bank(self):
-        import evaluate
+        from evaluation import evaluate
         model, batch = make_model(True, .5), prepared()
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / 'checkpoint.pt'
@@ -245,7 +245,7 @@ class SourceIntegrationTests(unittest.TestCase):
         stub = ModuleType('sam3d_objects.model.backbone.dit.embedder.touch'); stub.TouchEncoder = SmallTouch
         def enable(encoder, backbone, args):
             backbone.requires_grad_(True)
-        with patch.dict(sys.modules, {'sam3d_objects.model.backbone.dit.embedder.touch': stub}), patch.object(evaluate, 'build_optimizer', side_effect=enable):
+        with patch.dict(sys.modules, {'sam3d_objects.model.backbone.dit.embedder.touch': stub}), patch.object(train, 'build_optimizer', side_effect=enable):
             restored = evaluate.restore_run(pipeline, checkpoint, torch.device('cpu'))
         torch.testing.assert_close(model(*batch), restored(*batch), rtol=0, atol=0)
         torch.testing.assert_close(restored.get_touch_tokens(batch[3], batch[4]),

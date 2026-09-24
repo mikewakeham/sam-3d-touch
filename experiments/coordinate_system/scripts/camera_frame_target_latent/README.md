@@ -128,7 +128,7 @@ Code lives here; outputs stay in ignored `experiments/coordinate_system/outputs/
 
 Per arm: `config.json` (IDs/settings/source and initialization hashes), `metrics.jsonl`, `results.json` (loss curves/completion), and ONE rolling `latest.pt` trainable-weights checkpoint every 100 updates. At the end, `final.pt` replaces it. No optimizer history or frozen-model copies. Atomic replacement temporarily needs room for both files. Checkpoint size depends on trainable scope, not dataset size; keep weights/targets on cluster and return small JSON/selected figures.
 
-Checkpoints use `camera_frame_target_latent_v1`. They need this experiment's conditioning wrapper, not vanilla `evaluate.py`. `fit_camera_frame_gpu.restore_for_evaluation()` restores weights/components; use `training_runtime.prepare_batch()` with the saved arm and appropriate target manifest. Reconstruction scoring is deferred until after training. Resume optimization is not implemented; interrupted weights remain evaluable. Existing directories are never overwritten.
+Checkpoints use `camera_frame_target_latent_v1`. They need this experiment's conditioning wrapper, not vanilla `evaluation/evaluate.py`. `fit_camera_frame_gpu.restore_for_evaluation()` restores weights/components; use `training_runtime.prepare_batch()` with the saved arm and appropriate target manifest. Reconstruction scoring is deferred until after training. Resume optimization is not implemented; interrupted weights remain evaluable. Existing directories are never overwritten.
 
 ## Checks
 

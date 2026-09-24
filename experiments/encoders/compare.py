@@ -80,7 +80,7 @@ def plot_losses(run_dirs, output):
 def main():
     from omegaconf import OmegaConf
     from dataloader import build_dataloader, collate_touch_batch
-    from evaluate import read_run, restore_run, select_records, sample_shape, decode_voxels, stable_seed, safe_name
+    from evaluation.evaluate import read_run, restore_run, select_records, sample_shape, decode_voxels, stable_seed, safe_name
     from train import build_stage1_pipeline, prepare_batch, configure_encoder_data, amp
 
     parser = argparse.ArgumentParser(description=__doc__)

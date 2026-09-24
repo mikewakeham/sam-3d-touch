@@ -12,7 +12,7 @@ import numpy as np
 import torch
 
 from dataloader import build_dataloader
-from evaluate import read_run, restore_run
+from evaluation.evaluate import read_run, restore_run
 from train import amp, build_stage1_pipeline, prepare_batch
 
 

@@ -52,4 +52,4 @@ The file moves change imports and source-file lookup, not experiment settings, o
 
 `rotation_loss/` contains the current encoder-only rotation probe, paired Stage-1
 checkpoint latent/loss probe, and plotting commands. It does not use a decoder
-or change `evaluate.py`. See [commands and definitions](rotation_loss/README.md).
+or change `evaluation/evaluate.py`. See [commands and definitions](rotation_loss/README.md).

@@ -24,7 +24,7 @@ import torch
 import yaml
 from dataloader import TouchDataset, collate_touch_batch
 from train import amp, build_stage1_pipeline, prepare_batch
-from evaluate import restore_run
+from evaluation.evaluate import restore_run
 from experiments.coordinate_system.scripts.full_checkpoints.checkpoint_probe_gpu import sha, write
 from experiments.coordinate_system.scripts.full_checkpoints.checkpoint_probe_core import condition_tokens, tensor_sha
 from experiments.coordinate_system.scripts.full_checkpoints.checkpoint_rollout_core import sample_from_noise, support_metrics
