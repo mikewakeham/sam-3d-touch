@@ -221,6 +221,16 @@ class IntegrationTests(unittest.TestCase):
         np.testing.assert_array_equal(points, camera_points[indices + 64])
         with self.assertRaisesRegex(ValueError, 'does not match'):
             load_joint_view(args, touch + .01)
+        from data_generation.general.sample_touch_patches import joint_touch_indices as touch_indices
+        selected_touch = touch_indices(32)
+        fixed_camera = np.concatenate([np.tile(touch[:64] + .1, (16, 1)), touch[selected_touch]])
+        fixed_path = self.root / 'fixed_joint.npz'
+        np.savez(fixed_path, encoder_input_camera=fixed_camera, touch_centers=fixed_camera,
+                 touch_count=np.int64(7168), touch_source_indices=selected_touch)
+        args.joint_input = fixed_path
+        points, indices = load_joint_view(args, touch)
+        np.testing.assert_array_equal(points, fixed_camera)
+        np.testing.assert_array_equal(indices, np.arange(8192) - 1024)
 
     def test_v1_read_only_replay_and_mismatch(self):
         for record in self.records:
@@ -236,10 +246,10 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(before, [(self.root / r['full_surface_path']).read_bytes() for r in self.records])
         arrays['points_camera'] += .01
         np.savez_compressed(path, **arrays)
-        with self.assertRaisesRegex(ValueError, 'Sampling replay differs'):
+        with self.assertRaisesRegex(ValueError, 'source differ'):
             make_object((self.args, self.records))
 
-    def test_live_joint_viewer_budgets_toggles_and_cache(self):
+    def test_saved_joint_generation_loader_viewer_and_no_runtime_fps(self):
         import torch
         import view_data
         make_object((self.args, self.records))
@@ -251,7 +261,9 @@ class IntegrationTests(unittest.TestCase):
         inputs = dict(pointmap=torch.from_numpy(pointmap[::4, ::4].copy()).permute(2, 0, 1)[None],
                       mask=torch.from_numpy((rgba[::4, ::4, 3] / 255).copy())[None, None])
         inputs['pointmap'][0, :, 1, 1] = float('nan')
-        prepared = (SimpleNamespace(normalize_pointmap=False), inputs)
+        inputs['pointmap_scale'] = torch.ones(1, 3)
+        inputs['pointmap_shift'] = torch.zeros(1, 3)
+        preprocessor = SimpleNamespace(normalize_pointmap=False)
         valid = (inputs['mask'][0, 0] > .5) & inputs['pointmap'][0].isfinite().all(dim=0)
         expected_pointmap = inputs['pointmap'][0].permute(1, 2, 0)[valid].numpy()
 
@@ -285,23 +297,73 @@ class IntegrationTests(unittest.TestCase):
         # This unnormalized fixture never calls SSI; avoid its unavailable local GPU dependencies.
         transforms = ModuleType('sam3d_objects.data.dataset.tdfy.img_and_mask_transforms')
         transforms._apply_metric_to_ssi = Mock(side_effect=AssertionError('Unexpected SSI call'))
-        with patch.dict(sys.modules, {transforms.__name__: transforms}), \
-                patch.object(view_data, 'prepare_joint_preview', return_value=prepared) as prepare, \
+        from sample_touch_patches import saved_joint_points
+        path = view_data.touch_file(self.object_dir / 'views/000')
+        with np.load(path) as saved:
+            bank = dict(saved)
+        original_bank = bank
+        self.args.joint_pointmap = True
+        self.args.pipeline_config = self.root / 'pipeline.yaml'
+        self.args.pipeline_config.write_text('ss_preprocessor: fixture\n')
+        omega = ModuleType('omegaconf')
+        omega.OmegaConf = SimpleNamespace(load=lambda path: {'ss_preprocessor': 'fixture'})
+        with patch.dict(sys.modules, {transforms.__name__: transforms, 'omegaconf': omega}), \
+                patch('make_touch_data.joint_preprocessor', return_value=preprocessor), \
+                patch('train.preprocess_pointmap_batch', return_value=inputs), \
+                patch('make_touch_data.make_patch_bank', side_effect=AssertionError('Must reuse saved patches')):
+            make_object((self.args, self.records[:1]))
+            stamp = path.stat().st_mtime_ns
+            with patch('sam3d_objects.model.backbone.dit.embedder.surface_encoder_utils.farthest_point_indices',
+                       side_effect=AssertionError('Already saved; must skip FPS')):
+                make_object((self.args, self.records[:1]))
+            self.assertEqual(path.stat().st_mtime_ns, stamp)
+        with np.load(path) as saved:
+            bank = dict(saved)
+        for key, value in original_bank.items():
+            np.testing.assert_array_equal(bank[key], value)
+        before = {path: path.read_bytes() for path in self.root.rglob('*') if path.is_file()}
+        with patch('sam3d_objects.model.backbone.dit.embedder.surface_encoder_utils.farthest_point_indices',
+                   side_effect=AssertionError('Runtime FPS must not run')), \
                 patch.object(view_data, 'load_joint_cloud', wraps=view_data.load_joint_cloud) as compute:
             view_data.build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool)
             selection = gui['Touch patch budget']
             for count in (32, 16, 8, 32):
-                selection.value = f'{count} x {8192 // count} = 8192'
+                selection.value = f'{count} x {7168 // count} + 1024 pointmap'
                 selection.callback(None)
                 expected_touch = view_data.load_touch_view(args)[0]
                 np.testing.assert_array_equal(scene['/joint_before'].points[:len(expected_pointmap)], expected_pointmap)
-                np.testing.assert_array_equal(scene['/joint_before'].points[-8192:], expected_touch)
+                from data_generation.general.sample_touch_patches import joint_touch_indices as touch_indices
+                np.testing.assert_array_equal(scene['/joint_before'].points[-7168:], expected_touch[touch_indices(count)])
                 self.assertEqual(scene['/joint_fps'].points.shape, (8192, 3))
                 self.assertEqual(scene['/joint_fps'].colors.shape, (8192, 3))
                 self.assertIn('= 8,192', gui['counts'].content)
+                self.assertIn('1,024 pointmap + 7,168 touch', gui['counts'].content)
                 self.assertFalse(selection.disabled)
             self.assertEqual(compute.call_count, 3)
-            prepare.assert_called_once()
+            from dataloader import TouchDataset, collate_touch_batch
+            import train
+            record = dict(self.records[0], touch_path=str(path.relative_to(self.root)))
+            self.manifest.write_text(json.dumps(record) + '\n')
+            for count in (32, 16, 8):
+                config = dict(dataset=dict(root=str(self.root), manifest='generated_data/samples.jsonl',
+                                           split_file='generated_data/splits_train_val.json', split='train'),
+                              touch=dict(source='touch_patches', contacts=dict(count=count),
+                                         point_sampling=dict(points_per_contact=8192 // count)))
+                dataset = TouchDataset(config, joint_pointmap=True)
+                batch = collate_touch_batch([dataset[0]])
+                np.testing.assert_array_equal(batch['joint_xyz'][0], saved_joint_points(bank, count))
+                pipeline = SimpleNamespace(ss_condition_embedder=None, ss_condition_input_mapping=[],
+                                           ss_preprocessor=preprocessor,
+                                           get_condition_input=lambda *args: ((), {}),
+                                           backbone=SimpleNamespace(latent_mapping={'shape': None}))
+                with patch.object(train, 'preprocess_batch', return_value=inputs), \
+                        patch.object(train, 'combine_pointmap_and_touch', side_effect=AssertionError('Runtime combination')):
+                    result = train.prepare_batch(pipeline, batch, torch.device('cpu'), 'fp32', True, True)
+                    batch['joint_pointmap_scale'] += 1
+                    with self.assertRaisesRegex(ValueError, 'preprocessing differs'):
+                        train.prepare_batch(pipeline, batch, torch.device('cpu'), 'fp32', True, True)
+                torch.testing.assert_close(result[3], batch['joint_xyz'])
+            self.manifest.write_bytes(before[self.manifest])
         toggle = gui['Joint after FPS (8192 points)']
         toggle.value = False
         toggle.callback(None)

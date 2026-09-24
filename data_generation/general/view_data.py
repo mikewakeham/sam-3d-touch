@@ -25,9 +25,7 @@ def parse_args(argv=None):
     parser.add_argument('--contacts', type=int, choices=[32, 16, 8], default=32)
     joint = parser.add_mutually_exclusive_group()
     joint.add_argument('--joint-input', type=Path, help='Evaluated joint run stage1.npz: show its input after encoder FPS')
-    joint.add_argument('--joint-pointmap', action='store_true', help='Preview joint pointmap/touch FPS directly from this view')
-    parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'),
-                        help='Training pipeline preprocessing for --joint-pointmap; model weights are not loaded')
+    joint.add_argument('--joint-pointmap', action='store_true', help='Load the joint pointmap/touch selection saved by make_touch_data.py')
     parser.add_argument('--input-device', default='cpu', choices=['cpu', 'cuda'])
     return parser.parse_args(argv)
 
@@ -131,70 +129,52 @@ def load_touch_view(args):
     return data['points_camera'][indices], colors, centers, np.concatenate(lines)
 
 
-def prepare_joint_preview(args, rgba, pointmap):
-    """Use the training preprocessor without constructing or loading any model."""
+def load_joint_cloud(args, touch_points):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    import torch
-    from train import build_stage1_preprocessor, preprocess_pointmap_batch
-
-    preprocessor = build_stage1_preprocessor(args.pipeline_config)
-    with torch.no_grad():
-        inputs = preprocess_pointmap_batch(
-            preprocessor, torch.from_numpy(rgba.copy())[None],
-            torch.from_numpy(np.ascontiguousarray(pointmap))[None], args.input_device,
-        )
-    return preprocessor, inputs
-
-
-def load_joint_cloud(args, touch_points, prepared=None):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    from evaluation.input_visualizations import surface_indices
-    if prepared is None:
+    if getattr(args, 'joint_pointmap', False):
+        from sample_touch_patches import saved_joint_points, joint_touch_indices
+        view = args.data_root / 'generated_data' / args.object_id / 'views' / f'{args.view_id:03d}'
+        with np.load(touch_file(view), allow_pickle=False) as saved:
+            joint = saved_joint_points(saved, args.contacts, 'camera')
+            pointmap = saved['joint_pointmap_candidates_camera']
+            chosen = saved['joint_pointmap_indices']
+        camera = np.concatenate((pointmap, joint[1024:]))
+        indices = np.concatenate((chosen, np.arange(len(pointmap), len(camera))))
+        if not np.allclose(camera[indices], joint, atol=1e-5, rtol=1e-5):
+            raise ValueError('Saved joint selection is inconsistent')
+        touch_points = touch_points[joint_touch_indices(args.contacts)]
+        count = 7168
+    else:
+        from evaluation.input_visualizations import surface_indices
         with np.load(args.joint_input, allow_pickle=False) as saved:
             if 'encoder_input_camera' not in saved:
                 raise ValueError('--joint-input needs a newly evaluated joint stage1.npz')
             camera = saved['encoder_input_camera']
             pre_encoder = saved['touch_centers']
             count = int(saved['touch_count'])
-    else:
-        import torch
-        from train import combine_pointmap_and_touch, normalize_touch_to_pointmap_frame
-        from evaluation.input_visualizations import joint_camera_points
-
-        preprocessor, inputs = prepared
-        count = len(touch_points)
-        with torch.no_grad():
-            touch = torch.as_tensor(touch_points, device=args.input_device)[None]
-            mask = torch.ones(touch.shape[:2], dtype=torch.bool, device=touch.device)
-            touch = normalize_touch_to_pointmap_frame(touch, mask, inputs, preprocessor)
-            cloud, valid = combine_pointmap_and_touch(inputs, touch, mask)
-            cloud = cloud[0, valid[0]]
-            camera = joint_camera_points(cloud, inputs, preprocessor)
-            pre_encoder = cloud.float().cpu().numpy()
+            if 'touch_source_indices' in saved:
+                touch_points = touch_points[saved['touch_source_indices']]
+        indices = surface_indices(pre_encoder, 'vecsetx', args.input_device)
     if count != len(touch_points) or not np.allclose(camera[-count:], touch_points, atol=1e-5, rtol=1e-5):
         raise ValueError('Joint input does not match this object/view/contact selection')
-    print(f'Computing joint FPS for {args.contacts} patches: {len(camera):,} candidates -> 8192 points '
-          f'({args.input_device})', flush=True)
-    indices = surface_indices(pre_encoder, 'vecsetx', args.input_device)
-    pointmap_count = len(camera) - count
-    return camera, indices, pointmap_count
+    return camera, indices, len(camera) - count
 
 
-def joint_counts(args, indices, pointmap_count):
+def joint_counts(args, indices, pointmap_count, touch_count=8192):
     patch_ids = np.full(len(indices), -1, dtype=np.int64)
     touch = indices >= pointmap_count
-    patch_ids[touch] = (indices[touch] - pointmap_count) // (8192 // args.contacts)
+    patch_ids[touch] = (indices[touch] - pointmap_count) // (touch_count // args.contacts)
     retained = np.bincount(patch_ids[touch], minlength=args.contacts)
     print(f'Joint FPS: {touch.sum()} touch + {(~touch).sum()} pointmap = {len(indices)}', flush=True)
     print(f'Touch points per patch after FPS: {retained.tolist()}', flush=True)
-    return (f'**Before FPS:** {pointmap_count:,} pointmap + 8,192 touch points.\n\n'
+    return (f'**Before FPS:** {pointmap_count:,} pointmap + {touch_count:,} touch points.\n\n'
             f'**After FPS:** {(~touch).sum():,} pointmap + {touch.sum():,} touch = {len(indices):,}.\n\n'
             f'**Touch points retained per patch (FPS order):** {retained.tolist()}')
 
 
 def load_joint_view(args, touch_points):
     camera, indices, pointmap_count = load_joint_cloud(args, touch_points)
-    joint_counts(args, indices, pointmap_count)
+    joint_counts(args, indices, pointmap_count, len(camera) - pointmap_count)
     return camera[indices], indices - pointmap_count
 
 
@@ -245,16 +225,17 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
     )
     add_toggle(server, "Full surface (green visible / blue hidden)", handle)
     if has_touches:
-        budgets = {f'{count} x {8192 // count} = 8192': count for count in (32, 16, 8)}
+        budgets = {(f'{count} x {7168 // count} + 1024 pointmap' if joint_preview
+                    else f'{count} x {8192 // count} = 8192'): count for count in (32, 16, 8)}
         selection = server.gui.add_dropdown(
             'Touch patch budget', options=list(budgets),
-            initial_value=f'{args.contacts} x {8192 // args.contacts} = 8192',
+            initial_value=next(label for label, count in budgets.items() if count == args.contacts),
             disabled=bool(joint_input),
         )
         points, colors, centers, boundaries = load_touch_view(args)
         touch_handle = server.scene.add_point_cloud('/touch', points=points, colors=colors,
                                                     point_size=.003, point_shape='circle', visible=not show_joint)
-        add_toggle(server, 'Simulated touches', touch_handle)
+        add_toggle(server, 'Simulated touches (8192 candidates)' if joint_preview else 'Simulated touches', touch_handle)
         centers_handle = server.scene.add_point_cloud('/touch_centers', points=centers,
                                                       colors=(255, 255, 255), point_size=.008,
                                                       point_shape='circle', visible=not show_joint)
@@ -264,18 +245,21 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
         add_toggle(server, 'Patch ellipsoid boundaries', regions)
 
         if show_joint:
-            prepared = prepare_joint_preview(args, rgba, pointmap) if joint_preview else None
             cache = {}
-            counts = server.gui.add_markdown('Computing joint FPS…')
+            counts = server.gui.add_markdown('Loading saved joint inputs…')
 
             def joint_data(points, colors):
                 if args.contacts not in cache:
-                    cache[args.contacts] = load_joint_cloud(args, points, prepared)
+                    cache[args.contacts] = load_joint_cloud(args, points)
                 camera, indices, pointmap_count = cache[args.contacts]
+                touch_colors = colors
+                if len(camera) - pointmap_count == 7168:
+                    from sample_touch_patches import joint_touch_indices as touch_indices
+                    touch_colors = colors[touch_indices(args.contacts)]
                 joint_colors = np.concatenate([
-                    np.tile(np.array([60, 200, 90], np.uint8), (pointmap_count, 1)), colors,
+                    np.tile(np.array([60, 200, 90], np.uint8), (pointmap_count, 1)), touch_colors,
                 ])
-                counts.content = joint_counts(args, indices, pointmap_count)
+                counts.content = joint_counts(args, indices, pointmap_count, len(camera) - pointmap_count)
                 return camera, joint_colors, indices
 
             camera, joint_colors, indices = joint_data(points, colors)
@@ -301,7 +285,7 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
                 try:
                     points, colors, centers, boundaries = load_touch_view(args)
                     if show_joint:
-                        counts.content = 'Computing joint FPS…'
+                        counts.content = 'Loading saved joint inputs…'
                         camera, joint_colors, indices = joint_data(points, colors)
                     with server.atomic():
                         touch_handle.points = points
@@ -315,7 +299,7 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
                             joint_handle.colors = joint_colors[indices]
                 except Exception as error:
                     args.contacts = previous
-                    selection.value = f'{previous} x {8192 // previous} = 8192'
+                    selection.value = next(label for label, count in budgets.items() if count == previous)
                     if show_joint:
                         counts.content = f'Joint preview failed: {error}'
                     raise

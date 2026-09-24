@@ -7,13 +7,15 @@ import json
 import multiprocessing as mp
 from pathlib import Path
 import signal
+import sys
+from functools import lru_cache
 
 import numpy as np
 import trimesh
 
 from generate_target_latents import checkpoint_sha256, load_normalized_mesh
 from sample_full_surface import classify_visibility, sam_camera_transform, transform_points, validate_surface
-from sample_touch_patches import make_patch_bank, save_patches
+from sample_touch_patches import make_patch_bank, save_patches, validate_patches, select_patch_indices
 
 
 def initialize_worker():
@@ -32,11 +34,92 @@ def parse_args(argv=None):
     parser.add_argument('--workers', type=int, default=1)
     parser.add_argument('--object-id', action='append', help='Process only these objects (repeatable)')
     parser.add_argument('--overwrite', action='store_true')
+    parser.add_argument('--joint-pointmap', action='store_true', help='Also save fixed 1024-pointmap + 7168-touch inputs for all three budgets')
+    parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'))
     args = parser.parse_args(argv)
     if (not args.name or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-' for c in args.name)
             or args.workers < 1):
         parser.error('Use a simple alphanumeric/underscore/hyphen name and positive worker count')
     return args
+
+
+def joint_arrays(bank, preprocessor, inputs):
+    """Compute once during generation; training and the viewer only read these arrays."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import torch
+    from train import normalize_touch_to_pointmap_frame
+    from evaluation.input_visualizations import joint_camera_points
+    from sam3d_objects.model.backbone.dit.embedder.surface_encoder_utils import farthest_point_indices
+
+    with torch.no_grad():
+        pointmap = inputs['pointmap'][0].permute(1, 2, 0).reshape(-1, 3)
+        valid = (inputs['mask'][0].reshape(-1) > .5) & pointmap.isfinite().all(dim=-1)
+        pointmap = pointmap[valid]
+        if not len(pointmap):
+            raise ValueError('No valid foreground pointmap points')
+        chosen = farthest_point_indices(pointmap[None], min(1024, len(pointmap)))[0]
+        chosen = chosen[torch.arange(1024, device=chosen.device) % len(chosen)]
+        camera, normalized = [], []
+        for contacts in (32, 16, 8):
+            indices = select_patch_indices(bank, contacts, 7168 // contacts)
+            touch = torch.as_tensor(bank['points_camera'][indices], device=pointmap.device)[None]
+            mask = torch.ones(touch.shape[:2], dtype=torch.bool, device=pointmap.device)
+            touch = normalize_touch_to_pointmap_frame(touch, mask, inputs, preprocessor)[0]
+            cloud = torch.cat((pointmap[chosen], touch))
+            restored = joint_camera_points(cloud, inputs, preprocessor)
+            if not np.allclose(restored[1024:], bank['points_camera'][indices], atol=1e-5, rtol=1e-5):
+                raise ValueError('Joint points do not round-trip to the saved touch points')
+            camera.append(restored)
+            normalized.append(cloud.float().cpu().numpy())
+        return dict(joint_points_camera=np.array(camera, dtype=np.float32),
+                    joint_points_pre_encoder=np.array(normalized, dtype=np.float32),
+                    joint_pointmap_candidates_camera=joint_camera_points(pointmap, inputs, preprocessor),
+                    joint_pointmap_indices=chosen.cpu().numpy(),
+                    joint_pointmap_scale=inputs['pointmap_scale'][0].float().cpu().numpy(),
+                    joint_pointmap_shift=inputs['pointmap_shift'][0].float().cpu().numpy())
+
+
+@lru_cache(maxsize=1)
+def joint_preprocessor(path):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import torch
+    from train import build_stage1_preprocessor
+    torch.set_num_threads(1)
+    return build_stage1_preprocessor(path)
+
+
+def save_joint(args, record, arrays, path):
+    if not args.joint_pointmap:
+        return
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    import torch
+    from PIL import Image
+    from dataloader import TouchDataset
+    from train import preprocess_pointmap_batch
+    from omegaconf import OmegaConf
+
+    config_path = args.pipeline_config.resolve()
+    config = OmegaConf.load(config_path)
+    sources = [args.data_root / record[key] for key in ('image_path', 'camera_path', 'depth_path')]
+    if record.get('pointmap_path'):
+        sources.append(args.data_root / record['pointmap_path'])
+    sources.append(config_path)
+    if config.get('ss_preprocessor') is None:
+        sources.append(config_path.parent / config.ss_generator_config_path)
+    fingerprint = hashlib.sha256(''.join(checkpoint_sha256(source) for source in sources).encode()).hexdigest()
+    if 'joint_points_camera' in arrays and str(arrays.get('joint_source_sha256')) == fingerprint:
+        return
+    dataset = object.__new__(TouchDataset)
+    dataset.root = args.data_root
+    with Image.open(args.data_root / record['image_path']) as image:
+        rgba = np.array(image.convert('RGBA'))
+    pointmap = dataset.load_pointmap(record)
+    preprocessor = joint_preprocessor(str(config_path))
+    inputs = preprocess_pointmap_batch(preprocessor, torch.from_numpy(rgba)[None],
+                                      torch.from_numpy(pointmap)[None], 'cpu')
+    arrays.update(joint_arrays(arrays, preprocessor, inputs), joint_source_sha256=fingerprint)
+    # Upgrade this file atomically while preserving the existing patch bank.
+    save_patches(path, arrays, overwrite=True)
 
 
 def make_object(task):
@@ -51,6 +134,21 @@ def make_object(task):
     outputs = []
     for record in records:
         surface_path = root / record['full_surface_path']
+        path = surface_path.with_name(f'{args.name}.npz')
+        identity = int(hashlib.sha256(record['sample_id'].encode()).hexdigest()[:8], 16)
+        seed = [args.seed, identity]
+        if path.exists() and not args.overwrite:
+            with np.load(path, allow_pickle=False) as saved:
+                arrays = dict(saved)
+            validate_patches(arrays)
+            if (str(arrays['mesh_sha256']) != mesh_hash
+                    or str(arrays['source_surface_sha256']) != checkpoint_sha256(surface_path)
+                    or float(arrays['radius']) != args.radius or float(arrays['thickness']) != args.thickness
+                    or not np.array_equal(arrays['sample_seed_parts'], seed)):
+                raise ValueError(f'Existing touch settings or source differ: {path}; use --overwrite')
+            save_joint(args, record, arrays, path)
+            outputs.append(dict(record, touch_path=str(path.relative_to(root))))
+            continue
         with np.load(surface_path, allow_pickle=False) as saved:
             surface = dict(saved)
         validate_surface(surface)
@@ -92,6 +190,7 @@ def make_object(task):
         )
         path = surface_path.with_name(f'{args.name}.npz')
         save_patches(path, arrays, args.overwrite)
+        save_joint(args, record, arrays, path)
         outputs.append(dict(record, touch_path=str(path.relative_to(root))))
     return outputs
 

@@ -29,13 +29,14 @@ def load_data_config(path):
 
 
 class TouchDataset(Dataset):
-    def __init__(self, config, include_touch=True, oracle_point_frame=False):
+    def __init__(self, config, include_touch=True, oracle_point_frame=False, joint_pointmap=False):
         if isinstance(config, (str, Path)):
             config = load_data_config(config)
 
         dataset_config = config["dataset"]
         self.root = Path(dataset_config["root"])
         self.include_touch = include_touch
+        self.joint_pointmap = joint_pointmap
         self.oracle_point_frame = oracle_point_frame
         self.point_source = config.get("touch", {}).get("source", "touch")
         self.include_normals = bool(config.get("touch", {}).get("include_normals", False))
@@ -206,6 +207,13 @@ class TouchDataset(Dataset):
                     sample["touch_normals"] = torch.from_numpy(np.ascontiguousarray(normals))
             elif self.point_source == 'touch_patches':
                 touch_xyz = self.load_touch_patches(self.resolve_path(record['touch_path']))
+                sample['touch_patch_count'] = self.contact_count
+                if self.joint_pointmap:
+                    from data_generation.general.sample_touch_patches import saved_joint_points
+                    with np.load(self.resolve_path(record['touch_path']), allow_pickle=False) as data:
+                        sample['joint_xyz'] = torch.from_numpy(saved_joint_points(data, self.contact_count))
+                        for key in ('pointmap_scale', 'pointmap_shift'):
+                            sample['joint_' + key] = torch.from_numpy(data['joint_' + key].copy())
             else:
                 touch_xyz = self.load_touch(self.resolve_path(record["touch_path"]))
             sample["touch_xyz"] = torch.from_numpy(touch_xyz)
@@ -275,11 +283,13 @@ def build_dataloader(
     distributed=False,
     include_touch=True,
     oracle_point_frame=False,
+    joint_pointmap=False,
 ):
     if isinstance(config, (str, Path)):
         config = load_data_config(config)
 
-    dataset = TouchDataset(config, include_touch=include_touch, oracle_point_frame=oracle_point_frame)
+    dataset = TouchDataset(config, include_touch=include_touch, oracle_point_frame=oracle_point_frame,
+                           joint_pointmap=joint_pointmap)
     sampler = None
     rank = 0
 

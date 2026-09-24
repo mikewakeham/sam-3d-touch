@@ -178,6 +178,23 @@ def select_patch_indices(data, contacts, points_per_contact):
     return (offsets[:contacts, None] + np.arange(points_per_contact)).ravel()
 
 
+def joint_touch_indices(contacts):
+    if contacts not in (32, 16, 8):
+        raise ValueError('Joint simulated touches require 32, 16, or 8 patches')
+    return (np.arange(contacts)[:, None] * (8192 // contacts)
+            + np.arange(7168 // contacts)).ravel()
+
+
+def saved_joint_points(data, contacts, frame='pre_encoder'):
+    key = f'joint_points_{frame}'
+    if key not in data:
+        raise ValueError('Saved joint inputs are missing; rerun make_touch_data.py with --joint-pointmap')
+    points = data[key][(32, 16, 8).index(contacts)]
+    if points.shape != (8192, 3) or points.dtype != np.float32 or not np.isfinite(points).all():
+        raise ValueError('Invalid saved joint input')
+    return np.ascontiguousarray(points)
+
+
 def save_patches(path, arrays, overwrite=False):
     validate_patches(arrays)
     if any(np.asarray(value).dtype.hasobject for value in arrays.values()):

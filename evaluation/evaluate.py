@@ -431,7 +431,7 @@ def write_metrics(path, rows):
 def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                        completed, metrics_path, args, joint_pointmap=False,
                        oracle_point_frame=False, use_gt_latent=False, touch_token_fn=None,
-                       shared_pointmap_normalization=False):
+                       shared_pointmap_normalization=False, fixed_joint_patches=False):
     from train import prepare_batch
     from sam3d_objects.pipeline.inference_utils import downsample_sparse_structure, prune_sparse_structure
 
@@ -465,6 +465,7 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                         shared_pointmap_normalization,
                         use_normals=bool(encoder is not None and getattr(encoder, "requires_normals", False)),
                         return_inputs=True,
+                        fixed_joint_patches=fixed_joint_patches,
                     )
                 stage2_inputs = preprocess_stage2(pipeline, batch["image"])
                 torch.manual_seed(seed)
@@ -493,12 +494,17 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     from evaluation.input_visualizations import joint_camera_points
                     camera_points = joint_camera_points(touch_xyz[0, touch_mask[0], :3], inputs,
                                                         pipeline.ss_preprocessor)
-                    touch_count = int(batch['touch_mask'][0].sum())
+                    source_indices = np.arange(int(batch['touch_mask'][0].sum()))
+                    if fixed_joint_patches and 'touch_patch_count' in batch:
+                        from data_generation.general.sample_touch_patches import joint_touch_indices as touch_indices
+                        source_indices = touch_indices(int(batch['touch_patch_count'][0]))
+                    touch_count = len(source_indices)
                     if not np.allclose(camera_points[-touch_count:],
-                                       batch['touch_xyz'][0, batch['touch_mask'][0]].numpy(),
+                                       batch['touch_xyz'][0, batch['touch_mask'][0]].numpy()[source_indices],
                                        atol=1e-5, rtol=1e-5):
                         raise ValueError('Joint visualization does not round-trip to camera-space touch points')
-                    joint_input = dict(encoder_input_camera=camera_points, touch_count=np.int64(touch_count))
+                    joint_input = dict(encoder_input_camera=camera_points, touch_count=np.int64(touch_count),
+                                       touch_source_indices=source_indices)
 
                 coords_original = torch.argwhere(predicted_voxels).int()
                 coords = coords_original
@@ -853,6 +859,7 @@ def main():
             run_data, 1, args.workers, shuffle=False,
             include_touch=use_touch or shared_pointmap_normalization,
             oracle_point_frame=conditioning["oracle_point_frame"],
+            joint_pointmap=conditioning.get('joint_pointmap_points') == 1024,
         )
         run_records = {record["sample_id"]: record for record in loader.dataset.records}
         loader.dataset.records = [run_records[sample_id] for sample_id in local_sample_ids]
@@ -869,6 +876,7 @@ def main():
                 oracle_point_frame=conditioning["oracle_point_frame"],
                 touch_token_fn=model.get_touch_tokens if model is not None else None,
                 shared_pointmap_normalization=shared_pointmap_normalization,
+                fixed_joint_patches=conditioning.get('joint_pointmap_points') == 1024,
             )
             for row in new_rows:
                 rows_by_key[(row["condition"], row["sample_id"])] = row

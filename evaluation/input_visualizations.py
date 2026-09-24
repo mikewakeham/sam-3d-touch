@@ -155,6 +155,9 @@ def load_input_visualizations(args):
             if joint:
                 if 'encoder_input_camera' not in stage1:
                     raise ValueError('Re-evaluate this joint run to save its camera-space input')
+                if 'touch_source_indices' in stage1:
+                    camera_points = camera_points[stage1['touch_source_indices']]
+                    touch_count = len(camera_points)
                 np.testing.assert_allclose(stage1['encoder_input_camera'][-touch_count:], camera_points,
                                            atol=1e-5, rtol=1e-5)
                 camera_points = stage1['encoder_input_camera']

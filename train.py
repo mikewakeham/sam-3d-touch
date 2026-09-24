@@ -213,7 +213,7 @@ def build_stage1_preprocessor(config_path):
 class TouchTrainingModel(torch.nn.Module):
     def __init__(self, generator, touch_encoder=None, no_pointmap=False, oracle_point_frame=False,
                  visual_dropout=0.0, constant_touch=False, no_visual=False,
-                 shared_pointmap_normalization=False):
+                 shared_pointmap_normalization=False, joint_pointmap_points=None):
         super().__init__()
         self.generator = generator
         self.touch_encoder = touch_encoder
@@ -226,6 +226,8 @@ class TouchTrainingModel(torch.nn.Module):
             self.conditioning_config["no_visual"] = True
         if shared_pointmap_normalization:
             self.conditioning_config["shared_pointmap_normalization"] = True
+        if joint_pointmap_points is not None:
+            self.conditioning_config['joint_pointmap_points'] = joint_pointmap_points
         self.training_config = {"visual_dropout": visual_dropout, "constant_touch": constant_touch}
         self.register_buffer("constant_touch_features", None, persistent=False)
         self.constant_touch_sample_id = None
@@ -395,7 +397,7 @@ def make_targets(shape, backbone):
 def prepare_batch(
     pipeline, batch, device, precision, use_touch, joint_pointmap=False,
     oracle_point_frame=False, shared_pointmap_normalization=False, use_normals=False,
-    return_inputs=False,
+    return_inputs=False, fixed_joint_patches=True,
 ):
     inputs = preprocess_batch(
         pipeline, batch["image"], batch["pointmap"],
@@ -427,14 +429,22 @@ def prepare_batch(
                 if normals is not None:
                     normals = normals @ torch.linalg.inv(transform[:, :3, :3])
                     normals = torch.nn.functional.normalize(normals, dim=-1)
-            elif not shared_pointmap_normalization and not use_normals:
+            elif not shared_pointmap_normalization and not use_normals and not (
+                    joint_pointmap and fixed_joint_patches and 'touch_patch_count' in batch):
                 touch_xyz = normalize_touch_to_pointmap_frame(
                     touch_xyz, touch_mask, inputs, pipeline.ss_preprocessor,
                 )
             if joint_pointmap:
-                touch_xyz, touch_mask = combine_pointmap_and_touch(
-                    inputs, touch_xyz, touch_mask
-                )
+                if fixed_joint_patches and 'touch_patch_count' in batch:
+                    if 'joint_xyz' not in batch:
+                        raise ValueError('Saved joint inputs are missing; rerun make_touch_data.py with --joint-pointmap')
+                    for key in ('pointmap_scale', 'pointmap_shift'):
+                        if not torch.allclose(batch['joint_' + key].to(inputs[key]), inputs[key], atol=1e-5, rtol=1e-5):
+                            raise ValueError('Saved joint preprocessing differs; regenerate joint inputs with the training pipeline config')
+                    touch_xyz = batch['joint_xyz'].to(device, non_blocking=True)
+                    touch_mask = torch.ones(touch_xyz.shape[:2], dtype=torch.bool, device=device)
+                else:
+                    touch_xyz, touch_mask = combine_pointmap_and_touch(inputs, touch_xyz, touch_mask)
             if normals is not None:
                 # Keep the existing five-item batch interface; the new encoders take XYZ+normal.
                 touch_xyz = torch.cat((touch_xyz, normals), dim=-1)
@@ -926,6 +936,7 @@ def main():
         distributed=distributed,
         include_touch=not args.no_touch or args.shared_pointmap_normalization,
         oracle_point_frame=args.oracle_point_frame,
+        joint_pointmap=args.joint_pointmap,
     )
     if len(train_loader) == 0:
         raise ValueError("Training loader has no batches")
@@ -936,6 +947,7 @@ def main():
         shuffle=False, distributed=distributed,
         include_touch=not args.no_touch or args.shared_pointmap_normalization,
         oracle_point_frame=args.oracle_point_frame,
+        joint_pointmap=args.joint_pointmap,
     )
 
     pipeline = build_stage1_pipeline(
@@ -960,6 +972,7 @@ def main():
         args.oracle_point_frame, args.visual_dropout, args.constant_touch,
         no_visual=args.no_visual,
         shared_pointmap_normalization=args.shared_pointmap_normalization,
+        joint_pointmap_points=(1024 if args.joint_pointmap and data_config.get('touch', {}).get('source') == 'touch_patches' else None),
     )
     optimizer, parameters = build_optimizer(touch_encoder, pipeline.backbone, args)
     if args.no_touch:
