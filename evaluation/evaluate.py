@@ -141,6 +141,12 @@ def selected_touch_indices(data, contact, radius, points_per_contact):
 
 def hidden_fraction(record, dataset, data_config):
     touch = data_config["touch"]
+    if touch.get('source') == 'touch_patches':
+        from data_generation.general.sample_touch_patches import select_patch_indices
+        with np.load(dataset.resolve_path(record['touch_path']), allow_pickle=False) as data:
+            indices = select_patch_indices(data, touch['contacts']['count'],
+                                           touch['point_sampling']['points_per_contact'])
+            return float(np.mean(data['point_visibility'][indices] == 0))
     if touch.get("source") == "full_surface":
         with np.load(dataset.resolve_path(record["full_surface_path"]), allow_pickle=False) as data:
             return float(np.mean(data["point_visibility"] == 0))
@@ -300,7 +306,7 @@ def save_generated_artifacts(output_dir, condition, sample_id, prediction, predi
                              target_voxels, coords_original, coords, downsample_factor, slat,
                              raw_mesh, normalized_mesh, aligned_mesh, normalization, alignment,
                              icp_error, icp_fitness, icp_inlier_rmse, points, normals,
-                             touch_centers, seed, save_points):
+                             touch_centers, seed, save_points, joint_input=None):
     artifact_dir = output_dir / "artifacts" / safe_name(condition) / safe_name(sample_id)
     artifact_dir.mkdir(parents=True, exist_ok=True)
     stage1_path = artifact_dir / "stage1.npz"
@@ -320,6 +326,7 @@ def save_generated_artifacts(output_dir, condition, sample_id, prediction, predi
         coords=coords.cpu().numpy(),
         downsample_factor=np.asarray(factor),
         touch_centers=touch_centers,
+        **(joint_input or {}),
     )
     np.savez_compressed(
         slat_path,
@@ -451,12 +458,13 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
             try:
                 touch_xyz = touch_mask = None
                 if not use_gt_latent:
-                    _, condition_args, condition_kwargs, touch_xyz, touch_mask = prepare_batch(
+                    _, condition_args, condition_kwargs, touch_xyz, touch_mask, inputs = prepare_batch(
                         pipeline, batch, torch.device(args.device),
                         "fp32" if args.no_amp else "bf16", encoder is not None,
                         joint_pointmap, oracle_point_frame,
                         shared_pointmap_normalization,
                         use_normals=bool(encoder is not None and getattr(encoder, "requires_normals", False)),
+                        return_inputs=True,
                     )
                 stage2_inputs = preprocess_stage2(pipeline, batch["image"])
                 torch.manual_seed(seed)
@@ -480,6 +488,17 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     touch_xyz[0, touch_mask[0], :3].cpu().numpy()
                     if touch_xyz is not None else np.empty((0, 3), dtype=np.float32)
                 )
+                joint_input = None
+                if joint_pointmap and touch_xyz is not None:
+                    from evaluation.input_visualizations import joint_camera_points
+                    camera_points = joint_camera_points(touch_xyz[0, touch_mask[0], :3], inputs,
+                                                        pipeline.ss_preprocessor)
+                    touch_count = int(batch['touch_mask'][0].sum())
+                    if not np.allclose(camera_points[-touch_count:],
+                                       batch['touch_xyz'][0, batch['touch_mask'][0]].numpy(),
+                                       atol=1e-5, rtol=1e-5):
+                        raise ValueError('Joint visualization does not round-trip to camera-space touch points')
+                    joint_input = dict(encoder_input_camera=camera_points, touch_count=np.int64(touch_count))
 
                 coords_original = torch.argwhere(predicted_voxels).int()
                 coords = coords_original
@@ -516,7 +535,7 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     target_voxels[0], coords_original, coords, downsample_factor, slat,
                     raw_mesh, normalized_mesh, aligned_mesh, normalization, alignment,
                     icp_error, icp_fitness, icp_inlier_rmse, points, normals,
-                    touch_centers, seed, args.save_points,
+                    touch_centers, seed, args.save_points, joint_input=joint_input,
                 )
                 stage1_path, slat_path, raw_path, normalized_path, aligned_path, alignment_path = paths
                 row = {

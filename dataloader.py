@@ -20,6 +20,7 @@ from torch.utils.data import (
 from data_generation.general.pointmaps import depth_to_pointmap
 from data_generation.general.sample_full_surface import validate_surface, sam_camera_transform, transform_points, transform_normals
 from data_generation.general.surface_pool import select_surface_pool
+from data_generation.general.sample_touch_patches import select_patch_indices
 
 
 def load_data_config(path):
@@ -48,7 +49,7 @@ class TouchDataset(Dataset):
                 raise ValueError("touch.pool_points must be positive")
         if oracle_point_frame and (not include_touch or self.point_source != "full_surface"):
             raise ValueError("Oracle point frame requires full-surface conditioning")
-        if self.point_source not in ("touch", "full_surface"):
+        if self.point_source not in ("touch", "full_surface", "touch_patches"):
             raise ValueError(f"Unknown point source: {self.point_source}")
         if include_touch and self.point_source == "touch":
             touch_config = config["touch"]
@@ -61,6 +62,11 @@ class TouchDataset(Dataset):
                 raise ValueError("Contact and point counts must be positive")
             if self.radius < 0:
                 raise ValueError("Neighborhood radius must be non-negative")
+        if include_touch and self.point_source == "touch_patches":
+            self.contact_count = int(config['touch']['contacts']['count'])
+            self.points_per_contact = int(config['touch']['point_sampling']['points_per_contact'])
+            if (self.contact_count, self.points_per_contact) not in ((32, 256), (16, 512), (8, 1024)):
+                raise ValueError('Adaptive touch uses 32x256, 16x512, or 8x1024 (8192 total)')
 
         split = dataset_config["split"]
         with open(self.resolve_path(dataset_config["split_file"])) as file:
@@ -139,6 +145,11 @@ class TouchDataset(Dataset):
 
         return np.ascontiguousarray(mean.transpose(1, 2, 3, 0).reshape(4096, 8))
 
+    def load_touch_patches(self, path):
+        with np.load(path, allow_pickle=False) as data:
+            indices = select_patch_indices(data, self.contact_count, self.points_per_contact)
+            return np.ascontiguousarray(data['points_camera'][indices])
+
     def load_full_surface(self, path, include_normals=False):
         with np.load(path, allow_pickle=False) as data:
             validate_surface(data, require_normals=include_normals)
@@ -193,6 +204,8 @@ class TouchDataset(Dataset):
                     touch_xyz = self.load_full_surface(self.resolve_path(record["full_surface_path"]))
                 if self.include_normals:
                     sample["touch_normals"] = torch.from_numpy(np.ascontiguousarray(normals))
+            elif self.point_source == 'touch_patches':
+                touch_xyz = self.load_touch_patches(self.resolve_path(record['touch_path']))
             else:
                 touch_xyz = self.load_touch(self.resolve_path(record["touch_path"]))
             sample["touch_xyz"] = torch.from_numpy(touch_xyz)

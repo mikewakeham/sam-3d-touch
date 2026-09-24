@@ -395,6 +395,7 @@ def make_targets(shape, backbone):
 def prepare_batch(
     pipeline, batch, device, precision, use_touch, joint_pointmap=False,
     oracle_point_frame=False, shared_pointmap_normalization=False, use_normals=False,
+    return_inputs=False,
 ):
     inputs = preprocess_batch(
         pipeline, batch["image"], batch["pointmap"],
@@ -438,7 +439,8 @@ def prepare_batch(
                 # Keep the existing five-item batch interface; the new encoders take XYZ+normal.
                 touch_xyz = torch.cat((touch_xyz, normals), dim=-1)
 
-    return make_targets(shape, pipeline.backbone), condition_args, condition_kwargs, touch_xyz, touch_mask
+    result = make_targets(shape, pipeline.backbone), condition_args, condition_kwargs, touch_xyz, touch_mask
+    return (*result, inputs) if return_inputs else result
 
 
 def initialize_constant_touch(model, pipeline, dataset, device, precision):

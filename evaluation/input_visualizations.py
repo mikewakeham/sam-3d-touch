@@ -13,6 +13,15 @@ from PIL import Image
 from evaluation.geometry import load_mesh, resolve, find_record
 
 
+def joint_camera_points(points, inputs, preprocessor):
+    # Reverse the exact normalization used by prepare_batch; preserve concatenation order.
+    if preprocessor.normalize_pointmap:
+        points = preprocessor.pointmap_normalizer.denormalize(
+            points.T[:, :, None], inputs['pointmap_scale'][0], inputs['pointmap_shift'][0]
+        )[:, :, 0].T
+    return points.detach().float().cpu().numpy()
+
+
 def surface_indices(pre_encoder_points, encoder_name, device='cuda'):
     if encoder_name in ('craftsman', 'triposg'):
         # All input points are the attention key/value cloud; query FPS does not replace it.
@@ -24,7 +33,6 @@ def surface_indices(pre_encoder_points, encoder_name, device='cuda'):
     if len(pre_encoder_points) == count:
         return np.arange(count)
     import torch
-    from pytorch3d.ops import sample_farthest_points
 
     # Copied from TouchEncoder.normalize_points_for_vecsetx / prepare_points.
     # Replay on the SAVED pre-encoder coordinates: FPS in camera space can differ after SSI.
@@ -35,6 +43,10 @@ def surface_indices(pre_encoder_points, encoder_name, device='cuda'):
     if not torch.isfinite(radius).all() or (radius <= 0).any():
         raise ValueError('Invalid saved pre-encoder point cloud')
     points = points * (1 / radius)[:, None, None]
+    if device == 'cpu':
+        from sam3d_objects.model.backbone.dit.embedder.surface_encoder_utils import farthest_point_indices
+        return farthest_point_indices(points, count)[0].numpy()
+    from pytorch3d.ops import sample_farthest_points
     _, indices = sample_farthest_points(points, lengths=torch.tensor([points.shape[1]], device=device),
                                         K=count, random_start_point=False)
     return indices[0][indices[0] >= 0].cpu().numpy()
@@ -123,21 +135,29 @@ def load_input_visualizations(args):
         settings = config['runs'].get(condition)
         if not settings or not settings.get('touch_config'):
             continue
-        if settings['mode'] == 'image_touch_joint':
-            raise ValueError('Joint pointmap/surface encoders need separate saved input indices; cannot label that cloud full surface')
+        joint = settings['mode'] == 'image_touch_joint'
         run_data = copy.deepcopy(settings['data'])
-        if run_data.get('touch', {}).get('source') != 'full_surface':
-            raise ValueError(f'{condition} is not a full-surface encoder run')
+        if run_data.get('touch', {}).get('source') not in ('full_surface', 'touch_patches'):
+            raise ValueError(f'{condition} needs full-surface or adaptive touch inputs')
         dataset = TouchDataset(run_data, include_touch=True)
         run_record = next((item for item in dataset.records if item['sample_id'] == args.sample_id), None)
         if run_record is None:
             raise ValueError(f'{args.sample_id} missing from {condition} dataset')
-        if dataset.surface_pool_count is not None:
+        if dataset.point_source == 'touch_patches':
+            camera_points = dataset.load_touch_patches(dataset.resolve_path(run_record['touch_path']))
+        elif dataset.surface_pool_count is not None:
             camera_points, _ = dataset.load_surface_pool(run_record)
         else:
             camera_points = dataset.load_full_surface(dataset.resolve_path(run_record['full_surface_path']))
         with np.load(resolve(root, row['stage1_path']), allow_pickle=False) as stage1:
             pre_encoder = stage1['touch_centers']
+            touch_count = len(camera_points)
+            if joint:
+                if 'encoder_input_camera' not in stage1:
+                    raise ValueError('Re-evaluate this joint run to save its camera-space input')
+                np.testing.assert_allclose(stage1['encoder_input_camera'][-touch_count:], camera_points,
+                                           atol=1e-5, rtol=1e-5)
+                camera_points = stage1['encoder_input_camera']
         if pre_encoder.shape != camera_points.shape:
             raise ValueError(f'{condition}: saved encoder input {pre_encoder.shape} differs from dataset {camera_points.shape}')
         encoder_name = settings['touch_config']['encoder_name']
@@ -152,6 +172,10 @@ def load_input_visualizations(args):
         descriptions[condition] = {'encoder': encoder_name, 'source_points': len(camera_points),
                                    'encoder_valid_points': len(indices), 'selection': 'all' if len(indices) == len(pre_encoder) else 'encoder FPS',
                                    'coordinate_frame': 'evaluation_aligned'}
+        if joint:
+            retained_touch = indices >= len(camera_points) - touch_count
+            descriptions[condition]['retained_touch_points'] = int(retained_touch.sum())
+            descriptions[condition]['retained_pointmap_points'] = int((~retained_touch).sum())
         cache_dir = root / 'inputs' / args.sample_id
         cache_dir.mkdir(parents=True, exist_ok=True)
         np.savez_compressed(cache_dir / f'{condition}_surface.npz', points=display, source_indices=indices,
@@ -161,8 +185,11 @@ def load_input_visualizations(args):
                 members.append(condition)
                 break
         else:
+            colors = np.tile(np.array([45, 125, 210], dtype=np.uint8), (len(display), 1))
+            if joint:
+                colors[~retained_touch] = [60, 200, 90]
             surfaces.append(({'name': 'input_surface', 'points': display,
-                              'colors': np.broadcast_to(np.array([45, 125, 210], dtype=np.uint8), display.shape),
+                              'colors': colors,
                               'spheres': True}, [condition]))
     if not surfaces:
         raise ValueError('Input surface variants require a completed full-surface encoder condition')

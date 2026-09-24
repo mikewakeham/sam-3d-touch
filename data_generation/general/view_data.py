@@ -1,5 +1,7 @@
 import argparse
+import colorsys
 import json
+import sys
 import time
 from pathlib import Path
 
@@ -8,27 +10,34 @@ from pointmaps import depth_to_pointmap
 from generate_target_latents import load_normalized_mesh
 from sample_full_surface import sam_camera_transform, transform_points, transform_normals
 from surface_pool import validate_surface_pool
+from sample_touch_patches import select_patch_indices
 from PIL import Image
 
 
-def parse_args():
+def parse_args(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-root", type=Path, required=True)
-    parser.add_argument("--object-id", help="Defaults to the first object with a saved surface pool")
+    parser.add_argument("--object-id", help="Defaults to the first object with the requested touch bank or surface pool")
     parser.add_argument("--view-id", type=int, default=0)
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--pointmap-stride", type=int, default=2)
-    return parser.parse_args()
+    parser.add_argument('--touch-name', help='Show touches_NAME.npz, e.g. adaptive_v1')
+    parser.add_argument('--contacts', type=int, choices=[32, 16, 8], default=32)
+    parser.add_argument('--joint-input', type=Path, help='Evaluated joint run stage1.npz: show its input after encoder FPS')
+    parser.add_argument('--input-device', default='cpu', choices=['cpu', 'cuda'])
+    return parser.parse_args(argv)
 
 
 def load_view(args):
     if args.object_id is None:
         generated = args.data_root / "generated_data"
         objects = json.loads((generated / "objects.json").read_text())
+        relative = (Path('views') / f'{args.view_id:03d}' / f'touches_{args.touch_name}.npz'
+                    if args.touch_name else Path('surface_pool.npz'))
         args.object_id = next((obj["object_id"] for obj in objects
-                               if (generated / obj["object_id"] / "surface_pool.npz").is_file()), None)
+                               if (generated / obj["object_id"] / relative).is_file()), None)
         if args.object_id is None:
-            raise ValueError("No surface pools found. Run backfill_normals.py on a few objects first.")
+            raise ValueError(f'No objects with {relative}; generate that data first or specify --object-id')
     generated_dir = args.data_root / "generated_data" / args.object_id
     view_dir = generated_dir / "views" / f"{args.view_id:03d}"
 
@@ -84,7 +93,55 @@ def add_normals(server, name, label, points, normals, visible):
         lines.visible = tips.visible = toggle.value
 
 
+def load_touch_view(args):
+    view = args.data_root / 'generated_data' / args.object_id / 'views' / f'{args.view_id:03d}'
+    with np.load(view / f'touches_{args.touch_name}.npz', allow_pickle=False) as saved:
+        data = dict(saved)
+    count = args.contacts
+    per_contact = 8192 // count
+    indices = select_patch_indices(data, count, per_contact)
+    palette = np.array([colorsys.hsv_to_rgb((i * .61803398875) % 1, .8, 1)
+                        for i in range(count)]) * 255
+    colors = np.repeat(palette.astype(np.uint8), per_contact, axis=0)
+    centers = data['points_camera'][data['offsets'][:count]]
+    # Three principal great circles make the ellipsoid boundary visible without a solid shell.
+    angles = np.linspace(0, 2 * np.pi, 65)
+    lines = []
+    for index in range(count):
+        for first, second in [(0, 1), (0, 2), (1, 2)]:
+            circle = np.zeros((len(angles), 3))
+            circle[:, first] = np.cos(angles)
+            circle[:, second] = np.sin(angles)
+            circle = (circle * data['radii'][index]) @ data['bases_camera'][index].T + centers[index]
+            lines.append(np.stack([circle[:-1], circle[1:]], axis=1))
+    return data['points_camera'][indices], colors, centers, np.concatenate(lines)
+
+
+def load_joint_view(args, touch_points):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from evaluation.input_visualizations import surface_indices
+    with np.load(args.joint_input, allow_pickle=False) as saved:
+        if 'encoder_input_camera' not in saved:
+            raise ValueError('--joint-input needs a newly evaluated joint stage1.npz')
+        camera = saved['encoder_input_camera']
+        pre_encoder = saved['touch_centers']
+        count = int(saved['touch_count'])
+    if count != len(touch_points) or not np.allclose(camera[-count:], touch_points, atol=1e-5, rtol=1e-5):
+        raise ValueError('Joint input does not match this object/view/contact selection')
+    indices = surface_indices(pre_encoder, 'vecsetx', args.input_device)
+    pointmap_count = len(camera) - count
+    patch_ids = np.full(len(indices), -1, dtype=np.int64)
+    touch = indices >= pointmap_count
+    patch_ids[touch] = (indices[touch] - pointmap_count) // (8192 // args.contacts)
+    retained = np.bincount(patch_ids[touch], minlength=args.contacts)
+    print(f'Joint FPS: {touch.sum()} touch + {(~touch).sum()} pointmap = {len(indices)}', flush=True)
+    print(f'Touch points per patch after FPS: {retained.tolist()}', flush=True)
+    return camera[indices], indices - pointmap_count
+
+
 def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
+    touch_name = getattr(args, 'touch_name', None)
+    joint_input = getattr(args, 'joint_input', None)
     server.scene.set_up_direction("+y")
     server.gui.add_image(rgba, label=f"{args.object_id} / view {args.view_id:03d}")
 
@@ -102,7 +159,7 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
     pointmap_handle = server.scene.add_point_cloud(
         "/pointmap", points=points[valid], colors=pixels[..., :3][valid],
         point_size=0.003, point_shape="circle",
-        visible=pool is None,
+        visible=pool is None and not touch_name,
     )
     add_toggle(server, "Pointmap", pointmap_handle)
 
@@ -122,22 +179,43 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
     handle = server.scene.add_point_cloud(
         "/full_surface", points=points, colors=colors, point_size=0.003,
         point_shape="circle",
-        visible=pool is None,
+        visible=pool is None and not touch_name,
     )
     add_toggle(server, "Full surface (green visible / blue hidden)", handle)
+    if touch_name:
+        points, colors, centers, boundaries = load_touch_view(args)
+        touch_handle = server.scene.add_point_cloud('/touch', points=points, colors=colors,
+                                                    point_size=.003, point_shape='circle', visible=not bool(joint_input))
+        add_toggle(server, f'Touch: {args.contacts} x {8192 // args.contacts} = 8192', touch_handle)
+        centers_handle = server.scene.add_point_cloud('/touch_centers', points=centers,
+                                                      colors=(255, 255, 255), point_size=.008,
+                                                      point_shape='circle', visible=not bool(joint_input))
+        add_toggle(server, 'Patch centers (FPS order)', centers_handle)
+        regions = server.scene.add_line_segments('/touch_regions', points=boundaries,
+                                                 colors=(255, 220, 80), line_width=1., visible=False)
+        add_toggle(server, 'Patch ellipsoid boundaries', regions)
+        if joint_input:
+            joint_points, touch_indices = load_joint_view(args, points)
+            joint_colors = np.tile(np.array([60, 200, 90], np.uint8), (len(joint_points), 1))
+            is_touch = touch_indices >= 0
+            joint_colors[is_touch] = colors[touch_indices[is_touch]]
+            joint_handle = server.scene.add_point_cloud('/joint_fps', points=joint_points,
+                                                         colors=joint_colors, point_size=.003,
+                                                         point_shape='circle')
+            add_toggle(server, 'Joint FPS (green pointmap / colored touch)', joint_handle)
     if "normals_camera" in surface:
-        add_normals(server, "/surface_normals", "Original cloud normals", points,
+        add_normals(server, "/surface_normals", "Original cloud normals", surface['points_camera'],
                     surface["normals_camera"], visible=False)
     if pool is not None:
         pool_points, normals = pool["points_camera"], pool["normals_camera"]
         pool_handle = server.scene.add_point_cloud(
             "/surface_pool", points=pool_points,
             colors=np.clip((normals + 1) * 127.5, 0, 255).astype(np.uint8),
-            point_size=.003, point_shape="circle",
+            point_size=.003, point_shape="circle", visible=not bool(touch_name),
         )
         add_toggle(server, f"Shared cloud ({len(pool_points):,} points; normal colors)", pool_handle)
         add_normals(server, "/pool_normals", "Shared cloud normals (yellow tips)",
-                    pool_points, normals, visible=True)
+                    pool_points, normals, visible=not bool(touch_name))
 
     target = mesh.bounds.mean(axis=0)
 
@@ -163,6 +241,8 @@ def main():
     args = parse_args()
     if args.pointmap_stride < 1:
         raise ValueError("--pointmap-stride must be at least 1")
+    if args.joint_input and not args.touch_name:
+        raise ValueError('--joint-input requires --touch-name and the matching --contacts')
 
     data = load_view(args)
     print(f"Object: {args.object_id}; view: {args.view_id:03d}", flush=True)

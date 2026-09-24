@@ -1,0 +1,14 @@
+seed: 29
+
+dataset:
+  root: /n/netscratch/qianqian_lab/Lab/mwakeham/zeroverse_5000_sam3d_8views
+  manifest: generated_data/samples_touch_adaptive_v1.jsonl
+  split_file: generated_data/splits_train_val.json
+  split: train
+
+touch:
+  source: touch_patches
+  contacts:
+    count: 8
+  point_sampling:
+    points_per_contact: 1024
