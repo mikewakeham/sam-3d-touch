@@ -634,7 +634,8 @@ def token_magnitudes(model, prepared=None, drop_mask=None, enabled=True, pipelin
     def record(name, tensor):
         value = tensor.detach().float()
         metrics[f"tokens/{name}_rms"] = value.square().mean().sqrt().item()
-        metrics[f"tokens/{name}_mean_token_norm"] = value.norm(dim=-1).mean().item()
+        if name.startswith(("pointmap_", "rgb_pointmap_")):
+            metrics[f"tokens/{name}_mean_token_norm"] = value.norm(dim=-1).mean().item()
 
     def visual_metrics(condition_args, mask):
         if len(condition_args) == 1 and torch.is_tensor(condition_args[0]) and condition_args[0].ndim == 3:
@@ -861,18 +862,6 @@ def train_epoch(
                     metrics["optimization/gradient_norm"] = gradient_norm.item()
                 metrics.update(component_gradients)
                 metrics.update(token_metrics)
-                surface_rms = token_metrics.get('tokens/surface_conditioning_rms')
-                for branch in ('pointmap', 'rgb_pointmap'):
-                    branch_rms = token_metrics.get(f'tokens/{branch}_conditioning_rms')
-                    if surface_rms is not None and branch_rms is not None and branch_rms > 0:
-                        metrics[f'tokens/surface_to_{branch}_rms_ratio'] = surface_rms / branch_rms
-                pointmap_metrics = {key: value for key, value in token_metrics.items()
-                                    if key in ('tokens/pointmap_conditioning_rms', 'tokens/rgb_pointmap_conditioning_rms')}
-                if pointmap_metrics:
-                    print('conditioning ' + ' '.join(
-                        f'{name}={value:.4g}' for name, value in pointmap_metrics.items()
-                        if name.endswith('_conditioning_rms')
-                    ), flush=True)
                 for group in optimizer.param_groups:
                     metrics[f"learning_rate/{group['name']}"] = group["lr"]
                 run.log(metrics)

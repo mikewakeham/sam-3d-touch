@@ -118,7 +118,7 @@ class LoggingTests(unittest.TestCase):
             self.assertIn('tokens/visual_rms', row)
             self.assertEqual(row['tokens/pointmap_conditioning_rms'], 1.)
             self.assertEqual(row['tokens/pointmap_conditioning_mean_token_norm'], 2.)
-            self.assertIn('tokens/surface_to_pointmap_rms_ratio', row)
+            self.assertNotIn('tokens/surface_to_pointmap_rms_ratio', row)
             self.assertIn('parameters/touch_output_projection_trainable_norm', row)
             self.assertIn('gradients/touch_output_projection', row)
         self.assertFalse(model.touch_encoder._forward_hooks)
@@ -167,7 +167,7 @@ class LoggingTests(unittest.TestCase):
         model.touch_encoder = None
         with token_magnitudes(model, prepared) as metrics:
             pass
-        self.assertEqual(metrics, {'tokens/visual_rms': 1., 'tokens/visual_mean_token_norm': 2.})
+        self.assertEqual(metrics, {'tokens/visual_rms': 1.})
 
     def test_parameter_norms_match_trainable_weights_and_gradients(self):
         model = model_fixture()
