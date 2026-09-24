@@ -18,6 +18,7 @@ export PYTHONUNBUFFERED=1
 export WANDB_RUN_GROUP=zeroverse
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 train.py \
+  --cross-attention-learning-rate 1e-5 \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data_zeroverse_5000_8views_full_surface.yaml \
   --output-dir outputs/zeroverse/zeroverse_pointmap_triposg_scratch \

@@ -34,7 +34,7 @@ def parse_args():
     parser.add_argument("--max-steps", type=int, default=0,
                         help="Total optimizer steps, including resumed steps; overrides --epochs")
     parser.add_argument("--learning-rate", type=float, default=1e-4)
-    parser.add_argument("--cross-attention-learning-rate", type=float, default=1e-5)
+    parser.add_argument("--cross-attention-learning-rate", type=float, default=1e-4)
     parser.add_argument(
         "--train-scope", choices=["shape_cross_attention", "shape_full"],
         help="Generator weights to train (default: shape_cross_attention)",

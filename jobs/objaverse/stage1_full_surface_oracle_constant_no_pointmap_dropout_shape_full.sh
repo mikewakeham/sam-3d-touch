@@ -18,6 +18,7 @@ export PYTHONUNBUFFERED=1
 export WANDB_RUN_GROUP=objaverse
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 train.py \
+  --cross-attention-learning-rate 1e-5 \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data_full_surface.yaml \
   --output-dir outputs/objaverse/stage1_full_surface_oracle_constant_no_pointmap_dropout_shape_full \
