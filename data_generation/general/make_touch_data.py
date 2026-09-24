@@ -19,7 +19,7 @@ def parse_args(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('--data-root', type=Path, required=True)
     parser.add_argument('--manifest', default='generated_data/samples.jsonl')
-    parser.add_argument('--name', default='adaptive_v1', help='Suffix for the new NPZ files and manifest')
+    parser.add_argument('--name', default='simulated_touches', help='Name for the saved touches and manifest')
     parser.add_argument('--radius', type=float, default=.04, help='Maximum radius in normalized-object units')
     parser.add_argument('--thickness', type=float, default=.2, help='Normal/tangent radius ratio on flat surfaces')
     parser.add_argument('--seed', type=int, default=29)
@@ -84,7 +84,7 @@ def make_object(task):
             source_surface_sha256=checkpoint_sha256(surface_path),
             numpy_version=np.__version__, trimesh_version=trimesh.__version__,
         )
-        path = surface_path.with_name(f'touches_{args.name}.npz')
+        path = surface_path.with_name(f'{args.name}.npz')
         save_patches(path, arrays, args.overwrite)
         outputs.append(dict(record, touch_path=str(path.relative_to(root))))
     return outputs
@@ -95,7 +95,7 @@ def main(argv=None):
     args.data_root = args.data_root.resolve()
     generated = args.data_root / 'generated_data'
     manifest = args.data_root / args.manifest
-    output = generated / f'samples_touch_{args.name}.jsonl'
+    output = generated / f'samples_{args.name}.jsonl'
     if output.resolve() == manifest.resolve():
         raise ValueError('Input and output manifests must differ')
     with (generated / '.build.lock').open('a') as lock:
@@ -121,7 +121,7 @@ def main(argv=None):
                     print(f"{rows[0]['object_id']}: {len(rows)} views", flush=True)
         # A pilot subset must never replace a previously complete training manifest.
         if args.object_id is not None:
-            print(f'Wrote {len(completed)} pilot views; full manifest is published by an unfiltered run.', flush=True)
+            print(f'Saved simulated touches for {len(completed)} pilot views.', flush=True)
             return
         by_id = {row['sample_id']: row for row in completed}
         if len(by_id) != len(records):

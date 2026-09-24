@@ -21,23 +21,33 @@ def parse_args(argv=None):
     parser.add_argument("--view-id", type=int, default=0)
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--pointmap-stride", type=int, default=2)
-    parser.add_argument('--touch-name', help='Show touches_NAME.npz, e.g. adaptive_v1')
+    parser.add_argument('--touch-name', help='Show NAME.npz, e.g. simulated_touches')
     parser.add_argument('--contacts', type=int, choices=[32, 16, 8], default=32)
     parser.add_argument('--joint-input', type=Path, help='Evaluated joint run stage1.npz: show its input after encoder FPS')
     parser.add_argument('--input-device', default='cpu', choices=['cpu', 'cuda'])
     return parser.parse_args(argv)
 
 
+def touch_file(view_dir, name):
+    path = view_dir / f'{name}.npz'
+    # Keep already-generated pilot files readable under the corrected name.
+    old_name = 'adaptive_v1' if name == 'simulated_touches' else name
+    return path if path.is_file() else view_dir / f'touches_{old_name}.npz'
+
+
 def load_view(args):
     if args.object_id is None:
         generated = args.data_root / "generated_data"
         objects = json.loads((generated / "objects.json").read_text())
-        relative = (Path('views') / f'{args.view_id:03d}' / f'touches_{args.touch_name}.npz'
-                    if args.touch_name else Path('surface_pool.npz'))
-        args.object_id = next((obj["object_id"] for obj in objects
-                               if (generated / obj["object_id"] / relative).is_file()), None)
+        for obj in objects:
+            object_dir = generated / obj['object_id']
+            path = (touch_file(object_dir / 'views' / f'{args.view_id:03d}', args.touch_name)
+                    if args.touch_name else object_dir / 'surface_pool.npz')
+            if path.is_file():
+                args.object_id = obj['object_id']
+                break
         if args.object_id is None:
-            raise ValueError(f'No objects with {relative}; generate that data first or specify --object-id')
+            raise ValueError('No objects with the requested touches or surface pool; generate data first or specify --object-id')
     generated_dir = args.data_root / "generated_data" / args.object_id
     view_dir = generated_dir / "views" / f"{args.view_id:03d}"
 
@@ -95,7 +105,7 @@ def add_normals(server, name, label, points, normals, visible):
 
 def load_touch_view(args):
     view = args.data_root / 'generated_data' / args.object_id / 'views' / f'{args.view_id:03d}'
-    with np.load(view / f'touches_{args.touch_name}.npz', allow_pickle=False) as saved:
+    with np.load(touch_file(view, args.touch_name), allow_pickle=False) as saved:
         data = dict(saved)
     count = args.contacts
     per_contact = 8192 // count
@@ -183,10 +193,16 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
     )
     add_toggle(server, "Full surface (green visible / blue hidden)", handle)
     if touch_name:
+        budgets = {f'{count} x {8192 // count} = 8192': count for count in (32, 16, 8)}
+        selection = server.gui.add_dropdown(
+            'Touch patch budget', options=list(budgets),
+            initial_value=f'{args.contacts} x {8192 // args.contacts} = 8192',
+            disabled=bool(joint_input),
+        )
         points, colors, centers, boundaries = load_touch_view(args)
         touch_handle = server.scene.add_point_cloud('/touch', points=points, colors=colors,
                                                     point_size=.003, point_shape='circle', visible=not bool(joint_input))
-        add_toggle(server, f'Touch: {args.contacts} x {8192 // args.contacts} = 8192', touch_handle)
+        add_toggle(server, 'Simulated touches', touch_handle)
         centers_handle = server.scene.add_point_cloud('/touch_centers', points=centers,
                                                       colors=(255, 255, 255), point_size=.008,
                                                       point_shape='circle', visible=not bool(joint_input))
@@ -194,6 +210,17 @@ def build_viewer(server, args, mesh, rgba, pointmap, surface, K, pool=None):
         regions = server.scene.add_line_segments('/touch_regions', points=boundaries,
                                                  colors=(255, 220, 80), line_width=1., visible=False)
         add_toggle(server, 'Patch ellipsoid boundaries', regions)
+
+        @selection.on_update
+        def update_touch_budget(_):
+            args.contacts = budgets[selection.value]
+            points, colors, centers, boundaries = load_touch_view(args)
+            with server.atomic():
+                touch_handle.points = points
+                touch_handle.colors = colors
+                centers_handle.points = centers
+                regions.points = boundaries
+
         if joint_input:
             joint_points, touch_indices = load_joint_view(args, points)
             joint_colors = np.tile(np.array([60, 200, 90], np.uint8), (len(joint_points), 1))

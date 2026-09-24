@@ -128,7 +128,7 @@ class IntegrationTests(unittest.TestCase):
         from dataloader import TouchDataset, collate_touch_batch
         before = {path: path.read_bytes() for path in self.root.rglob('*') if path.is_file()}
         main(['--data-root', str(self.root)])
-        output = self.generated / 'samples_touch_adaptive_v1.jsonl'
+        output = self.generated / 'samples_simulated_touches.jsonl'
         rows = [json.loads(line) for line in output.read_text().splitlines()]
         for record, original in zip(rows, self.records):
             self.assertEqual({**record, 'touch_path': original['touch_path']}, original)
@@ -169,10 +169,10 @@ class IntegrationTests(unittest.TestCase):
         from dataloader import TouchDataset
         from view_data import load_touch_view, parse_args as viewer_args
         make_object((self.args, self.records))
-        path = (self.root / self.records[0]['full_surface_path']).with_name('touches_adaptive_v1.npz')
+        path = (self.root / self.records[0]['full_surface_path']).with_name('simulated_touches.npz')
         for count, per_contact in [(32, 256), (16, 512), (8, 1024)]:
             args = viewer_args(['--data-root', str(self.root), '--object-id', 'box',
-                                '--touch-name', 'adaptive_v1', '--contacts', str(count)])
+                                '--touch-name', 'simulated_touches', '--contacts', str(count)])
             points, colors, centers, lines = load_touch_view(args)
             dataset = object.__new__(TouchDataset)
             dataset.contact_count, dataset.points_per_contact = count, per_contact
@@ -191,7 +191,7 @@ class IntegrationTests(unittest.TestCase):
         from evaluation.evaluate import hidden_fraction, save_generated_artifacts
         from view_data import load_joint_view
         make_object((self.args, self.records))
-        path = (self.root / self.records[0]['full_surface_path']).with_name('touches_adaptive_v1.npz')
+        path = (self.root / self.records[0]['full_surface_path']).with_name('simulated_touches.npz')
         dataset = object.__new__(TouchDataset)
         dataset.root, dataset.contact_count, dataset.points_per_contact = self.root, 32, 256
         touch = dataset.load_touch_patches(path)
