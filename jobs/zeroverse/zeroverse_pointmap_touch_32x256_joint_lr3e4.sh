@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=zv_pointmap_touch_8x1024_joint
+#SBATCH --job-name=zv_pointmap_touch_32x256_joint_lr3e4
 #SBATCH --partition=kempner_h100
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
@@ -19,11 +19,12 @@ export WANDB_RUN_GROUP=zeroverse
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 train.py \
   --pipeline-config checkpoints/hf/pipeline.yaml \
-  --data-config configs/data_zeroverse_5000_8views_touch_8x1024.yaml \
-  --output-dir outputs/zeroverse/zeroverse_pointmap_touch_8x1024_joint \
+  --data-config configs/data_zeroverse_5000_8views_touch_32x256.yaml \
+  --output-dir outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint_lr3e4 \
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
-  --max-steps 50000 \
+  --cross-attention-learning-rate 3e-4 \
+  --max-steps 20000 \
   --joint-pointmap \
   --train-scope shape_cross_attention "$@"
