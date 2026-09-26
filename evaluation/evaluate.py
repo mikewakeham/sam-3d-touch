@@ -94,8 +94,6 @@ def parse_args():
     runs = parser.add_mutually_exclusive_group(required=True)
     runs.add_argument("--run-dirs", type=Path, nargs="+", help="Evaluate best.pt in each directory")
     runs.add_argument("--checkpoints", type=Path, nargs="+", help="Explicit checkpoints with sibling config.yaml")
-    parser.add_argument("--skip-official", action="store_true")
-    parser.add_argument("--skip-decoded-gt", action="store_true")
     parser.add_argument("--pipeline-config", type=Path, default=Path("checkpoints/hf/pipeline.yaml"))
     parser.add_argument("--data-config", type=Path, help="Override saved run data configuration")
     parser.add_argument("--selection-data-config", type=Path)
@@ -278,20 +276,22 @@ def load_target_mesh(record, dataset, output_dir, surface_points, icp_points, sa
     target_dir = output_dir / "targets" / safe_name(object_id)
     target_dir.mkdir(parents=True, exist_ok=True)
     mesh_path = target_dir / "mesh_normalized.ply"
-    mesh.export(mesh_path)
+    if not mesh_path.exists() or mesh_path.stat().st_size == 0:
+        mesh.export(mesh_path)
     icp_points_array, _ = sample_surface(mesh, icp_points, seed + 1)
     points, normals = sample_surface(mesh, surface_points, seed + 2)
     saved = min(save_points, len(points))
     points_path = target_dir / "points.npz"
-    np.savez_compressed(
-        points_path,
-        points=points[:saved],
-        normals=normals[:saved],
-        dataset_transform=dataset_transform,
-        evaluation_normalization=normalization,
-        icp_seed=np.int64(seed + 1),
-        surface_seed=np.int64(seed + 2),
-    )
+    if not points_path.exists() or points_path.stat().st_size == 0:
+        np.savez_compressed(
+            points_path,
+            points=points[:saved],
+            normals=normals[:saved],
+            dataset_transform=dataset_transform,
+            evaluation_normalization=normalization,
+            icp_seed=np.int64(seed + 1),
+            surface_seed=np.int64(seed + 2),
+        )
     return {
         "mesh": mesh,
         "icp_points": icp_points_array,
@@ -374,17 +374,22 @@ def add_stage1_metrics(rows, output_dir, workers):
         by_sample.setdefault(row["sample_id"], {})[row["condition"]] = row
 
     for conditions in by_sample.values():
+        keys = ("stage1_aligned_chamfer", "stage1_aligned_voxel_iou_64", "stage1_downsample_factor")
+        pending = [row for row in conditions.values()
+                   if not all(row.get(key) not in (None, "") and np.isfinite(float(row[key])) for key in keys)]
+        if not pending:
+            continue
         ground_truth = conditions.get("decoded_gt")
-        if ground_truth is None or ground_truth["error"]:
-            for row in conditions.values():
-                row["stage1_aligned_chamfer"] = np.nan
-                row["stage1_aligned_voxel_iou_64"] = np.nan
-                row["stage1_downsample_factor"] = np.nan
+        if ground_truth is None or not artifacts_complete(ground_truth, output_dir):
+            for row in pending:
+                for key in keys:
+                    if row.get(key) in (None, ""):
+                        row[key] = np.nan
             continue
         target_points, _ = aligned_stage1_points(ground_truth, output_dir)
         target_voxels = voxelize_points(target_points)
-        for row in conditions.values():
-            if row["error"]:
+        for row in pending:
+            if not artifacts_complete(row, output_dir):
                 row["stage1_aligned_chamfer"] = np.nan
                 row["stage1_aligned_voxel_iou_64"] = np.nan
                 row["stage1_downsample_factor"] = np.nan
@@ -411,21 +416,47 @@ def load_metrics(path):
 
 def append_metric(path, row):
     write_header = not path.exists() or path.stat().st_size == 0
+    fields = list(row)
+    if not write_header:
+        with open(path, newline="") as file:
+            fields = next(csv.reader(file))
     with open(path, "a", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=list(row))
+        writer = csv.DictWriter(file, fieldnames=fields, restval="nan")
         if write_header:
             writer.writeheader()
         writer.writerow(row)
 
 
 def write_metrics(path, rows):
-    if not rows:
-        path.write_text("")
-        return
-    with open(path, "w", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
+    temporary = path.with_suffix(".tmp.csv")
+    with open(temporary, "w", newline="") as file:
+        if rows:
+            fields = list(dict.fromkeys(key for row in rows for key in row))
+            writer = csv.DictWriter(file, fieldnames=fields, restval="nan")
+            writer.writeheader()
+            writer.writerows(rows)
+    temporary.replace(path)
+
+
+def merged_metrics(sources, output_dir):
+    rows = {}
+    for source in sources:
+        for row in load_metrics(source):
+            key = (row["condition"], row["sample_id"])
+            # An interrupted retry/shard must not displace an intact success.
+            if key not in rows or artifacts_complete(row, output_dir) or not artifacts_complete(rows[key], output_dir):
+                # Old shards can survive a restart with a different GPU count.
+                # Do not let one erase derived metrics computed by the new owner.
+                if key in rows and artifacts_complete(rows[key], output_dir) and artifacts_complete(row, output_dir):
+                    for metric in ("stage1_aligned_chamfer", "stage1_aligned_voxel_iou_64", "stage1_downsample_factor"):
+                        previous = rows[key].get(metric)
+                        current = row.get(metric)
+                        if previous not in (None, "") and np.isfinite(float(previous)) and (
+                            current in (None, "") or not np.isfinite(float(current))
+                        ):
+                            row[metric] = previous
+                rows[key] = row
+    return rows
 
 
 def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
@@ -611,11 +642,13 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
         "fscore_0.01", "f_precision_0.01", "f_recall_0.01", "voxel_iou_64",
         "normal_consistency", "icp_fitness", "stage1_aligned_voxel_iou_64",
     }
+    no_touch_runs = [no_touch] if isinstance(no_touch, str) else (no_touch or [])
     summary = {
         "primary_metric": "fscore_0.01",
         "primary_conditions": primary_conditions,
         "diagnostic_conditions": diagnostic_conditions,
-        "no_touch": no_touch,
+        "no_touch": no_touch_runs[0] if len(no_touch_runs) == 1 else None,
+        "no_touch_conditions": no_touch_runs,
         "best_touch": best_touch,
         "conditions": {},
         "comparisons": {},
@@ -624,20 +657,21 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
     for row in rows:
         by_condition.setdefault(row["condition"], {})[row["sample_id"]] = row
 
-    for condition, samples in by_condition.items():
+    for condition in primary_conditions + diagnostic_conditions:
+        samples = by_condition.setdefault(condition, {})
         summary["conditions"][condition] = {
             "completed": sum(not row["error"] for row in samples.values()),
             "failed": sum(bool(row["error"]) for row in samples.values()),
         }
         for metric in metrics:
-            values = np.asarray([row[metric] for row in samples.values() if not row["error"]], dtype=float)
+            values = np.asarray([row.get(metric, np.nan) for row in samples.values() if not row["error"]], dtype=float)
             values = values[np.isfinite(values)]
             summary["conditions"][condition][metric] = {
                 "mean": float(values.mean()) if len(values) else float("nan"),
                 "median": float(np.median(values)) if len(values) else float("nan"),
             }
 
-    baselines = (["official"] if "official" in by_condition else []) + ([no_touch] if no_touch else [])
+    baselines = (["official"] if "official" in by_condition else []) + [name for name in no_touch_runs if name in by_condition]
     for condition in primary_conditions + diagnostic_conditions:
         for baseline in baselines:
             if condition == baseline:
@@ -646,8 +680,9 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
             comparison = {}
             for metric in metrics:
                 pairs = [
-                    (float(by_condition[condition][sample][metric]), float(by_condition[baseline][sample][metric]))
+                    (float(by_condition[condition][sample].get(metric, np.nan)), float(by_condition[baseline][sample].get(metric, np.nan)))
                     for sample in common
+                    if not by_condition[condition][sample]["error"] and not by_condition[baseline][sample]["error"]
                 ]
                 pairs = [(value, base) for value, base in pairs if np.isfinite(value) and np.isfinite(base)]
                 if not pairs:
@@ -655,6 +690,7 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
                 sign = 1 if metric in higher_is_better else -1
                 improvements = np.asarray([sign * (value - base) for value, base in pairs])
                 comparison[metric] = {
+                    "paired_samples": len(pairs),
                     "mean_improvement": float(improvements.mean()),
                     "median_improvement": float(np.median(improvements)),
                     "improved_fraction": float(np.mean(improvements > 0)),
@@ -672,36 +708,137 @@ def artifacts_complete(row, output_dir):
                and (output_dir / row[key]).stat().st_size > 0 for key in keys)
 
 
-def validate_resume(args, checkpoints, selection_data, selected, rank):
-    def identity(path):
-        path = Path(path).resolve()
-        stat = path.stat()
-        return {"path": str(path), "size": stat.st_size, "mtime_ns": stat.st_mtime_ns}
+def file_identity(path):
+    path = Path(path).resolve()
+    stat = path.stat()
+    return {"path": str(path), "size": stat.st_size, "mtime_ns": stat.st_mtime_ns}
+
+
+def file_digest(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as file:
+        for block in iter(lambda: file.read(8 * 1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def write_json(path, value):
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(value, indent=2) + "\n")
+    temporary.replace(path)
+
+
+def register_runs(output_dir, protocol, checkpoints, describe, previous_config, base_data):
+    """Validate the fixed protocol and return stable names plus cumulative metadata.
+
+    Call on rank zero only. Legacy entries whose source files changed keep their
+    original names/results but are never associated with the replacement weights.
+    """
+    path = output_dir / "evaluation_settings.json"
+    original = path.read_text() if path.exists() else None
+    old = json.loads(original) if original else None
+    entries = {}
+    if old:
+        version = old.get("format_version")
+        if version not in (1, 2):
+            raise ValueError(f"Unsupported evaluation settings version: {version}")
+        old_protocol = {key: value for key, value in old.items() if key not in (
+            "format_version", "checkpoints", "run_configs", "entries", "base_data",
+        )}
+        if old_protocol != protocol:
+            changed = sorted(key for key in set(protocol) | set(old_protocol)
+                             if protocol.get(key) != old_protocol.get(key))
+            raise ValueError(f"Evaluation protocol changed ({', '.join(changed)}). "
+                             "Use a new --output-dir to avoid mixing results.")
+        if version == 2:
+            entries = dict(old["entries"])
+            base_data = old["base_data"]
+        else:
+            for checkpoint, config in zip(old["checkpoints"], old["run_configs"]):
+                name = re.sub(r"[^A-Za-z0-9_.-]+", "_", Path(checkpoint["path"]).parent.name)
+                metadata = previous_config.get("runs", {}).get(name)
+                unchanged = all(Path(item["path"]).is_file()
+                                and file_identity(item["path"]) == item
+                                for item in (checkpoint, config))
+                entries[name] = {
+                    "checkpoint_sha256": file_digest(checkpoint["path"]) if unchanged else None,
+                    "config_sha256": file_digest(config["path"]) if unchanged else None,
+                    "metadata": metadata or (describe(Path(checkpoint["path"])) if unchanged else None),
+                    "legacy_identity": checkpoint,
+                }
+            # Official/decoded-GT must keep the data used in the old evaluation.
+            first_metadata = next(iter(entries.values()), {}).get("metadata")
+            if "data_config" in previous_config:
+                base_data = previous_config["data_config"]
+            elif first_metadata:
+                base_data = first_metadata["data"]
+            else:
+                raise ValueError("Existing evaluation is missing its saved base data configuration; "
+                                 "use a new --output-dir rather than guessing reference inputs.")
+    elif any(output_dir.glob("metrics*.csv")):
+        raise ValueError("Existing results have no resume settings. Use a new --output-dir; "
+                         "old results remain available for viewing.")
+
+    names = []
+    for checkpoint in checkpoints:
+        digest = file_digest(checkpoint)
+        config_digest = file_digest(checkpoint.parent / "config.yaml")
+        name = next((name for name, entry in entries.items()
+                     if entry["checkpoint_sha256"] == digest
+                     and entry["config_sha256"] == config_digest), None)
+        if name is None:
+            metadata = describe(checkpoint)
+            base = re.sub(r"[^A-Za-z0-9_.-]+", "_", checkpoint.parent.name)
+            name = base
+            if name in entries or name in ("official", "decoded_gt"):
+                suffix = hashlib.sha256((digest + config_digest).encode()).hexdigest()[:12]
+                name = f"{base}_step{metadata['step']}_{suffix}"
+                if name in entries:
+                    raise ValueError(f"Checkpoint condition name collision: {name}")
+            entries[name] = {"checkpoint_sha256": digest, "config_sha256": config_digest,
+                             "metadata": metadata}
+        names.append(name)
+
+    # Only write after every input has been validated. Preserve original v1 settings.
+    if old and old.get("format_version") == 1:
+        backup = path.with_name("evaluation_settings.v1.json")
+        if not backup.exists():
+            backup.write_text(original)
+    settings = dict(protocol, format_version=2, entries=entries, base_data=base_data)
+    if settings != old:
+        write_json(path, settings)
+    return names, settings
+
+
+def validate_resume(args, checkpoints, selection_data, selected, previous_config, base_data):
+    from train import checkpoint_train_scope
 
     settings = {key: getattr(args, key) for key in (
         "split", "selection", "max_samples", "selection_seed", "seed", "inference_steps",
         "stage2_inference_steps", "surface_points", "icp_points", "emd_points", "save_points", "no_amp",
     )}
-    settings["format_version"] = 1
-    settings["checkpoints"] = [identity(path) for path in checkpoints]
-    settings["run_configs"] = [identity(path.parent / "config.yaml") for path in checkpoints]
-    settings["data_override"] = identity(args.data_config) if args.data_config else None
-    settings["pipeline"] = identity(args.pipeline_config)
+    settings["data_override"] = file_identity(args.data_config) if args.data_config else None
+    settings["pipeline"] = file_identity(args.pipeline_config)
     settings["selection_data"] = selection_data
     dataset = selection_data["dataset"]
-    settings["dataset_files"] = [identity(Path(dataset["root"]) / dataset[key])
+    settings["dataset_files"] = [file_identity(Path(dataset["root"]) / dataset[key])
                                  for key in ("manifest", "split_file") if dataset.get(key)]
     settings["samples"] = [record["sample_id"] for record in selected]
-    path = args.output_dir / "evaluation_settings.json"
-    if path.exists():
-        if json.loads(path.read_text()) != settings:
-            raise ValueError("Evaluation inputs/settings changed. Use a new --output-dir to avoid mixing results.")
-    elif any(args.output_dir.glob("metrics*.csv")):
-        raise ValueError("Existing results have no resume settings. Use a new --output-dir; old meshes can still be re-scored/viewed.")
-    if rank == 0:
-        temporary = path.with_suffix(".tmp.json")
-        temporary.write_text(json.dumps(settings, indent=2) + "\n")
-        temporary.replace(path)
+
+    def describe(path):
+        checkpoint, _, data = read_run(path, args.data_config, args.split)
+        return {
+            "checkpoint": str(path),
+            "step": checkpoint["step"],
+            "conditioning_config": checkpoint.get("conditioning_config", {"no_pointmap": False, "oracle_point_frame": False}),
+            "touch_config": checkpoint["touch_config"],
+            "mode": checkpoint["mode"],
+            "cross_attention_scope": checkpoint.get("cross_attention_scope", "kv"),
+            "train_scope": checkpoint_train_scope(checkpoint),
+            "data": data,
+        }
+
+    return register_runs(args.output_dir, settings, checkpoints, describe, previous_config, base_data)
 
 
 def main():
@@ -711,9 +848,6 @@ def main():
     from train import checkpoint_train_scope, configure_encoder_data
 
     checkpoints = args.checkpoints or [directory / "best.pt" for directory in args.run_dirs]
-    names = [safe_name(path.parent.name) for path in checkpoints]
-    if len(set(names)) != len(names) or set(names) & {"official", "decoded_gt"}:
-        raise ValueError("Checkpoint parent directory names must be unique and not official/decoded_gt")
     if min(args.surface_points, args.icp_points, args.save_points) < 1 or args.emd_points < 0 or args.max_samples < 0:
         raise ValueError("Invalid sample counts")
     if args.batch_size != 1:
@@ -740,10 +874,17 @@ def main():
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
 
-    _, _, data_config = read_run(checkpoints[0], args.data_config, args.split)
+    previous_config_path = args.output_dir / "config.yaml"
+    previous_config = yaml.safe_load(previous_config_path.read_text()) if previous_config_path.exists() else {}
+    settings_path = args.output_dir / "evaluation_settings.json"
+    previous_settings = json.loads(settings_path.read_text()) if settings_path.exists() else {}
+    with open(checkpoints[0].parent / "config.yaml") as file:
+        first_run_data = yaml.safe_load(file)["data"]
+    data_config = load_data_config(args.data_config) if args.data_config else first_run_data
+    data_config["dataset"]["split"] = args.split
     selection_data = (
-        load_data_config(args.selection_data_config)
-        if args.selection_data_config else data_config
+        load_data_config(args.selection_data_config) if args.selection_data_config
+        else previous_settings.get("selection_data", data_config)
     )
     selection_data["dataset"]["split"] = args.split
     loader = build_dataloader(selection_data, 1, args.workers, shuffle=False, include_touch=False)
@@ -762,16 +903,33 @@ def main():
     )
     if not selected:
         raise ValueError("No samples selected")
-    validate_resume(args, checkpoints, selection_data, selected, rank)
+    # Hash/register once, then share names and errors so no rank waits at a barrier
+    # after another rank rejects incompatible inputs.
+    registration = [None]
+    if rank == 0:
+        try:
+            registration[0] = {"result": validate_resume(
+                args, checkpoints, selection_data, selected, previous_config, data_config
+            )}
+        except Exception as error:
+            registration[0] = {"error": f"{type(error).__name__}: {error}"}
     if distributed:
-        torch.distributed.barrier()
+        torch.distributed.broadcast_object_list(registration, src=0)
+    if "error" in registration[0]:
+        raise ValueError(registration[0]["error"])
+    names, settings = registration[0]["result"]
+    data_config = settings["base_data"]
+    requested = dict(zip(names, checkpoints))
+    run_settings = {name: entry["metadata"] for name, entry in settings["entries"].items()
+                    if entry.get("metadata") is not None}
     if rank == 0:
         views_dir = args.output_dir / "selected_views"
         views_dir.mkdir(parents=True, exist_ok=True)
         for record, details in zip(selected, selection_details):
             source = loader.dataset.resolve_path(record["image_path"])
             destination = views_dir / f"{safe_name(record['sample_id'])}{source.suffix}"
-            shutil.copy2(source, destination)
+            if not destination.exists():
+                shutil.copy2(source, destination)
             details["image_path"] = str(destination.relative_to(args.output_dir))
         with open(selection_path, "w") as file:
             yaml.safe_dump(selection_details, file, sort_keys=False)
@@ -798,11 +956,8 @@ def main():
     rank_metrics_path = (
         args.output_dir / f"metrics_rank{rank}.csv" if distributed else metrics_path
     )
-    rows_by_key = {}
     metric_sources = [metrics_path, *sorted(args.output_dir.glob("metrics_rank*.csv"))]
-    for source in metric_sources:
-        for row in load_metrics(source):
-            rows_by_key[(row["condition"], row["sample_id"])] = row
+    rows_by_key = merged_metrics(metric_sources, args.output_dir)
     completed = {key for key, row in rows_by_key.items() if artifacts_complete(row, args.output_dir)}
     if rows_by_key:
         print(f"resume: found {len(completed)} completed evaluations", flush=True)
@@ -810,51 +965,39 @@ def main():
         # Finish reading old rank files before any rank starts writing new results.
         torch.distributed.barrier()
 
-    target_cache = {}
-    for index, record in enumerate(selected):
-        print(f"preparing target meshes: {index + 1}/{len(selected)}", flush=True)
-        target_cache[record["object_id"]] = load_target_mesh(
-            record, loader.dataset, args.output_dir,
-            args.surface_points, args.icp_points, args.save_points,
-            stable_seed(args.seed, f"target:{record['object_id']}"),
-        )
-    print("target meshes ready", flush=True)
-
-    primary_conditions = []
+    primary_conditions = list(dict.fromkeys(
+        ["official", "decoded_gt", *settings["entries"],
+         *(row["condition"] for row in rows_by_key.values())]
+    ))
     diagnostic_conditions = []
-    touch_runs = []
-    no_touch = None
-    run_settings = {}
-    include_base = not args.skip_official or not args.skip_decoded_gt
-    for checkpoint_path in ([None] if include_base else []) + checkpoints:
-        run_dir = checkpoint_path.parent if checkpoint_path is not None else None
-        name = "official" if run_dir is None else safe_name(run_dir.name)
-        if name in primary_conditions:
-            raise ValueError(f"Duplicate condition name: {name}")
+    requested_conditions = ["official", "decoded_gt", *requested]
+    pending_samples = {sample for sample in local_sample_ids
+                       if any((name, sample) not in completed for name in requested_conditions)}
+    target_cache = {}
+    for record in selected:
+        if record["sample_id"] in pending_samples:
+            target_cache[record["object_id"]] = load_target_mesh(
+                record, loader.dataset, args.output_dir,
+                args.surface_points, args.icp_points, args.save_points,
+                stable_seed(args.seed, f"target:{record['object_id']}"),
+            )
+
+    pipeline_config_data = previous_config.get("pipeline_config")
+    for name, checkpoint_path in [("official", None), *requested.items()]:
+        conditions = ["official", "decoded_gt"] if checkpoint_path is None else [name]
+        if all((condition, sample) in completed for condition in conditions for sample in local_sample_ids):
+            print(f"{name}: all local samples already complete; skipping pipeline", flush=True)
+            continue
         checkpoint = None
         run_data = data_config
         conditioning = {"no_pointmap": False, "oracle_point_frame": False}
-        if run_dir is not None:
-            checkpoint, _, run_data = read_run(
-                checkpoint_path, args.data_config, args.split
-            )
+        if checkpoint_path is not None:
+            checkpoint, _, run_data = read_run(checkpoint_path, args.data_config, args.split)
             conditioning = checkpoint.get("conditioning_config", conditioning)
-            run_settings[name] = {
-                "checkpoint": str(checkpoint_path),
-                "step": checkpoint["step"],
-                "conditioning_config": conditioning,
-                "touch_config": checkpoint["touch_config"],
-                "mode": checkpoint["mode"],
-                "cross_attention_scope": checkpoint.get("cross_attention_scope", "kv"),
-                "train_scope": checkpoint_train_scope(checkpoint),
-                "data": run_data,
-            }
         use_touch = checkpoint is not None and checkpoint["touch_config"] is not None
         if use_touch:
             run_data = configure_encoder_data(run_data, checkpoint["touch_config"]["encoder_name"])
-        shared_pointmap_normalization = conditioning.get(
-            "shared_pointmap_normalization", False
-        )
+        shared_pointmap_normalization = conditioning.get("shared_pointmap_normalization", False)
         loader = build_dataloader(
             run_data, 1, args.workers, shuffle=False,
             include_touch=use_touch or shared_pointmap_normalization,
@@ -865,34 +1008,25 @@ def main():
         loader.dataset.records = [run_records[sample_id] for sample_id in local_sample_ids]
         print(f"loading fresh pipeline for {name}", flush=True)
         pipeline, pipeline_config = build_pipeline(args.pipeline_config, args.device)
+        pipeline_config_data = OmegaConf.to_container(pipeline_config, resolve=True)
         pipeline.ss_generator.no_shortcut = True
         model = restore_run(pipeline, checkpoint, args.device) if checkpoint is not None else None
         encoder = model.touch_encoder if model is not None else None
-        if run_dir is not None or not args.skip_official:
+        for condition in conditions:
+            if all((condition, sample) in completed for sample in local_sample_ids):
+                continue
             new_rows = evaluate_condition(
-                name, pipeline, encoder, loader, run_records, target_cache, completed,
+                condition, pipeline, encoder, loader, run_records, target_cache, completed,
                 rank_metrics_path, args,
                 joint_pointmap=checkpoint is not None and checkpoint["mode"] == "image_touch_joint",
                 oracle_point_frame=conditioning["oracle_point_frame"],
                 touch_token_fn=model.get_touch_tokens if model is not None else None,
                 shared_pointmap_normalization=shared_pointmap_normalization,
                 fixed_joint_patches=conditioning.get('joint_pointmap_points') == 1024,
+                use_gt_latent=condition == "decoded_gt",
             )
             for row in new_rows:
                 rows_by_key[(row["condition"], row["sample_id"])] = row
-            primary_conditions.append(name)
-        if run_dir is None and not args.skip_decoded_gt:
-            gt_rows = evaluate_condition(
-                "decoded_gt", pipeline, None, loader, run_records, target_cache,
-                completed, rank_metrics_path, args, use_gt_latent=True,
-            )
-            for row in gt_rows:
-                rows_by_key[(row["condition"], row["sample_id"])] = row
-            primary_conditions.append("decoded_gt")
-        if encoder is None and run_dir is not None:
-            no_touch = name
-        elif encoder is not None:
-            touch_runs.append((name, run_dir))
         del encoder, model, pipeline, checkpoint
         gc.collect()
         if torch.cuda.is_available():
@@ -907,14 +1041,16 @@ def main():
     write_metrics(rank_metrics_path, local_rows)
 
     if distributed:
+        pipeline_configs = [None] * world_size
+        torch.distributed.all_gather_object(pipeline_configs, pipeline_config_data)
+        pipeline_config_data = next((item for item in pipeline_configs if item is not None), None)
         torch.distributed.barrier()
         if rank != 0:
             torch.distributed.destroy_process_group()
             return
-        rows_by_key = {}
-        for source in [metrics_path, *sorted(args.output_dir.glob("metrics_rank*.csv"))]:
-            for row in load_metrics(source):
-                rows_by_key[(row["condition"], row["sample_id"])] = row
+        rows_by_key = merged_metrics(
+            [metrics_path, *sorted(args.output_dir.glob("metrics_rank*.csv"))], args.output_dir
+        )
 
     rows = [
         row for row in rows_by_key.values()
@@ -923,10 +1059,12 @@ def main():
     write_metrics(metrics_path, rows)
 
     means = {}
-    for name, _ in touch_runs:
+    for name, metadata in run_settings.items():
+        if metadata["touch_config"] is None:
+            continue
         values = [float(row["fscore_0.01"]) for row in rows
                   if row["condition"] == name and not row["error"] and np.isfinite(float(row["fscore_0.01"]))]
-        if values:
+        if len(values) == len(all_sample_ids):
             means[name] = float(np.mean(values))
     best_touch = max(means, key=means.get) if means else None
 
@@ -934,12 +1072,15 @@ def main():
         row for row in rows
         if row["condition"] in active_conditions and row["sample_id"] in all_sample_ids
     ]
+    no_touch = sorted(name for name, metadata in run_settings.items()
+                      if metadata["touch_config"] is None)
     summary = summarize(
         summary_rows, primary_conditions, diagnostic_conditions, no_touch, best_touch
     )
-    with open(args.output_dir / "summary.yaml", "w") as file:
+    with open(args.output_dir / "summary.tmp.yaml", "w") as file:
         yaml.safe_dump(summary, file, sort_keys=False)
-    with open(args.output_dir / "config.yaml", "w") as file:
+    (args.output_dir / "summary.tmp.yaml").replace(args.output_dir / "summary.yaml")
+    with open(args.output_dir / "config.tmp.yaml", "w") as file:
         yaml.safe_dump({
             "arguments": {
                 key: [str(path) for path in value] if key in ("run_dirs", "checkpoints") and value else str(value) if isinstance(value, Path) else value
@@ -969,11 +1110,12 @@ def main():
                 "emd": "entropic Sinkhorn approximation of Wasserstein-2; epsilon 0.01; 100 iterations",
                 "normal_consistency": "symmetric mean absolute nearest-neighbor normal dot product",
             },
-            "pipeline_config": OmegaConf.to_container(pipeline_config, resolve=True),
+            "pipeline_config": pipeline_config_data,
             "data_config": data_config,
             "selection_data_config": selection_data,
             "runs": run_settings,
         }, file, sort_keys=False)
+    (args.output_dir / "config.tmp.yaml").replace(args.output_dir / "config.yaml")
     print(f"saved evaluation to {args.output_dir}")
     if distributed:
         for path in args.output_dir.glob("metrics_rank*.csv"):
