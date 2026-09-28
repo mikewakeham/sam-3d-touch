@@ -1,0 +1,10 @@
+seed: 29
+
+dataset:
+  root: /n/netscratch/qianqian_lab/Lab/mwakeham/toys4k_100_sam3d_1view
+  manifest: generated_data/samples.jsonl
+  split_file: generated_data/splits.json
+  split: val
+
+touch:
+  source: full_surface
