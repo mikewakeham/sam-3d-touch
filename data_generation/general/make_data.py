@@ -42,6 +42,8 @@ def pipeline_sha256():
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--objects-root", type=Path, help="Input directory (or one mesh file)")
+    parser.add_argument("--objects-manifest", type=Path,
+                        help="Frozen JSON selection: objects with source_relative_path and sha256; paths are relative to --objects-root")
     parser.add_argument("--pattern", default="**/*", help="Relative glob, e.g. '**/*.glb' for Zeroverse")
     parser.add_argument("--ready-marker", help="Only use objects whose adjacent JSON marker has status=complete, e.g. '{stem}_generation.json'")
     parser.add_argument("--data-root", type=Path, required=True, help="Output dataset root")
@@ -97,9 +99,43 @@ def parse_args(argv=None):
     return args
 
 
-def get_objects(objects_root, pattern="**/*", ready_marker=None):
+def get_objects(objects_root, pattern="**/*", ready_marker=None, objects_manifest=None):
     objects_root = objects_root.expanduser().resolve()
-    if objects_root.is_file():
+    expected_hashes = {}
+    if objects_manifest is not None:
+        if not objects_root.is_dir():
+            raise ValueError("--objects-manifest requires a directory --objects-root")
+        if ready_marker or pattern != "**/*":
+            raise ValueError("--objects-manifest cannot be combined with --pattern or --ready-marker")
+        manifest = json.loads(Path(objects_manifest).read_text())
+        entries = manifest.get("objects") if isinstance(manifest, dict) else None
+        if not isinstance(entries, list) or not entries:
+            raise ValueError("Object manifest must contain a nonempty objects list")
+        paths, root = [], objects_root
+        for entry in entries:
+            relative = entry["source_relative_path"]
+            digest = entry["sha256"]
+            relative_path = Path(relative)
+            if relative_path.is_absolute() or ".." in relative_path.parts:
+                raise ValueError(f"Manifest path must stay inside --objects-root: {relative}")
+            path = root / relative_path
+            if not path.resolve().is_relative_to(root):
+                raise ValueError(f"Manifest path escapes --objects-root: {relative}")
+            if path in expected_hashes:
+                raise ValueError(f"Duplicate manifest path: {relative}")
+            if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+                raise ValueError(f"Invalid sha256 for {relative}")
+            if not path.is_file():
+                raise FileNotFoundError(path)
+            actual = hashlib.sha256()
+            with path.open("rb") as source:
+                for chunk in iter(lambda: source.read(1024 * 1024), b""):
+                    actual.update(chunk)
+            if actual.hexdigest() != digest:
+                raise ValueError(f"SHA256 mismatch: {relative}")
+            expected_hashes[path] = digest
+            paths.append(path)
+    elif objects_root.is_file():
         paths, root = [objects_root], objects_root.parent
     elif objects_root.is_dir():
         paths = sorted(path for path in objects_root.glob(pattern) if path.is_file() and path.suffix.lower() in FORMATS)
@@ -126,6 +162,8 @@ def get_objects(objects_root, pattern="**/*", ready_marker=None):
         objects.append({"object_id": f"{name}-{digest}", "model_path": str(path),
                         "source_relative_path": relative,
                         "source_size": path.stat().st_size, "source_mtime_ns": path.stat().st_mtime_ns})
+        if objects_manifest is not None:
+            objects[-1]["source_sha256"] = expected_hashes[path]
     if not objects:
         raise ValueError("No completed objects found; rerun after generation finishes an object")
     if len({obj["object_id"] for obj in objects}) != len(objects):
@@ -354,7 +392,7 @@ def run(args):
     else:
         if args.objects_root is None:
             raise ValueError("--objects-root is required for render/all")
-        objects = get_objects(args.objects_root, args.pattern, args.ready_marker)
+        objects = get_objects(args.objects_root, args.pattern, args.ready_marker, args.objects_manifest)
         if args.data_root == args.objects_root.resolve() or args.objects_root.resolve() in args.data_root.parents:
             raise ValueError("Keep --data-root outside --objects-root to avoid discovering generated files")
         version = subprocess.check_output([args.blender, "--version"], text=True)
@@ -370,7 +408,10 @@ def run(args):
         if settings_path.exists() and json.loads(settings_path.read_text()) != settings:
             raise ValueError(f"Inputs/settings differ from {settings_path}; use a new --data-root")
         if objects_path.exists():
-            check_existing_objects(objects, json.loads(objects_path.read_text()), generated)
+            previous = json.loads(objects_path.read_text())
+            if args.objects_manifest is not None and objects != previous:
+                raise ValueError("Frozen object selection changed; use a new --data-root")
+            check_existing_objects(objects, previous, generated)
         save_json(settings, settings_path)
         save_json(objects, objects_path)
     splits_path = generated / "splits.json"
@@ -435,7 +476,7 @@ def main(argv=None):
     if args.dry_run:
         if args.objects_root is None:
             raise ValueError("--dry-run requires --objects-root")
-        objects = get_objects(args.objects_root, args.pattern, args.ready_marker)
+        objects = get_objects(args.objects_root, args.pattern, args.ready_marker, args.objects_manifest)
         print(json.dumps({"objects": len(objects), "examples": objects[:5],
                           "settings": {key: getattr(args, key) for key in SETTING_NAMES}}, indent=2))
         return
