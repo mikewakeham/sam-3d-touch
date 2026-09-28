@@ -3,7 +3,5 @@ splat.ply
 outputs
 logs
 old
-/data_generation/*
-!/data_generation/general/
-/data_generation/general/generated_data/
+/data_generation/objaverse-dexonomy
 experiments/coordinate_system/results
