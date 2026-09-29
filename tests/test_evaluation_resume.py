@@ -2,8 +2,10 @@
 import argparse
 import ast
 import csv
+import contextlib
 import gc
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -85,6 +87,48 @@ class ResumeTests(unittest.TestCase):
         last.write_text('75')
         names, _ = self.register([best, last])
         self.assertEqual(len(set(names)), 2)
+
+    def test_grouped_data_configs_and_legacy_commands(self):
+        ns = evaluator_functions()
+        a, b = self.checkpoint('a'), self.checkpoint('b', 75)
+        default, override = self.root / 'default.yaml', self.root / 'patches.yaml'
+        def parse(argv):
+            with patch.object(sys, 'argv', ['evaluate', *map(str, argv)]):
+                return ns['parse_args']()
+        for flag, first, second in (('--run-dirs', a.parent, b.parent), ('--checkpoints', a, b)):
+            args = parse(['--data-config', default, flag, first,
+                          '--data-config', override, flag, second])
+            self.assertEqual(ns['run_data_config'](args, a), default)
+            self.assertEqual(ns['run_data_config'](args, b), override)
+            self.assertEqual(getattr(args, flag[2:].replace('-', '_')), [first, second])
+            self.assertEqual(args.data_config, default)
+            for argv in ([flag, first, second, '--data-config', default],
+                         ['--data-config', default, flag, first, second]):
+                args = parse(argv)
+                self.assertEqual(ns['run_data_config'](args, a), default)
+                self.assertEqual(ns['run_data_config'](args, b), default)
+            args = parse([flag, first, second])
+            self.assertIsNone(ns['run_data_config'](args, a))
+            self.assertIsNone(ns['run_data_config'](args, b))
+            invalid = [
+                [flag, first, '--data-config', default, flag, second, '--data-config', override],
+                ['--data-config', default, '--data-config', override, flag, first],
+                ['--data-config', default, flag, first, '--data-config', override],
+                ['--data-config', default, flag, first, '--data-config', override, flag, first],
+            ]
+            for argv in invalid:
+                with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
+                    parse(argv)
+
+    def test_changed_effective_data_cannot_reuse_results(self):
+        a = self.checkpoint('a')
+        self.register([a])
+        path = self.out / 'evaluation_settings.json'
+        before = path.read_bytes()
+        self.data = dict(self.data, touch={'source': 'touch_patches'})
+        with self.assertRaisesRegex(ValueError, 'Data configuration changed for a'):
+            self.register([a])
+        self.assertEqual(path.read_bytes(), before)
 
     def legacy(self, checkpoint, previous=True):
         old = dict(self.protocol, format_version=1,
@@ -192,7 +236,12 @@ class ResumeTests(unittest.TestCase):
         ns['torch'] = NS(manual_seed=lambda _: None, cuda=NS(is_available=lambda: False))
         ns['yaml'] = NS(safe_load=lambda value: json.loads(value.read() if hasattr(value, "read") else value), safe_dump=lambda data, file, **kw: json.dump(data, file))
         ns['select_records'] = lambda *a: ([record], [dict(record)])
-        ns['read_run'] = lambda path, *_: (self.describe(path), {}, json.loads(json.dumps(self.data)))
+        override = self.root / 'patches.yaml'
+        override.write_text(json.dumps(dict(self.data, touch={'source': 'touch_patches'})))
+        def read_run(path, config, split):
+            data = json.loads(config.read_text()) if config else json.loads(json.dumps(self.data))
+            return self.describe(path), {}, data
+        ns['read_run'] = read_run
         ns['build_pipeline'] = Mock(side_effect=lambda *_: (NS(ss_generator=NS()), {}))
         ns['restore_run'] = lambda *_: NS(touch_encoder=object(), get_touch_tokens=None)
         ns['load_target_mesh'] = Mock(return_value={})
@@ -202,6 +251,10 @@ class ResumeTests(unittest.TestCase):
         interrupt_once = [True]
 
         def evaluate(name, pipeline, encoder, loader, records, targets, completed, path, args, **kw):
+            if name == 'b':
+                self.assertEqual(loader.data['touch']['source'], 'touch_patches')
+            else:
+                self.assertNotIn('touch', loader.data)
             calls.append(name)
             row = {'condition': name, 'sample_id': 's', 'object_id': 'o', 'view_id': 'v',
                    'error': '', 'fscore_0.01': .5}
@@ -217,8 +270,8 @@ class ResumeTests(unittest.TestCase):
             return [row]
 
         ns['evaluate_condition'] = evaluate
-        def loader(*args, **kwargs):
-            return NS(dataset=NS(records=[record], resolve_path=Path))
+        def loader(data, *args, **kwargs):
+            return NS(data=data, dataset=NS(records=[record], resolve_path=Path))
         modules = {'dataloader': NS(build_dataloader=loader, load_data_config=lambda p: self.data),
                    'train': NS(checkpoint_train_scope=lambda _: 'shape_cross_attention', configure_encoder_data=lambda d, _: d),
                    'omegaconf': NS(OmegaConf=NS(to_container=lambda d, **kw: d))}
@@ -231,10 +284,15 @@ class ResumeTests(unittest.TestCase):
             ns['main']()
             self.assertEqual(calls, ['official', 'decoded_gt', 'a'])
             args.checkpoints = [b]
+            args.run_data_configs = {str(b.resolve()): str(override)}
             ns['main']()
             self.assertEqual(calls, ['official', 'decoded_gt', 'a', 'b'])
             self.assertEqual(dependent_conditions[-1], {'official', 'decoded_gt', 'a', 'b'})
             ns['main']()
+            self.assertEqual(len(calls), 4)
+            args.run_data_configs = {}
+            with self.assertRaisesRegex(ValueError, 'Data configuration changed for b'):
+                ns['main']()
             self.assertEqual(len(calls), 4)
             a.write_text('100')
             args.checkpoints = [a]
@@ -244,6 +302,7 @@ class ResumeTests(unittest.TestCase):
         config = json.loads((self.out / 'config.yaml').read_text())
         self.assertEqual(len(config['runs']), 3)
         self.assertEqual(config['runs']['a']['step'], 50)
+        self.assertEqual(config['runs']['b']['data']['touch']['source'], 'touch_patches')
         self.assertEqual(ns['build_pipeline'].call_count, 5)
 
 

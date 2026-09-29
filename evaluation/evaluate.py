@@ -90,12 +90,21 @@ def decode_voxels(decoder, latent):
 
 
 def parse_args():
+    class InputGroup(argparse.Action):
+        def __call__(self, parser, namespace, values, option_string=None):
+            groups = getattr(namespace, "input_groups", [])
+            groups.append((self.dest, values))
+            namespace.input_groups = groups
+
     parser = argparse.ArgumentParser()
     runs = parser.add_mutually_exclusive_group(required=True)
-    runs.add_argument("--run-dirs", type=Path, nargs="+", help="Evaluate best.pt in each directory")
-    runs.add_argument("--checkpoints", type=Path, nargs="+", help="Explicit checkpoints with sibling config.yaml")
+    runs.add_argument("--run-dirs", type=Path, nargs="+", action=InputGroup,
+                      help="Evaluate best.pt in each directory; repeat after each --data-config")
+    runs.add_argument("--checkpoints", type=Path, nargs="+", action=InputGroup,
+                      help="Explicit checkpoints with sibling config.yaml; supports data-config groups")
     parser.add_argument("--pipeline-config", type=Path, default=Path("checkpoints/hf/pipeline.yaml"))
-    parser.add_argument("--data-config", type=Path, help="Override saved run data configuration")
+    parser.add_argument("--data-config", type=Path, action=InputGroup,
+                        help="Data config for following run/checkpoint groups; a single config applies to all runs")
     parser.add_argument("--selection-data-config", type=Path)
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/evaluation"))
     parser.add_argument("--split", default="val")
@@ -114,7 +123,40 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=29)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--no-amp", action="store_true")
-    return parser.parse_args()
+    args = parser.parse_args()
+    groups = vars(args).pop("input_groups")
+    configs = [value for key, value in groups if key == "data_config"]
+    # Preserve existing single-config commands, including --data-config after the runs.
+    # The first config also remains the shared reference/default selection config.
+    args.data_config = configs[0] if configs else None
+    current = args.data_config if len(configs) <= 1 else None
+    pending_config = False
+    args.run_data_configs = {}
+    for key, value in groups:
+        if key == "data_config":
+            if len(configs) > 1:
+                if pending_config:
+                    parser.error("Each --data-config must be followed by a run/checkpoint group")
+                current, pending_config = value, True
+            continue
+        if len(configs) > 1 and current is None:
+            parser.error("With multiple data configs, place --data-config before each run/checkpoint group")
+        pending_config = False
+        setattr(args, key, (getattr(args, key) or []) + value)
+        for path in value:
+            checkpoint = path / "best.pt" if key == "run_dirs" else path
+            identity = str(checkpoint.resolve())
+            if identity in args.run_data_configs:
+                parser.error(f"Checkpoint appears in more than one group: {checkpoint}")
+            args.run_data_configs[identity] = str(current) if current else None
+    if pending_config:
+        parser.error("The last --data-config has no following run/checkpoint group")
+    return args
+
+
+def run_data_config(args, checkpoint_path):
+    config = getattr(args, "run_data_configs", {}).get(str(checkpoint_path.resolve()), args.data_config)
+    return Path(config) if config is not None else None
 
 
 def safe_name(value):
@@ -786,8 +828,13 @@ def register_runs(output_dir, protocol, checkpoints, describe, previous_config, 
         name = next((name for name, entry in entries.items()
                      if entry["checkpoint_sha256"] == digest
                      and entry["config_sha256"] == config_digest), None)
+        metadata = describe(checkpoint)
+        if name is not None:
+            previous_data = (entries[name].get("metadata") or {}).get("data")
+            if previous_data != metadata["data"]:
+                raise ValueError(f"Data configuration changed for {name}. "
+                                 "Use a new --output-dir to avoid reusing incompatible results.")
         if name is None:
-            metadata = describe(checkpoint)
             base = re.sub(r"[^A-Za-z0-9_.-]+", "_", checkpoint.parent.name)
             name = base
             if name in entries or name in ("official", "decoded_gt"):
@@ -826,7 +873,7 @@ def validate_resume(args, checkpoints, selection_data, selected, previous_config
     settings["samples"] = [record["sample_id"] for record in selected]
 
     def describe(path):
-        checkpoint, _, data = read_run(path, args.data_config, args.split)
+        checkpoint, _, data = read_run(path, run_data_config(args, path), args.split)
         return {
             "checkpoint": str(path),
             "step": checkpoint["step"],
@@ -992,7 +1039,7 @@ def main():
         run_data = data_config
         conditioning = {"no_pointmap": False, "oracle_point_frame": False}
         if checkpoint_path is not None:
-            checkpoint, _, run_data = read_run(checkpoint_path, args.data_config, args.split)
+            checkpoint, _, run_data = read_run(checkpoint_path, run_data_config(args, checkpoint_path), args.split)
             conditioning = checkpoint.get("conditioning_config", conditioning)
         use_touch = checkpoint is not None and checkpoint["touch_config"] is not None
         if use_touch:
@@ -1005,6 +1052,9 @@ def main():
             joint_pointmap=conditioning.get('joint_pointmap_points') == 1024,
         )
         run_records = {record["sample_id"]: record for record in loader.dataset.records}
+        missing = set(local_sample_ids) - run_records.keys()
+        if missing:
+            raise ValueError(f"Data for {name} is missing selected samples: {sorted(missing)[:10]}")
         loader.dataset.records = [run_records[sample_id] for sample_id in local_sample_ids]
         print(f"loading fresh pipeline for {name}", flush=True)
         pipeline, pipeline_config = build_pipeline(args.pipeline_config, args.device)
@@ -1083,7 +1133,8 @@ def main():
     with open(args.output_dir / "config.tmp.yaml", "w") as file:
         yaml.safe_dump({
             "arguments": {
-                key: [str(path) for path in value] if key in ("run_dirs", "checkpoints") and value else str(value) if isinstance(value, Path) else value
+                key: [str(path) for path in value] if key in ("run_dirs", "checkpoints") and value
+                else str(value) if isinstance(value, Path) else value
                 for key, value in vars(args).items()
             },
             "selected_objects": len(all_sample_ids),
