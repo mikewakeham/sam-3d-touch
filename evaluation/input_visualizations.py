@@ -80,11 +80,21 @@ def textured_mesh_path(object_dir, cache_dir, blender):
     return output
 
 
-def input_groups(mesh, textured, pointmap, surfaces):
+def saved_surface_names(settings):
+    details = settings.get('input_details') or {}
+    if 'surface_names' in details:
+        return dict(details['surface_names'])
+    groups = details.get('surface_groups', [])
+    return {condition: '' if len(groups) == 1 else '_' + members[0]
+            for members in groups for condition in members}
+
+
+def input_groups(mesh, textured, pointmap, surfaces, surface_names):
     groups = [('input_mesh_textured', [textured]), ('input_mesh', [mesh]),
               ('input_mesh_pointmap', [mesh, pointmap]), ('input_pointmap', [pointmap])]
     for surface, conditions in surfaces:
-        suffix = '' if len(surfaces) == 1 else '_' + conditions[0]
+        suffix = next((surface_names[name] for name in conditions if name in surface_names), '_' + conditions[0])
+        surface_names.update({name: suffix for name in conditions})
         groups.extend([
             ('input_mesh_surface' + suffix, [mesh, surface]),
             ('input_mesh_pointmap_surface' + suffix, [mesh, pointmap, surface]),
@@ -94,7 +104,7 @@ def input_groups(mesh, textured, pointmap, surfaces):
     return groups
 
 
-def load_input_visualizations(args):
+def load_input_visualizations(args, previous=None):
     root = args.evaluation_dir
     with (root / 'config.yaml').open() as file:
         config = yaml.safe_load(file)
@@ -207,6 +217,9 @@ def load_input_visualizations(args):
     textured = {'name': 'input_mesh_textured', 'mesh': mesh['mesh'], 'path': str(textured_path),
                 'textured': True, 'transform': textured_transform}
     descriptions['pointmap'] = {'points': int(valid.sum()), 'source': 'foreground depth back-projected in SAM camera coordinates'}
+    surface_names = saved_surface_names(previous or {})
+    groups = input_groups(mesh, textured, pointmap, surfaces, surface_names)
+    descriptions['surface_names'] = surface_names
     descriptions['surface_groups'] = [members for _, members in surfaces]
     descriptions['textured_mesh'] = str(textured_path)
-    return input_groups(mesh, textured, pointmap, surfaces), [image_path], descriptions
+    return groups, [image_path], descriptions

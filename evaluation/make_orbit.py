@@ -12,6 +12,7 @@ import time
 from pathlib import Path
 
 import numpy as np
+import yaml
 from PIL import Image
 
 if sys.platform.startswith('linux'):
@@ -262,33 +263,78 @@ def orbit_names(names):
     return filenames
 
 
-def orbits_complete(output, args, conditions):
-    # Written only after all variants finish. A directory alone is not completion.
+def read_orbit_settings(output):
     try:
         settings = json.loads((output / 'orbit_settings.json').read_text())
     except (OSError, ValueError):
+        return {}
+    return settings if isinstance(settings, dict) else {}
+
+
+def render_parameters(settings):
+    return {key: settings.get(key) for key in (
+        'frames', 'fps', 'gif_fps', 'gif_size', 'width', 'height', 'fit_camera', 'fov',
+        'orbit_radius', 'orbit_height', 'light_strength', 'point_size', 'particle_size',
+        'mp4', 'textured', 'normal_colors', 'overlay', 'up', 'reference_camera',
+    )}
+
+
+def completed_renders(settings):
+    if 'renders' in settings:
+        return dict(settings['renders'])
+    # Older files recorded completion for the whole sample. Keep those renders.
+    return {name: render_parameters(settings) for name in orbit_names(settings.get('geometry_names', []))}
+
+
+def render_complete(output, name, args, records):
+    settings = records.get(name)
+    if not settings:
         return False
-    if not isinstance(settings, dict):
-        return False
-    if not args.fit_camera:
-        camera = settings.get('reference_camera') or {}
-        if camera.get('orbit_axis') != 'input_camera_up':
-            return False  # Regenerate older object-axis orbits after the camera fix.
-    for key in ('with_inputs', 'modes', 'conditions', 'frames', 'fps', 'gif_fps', 'gif_size',
-                'width', 'height', 'fit_camera', 'fov', 'orbit_radius', 'orbit_height',
-                'light_strength', 'point_size', 'particle_size', 'mp4', 'textured',
-                'normal_colors', 'overlay', 'up'):
+    for key in render_parameters(settings):
+        if key == 'reference_camera':
+            continue
         if settings.get(key) != getattr(args, key):
             return False
-    names = settings.get('geometry_names', [])
-    required = {f'{mode}_{condition}' for mode in args.modes for condition in conditions}
-    if not names or (not args.overlay and not required.issubset(names)):
+    if not args.fit_camera and (settings.get('reference_camera') or {}).get('orbit_axis') != 'input_camera_up':
         return False
-    files = [output / (name + extension) for name in orbit_names(names)
-             for extension in (('.gif', '.png', '.mp4') if args.mp4 else ('.gif', '.png'))]
+    extensions = ('.gif', '.png', '.mp4') if args.mp4 else ('.gif', '.png')
+    return all((output / (name + ext)).is_file() and (output / (name + ext)).stat().st_size > 0
+               for ext in extensions)
+
+
+def orbits_complete(output, args, conditions, touch_conditions=()):
+    from evaluation.input_visualizations import saved_surface_names
+
+    settings = read_orbit_settings(output)
+    required = {f'{mode}_{condition}' for mode in args.modes for condition in conditions}
     if args.with_inputs:
-        files.append(output / 'input_view.png')
-    return all(path.is_file() and path.stat().st_size > 0 for path in files)
+        image = output / 'input_view.png'
+        if not image.is_file() or image.stat().st_size == 0:
+            return False
+        required.update(('input_mesh_textured', 'input_mesh', 'input_mesh_pointmap', 'input_pointmap'))
+        surface_names = saved_surface_names(settings)
+        for condition in touch_conditions:
+            if condition not in surface_names:
+                return False
+            required.update(prefix + surface_names[condition] for prefix in (
+                'input_mesh_surface', 'input_mesh_pointmap_surface', 'input_surface', 'input_pointmap_surface'))
+    elif 'mesh' in args.modes:
+        required.add('mesh_ground_truth')
+    if args.overlay:
+        if settings.get('conditions') != args.conditions or settings.get('modes') != args.modes:
+            return False
+        # Overlay is one combined image, so adding a condition requires rebuilding it.
+        if not required.issubset(set(settings.get('overlay_members', []))):
+            return False
+        required = {'overlay'}
+    records = completed_renders(settings)
+    return bool(required) and all(render_complete(output, name, args, records) for name in orbit_names(sorted(required)))
+
+
+def write_orbit_settings(output, settings):
+    temporary = output / 'orbit_settings.tmp.json'
+    temporary.write_text(json.dumps(settings, indent=2) + '\n')
+    temporary.replace(output / 'orbit_settings.json')
 
 
 def render_all(args, arguments):
@@ -298,6 +344,10 @@ def render_all(args, arguments):
         raise ValueError('--max-samples must be nonnegative')
     with open(args.evaluation_dir / 'metrics.csv', newline='') as file:
         rows = list(csv.DictReader(file))
+    runs = {}
+    if args.with_inputs:
+        with (args.evaluation_dir / 'config.yaml').open() as file:
+            runs = yaml.safe_load(file).get('runs', {})
     sample_ids = sorted({row['sample_id'] for row in rows
                          if row.get('error') == '' and row.get('sample_id')
                          and (not args.conditions or row['condition'] in args.conditions)})
@@ -318,15 +368,16 @@ def render_all(args, arguments):
     for sample_id in sample_ids:
         conditions = {row['condition'] for row in rows if row['sample_id'] == sample_id
                       and row.get('error') == '' and (not args.conditions or row['condition'] in args.conditions)}
-        if args.overwrite or not orbits_complete(output / sample_id, args, conditions):
+        touch_conditions = {name for name in conditions if runs.get(name, {}).get('touch_config')}
+        if args.overwrite or not orbits_complete(output / sample_id, args, conditions, touch_conditions):
             pending.append(sample_id)
     print(f'Selected {len(sample_ids)} of {available}; skipping {len(sample_ids) - len(pending)} completed, '
           f'rendering {len(pending)}. Selection saved to {output}.', flush=True)
     # Same per-object process loop as the existing make_eval_orbits_geometry.sh job.
     command = [sys.executable, '-m', 'evaluation.make_orbit',
                *[argument for argument in arguments if argument != '--all-samples']]
-    # Restart incomplete samples, including any files left by an interrupted render.
-    if '--overwrite' not in command:
+    # Separate variants resume individually. An overlay remains one combined render.
+    if args.overlay and '--overwrite' not in command:
         command.append('--overwrite')
     started = time.perf_counter()
     for index, sample_id in enumerate(pending, 1):
@@ -359,13 +410,15 @@ def main():
     output = args.output_dir or (args.evaluation_dir / 'orbits' if args.evaluation_dir else Path('outputs/orbits'))
     if args.evaluation_dir:
         output = output / args.sample_id
+    incremental = args.evaluation_dir is not None and not args.overlay
+    previous = read_orbit_settings(output) if incremental else {}
     groups = [('overlay', items)] if args.overlay else [(item['name'], [item]) for item in items]
     if args.row:
         groups = [('row', items)]
     input_details = None
     if args.with_inputs:
         from evaluation.input_visualizations import load_input_visualizations
-        inputs, images, input_details = load_input_visualizations(args)
+        inputs, images, input_details = load_input_visualizations(args, previous)
         # The input gray mesh already supplies the ground-truth orbit.
         groups = inputs + [(name, group) for name, group in groups if name != 'mesh_ground_truth']
     items = [item for _, group in groups for item in group]
@@ -381,29 +434,60 @@ def main():
         center = np.asarray(reference_camera['pivot'])
         radius = np.linalg.norm(np.asarray(reference_camera['camera_to_world'])[:3, 3] - center)
         print('Orbit frame 0 matches the saved input camera; rotating around input-camera up.', flush=True)
+    # Adding a variant must not change the framing or point/lighting scale of the set.
+    if previous and all(previous.get(key) == getattr(args, key) for key in (
+            'fit_camera', 'fov', 'orbit_radius', 'orbit_height', 'up', 'width', 'height')):
+        if previous.get('scale') is not None:
+            scale = previous['scale']
+        else:
+            # Legacy metadata omitted scale; recover it from the original render groups.
+            by_name = dict(groups)
+            old_names = previous.get('geometry_names', [])
+            if old_names and all(name in by_name for name in old_names):
+                old_items = [item for name in old_names for item in by_name[name]]
+                scale = max(float(np.max(np.ptp(scene_bounds(old_items), axis=0))), 1e-3)
+        if previous.get('center') is not None and previous.get('radius') is not None:
+            center, radius = np.asarray(previous['center']), previous['radius']
     names = orbit_names([name for name, _ in groups])
-    for name in names:
-        for extension in ('.gif', '.png', '.mp4'):
-            path = output / (name + extension)
-            if path.exists() and not args.overwrite:
-                raise FileExistsError(f'{path} already exists; use --overwrite to replace')
+    if not incremental:
+        for name in names:
+            for extension in ('.gif', '.png', '.mp4'):
+                path = output / (name + extension)
+                if path.exists() and not args.overwrite:
+                    raise FileExistsError(f'{path} already exists; use --overwrite to replace')
     output.mkdir(parents=True, exist_ok=True)
-    (output / 'orbit_settings.json').unlink(missing_ok=True)
     for image in images:
-        shutil.copy2(image, output / 'input_view.png')
-    for name, (_, group) in zip(names, groups):
-        render(group, center, radius, args, output / name, scale, reference_camera=reference_camera)
+        destination = output / 'input_view.png'
+        if args.overwrite or not destination.is_file() or destination.stat().st_size == 0:
+            shutil.copy2(image, destination)
     settings = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
     settings['inputs'] = [str(path) for path in args.inputs] if args.inputs else None
-    settings.update(center=center.tolist(), radius=float(radius), geometry_names=[name for name, _ in groups],
-                    input_details=input_details, reference_camera=reference_camera,
+    records = completed_renders(previous)
+    details = dict(previous.get('input_details') or {})
+    details.update(input_details or {})
+    settings.update(center=center.tolist(), radius=float(radius), scale=float(scale),
+                    geometry_names=list(records), renders=records,
+                    input_details=details or None, reference_camera=reference_camera,
                     voxel_source='full decoded Stage-1 occupancy')
+    if args.overlay:
+        settings['overlay_members'] = [item['name'] for item in items]
     if args.row:
         settings['row_objects'] = [dict(name=item['name'], pivot=item['pivot'].tolist(),
                                        transform=item['transform'].tolist()) for item in items]
-    temporary = output / 'orbit_settings.tmp.json'
-    temporary.write_text(json.dumps(settings, indent=2) + '\n')
-    temporary.replace(output / 'orbit_settings.json')
+    for name, (_, group) in zip(names, groups):
+        if incremental and not args.overwrite and render_complete(output, name, args, records) and (
+                records[name].get('reference_camera') == reference_camera):
+            print(f'Skipping completed render: {name}', flush=True)
+            continue
+        # Invalidate only this render before writing files; a crash cannot mark it complete.
+        records.pop(name, None)
+        settings['geometry_names'] = list(records)
+        write_orbit_settings(output, settings)
+        render(group, center, radius, args, output / name, scale, reference_camera=reference_camera)
+        records[name] = render_parameters(settings)
+        settings['geometry_names'] = list(records)
+        write_orbit_settings(output, settings)
+    write_orbit_settings(output, settings)
     print(f'Saved orbits to {output}')
 
 
