@@ -1,0 +1,4 @@
+python -m experiments.vecsetx.make_orbit \
+  --sample-id 0088cc8d1ae746038f091c8e459e2f38_000 \
+  --input-dir experiments/vecsetx/outputs/reconstruction \
+  --output-dir experiments/vecsetx/outputs/qualitative

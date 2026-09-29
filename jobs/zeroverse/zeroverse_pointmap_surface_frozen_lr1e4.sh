@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=zv_pointmap_surface_frozen_lr1e4
-#SBATCH --partition=kempner_h200
+#SBATCH --partition=kempner_h100
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
@@ -25,5 +25,5 @@ export WANDB_RUN_GROUP=zeroverse
   --workers 8 \
   --val-workers 2 \
   --cross-attention-learning-rate 1e-4 \
-  --max-steps 20000 \
+  --max-steps 50000 \
   --train-scope shape_cross_attention "$@"

@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=64
 #SBATCH --mem=256G
 #SBATCH --gres=gpu:4
-#SBATCH --time=16:00:00
+#SBATCH --time=24:00:00
 #SBATCH --output=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/zeroverse/%x-%j.out
 #SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/logs/zeroverse/%x-%j.err
 
@@ -24,5 +24,5 @@ export WANDB_RUN_GROUP=zeroverse
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
-  --max-steps 50000 \
+  --max-steps 75000 \
   --train-scope shape_cross_attention "$@"
