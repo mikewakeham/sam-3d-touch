@@ -133,7 +133,10 @@ def main():
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    torch.set_float32_matmul_precision('high')
+    # SSI uses matrix products for coordinates. TF32 ('high') can break the
+    # forward/inverse round trip at ~1e-3; keep geometry in full float32.
+    # The encoder/decoder still use the requested bf16 autocast below.
+    torch.set_float32_matmul_precision('highest')
     device = torch.device(args.device)
     preprocessor = build_stage1_preprocessor(args.pipeline_config)
     encoder = TouchEncoder(encoder_checkpoint=args.encoder_checkpoint, use_position=False).to(device).eval()
