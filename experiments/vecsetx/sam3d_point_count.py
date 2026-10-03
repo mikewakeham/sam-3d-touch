@@ -150,7 +150,7 @@ def main():
     parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'))
     parser.add_argument('--output-dir', type=Path, default=Path('experiments/vecsetx/outputs/sam3d_point_count'))
     parser.add_argument('--objects', type=int, default=100)
-    parser.add_argument('--seeds', type=int, default=3)
+    parser.add_argument('--seeds', type=int, default=1)
     parser.add_argument('--seed', type=int, default=29)
     parser.add_argument('--inference-steps', type=int, default=25)
     parser.add_argument('--stage2-inference-steps', type=int, default=25)
@@ -261,6 +261,7 @@ def main():
                        ('touch_path', 'mesh_path', 'camera_path', 'image_path', 'depth_path', 'target_path')}
             (output / 'sources.json').write_text(json.dumps(sources, indent=2) + '\n')
             for draw in range(args.seeds):
+                # Reuse this seed for every point count; thinning never changes it.
                 seed = stable_seed(args.seed, f'{sample_id}:{draw}')
                 for count in POINTS_PER_PATCH:
                     destination = output / f'seed_{draw}' / str(count)

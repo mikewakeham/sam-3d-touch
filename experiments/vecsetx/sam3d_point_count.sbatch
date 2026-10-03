@@ -22,7 +22,7 @@ export PYTHONUNBUFFERED=1
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --output-dir experiments/vecsetx/outputs/sam3d_point_count \
   --objects 100 \
-  --seeds 3 \
+  --seeds 1 \
   --seed 29 \
   --inference-steps 25 \
   --stage2-inference-steps 25 "$@"
