@@ -1,4 +1,4 @@
-"""Thin fixed Zeroverse patches at inference through one trained SAM-3D-Touch model."""
+"""Thin fixed patches at inference through one trained SAM-3D-Touch model."""
 import argparse
 import copy
 import csv
@@ -11,7 +11,7 @@ import torch
 from omegaconf import OmegaConf
 from scipy.spatial import cKDTree
 
-from dataloader import TouchDataset, collate_touch_batch
+from dataloader import TouchDataset, collate_touch_batch, load_data_config
 from data_generation.general.sample_full_surface import sam_camera_transform, transform_points
 from data_generation.general.sample_touch_patches import select_patch_indices
 from evaluation.evaluate import (
@@ -147,6 +147,7 @@ def reconstruct(pipeline, condition_args, condition_kwargs, tokens, stage2_input
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--checkpoint', type=Path, default=Path('outputs/zeroverse/zeroverse_pointmap_touch_32x256/best.pt'))
+    parser.add_argument('--data-config', type=Path, help='Override the checkpoint dataset for evaluation')
     parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'))
     parser.add_argument('--output-dir', type=Path, default=Path('experiments/vecsetx/outputs/sam3d_point_count'))
     parser.add_argument('--objects', type=int, default=100)
@@ -164,7 +165,7 @@ def main():
            args.surface_points, args.icp_points, args.metric_workers) < 1:
         raise ValueError('Counts must be positive')
     checkpoint, run_config, _ = read_run(args.checkpoint, split='train')
-    data = copy.deepcopy(run_config['data'])
+    data = load_data_config(args.data_config) if args.data_config else copy.deepcopy(run_config['data'])
     data['dataset']['split'] = 'val'
     touch = data['touch']
     conditioning = checkpoint.get('conditioning_config', {})
@@ -187,6 +188,7 @@ def main():
     settings.update(data=data, run_config=run_config, points_per_patch=POINTS_PER_PATCH,
                     checkpoint_sha256=sha256(args.checkpoint),
                     run_config_sha256=sha256(args.checkpoint.parent / 'config.yaml'),
+                    data_config_sha256=sha256(args.data_config) if args.data_config else None,
                     pipeline_sha256=sha256(args.pipeline_config),
                     manifest_sha256=sha256(dataset.resolve_path(data['dataset']['manifest'])),
                     split_sha256=sha256(dataset.resolve_path(data['dataset']['split_file'])),
