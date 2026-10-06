@@ -25,6 +25,10 @@ export PYTHONUNBUFFERED=1
   --run-dirs \
   outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint \
   outputs/zeroverse/zeroverse_pointmap_touch_32x256 \
+  --data-config configs/data_toys4k_100_1view_touch_16x512.yaml \
+  --run-dirs outputs/zeroverse/zeroverse_pointmap_touch_16x512_joint \
+  --data-config configs/data_toys4k_100_1view_touch_8x1024.yaml \
+  --run-dirs outputs/zeroverse/zeroverse_pointmap_touch_8x1024_joint \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --selection-data-config configs/data_toys4k_100_1view_full_surface.yaml \
   --output-dir outputs/zeroverse/evaluation_toys4k \
