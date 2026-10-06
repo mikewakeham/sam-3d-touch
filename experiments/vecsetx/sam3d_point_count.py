@@ -8,23 +8,30 @@ import random
 
 import numpy as np
 import torch
+import yaml
 from omegaconf import OmegaConf
 from scipy.spatial import cKDTree
 
 from dataloader import TouchDataset, collate_touch_batch, load_data_config
 from data_generation.general.sample_full_surface import sam_camera_transform, transform_points
-from data_generation.general.sample_touch_patches import select_patch_indices
+from data_generation.general.sample_touch_patches import select_patch_indices, saved_joint_points, joint_touch_indices
 from evaluation.evaluate import (
     read_run, restore_run, build_pipeline, preprocess_stage2, sample_shape,
-    decode_voxels, trimesh_from_result, load_target_mesh, stable_seed,
+    decode_voxels, trimesh_from_result, load_target_mesh, stable_seed, select_records,
 )
 from evaluation.metrics import normalize_mesh, sample_surface, align_mesh, mesh_metrics
-from experiments.vecsetx.point_count_sweep import POINTS_PER_PATCH, sha256, select_records, subset_indices
+from experiments.vecsetx.point_count_sweep import sha256, subset_indices as patch_subset_indices
 from sam3d_objects.pipeline.inference_utils import prune_sparse_structure, downsample_sparse_structure
 from train import prepare_batch
 
 
 METRICS = ('stage1_iou', 'chamfer', 'fscore_0.01', 'patch_distance_mean', 'patch_distance_p95')
+POINTS_PER_PATCH = (224, 112, 56, 28)
+
+
+def subset_indices(points_per_patch, patch_count=32):
+    return patch_subset_indices(points_per_patch, patch_count, baseline_points_per_patch=224,
+                                prefix_points=1024)
 
 
 def seed_generation(seed, generator):
@@ -79,7 +86,7 @@ def summary(rows, seed_count, seed):
                 if points != count or metric not in measurements:
                     continue
                 values.append(measurements[metric])
-                baseline = means.get((256, sample_id), {})
+                baseline = means.get((224, sample_id), {})
                 if metric in baseline:
                     deltas.append(measurements[metric] - baseline[metric])
             delta = np.asarray(deltas)
@@ -92,10 +99,10 @@ def summary(rows, seed_count, seed):
                 complete_objects=len(values), paired_objects=len(delta),
                 mean=float(np.mean(values)) if values else None,
                 median=float(np.median(values)) if values else None,
-                mean_change_from_256=float(delta.mean()) if len(delta) else None,
-                median_change_from_256=float(np.median(delta)) if len(delta) else None,
+                mean_change_from_224=float(delta.mean()) if len(delta) else None,
+                median_change_from_224=float(np.median(delta)) if len(delta) else None,
                 mean_change_95ci=ci,
-                fraction_worse_than_256=float(np.mean(delta < 0 if metric in ('stage1_iou', 'fscore_0.01') else delta > 0)) if len(delta) else None,
+                fraction_worse_than_224=float(np.mean(delta < 0 if metric in ('stage1_iou', 'fscore_0.01') else delta > 0)) if len(delta) else None,
             )
         result[count] = entry
     return result
@@ -146,57 +153,78 @@ def reconstruct(pipeline, condition_args, condition_kwargs, tokens, stage2_input
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--checkpoint', type=Path, default=Path('outputs/zeroverse/zeroverse_pointmap_touch_32x256/best.pt'))
+    parser.add_argument('--checkpoint', type=Path, default=Path('outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint/best.pt'))
     parser.add_argument('--data-config', type=Path, help='Override the checkpoint dataset for evaluation')
+    parser.add_argument('--selection-data-config', type=Path, required=True)
+    parser.add_argument('--reference-evaluation', type=Path)
     parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'))
     parser.add_argument('--output-dir', type=Path, default=Path('experiments/vecsetx/outputs/sam3d_point_count'))
-    parser.add_argument('--objects', type=int, default=100)
+    parser.add_argument('--objects', '--max-samples', dest='max_samples', type=int, default=100)
+    parser.add_argument('--split', default='val')
+    parser.add_argument('--selection', choices=['random', 'hidden'], default='random')
+    parser.add_argument('--selection-seed', type=int, default=29)
     parser.add_argument('--seeds', type=int, default=1)
     parser.add_argument('--seed', type=int, default=29)
     parser.add_argument('--inference-steps', type=int, default=25)
     parser.add_argument('--stage2-inference-steps', type=int, default=25)
     parser.add_argument('--surface-points', type=int, default=1_000_000)
     parser.add_argument('--icp-points', type=int, default=20_000)
+    parser.add_argument('--save-points', type=int, default=8192)
     parser.add_argument('--metric-workers', type=int, default=8)
     parser.add_argument('--device', default='cuda')
     parser.add_argument('--no-amp', action='store_true')
     args = parser.parse_args()
-    if min(args.objects, args.seeds, args.inference_steps, args.stage2_inference_steps,
-           args.surface_points, args.icp_points, args.metric_workers) < 1:
+    if min(args.seeds, args.inference_steps, args.stage2_inference_steps,
+           args.surface_points, args.icp_points, args.save_points, args.metric_workers) < 1 or args.max_samples < 0:
         raise ValueError('Counts must be positive')
     checkpoint, run_config, _ = read_run(args.checkpoint, split='train')
     data = load_data_config(args.data_config) if args.data_config else copy.deepcopy(run_config['data'])
-    data['dataset']['split'] = 'val'
+    data['dataset']['split'] = args.split
     touch = data['touch']
     conditioning = checkpoint.get('conditioning_config', {})
-    if (checkpoint['mode'] != 'image_touch' or checkpoint['touch_config']['encoder_name'] != 'vecsetx'
+    if (checkpoint['mode'] != 'image_touch_joint' or conditioning.get('joint_pointmap_points') != 1024
+            or checkpoint['touch_config']['encoder_name'] != 'vecsetx'
             or checkpoint.get('training_config', {}).get('constant_touch', False)
             or conditioning.get('oracle_point_frame', False) or conditioning.get('shared_pointmap_normalization', False)
             or touch.get('source') != 'touch_patches' or touch['contacts']['count'] != 32
             or touch['point_sampling']['points_per_contact'] != 256):
-        raise ValueError('Use a separate-branch VecSetX checkpoint trained on 32x256 camera-frame patches')
-    dataset = TouchDataset(data)
+        raise ValueError('Use the 32-patch joint VecSetX checkpoint with saved 1024-pointmap + 7168-touch inputs')
+    dataset = TouchDataset(data, joint_pointmap=True)
     splits = json.loads(dataset.resolve_path(data['dataset']['split_file']).read_text())
     if set(splits['train']) & set(splits['val']):
         raise ValueError('Training and validation object IDs overlap')
-    dataset.records = select_records(dataset.records, args.objects, args.seed)
+    selection_data = load_data_config(args.selection_data_config)
+    selection_data['dataset']['split'] = args.split
+    selection_dataset = TouchDataset(selection_data, include_touch=False)
+    selected, details = select_records(selection_dataset, selection_data, args.max_samples,
+                                       args.selection_seed, args.selection)
+    from experiments.vecsetx.sam3d_patch_count import check_reference
+    check_reference(args, details, selection_data)
+    records = {record['sample_id']: record for record in dataset.records}
+    dataset.records = [records[record['sample_id']] for record in selected]
+    for record in selected:
+        for key in ('mesh_path', 'image_path', 'camera_path', 'depth_path', 'target_path'):
+            if selection_dataset.resolve_path(record[key]) != dataset.resolve_path(records[record['sample_id']][key]):
+                raise ValueError(f'Selection and touch manifests disagree on {key}')
     args.output_dir.mkdir(parents=True, exist_ok=False)
+    (args.output_dir / 'selected_samples.yaml').write_text(yaml.safe_dump(details, sort_keys=False))
     (args.output_dir / 'selection.json').write_text(json.dumps(dataset.records, indent=2) + '\n')
     for count in POINTS_PER_PATCH:
         np.save(args.output_dir / f'indices_{count}.npy', subset_indices(count))
     settings = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
-    settings.update(data=data, run_config=run_config, points_per_patch=POINTS_PER_PATCH,
+    settings.update(data=data, selection_data=selection_data, run_config=run_config,
+                    conditioning_config=conditioning, points_per_patch=POINTS_PER_PATCH, pointmap_points=1024,
                     checkpoint_sha256=sha256(args.checkpoint),
                     run_config_sha256=sha256(args.checkpoint.parent / 'config.yaml'),
                     data_config_sha256=sha256(args.data_config) if args.data_config else None,
                     pipeline_sha256=sha256(args.pipeline_config),
                     manifest_sha256=sha256(dataset.resolve_path(data['dataset']['manifest'])),
                     split_sha256=sha256(dataset.resolve_path(data['dataset']['split_file'])),
-                    normalization='fixed from 32x256 before subsetting; fixed position term if enabled',
+                    normalization='fixed from saved 1024 pointmap + 32x224 touch points before subsetting; fixed position term',
                     stage1_metric='native occupancy IoU against decoded target latent, before pruning/registration',
                     mesh_metrics='source/prediction independently centered, longest extent 2; PCA similarity + ICP',
                     chamfer='symmetric mean unsquared Euclidean distance after registration', fscore_threshold=.01,
-                    patch_metric='same 8192 original points in normalized source frame vs registered prediction',
+                    patch_metric='same 7168 saved joint touch points in normalized source frame vs registered prediction',
                     summary='average all seeds per object, paired deltas, 2000 object bootstrap draws; missing seeds excluded per metric',
                     torch_version=torch.__version__, numpy_version=np.__version__)
     random.seed(args.seed)
@@ -229,12 +257,14 @@ def main():
             output = args.output_dir / sample_id
             output.mkdir()
             batch = collate_touch_batch([dataset[index]])
-            raw = batch['touch_xyz'][0].numpy()
+            raw = batch['touch_xyz'][0].numpy()[joint_touch_indices(32)]
             with np.load(dataset.resolve_path(record['touch_path']), allow_pickle=False) as bank:
-                bank_indices = select_patch_indices(bank, 32, 256)
+                bank_indices = select_patch_indices(bank, 32, 224)
                 np.testing.assert_array_equal(raw, bank['points_camera'][bank_indices])
+                joint_camera = saved_joint_points(bank, 32, frame='camera')
             _, condition_args, condition_kwargs, touch_xyz, touch_mask, inputs = prepare_batch(
-                pipeline, batch, device, 'fp32' if args.no_amp else 'bf16', True, return_inputs=True)
+                pipeline, batch, device, 'fp32' if args.no_amp else 'bf16', True,
+                joint_pointmap=True, fixed_joint_patches=True, return_inputs=True)
             prepared, mask, shift, scale = encoder.prepare_points(touch_xyz, touch_mask)
             assert prepared.shape == (1, 8192, 3) and mask.all()
             tokens = {}
@@ -242,18 +272,20 @@ def main():
                 for count in POINTS_PER_PATCH:
                     tokens[count] = touch_tokens(encoder, prepared[:, subset_indices(count)], shift, scale)
                 # Confirms the unthinned path retains the checkpoint's actual conditioning.
-                torch.testing.assert_close(tokens[256], model.get_touch_tokens(touch_xyz, touch_mask), atol=1e-4, rtol=1e-4)
+                torch.testing.assert_close(tokens[224], model.get_touch_tokens(touch_xyz, touch_mask), atol=1e-4, rtol=1e-4)
                 target_voxels = decode_voxels(pipeline.models['ss_decoder'], batch['target_shape'].to(device))
             stage2_inputs = preprocess_stage2(pipeline, batch['image'])
-            metric_seed = stable_seed(args.seed, sample_id) % (2**32 - 3)
             target = load_target_mesh(record, dataset, args.output_dir, args.surface_points,
-                                      args.icp_points, args.surface_points, metric_seed)
+                                      args.icp_points, args.save_points,
+                                      stable_seed(args.seed, f"target:{record['object_id']}"))
             object_from_camera = np.linalg.inv(sam_camera_transform(dataset.resolve_path(record['camera_path'])))
             with np.load(target['points_path'], allow_pickle=False) as saved:
                 target_normalization = saved['evaluation_normalization']
             patch_points = transform_points(raw, target_normalization @ object_from_camera)
-            np.savez_compressed(output / 'inputs.npz', points_camera=raw, points_encoder=prepared[0].cpu().numpy(),
-                                points_evaluation=patch_points, bank_indices=bank_indices,
+            np.savez_compressed(output / 'inputs.npz', points_camera=joint_camera, points_touch_camera=raw,
+                                points_encoder=prepared[0].cpu().numpy(),
+                                points_evaluation=transform_points(joint_camera, target_normalization @ object_from_camera),
+                                bank_indices=bank_indices, pointmap_count=np.int64(1024), touch_count=np.int64(7168),
                                 shift=shift.cpu().numpy(), scale=scale.cpu().numpy(),
                                 pointmap_scale=inputs['pointmap_scale'].cpu().numpy(),
                                 pointmap_shift=inputs['pointmap_shift'].cpu().numpy(),
@@ -264,17 +296,18 @@ def main():
             (output / 'sources.json').write_text(json.dumps(sources, indent=2) + '\n')
             for draw in range(args.seeds):
                 # Reuse this seed for every point count; thinning never changes it.
-                seed = stable_seed(args.seed, f'{sample_id}:{draw}')
+                seed = stable_seed(args.seed, sample_id if draw == 0 else f'{sample_id}:{draw}')
                 for count in POINTS_PER_PATCH:
                     destination = output / f'seed_{draw}' / str(count)
                     destination.mkdir(parents=True)
                     row = dict(sample_id=sample_id, object_id=record['object_id'], view_id=record['view_id'],
                                draw=draw, stage1_seed=seed, stage2_seed=seed + 1_000_000,
-                               points_per_patch=count, total_points=32 * count, status='ok', error='',
+                               points_per_patch=count, touch_points=32 * count, pointmap_points=1024,
+                               total_points=1024 + 32 * count, status='ok', error='',
                                **{metric: None for metric in METRICS})
                     try:
                         reconstruct(pipeline, condition_args, condition_kwargs, tokens[count], stage2_inputs,
-                                    target_voxels, target, patch_points, seed, metric_seed, destination, args, row)
+                                    target_voxels, target, patch_points, seed, seed, destination, args, row)
                     except Exception as error:
                         row.update(status='error', error=f'{type(error).__name__}: {error}')
                         if device.type == 'cuda':

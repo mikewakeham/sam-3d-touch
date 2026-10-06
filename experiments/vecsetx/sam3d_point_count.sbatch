@@ -18,10 +18,14 @@ export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python -m experiments.vecsetx.sam3d_point_count \
-  --checkpoint outputs/zeroverse/zeroverse_pointmap_touch_32x256/best.pt \
+  --checkpoint outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint/best.pt \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --output-dir experiments/vecsetx/outputs/sam3d_point_count \
-  --objects 100 \
+  --selection-data-config configs/data_zeroverse_5000_8views_full_surface.yaml \
+  --reference-evaluation outputs/zeroverse/evaluation_lr1e4 \
+  --max-samples 100 \
+  --selection random \
+  --selection-seed 29 \
   --seeds 1 \
   --seed 29 \
   --inference-steps 25 \

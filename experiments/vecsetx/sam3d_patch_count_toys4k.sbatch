@@ -19,7 +19,7 @@ export PYTHONUNBUFFERED=1
 
 # Create experiments/vecsetx/logs before submitting.
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python -m experiments.vecsetx.sam3d_patch_count \
-  --checkpoint outputs/zeroverse/zeroverse_pointmap_touch_32x256/best.pt \
+  --checkpoint outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint/best.pt \
   --data-config configs/data_toys4k_100_1view_touch_32x256.yaml \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --output-dir experiments/vecsetx/outputs/sam3d_patch_count_toys4k \

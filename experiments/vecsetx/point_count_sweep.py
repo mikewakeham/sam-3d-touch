@@ -47,9 +47,11 @@ def select_records(records, count, seed):
     return selected
 
 
-def subset_indices(points_per_patch):
-    # Baseline loader concatenates the first 256 points of each of the same 32 patches.
-    return (np.arange(32)[:, None] * 256 + np.arange(points_per_patch)).ravel()
+def subset_indices(points_per_patch, patch_count=32, baseline_points_per_patch=256, prefix_points=0):
+    # Keep a fixed prefix (the joint pointmap, when present), then nested patches.
+    patches = (np.arange(patch_count)[:, None] * baseline_points_per_patch
+               + np.arange(points_per_patch)).ravel()
+    return np.concatenate((np.arange(prefix_points), prefix_points + patches))
 
 
 def metrics(mesh, reference_points, patch_points, count, seed):

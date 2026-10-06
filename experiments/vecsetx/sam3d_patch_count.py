@@ -1,4 +1,4 @@
-"""Remove whole patches from a frozen 32x256 model, using the main evaluation loop."""
+"""Remove whole patches from the saved 32-patch joint input using the main evaluator."""
 import argparse
 from functools import partial
 import json
@@ -15,7 +15,7 @@ from evaluation.evaluate import (
     read_run, restore_run, build_pipeline, select_records, stable_seed,
     load_target_mesh, evaluate_condition, file_digest, file_identity, write_metrics,
 )
-from experiments.vecsetx.sam3d_point_count import touch_tokens
+from experiments.vecsetx.sam3d_point_count import touch_tokens, subset_indices
 
 
 PATCH_COUNTS = (32, 28, 24, 16, 12, 8)
@@ -29,9 +29,9 @@ def encode_patches(model, count, points, mask):
     encoder = model.touch_encoder
     prepared, valid, shift, scale = encoder.prepare_points(points, mask)
     assert prepared.shape == (1, 8192, 3) and valid.all()
-    # The loader concatenates 256 points per patch in saved FPS-center order.
-    # Normalize the full cloud once, then remove whole patches without padding.
-    return touch_tokens(encoder, prepared[:, :count * 256], shift, scale)
+    # Keep all 1024 saved pointmap points and 224 points per retained patch.
+    # Normalize the full joint cloud once, then subset without padding or FPS.
+    return touch_tokens(encoder, prepared[:, subset_indices(224, count)], shift, scale)
 
 
 def check_reference(args, selected, selection_data):
@@ -45,7 +45,7 @@ def check_reference(args, selected, selection_data):
     settings = json.loads((reference / 'evaluation_settings.json').read_text())
     for key in ('split', 'selection', 'max_samples', 'selection_seed', 'seed', 'inference_steps',
                 'stage2_inference_steps', 'surface_points', 'icp_points', 'emd_points', 'save_points', 'no_amp'):
-        if settings[key] != getattr(args, key):
+        if hasattr(args, key) and settings[key] != getattr(args, key):
             raise ValueError(f'{key} differs from the reference evaluation: {settings[key]!r}')
     if settings['pipeline'] != file_identity(args.pipeline_config):
         raise ValueError('Pipeline config differs from the reference evaluation')
@@ -57,16 +57,18 @@ def check_reference(args, selected, selection_data):
 
 
 def summarize(rows, seed):
-    baseline = {row['sample_id']: row for row in rows if row['patch_count'] == 32 and not row['error']}
+    baseline = {row['sample_id']: row for row in rows if row['patch_count'] == 32}
     result = {}
     for count in PATCH_COUNTS:
         attempted = [row for row in rows if row['patch_count'] == count]
         valid = [row for row in attempted if not row['error']]
         entry = dict(attempted=len(attempted), successful=len(valid), failed=len(attempted) - len(valid))
         for metric in METRICS:
-            values = [row[metric] for row in valid if np.isfinite(row.get(metric, np.nan))]
-            delta = np.asarray([row[metric] - baseline[row['sample_id']][metric] for row in valid
+            measured = attempted if metric == 'stage1_iou' else valid
+            values = [row[metric] for row in measured if np.isfinite(row.get(metric, np.nan))]
+            delta = np.asarray([row[metric] - baseline[row['sample_id']][metric] for row in measured
                                 if row['sample_id'] in baseline and np.isfinite(row.get(metric, np.nan))
+                                and (metric == 'stage1_iou' or not baseline[row['sample_id']]['error'])
                                 and np.isfinite(baseline[row['sample_id']].get(metric, np.nan))])
             ci = None
             if len(delta):
@@ -87,7 +89,7 @@ def summarize(rows, seed):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--checkpoint', type=Path, default=Path('outputs/zeroverse/zeroverse_pointmap_touch_32x256/best.pt'))
+    parser.add_argument('--checkpoint', type=Path, default=Path('outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint/best.pt'))
     parser.add_argument('--data-config', type=Path)
     parser.add_argument('--selection-data-config', type=Path, required=True)
     parser.add_argument('--reference-evaluation', type=Path, help='Verify selection and protocol against an existing main evaluation')
@@ -114,10 +116,11 @@ def main():
         raise ValueError('Invalid sample counts or worker count')
     checkpoint, run_config, data = read_run(args.checkpoint, args.data_config, args.split)
     conditioning = checkpoint.get('conditioning_config', {})
-    if (checkpoint['mode'] != 'image_touch' or checkpoint['touch_config']['encoder_name'] != 'vecsetx'
+    if (checkpoint['mode'] != 'image_touch_joint' or conditioning.get('joint_pointmap_points') != 1024
+            or checkpoint['touch_config']['encoder_name'] != 'vecsetx'
             or checkpoint.get('training_config', {}).get('constant_touch', False)
             or conditioning.get('oracle_point_frame', False) or conditioning.get('shared_pointmap_normalization', False)):
-        raise ValueError('Use the separate-branch camera-frame VecSetX model from the point-count sweep')
+        raise ValueError('Use the 32-patch joint VecSetX checkpoint with saved 1024-pointmap + 7168-touch inputs')
     for config in (run_config['data'], data):
         touch = config['touch']
         if (touch['source'] != 'touch_patches' or touch['contacts']['count'] != 32
@@ -132,7 +135,7 @@ def main():
         raise ValueError('No samples selected')
     checkpoint_hash = file_digest(args.checkpoint)
     check_reference(args, details, selection_data)
-    loader = build_dataloader(data, 1, args.workers, shuffle=False)
+    loader = build_dataloader(data, 1, args.workers, shuffle=False, joint_pointmap=True)
     records = {record['sample_id']: record for record in loader.dataset.records}
     loader.dataset.records = [records[record['sample_id']] for record in selected]
     # Match the inputs and target used by the main evaluator's selection dataset.
@@ -145,15 +148,16 @@ def main():
     (args.output_dir / 'selected_samples.yaml').write_text(yaml.safe_dump(details, sort_keys=False))
     (args.output_dir / 'selection.json').write_text(json.dumps(loader.dataset.records, indent=2) + '\n')
     for count in PATCH_COUNTS:
-        np.save(args.output_dir / f'indices_{count}.npy', np.arange(count * 256))
+        np.save(args.output_dir / f'indices_{count}.npy', subset_indices(224, count))
     settings = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
     settings.update(data=data, selection_data=selection_data, run_config=run_config,
-                    checkpoint_sha256=checkpoint_hash, patch_counts=PATCH_COUNTS, points_per_patch=256,
+                    checkpoint_sha256=checkpoint_hash, conditioning_config=conditioning,
+                    patch_counts=PATCH_COUNTS, points_per_patch=224, pointmap_points=1024,
                     script_sha256=file_digest(__file__), pipeline_sha256=file_digest(args.pipeline_config),
                     manifest_sha256=file_digest(loader.dataset.resolve_path(data['dataset']['manifest'])),
                     split_sha256=file_digest(loader.dataset.resolve_path(data['dataset']['split_file'])),
                     patch_selection='first K patches in the saved farthest-center order; nested, no resampling',
-                    normalization='fixed from all 32x256 points before removing patches',
+                    normalization='fixed from saved 1024 pointmap + 32x224 touch points before removing patches',
                     evaluation='evaluation.evaluate.evaluate_condition, including its seeds and mesh metrics',
                     torch_version=torch.__version__, numpy_version=np.__version__)
     (args.output_dir / 'settings.json').write_text(json.dumps(settings, indent=2) + '\n')
@@ -179,17 +183,24 @@ def main():
         measured = evaluate_condition(
             f'patches_{count}', pipeline, encoder, loader, records, target_cache,
             completed, args.output_dir / 'metrics.csv', args,
-            touch_token_fn=partial(encode_patches, model, count))
+            touch_token_fn=partial(encode_patches, model, count),
+            joint_pointmap=True, fixed_joint_patches=True)
         for row in measured:
-            row.update(patch_count=count, points_per_patch=256, total_points=count * 256, stage1_iou=np.nan)
-            if not row['error']:
+            row.update(patch_count=count, points_per_patch=224, pointmap_points=1024,
+                       touch_points=count * 224, total_points=1024 + count * 224, stage1_iou=np.nan)
+            if row['stage1_path']:
                 with np.load(args.output_dir / row['stage1_path'], allow_pickle=False) as saved:
                     row['stage1_iou'] = float(np.logical_and(saved['prediction'], saved['target']).sum()
                                              / max(np.logical_or(saved['prediction'], saved['target']).sum(), 1))
                     stage1 = dict(saved)
                 # The main evaluator sees the dense cloud for normalization; save
                 # only the contacts actually encoded as this condition's touches.
-                stage1['touch_centers'] = stage1['touch_centers'][:count * 256]
+                indices = subset_indices(224, count)
+                stage1['touch_centers'] = stage1['touch_centers'][indices]
+                stage1['encoder_input_camera'] = stage1['encoder_input_camera'][indices]
+                stage1['touch_source_indices'] = stage1['touch_source_indices'][:count * 224]
+                stage1['touch_count'] = np.int64(count * 224)
+                stage1['encoder_input_indices'] = indices
                 stage1['patch_count'] = np.int64(count)
                 np.savez_compressed(args.output_dir / row['stage1_path'], **stage1)
         rows.extend(measured)

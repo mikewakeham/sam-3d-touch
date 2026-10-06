@@ -344,20 +344,12 @@ def load_target_mesh(record, dataset, output_dir, surface_points, icp_points, sa
     }
 
 
-def save_generated_artifacts(output_dir, condition, sample_id, prediction, predicted_voxels,
-                             target_voxels, coords_original, coords, downsample_factor, slat,
-                             raw_mesh, normalized_mesh, aligned_mesh, normalization, alignment,
-                             icp_error, icp_fitness, icp_inlier_rmse, points, normals,
-                             touch_centers, seed, save_points, joint_input=None):
+def save_stage1_artifact(output_dir, condition, sample_id, prediction, predicted_voxels,
+                         target_voxels, coords_original, coords, downsample_factor,
+                         touch_centers, joint_input=None):
     artifact_dir = output_dir / "artifacts" / safe_name(condition) / safe_name(sample_id)
     artifact_dir.mkdir(parents=True, exist_ok=True)
     stage1_path = artifact_dir / "stage1.npz"
-    slat_path = artifact_dir / "slat.npz"
-    raw_path = artifact_dir / "mesh_raw.ply"
-    normalized_path = artifact_dir / "mesh_normalized.ply"
-    aligned_path = artifact_dir / "mesh_aligned.ply"
-    alignment_path = artifact_dir / "alignment.npz"
-
     factor = downsample_factor.item() if torch.is_tensor(downsample_factor) else downsample_factor
     np.savez_compressed(
         stage1_path,
@@ -370,6 +362,24 @@ def save_generated_artifacts(output_dir, condition, sample_id, prediction, predi
         touch_centers=touch_centers,
         **(joint_input or {}),
     )
+    return stage1_path
+
+
+def save_generated_artifacts(output_dir, condition, sample_id, prediction, predicted_voxels,
+                             target_voxels, coords_original, coords, downsample_factor, slat,
+                             raw_mesh, normalized_mesh, aligned_mesh, normalization, alignment,
+                             icp_error, icp_fitness, icp_inlier_rmse, points, normals,
+                             touch_centers, seed, save_points, joint_input=None):
+    stage1_path = save_stage1_artifact(
+        output_dir, condition, sample_id, prediction, predicted_voxels, target_voxels,
+        coords_original, coords, downsample_factor, touch_centers, joint_input,
+    )
+    artifact_dir = stage1_path.parent
+    slat_path = artifact_dir / "slat.npz"
+    raw_path = artifact_dir / "mesh_raw.ply"
+    normalized_path = artifact_dir / "mesh_normalized.ply"
+    aligned_path = artifact_dir / "mesh_aligned.ply"
+    alignment_path = artifact_dir / "alignment.npz"
     np.savez_compressed(
         slat_path,
         coords=slat.coords.detach().cpu().numpy(),
@@ -528,6 +538,7 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                 continue
             record = records[sample_id]
             seed = stable_seed(args.seed, sample_id)
+            stage1_payload = None
             try:
                 touch_xyz = touch_mask = None
                 if not use_gt_latent:
@@ -584,6 +595,8 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                 if pipeline.downsample_ss_dist > 0:
                     coords = prune_sparse_structure(coords, pipeline.downsample_ss_dist)
                 coords, downsample_factor = downsample_sparse_structure(coords)
+                stage1_payload = (prediction, predicted_voxels[0], target_voxels[0],
+                                  coords_original, coords, downsample_factor, touch_centers, joint_input)
 
                 torch.manual_seed(seed + 1_000_000)
                 slat = pipeline.sample_slat(
@@ -638,13 +651,17 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     "error": "",
                 }
             except Exception as error:
+                # Reuse the normal artifact writer so successful Stage 1 remains
+                # measurable even if Stage 2 or mesh scoring fails.
+                failed_stage1 = (save_stage1_artifact(args.output_dir, name, sample_id, *stage1_payload)
+                                 if stage1_payload is not None else None)
                 row = {
                     "condition": name,
                     "sample_id": sample_id,
                     "object_id": record["object_id"],
                     "view_id": record["view_id"],
                     "image_path": str(loader.dataset.resolve_path(record["image_path"])),
-                    "stage1_path": "",
+                    "stage1_path": relative(failed_stage1, args.output_dir) if failed_stage1 is not None else "",
                     "slat_path": "",
                     "mesh_raw_path": "",
                     "mesh_normalized_path": "",
