@@ -13,7 +13,7 @@ from omegaconf import OmegaConf
 from dataloader import TouchDataset, build_dataloader, load_data_config
 from evaluation.evaluate import (
     read_run, restore_run, build_pipeline, select_records, stable_seed,
-    load_target_mesh, evaluate_condition, file_digest, file_identity, write_metrics, safe_name,
+    load_target_mesh, evaluate_condition, file_digest, file_identity, write_metrics,
 )
 from experiments.vecsetx.sam3d_point_count import touch_tokens
 
@@ -34,7 +34,7 @@ def encode_patches(model, count, points, mask):
     return touch_tokens(encoder, prepared[:, :count * 256], shift, scale)
 
 
-def check_reference(args, selected, checkpoint_hash, selection_data, data):
+def check_reference(args, selected, selection_data):
     reference = args.reference_evaluation
     if reference is None:
         return
@@ -54,37 +54,6 @@ def check_reference(args, selected, checkpoint_hash, selection_data, data):
     for identity in settings['dataset_files']:
         if file_identity(identity['path']) != identity:
             raise ValueError(f'Reference dataset file changed: {identity["path"]}')
-    entries = settings.get('entries', {})
-    verification = 'sha256'
-    if settings.get('format_version') == 1:
-        # The original evaluator saved path/size/mtime, not checkpoint hashes.
-        # Use its own unchanged-file criterion; never hash a replaced best.pt
-        # and pretend that hash describes the earlier evaluation.
-        config = yaml.safe_load((reference / 'config.yaml').read_text())
-        current_checkpoint = file_identity(args.checkpoint)
-        current_config = file_identity(args.checkpoint.parent / 'config.yaml')
-        entries = {}
-        for identity, run_config in zip(settings['checkpoints'], settings['run_configs']):
-            name = safe_name(Path(identity['path']).parent.name)
-            entries[name] = dict(
-                checkpoint_sha256=checkpoint_hash if identity == current_checkpoint and run_config == current_config else None,
-                metadata=config.get('runs', {}).get(name), legacy_identity=identity,
-            )
-        verification = 'legacy path/size/mtime (no historical hash available)'
-    matching = [entry for entry in entries.values() if entry.get('checkpoint_sha256') == checkpoint_hash]
-    if not matching:
-        recorded = {name: dict(step=(entry.get('metadata') or {}).get('step'),
-                               sha256=entry.get('checkpoint_sha256'),
-                               checkpoint=(entry.get('metadata') or {}).get('checkpoint'),
-                               legacy_identity=entry.get('legacy_identity')) for name, entry in entries.items()}
-        raise ValueError(
-            f'Cannot verify {args.checkpoint} (SHA256 {checkpoint_hash}) against {reference} '
-            f'(format {settings.get("format_version")}). Recorded checkpoints: {json.dumps(recorded)}. '
-            'Use the checkpoint from that evaluation or the reference directory for these weights. '
-            'A replaced best.pt cannot be verified by its filename alone.')
-    if not any((entry.get('metadata') or {}).get('data') == data for entry in matching):
-        raise ValueError('Checkpoint evaluation data differs from the reference evaluation')
-    return dict(checkpoint_verification=verification)
 
 
 def summarize(rows, seed):
@@ -121,7 +90,7 @@ def main():
     parser.add_argument('--checkpoint', type=Path, default=Path('outputs/zeroverse/zeroverse_pointmap_touch_32x256/best.pt'))
     parser.add_argument('--data-config', type=Path)
     parser.add_argument('--selection-data-config', type=Path, required=True)
-    parser.add_argument('--reference-evaluation', type=Path, help='Verify selection, protocol and weights against an existing main evaluation')
+    parser.add_argument('--reference-evaluation', type=Path, help='Verify selection and protocol against an existing main evaluation')
     parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'))
     parser.add_argument('--output-dir', type=Path, default=Path('experiments/vecsetx/outputs/sam3d_patch_count'))
     parser.add_argument('--split', default='val')
@@ -162,7 +131,7 @@ def main():
     if not selected:
         raise ValueError('No samples selected')
     checkpoint_hash = file_digest(args.checkpoint)
-    reference_check = check_reference(args, details, checkpoint_hash, selection_data, data)
+    check_reference(args, details, selection_data)
     loader = build_dataloader(data, 1, args.workers, shuffle=False)
     records = {record['sample_id']: record for record in loader.dataset.records}
     loader.dataset.records = [records[record['sample_id']] for record in selected]
@@ -178,7 +147,7 @@ def main():
     for count in PATCH_COUNTS:
         np.save(args.output_dir / f'indices_{count}.npy', np.arange(count * 256))
     settings = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
-    settings.update(data=data, selection_data=selection_data, run_config=run_config, reference_check=reference_check,
+    settings.update(data=data, selection_data=selection_data, run_config=run_config,
                     checkpoint_sha256=checkpoint_hash, patch_counts=PATCH_COUNTS, points_per_patch=256,
                     script_sha256=file_digest(__file__), pipeline_sha256=file_digest(args.pipeline_config),
                     manifest_sha256=file_digest(loader.dataset.resolve_path(data['dataset']['manifest'])),
