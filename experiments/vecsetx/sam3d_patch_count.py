@@ -22,16 +22,21 @@ PATCH_COUNTS = (32, 28, 24, 16, 12, 8)
 METRICS = ('stage1_iou', 'chamfer', 'fscore_0.01', 'normal_consistency', 'voxel_iou_64', 'emd')
 
 
-def encode_patches(model, count, points, mask):
+def encode_patches(model, count, points, mask, normalization='full'):
     # Keep the exact ordinary evaluation path for the full-input baseline.
     if count == 32:
         return model.get_touch_tokens(points, mask)
     encoder = model.touch_encoder
+    indices = subset_indices(224, count)
+    if normalization == 'retained':
+        # Normalize only the actual input, without prepare_points padding/FPS.
+        prepared, shift, scale = encoder.normalize_points_for_vecsetx(points[:, indices], mask[:, indices])
+        return touch_tokens(encoder, prepared, shift, scale)
     prepared, valid, shift, scale = encoder.prepare_points(points, mask)
     assert prepared.shape == (1, 8192, 3) and valid.all()
     # Keep all 1024 saved pointmap points and 224 points per retained patch.
     # Normalize the full joint cloud once, then subset without padding or FPS.
-    return touch_tokens(encoder, prepared[:, subset_indices(224, count)], shift, scale)
+    return touch_tokens(encoder, prepared[:, indices], shift, scale)
 
 
 def check_reference(args, selected, selection_data):
@@ -56,11 +61,11 @@ def check_reference(args, selected, selection_data):
             raise ValueError(f'Reference dataset file changed: {identity["path"]}')
 
 
-def summarize(rows, seed):
-    baseline = {row['sample_id']: row for row in rows if row['patch_count'] == 32}
+def summarize(rows, seed, group_key='patch_count', groups=PATCH_COUNTS, reference=32):
+    baseline = {row['sample_id']: row for row in rows if row[group_key] == reference}
     result = {}
-    for count in PATCH_COUNTS:
-        attempted = [row for row in rows if row['patch_count'] == count]
+    for count in groups:
+        attempted = [row for row in rows if row[group_key] == count]
         valid = [row for row in attempted if not row['error']]
         entry = dict(attempted=len(attempted), successful=len(valid), failed=len(attempted) - len(valid))
         for metric in METRICS:
@@ -78,10 +83,10 @@ def summarize(rows, seed):
                 complete_objects=len(values), paired_objects=len(delta),
                 mean=float(np.mean(values)) if values else None,
                 median=float(np.median(values)) if values else None,
-                mean_change_from_32=float(delta.mean()) if len(delta) else None,
-                median_change_from_32=float(np.median(delta)) if len(delta) else None,
                 mean_change_95ci=ci,
-                fraction_worse_than_32=float(np.mean(delta > 0 if metric in ('chamfer', 'emd') else delta < 0)) if len(delta) else None,
+                **{f'mean_change_from_{reference}': float(delta.mean()) if len(delta) else None,
+                   f'median_change_from_{reference}': float(np.median(delta)) if len(delta) else None,
+                   f'fraction_worse_than_{reference}': float(np.mean(delta > 0 if metric in ('chamfer', 'emd') else delta < 0)) if len(delta) else None},
             )
         result[count] = entry
     return result
@@ -100,6 +105,8 @@ def main():
     parser.add_argument('--selection', choices=['random', 'hidden'], default='random')
     parser.add_argument('--selection-seed', type=int, default=29)
     parser.add_argument('--seed', type=int, default=29)
+    parser.add_argument('--normalization-probe', type=int, default=0, metavar='N',
+                        help='Evaluate full vs retained normalization at 16 patches on N random objects from the reference selection')
     parser.add_argument('--inference-steps', type=int, default=25)
     parser.add_argument('--stage2-inference-steps', type=int, default=25)
     parser.add_argument('--surface-points', type=int, default=1_000_000)
@@ -112,7 +119,7 @@ def main():
     parser.add_argument('--no-amp', action='store_true')
     args = parser.parse_args()
     if min(args.surface_points, args.icp_points, args.save_points, args.inference_steps,
-           args.stage2_inference_steps, args.metric_workers) < 1 or min(args.max_samples, args.emd_points, args.workers) < 0:
+           args.stage2_inference_steps, args.metric_workers) < 1 or min(args.max_samples, args.emd_points, args.workers, args.normalization_probe) < 0:
         raise ValueError('Invalid sample counts or worker count')
     checkpoint, run_config, data = read_run(args.checkpoint, args.data_config, args.split)
     conditioning = checkpoint.get('conditioning_config', {})
@@ -135,6 +142,12 @@ def main():
         raise ValueError('No samples selected')
     checkpoint_hash = file_digest(args.checkpoint)
     check_reference(args, details, selection_data)
+    if args.normalization_probe:
+        # Choose before measuring either arm, keeping the same reference objects/views.
+        indices = sorted(random.Random(args.selection_seed).sample(range(len(selected)), args.normalization_probe))
+        selected, details = [selected[i] for i in indices], [details[i] for i in indices]
+    conditions = ([(16, 'full'), (16, 'retained')] if args.normalization_probe
+                  else [(count, 'full') for count in PATCH_COUNTS])
     loader = build_dataloader(data, 1, args.workers, shuffle=False, joint_pointmap=True)
     records = {record['sample_id']: record for record in loader.dataset.records}
     loader.dataset.records = [records[record['sample_id']] for record in selected]
@@ -147,17 +160,18 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=False)
     (args.output_dir / 'selected_samples.yaml').write_text(yaml.safe_dump(details, sort_keys=False))
     (args.output_dir / 'selection.json').write_text(json.dumps(loader.dataset.records, indent=2) + '\n')
-    for count in PATCH_COUNTS:
+    for count in sorted({count for count, _ in conditions}):
         np.save(args.output_dir / f'indices_{count}.npy', subset_indices(224, count))
     settings = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items()}
     settings.update(data=data, selection_data=selection_data, run_config=run_config,
                     checkpoint_sha256=checkpoint_hash, conditioning_config=conditioning,
-                    patch_counts=PATCH_COUNTS, points_per_patch=224, pointmap_points=1024,
+                    patch_counts=sorted({count for count, _ in conditions}), points_per_patch=224, pointmap_points=1024,
                     script_sha256=file_digest(__file__), pipeline_sha256=file_digest(args.pipeline_config),
                     manifest_sha256=file_digest(loader.dataset.resolve_path(data['dataset']['manifest'])),
                     split_sha256=file_digest(loader.dataset.resolve_path(data['dataset']['split_file'])),
                     patch_selection='first K patches in the saved farthest-center order; nested, no resampling',
-                    normalization='fixed from saved 1024 pointmap + 32x224 touch points before removing patches',
+                    normalization=('paired full-32 vs retained-16 joint normalization, including position embedding'
+                                   if args.normalization_probe else 'fixed from saved 1024 pointmap + 32x224 touch points before removing patches'),
                     evaluation='evaluation.evaluate.evaluate_condition, including its seeds and mesh metrics',
                     torch_version=torch.__version__, numpy_version=np.__version__)
     (args.output_dir / 'settings.json').write_text(json.dumps(settings, indent=2) + '\n')
@@ -179,13 +193,16 @@ def main():
     (args.output_dir / 'settings.json').write_text(json.dumps(settings, indent=2, default=str) + '\n')
     del checkpoint
     rows, completed = [], set()
-    for count in PATCH_COUNTS:
+    for count, normalization in conditions:
+        name = f'patches_{count}' + (f'_{normalization}' if args.normalization_probe else '')
         measured = evaluate_condition(
-            f'patches_{count}', pipeline, encoder, loader, records, target_cache,
+            name, pipeline, encoder, loader, records, target_cache,
             completed, args.output_dir / 'metrics.csv', args,
-            touch_token_fn=partial(encode_patches, model, count),
+            touch_token_fn=partial(encode_patches, model, count, normalization=normalization),
             joint_pointmap=True, fixed_joint_patches=True)
         for row in measured:
+            if args.normalization_probe:
+                row['normalization'] = normalization
             row.update(patch_count=count, points_per_patch=224, pointmap_points=1024,
                        touch_points=count * 224, total_points=1024 + count * 224, stage1_iou=np.nan)
             if row['stage1_path']:
@@ -202,10 +219,15 @@ def main():
                 stage1['touch_count'] = np.int64(count * 224)
                 stage1['encoder_input_indices'] = indices
                 stage1['patch_count'] = np.int64(count)
+                if args.normalization_probe:
+                    stage1['encoder_normalization'] = np.asarray(normalization)
                 np.savez_compressed(args.output_dir / row['stage1_path'], **stage1)
         rows.extend(measured)
         write_metrics(args.output_dir / 'metrics.csv', rows)
-        (args.output_dir / 'summary.json').write_text(json.dumps(summarize(rows, args.seed), indent=2) + '\n')
+        summary = (summarize(rows, args.seed, group_key='condition',
+                             groups=['patches_16_full', 'patches_16_retained'], reference='patches_16_full')
+                   if args.normalization_probe else summarize(rows, args.seed))
+        (args.output_dir / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
     print(f'Saved {len(rows)} reconstruction attempts to {args.output_dir}', flush=True)
 
 
