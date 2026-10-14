@@ -270,7 +270,9 @@ class ResumeTests(unittest.TestCase):
             return [row]
 
         ns['evaluate_condition'] = evaluate
+        loaded_data = []
         def loader(data, *args, **kwargs):
+            loaded_data.append(json.loads(json.dumps(data)))
             return NS(data=data, dataset=NS(records=[record], resolve_path=Path))
         modules = {'dataloader': NS(build_dataloader=loader, load_data_config=lambda p: self.data),
                    'train': NS(checkpoint_train_scope=lambda _: 'shape_cross_attention', configure_encoder_data=lambda d, _: d),
@@ -304,6 +306,29 @@ class ResumeTests(unittest.TestCase):
         self.assertEqual(config['runs']['a']['step'], 50)
         self.assertEqual(config['runs']['b']['data']['touch']['source'], 'touch_patches')
         self.assertEqual(ns['build_pipeline'].call_count, 5)
+
+        old_config = (self.out / 'config.yaml').read_bytes()
+        args.checkpoints = [a, b]
+        args.run_data_configs = {str(b.resolve()): str(override)}
+        args.data_root = self.root / 'new_dataset'
+        args.output_dir = self.root / 'new_evaluation'
+        loaded_data.clear()
+        with patch.dict(sys.modules, modules), patch.dict(os.environ, {'WORLD_SIZE': '1'}):
+            ns['main']()
+            self.assertTrue(loaded_data)
+            self.assertTrue(all(data['dataset']['root'] == str(args.data_root) for data in loaded_data))
+            saved = json.loads((args.output_dir / 'config.yaml').read_text())
+            self.assertEqual(saved['runs']['b']['data']['touch']['source'], 'touch_patches')
+            self.assertEqual(saved['runs']['b']['data']['dataset']['root'], str(args.data_root))
+            before = len(calls)
+            ns['main']()
+            self.assertEqual(len(calls), before)
+            args.data_root = self.root / 'another_dataset'
+            with self.assertRaisesRegex(ValueError, 'Evaluation protocol changed'):
+                ns['main']()
+            self.assertEqual(len(calls), before)
+        self.assertEqual((self.out / 'config.yaml').read_bytes(), old_config)
+        self.assertEqual(self.data['dataset']['root'], str(self.root))
 
 
 if __name__ == '__main__':

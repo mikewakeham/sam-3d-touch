@@ -106,6 +106,8 @@ def parse_args():
     parser.add_argument("--data-config", type=Path, action=InputGroup,
                         help="Data config for following run/checkpoint groups; a single config applies to all runs")
     parser.add_argument("--selection-data-config", type=Path)
+    parser.add_argument("--data-root", type=Path,
+                      help="Override the dataset root for selection and every run, preserving input settings")
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/evaluation"))
     parser.add_argument("--split", default="val")
     parser.add_argument("--selection", choices=["random", "hidden"], default="random")
@@ -157,6 +159,12 @@ def parse_args():
 def run_data_config(args, checkpoint_path):
     config = getattr(args, "run_data_configs", {}).get(str(checkpoint_path.resolve()), args.data_config)
     return Path(config) if config is not None else None
+
+
+def override_data_root(data, root):
+    if root is None:
+        return data
+    return dict(data, dataset=dict(data["dataset"], root=str(root)))
 
 
 def safe_name(value):
@@ -891,6 +899,7 @@ def validate_resume(args, checkpoints, selection_data, selected, previous_config
 
     def describe(path):
         checkpoint, _, data = read_run(path, run_data_config(args, path), args.split)
+        data = override_data_root(data, getattr(args, "data_root", None))
         return {
             "checkpoint": str(path),
             "step": checkpoint["step"],
@@ -945,11 +954,13 @@ def main():
     with open(checkpoints[0].parent / "config.yaml") as file:
         first_run_data = yaml.safe_load(file)["data"]
     data_config = load_data_config(args.data_config) if args.data_config else first_run_data
+    data_config = override_data_root(data_config, getattr(args, "data_root", None))
     data_config["dataset"]["split"] = args.split
     selection_data = (
         load_data_config(args.selection_data_config) if args.selection_data_config
         else previous_settings.get("selection_data", data_config)
     )
+    selection_data = override_data_root(selection_data, getattr(args, "data_root", None))
     selection_data["dataset"]["split"] = args.split
     loader = build_dataloader(selection_data, 1, args.workers, shuffle=False, include_touch=False)
     selection_path = args.output_dir / "selected_samples.yaml"
@@ -1058,6 +1069,7 @@ def main():
         if checkpoint_path is not None:
             checkpoint, _, run_data = read_run(checkpoint_path, run_data_config(args, checkpoint_path), args.split)
             conditioning = checkpoint.get("conditioning_config", conditioning)
+        run_data = override_data_root(run_data, getattr(args, "data_root", None))
         use_touch = checkpoint is not None and checkpoint["touch_config"] is not None
         if use_touch:
             run_data = configure_encoder_data(run_data, checkpoint["touch_config"]["encoder_name"])
