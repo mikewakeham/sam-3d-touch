@@ -80,11 +80,33 @@ class GeometryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             args = parse_args(['--data-root', temporary, '--render-device', 'OPTIX'])
             with patch('make_data.subprocess.run', return_value=SimpleNamespace(returncode=0)) as run:
-                render_object({'model_path': '/input/object.glb'}, Path(temporary), args, 'GPU-test-uuid')
+                render_object({'object_id': 'object-a', 'model_path': '/input/object.glb'}, Path(temporary), args, 'GPU-test-uuid')
             command = run.call_args.args[0]
             self.assertEqual(command[command.index('--device') + 1], 'OPTIX')
             self.assertEqual(run.call_args.kwargs['env']['CUDA_VISIBLE_DEVICES'], 'GPU-test-uuid')
             self.assertNotEqual(os.environ.get('CUDA_VISIBLE_DEVICES'), 'GPU-test-uuid')
+
+    def test_render_seed_reproducibility(self):
+        from unittest.mock import patch
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as temporary:
+            args = parse_args(['--data-root', temporary])
+            def seeds_for(ids, source_root, gpu):
+                seeds = {}
+                with patch('make_data.subprocess.run', return_value=SimpleNamespace(returncode=0)) as run:
+                    for object_id in ids:
+                        render_object({'object_id': object_id, 'model_path': f'{source_root}/{object_id}.glb'},
+                                      Path(temporary) / object_id, args, gpu)
+                        command = run.call_args.args[0]
+                        seeds[object_id] = int(command[command.index('--seed') + 1])
+                return seeds
+            first = seeds_for(['a', 'b', 'c'], '/original', 'GPU-0')
+            self.assertEqual(len(set(first.values())), 3)
+            self.assertEqual(first, seeds_for(['c', 'b', 'a'], '/moved', 'GPU-1'))
+            self.assertEqual({'b': first['b']}, seeds_for(['b'], '/moved', None))
+            args.seed += 1
+            changed = seeds_for(['a', 'b', 'c'], '/original', 'GPU-0')
+            self.assertTrue(all(first[key] != changed[key] for key in first))
 
     def test_standalone_vae_checkpoint_roundtrip(self):
         import torch
@@ -211,10 +233,8 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
                 half_fov = np.arctan(pointmap.shape[1] / (2 * camera['K'][0, 0]))
                 radius = np.linalg.norm(T[:3, 3])
                 self.assertAlmostEqual(radius * np.sin(half_fov), np.sqrt(3) / 2, places=6)
-                previous_K = intrinsics.setdefault(record['view_id'], camera['K'])
-                np.testing.assert_array_equal(camera['K'], previous_K)
-                previous = cameras.setdefault(record['view_id'], T)
-                np.testing.assert_array_equal(T, previous)
+                cameras.setdefault(record['view_id'], []).append(T.copy())
+                intrinsics.setdefault(record['view_id'], []).append(camera['K'].copy())
             points = pointmap[np.isfinite(pointmap).all(-1)]
             self.assertGreater(len(points), 30)
             object_points = transform_points(points, np.linalg.inv(T))
@@ -229,12 +249,15 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
                 self.assertLess(distance.max(), 1e-5)
                 object_normals = transform_normals(data['normals_camera'], np.linalg.inv(T))
                 np.testing.assert_allclose(object_normals, mesh.face_normals[data['face_indices']], atol=1e-6)
-            from surface_pool import validate_surface_pool
+            from surface_pool import DEFAULT_POOL_POINTS, validate_surface_pool
             from generate_target_latents import checkpoint_sha256
             with np.load(self.output / record['surface_pool_path']) as pool:
-                self.assertEqual(pool['points_object'].shape, (16384, 3))
+                self.assertEqual(pool['points_object'].shape, (DEFAULT_POOL_POINTS, 3))
                 validate_surface_pool(pool, mesh, checkpoint_sha256(self.output / record['mesh_path']))
-        self.assertFalse(np.array_equal(intrinsics['000'], intrinsics['001']))
+        for view_id in cameras:
+            self.assertEqual(len({value.tobytes() for value in cameras[view_id]}), 8)
+            self.assertEqual(len({value.tobytes() for value in intrinsics[view_id]}), 8)
+        self.assertFalse(np.array_equal(intrinsics['000'][0], intrinsics['001'][0]))
         self.assertEqual((self.output / 'generated_data/samples.jsonl').read_text(), '')
         self.assertFalse(list(self.output.rglob('touches.npz')))
         self.assertFalse(list(self.output.rglob('pointmap.npy')))
@@ -428,6 +451,48 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('Previously rendered input changed', result.stderr)
         self.assertEqual(old_image.stat().st_mtime_ns, old_mtime)
+
+    def test_single_view_observations_repeat_for_subset(self):
+        # Check RGB, depth and cameras across subset and worker-count changes.
+        import shutil
+        inputs = self.root / 'observation_inputs'
+        inputs.mkdir()
+        for name in ('a.glb', 'b.glb'):
+            shutil.copy2(self.inputs / 'hierarchy.glb', inputs / name)
+        command = list(self.command)
+        command[command.index('--objects-root') + 1] = str(inputs)
+        command[command.index('--num-views') + 1] = '1'
+        output = self.root / 'observations_full'
+        command[command.index('--data-root') + 1] = str(output)
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        rows = [json.loads(line) for line in (output / 'generated_data/samples_rendered.jsonl').read_text().splitlines()]
+        self.assertEqual(len(rows), 2)
+        with np.load(output / rows[0]['camera_path']) as a, np.load(output / rows[1]['camera_path']) as b:
+            self.assertFalse(np.array_equal(a['K'], b['K']))
+            self.assertFalse(np.array_equal(a['T_camera_from_object'], b['T_camera_from_object']))
+        metadata = [json.loads((output / row['mesh_path']).with_name('render_metadata.json').read_text()) for row in rows]
+        for key in ('angles', 'distance', 'lighting', 'cycles'):
+            self.assertNotEqual(metadata[0]['render_stream_seeds'][key], metadata[1]['render_stream_seeds'][key])
+
+        moved = self.root / 'observation_inputs_moved'
+        shutil.copytree(inputs, moved)
+        subset = self.root / 'observations_subset'
+        command[command.index('--objects-root') + 1] = str(moved)
+        command[command.index('--data-root') + 1] = str(subset)
+        command[command.index('--workers') + 1] = '1'
+        result = subprocess.run([*command, '--object-id', rows[1]['object_id']], capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        row = rows[1]
+        np.testing.assert_array_equal(np.asarray(Image.open(output / row['image_path'])),
+                                      np.asarray(Image.open(subset / row['image_path'])))
+        np.testing.assert_array_equal(np.load(output / row['depth_path']), np.load(subset / row['depth_path']))
+        with np.load(output / row['camera_path']) as original, np.load(subset / row['camera_path']) as repeated:
+            for key in ('K', 'T_camera_from_object'):
+                np.testing.assert_array_equal(original[key], repeated[key])
+        repeated = json.loads((subset / row['mesh_path']).with_name('render_metadata.json').read_text())
+        self.assertEqual(metadata[1]['render_seed'], repeated['render_seed'])
+        self.assertEqual(metadata[1]['render_stream_seeds'], repeated['render_stream_seeds'])
 
     def test_fixed_scene_and_repeatable_lighting(self):
         outputs = []

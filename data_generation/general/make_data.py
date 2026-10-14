@@ -60,9 +60,9 @@ def parse_args(argv=None):
     parser.add_argument("--resolution", type=int, default=768)
     parser.add_argument("--samples", type=int, default=32)
     parser.add_argument("--camera-mode", choices=["trellis2", "fixed"], default="trellis2",
-                        help="Shared seeded FOV/distance variation or fixed FOV/distance")
+                        help="Seeded FOV/distance variation or fixed FOV/distance")
     parser.add_argument("--lighting", choices=["trellis2", "fixed"], default="trellis2",
-                        help="Shared seeded TRELLIS.2 lighting or fixed three-light scene")
+                        help="Seeded TRELLIS.2 lighting or fixed three-light scene")
     parser.add_argument("--seed", type=int, default=29)
     # TRELLIS frames the unit cube using sqrt(3)/2 / sin(FOV/2); 2.7 adds margin at 40 degrees.
     parser.add_argument("--camera-radius", type=float, default=2.7)
@@ -211,6 +211,8 @@ def format_time(seconds):
 
 
 def render_object(obj, output_dir, args, gpu_id):
+    digest = hashlib.sha256(f"render-v1:{args.seed}:{obj['object_id']}".encode()).digest()
+    render_seed = int.from_bytes(digest[:8], "big")
     env = os.environ.copy()
     if gpu_id is not None:
         env["CUDA_VISIBLE_DEVICES"] = gpu_id
@@ -220,7 +222,7 @@ def render_object(obj, output_dir, args, gpu_id):
         "--python", str(Path(__file__).with_name("render_blender.py")), "--",
         "--object", obj["model_path"], "--output", str(output_dir),
         "--num-views", str(args.num_views), "--resolution", str(args.resolution),
-        "--seed", str(args.seed), "--camera-radius", str(args.camera_radius),
+        "--seed", str(render_seed), "--camera-radius", str(args.camera_radius),
         "--fov-degrees", str(args.fov_degrees), "--samples", str(args.samples),
         "--device", args.render_device, "--frame", str(args.frame),
         "--rotation", *map(str, args.rotation),
@@ -402,7 +404,9 @@ def run(args):
                         full_surface_format_version=2, normal_method="triangle_face_winding",
                         persistent_data=True, blender_version=blender_version,
                         voxel_resolution=64, latent_shape=[8, 16, 16, 16],
-                        camera_schedule="shared_hammersley", color_transform="Filmic",
+                        camera_schedule="hammersley",
+                        render_seed_scheme="sha256_uint64_v1",
+                        color_transform="Filmic",
                         normalization="evaluated_blender_world_centered_unit_cube")
         settings["pipeline_sha256"] = pipeline_sha256()
         if settings_path.exists() and json.loads(settings_path.read_text()) != settings:

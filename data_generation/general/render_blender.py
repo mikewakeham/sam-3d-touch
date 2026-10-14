@@ -15,7 +15,8 @@ def parse_args():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--num-views", type=int, required=True)
     parser.add_argument("--resolution", type=int, required=True)
-    parser.add_argument("--seed", type=int, required=True)
+    parser.add_argument("--seed", type=int, required=True,
+                        help="Render seed derived by make_data.py")
     parser.add_argument("--camera-radius", type=float, default=2.7)
     parser.add_argument("--fov-degrees", type=float, default=40.0)
 
@@ -505,6 +506,15 @@ def render_view(view_index, camera, K, output_dir, depth_output):
 
 def main():
     args = parse_args()
+    # Keep stream ordering stable for reproducibility.
+    stream_seeds = {
+        name: int(child.generate_state(1)[0])
+        for name, child in zip(
+            ("angles", "distance", "lighting", "cycles"),
+            np.random.SeedSequence(args.seed).spawn(4),
+        )
+    }
+    stream_seeds["cycles"] &= 0x7fffffff  # Blender's signed integer seed range.
 
     args.output.mkdir(parents=True, exist_ok=True)
 
@@ -522,7 +532,7 @@ def main():
     mesh_objects = freeze_geometry(args.frame, args.rotation)
     normalize_scene(mesh_objects, args.output)
     initialize_render(args.resolution, args.device, args.samples)
-    bpy.context.scene.cycles.seed = args.seed
+    bpy.context.scene.cycles.seed = stream_seeds["cycles"]
     depth_output = initialize_depth_output()
 
     camera = initialize_camera()
@@ -530,6 +540,8 @@ def main():
 
     with (args.output / "render_metadata.json").open("w") as file:
         json.dump({"blender_version": bpy.app.version_string, "source": str(args.object),
+                   "render_seed": args.seed, "render_stream_scheme": "seedsequence_spawn_v1",
+                   "render_stream_seeds": stream_seeds,
                    "frame": args.frame, "rotation_degrees": args.rotation,
                    "camera_mode": args.camera_mode, "lighting": args.lighting,
                    "samples": args.samples, "persistent_data": True,
@@ -537,12 +549,11 @@ def main():
                    "depth_convention": "camera_axis_z", "color_transform": "Filmic",
                    "pointmap_convention": "x_left_y_up_z_forward"}, file, indent=2)
 
-    rng = np.random.RandomState(args.seed)
+    rng = np.random.RandomState(stream_seeds["angles"])
     offset = (rng.rand(), rng.rand())
     # TRELLIS.2 data_toolkit/render_cond.py samples inverse squared distance.
-    # Use the same schedule for every object.
-    camera_rng = np.random.RandomState(args.seed)
-    light_rng = np.random.RandomState(args.seed)
+    camera_rng = np.random.RandomState(stream_seeds["distance"])
+    light_rng = np.random.RandomState(stream_seeds["lighting"])
     radius_min = np.sqrt(3) / 2 / np.sin(np.deg2rad(70 / 2))
     radius_max = np.sqrt(3) / 2 / np.sin(np.deg2rad(10 / 2))
     radii = 1 / np.sqrt(camera_rng.uniform(1 / radius_max**2, 1 / radius_min**2, args.num_views))
