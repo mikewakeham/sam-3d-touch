@@ -495,10 +495,19 @@ def render_view(view_index, camera, K, output_dir, depth_output):
 
     np.save(view_dir / "depth.npy", z_depth)
 
+    transform = camera_extrinsics(camera)
+    pose = np.diag(np.array([-1, -1, 1, 1], dtype=np.float32)) @ transform
+    # Column vectors: p_sam_camera = rotation @ (scale * p_object) + translation.
     np.savez(
         view_dir / "camera.npz",
         K=K,
-        T_camera_from_object=camera_extrinsics(camera),
+        T_camera_from_object=transform,
+        rotation=pose[:3, :3],
+        translation=pose[:3, 3],
+        scale=np.ones(3, dtype=np.float32),
+        pose_source_frame="normalized_object",
+        pose_coordinate_frame="sam_camera",
+        pose_rotation_convention="column_vectors",
     )
 
     depth_exr_path.unlink()

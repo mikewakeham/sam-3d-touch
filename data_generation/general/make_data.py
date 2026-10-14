@@ -50,7 +50,10 @@ def parse_args(argv=None):
     parser.add_argument("--stage", choices=["all", "render", "latents"], default="all",
                         help="render includes depth and full surfaces; all also encodes targets")
     parser.add_argument("--limit", type=int, help="Process only the first N objects; omit to resume the full dataset")
-    parser.add_argument("--object-id", help="Restrict processing to an ID from objects.json")
+    selection = parser.add_mutually_exclusive_group()
+    selection.add_argument("--object-id", help="Restrict processing to an ID from objects.json")
+    selection.add_argument("--object-ids", type=Path,
+                           help="Restrict processing to a JSON list of IDs from objects.json; discovery and splits remain complete")
     parser.add_argument("--blender", default="blender")
     parser.add_argument("--render-device", choices=["CUDA", "OPTIX", "CPU"], default="CUDA")
     parser.add_argument("--workers", type=int, default=4)
@@ -175,6 +178,27 @@ def save_json(value, path):
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(value, indent=2) + "\n")
     temporary.replace(path)
+
+
+def select_objects(objects, args):
+    selected = objects
+    ids = [args.object_id] if args.object_id else None
+    if args.object_ids is not None:
+        ids = json.loads(args.object_ids.expanduser().read_text())
+        if (not isinstance(ids, list) or not ids
+                or any(not isinstance(value, str) or not value for value in ids)):
+            raise ValueError("--object-ids must contain a nonempty JSON list of object IDs")
+        if len(set(ids)) != len(ids):
+            raise ValueError("Duplicate IDs in --object-ids")
+    if ids is not None:
+        requested = set(ids)
+        unknown = requested - {obj["object_id"] for obj in objects}
+        if unknown:
+            raise ValueError(f"Unknown object IDs: {sorted(unknown)}")
+        selected = [obj for obj in objects if obj["object_id"] in requested]
+    if args.limit is not None:
+        selected = selected[:args.limit]
+    return selected
 
 
 def make_splits(objects, seed, train_fraction, val_fraction, existing=None):
@@ -386,6 +410,7 @@ def run(args):
     objects_path = generated / "objects.json"
     if args.stage == "latents":
         objects = json.loads(objects_path.read_text())
+        selected = select_objects(objects, args)
         settings = json.loads(settings_path.read_text())
         if settings["pipeline_sha256"] != pipeline_sha256():
             raise ValueError("Pipeline code changed since rendering; use the same code revision")
@@ -395,6 +420,7 @@ def run(args):
         if args.objects_root is None:
             raise ValueError("--objects-root is required for render/all")
         objects = get_objects(args.objects_root, args.pattern, args.ready_marker, args.objects_manifest)
+        selected = select_objects(objects, args)
         if args.data_root == args.objects_root.resolve() or args.objects_root.resolve() in args.data_root.parents:
             raise ValueError("Keep --data-root outside --objects-root to avoid discovering generated files")
         version = subprocess.check_output([args.blender, "--version"], text=True)
@@ -423,13 +449,6 @@ def run(args):
     splits = make_splits(objects, args.seed, args.train_fraction, args.val_fraction, existing_splits)
     save_json(splits, splits_path)
     lookup = {object_id: split for split, ids in splits.items() for object_id in ids}
-    selected = objects
-    if args.object_id:
-        selected = [obj for obj in objects if obj["object_id"] == args.object_id]
-        if not selected:
-            raise ValueError(f"Unknown --object-id: {args.object_id}")
-    if args.limit is not None:
-        selected = selected[:args.limit]
     gpu_ids = [gpu.strip() for gpu in os.environ.get("CUDA_VISIBLE_DEVICES", "").split(",") if gpu.strip() and gpu.strip() != "-1"]
     failures = []
     if args.stage in {"all", "render"}:
@@ -481,7 +500,8 @@ def main(argv=None):
         if args.objects_root is None:
             raise ValueError("--dry-run requires --objects-root")
         objects = get_objects(args.objects_root, args.pattern, args.ready_marker, args.objects_manifest)
-        print(json.dumps({"objects": len(objects), "examples": objects[:5],
+        selected = select_objects(objects, args)
+        print(json.dumps({"objects": len(objects), "selected": len(selected), "examples": selected[:5],
                           "settings": {key: getattr(args, key) for key in SETTING_NAMES}}, indent=2))
         return
     if args.stage in {"all", "latents"} and not args.encoder_checkpoint.is_file():

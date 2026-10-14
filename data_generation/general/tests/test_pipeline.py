@@ -228,6 +228,12 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
             with np.load(self.output / record['camera_path']) as camera:
                 pointmap = depth_to_pointmap(np.load(self.output / record['depth_path']), camera['K'])
                 T = np.diag([-1, -1, 1, 1]) @ camera['T_camera_from_object']
+                self.assertEqual(camera['pose_source_frame'].item(), 'normalized_object')
+                self.assertEqual(camera['pose_coordinate_frame'].item(), 'sam_camera')
+                self.assertEqual(camera['pose_rotation_convention'].item(), 'column_vectors')
+                np.testing.assert_array_equal(camera['scale'], np.ones(3))
+                posed = (mesh.vertices * camera['scale']) @ camera['rotation'].T + camera['translation']
+                np.testing.assert_allclose(posed, transform_points(mesh.vertices, T), atol=1e-6)
                 # The saved camera must frame the unit cube's enclosing sphere,
                 # using TRELLIS.2's distance/FOV relation without extra padding.
                 half_fov = np.arctan(pointmap.shape[1] / (2 * camera['K'][0, 0]))
@@ -481,18 +487,32 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
         command[command.index('--objects-root') + 1] = str(moved)
         command[command.index('--data-root') + 1] = str(subset)
         command[command.index('--workers') + 1] = '1'
-        result = subprocess.run([*command, '--object-id', rows[1]['object_id']], capture_output=True, text=True)
+        selection = self.root / 'observation_ids.json'
+        selection.write_text(json.dumps([rows[1]['object_id']]))
+        result = subprocess.run([*command, '--object-ids', str(selection)], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        generated = subset / 'generated_data'
+        self.assertEqual(len(json.loads((generated / 'objects.json').read_text())), 2)
+        self.assertEqual(json.loads((generated / 'splits.json').read_text()),
+                         json.loads((output / 'generated_data/splits.json').read_text()))
+        subset_rows = [json.loads(line) for line in (generated / 'samples_rendered.jsonl').read_text().splitlines()]
+        self.assertEqual([item['sample_id'] for item in subset_rows], [rows[1]['sample_id']])
         row = rows[1]
         np.testing.assert_array_equal(np.asarray(Image.open(output / row['image_path'])),
                                       np.asarray(Image.open(subset / row['image_path'])))
         np.testing.assert_array_equal(np.load(output / row['depth_path']), np.load(subset / row['depth_path']))
         with np.load(output / row['camera_path']) as original, np.load(subset / row['camera_path']) as repeated:
-            for key in ('K', 'T_camera_from_object'):
+            for key in original.files:
                 np.testing.assert_array_equal(original[key], repeated[key])
         repeated = json.loads((subset / row['mesh_path']).with_name('render_metadata.json').read_text())
         self.assertEqual(metadata[1]['render_seed'], repeated['render_seed'])
         self.assertEqual(metadata[1]['render_stream_seeds'], repeated['render_stream_seeds'])
+        camera_bytes = (subset / row['camera_path']).read_bytes()
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        completed = [json.loads(line) for line in (generated / 'samples_rendered.jsonl').read_text().splitlines()]
+        self.assertEqual([item['sample_id'] for item in completed], [item['sample_id'] for item in rows])
+        self.assertEqual((subset / row['camera_path']).read_bytes(), camera_bytes)
 
     def test_fixed_scene_and_repeatable_lighting(self):
         outputs = []
