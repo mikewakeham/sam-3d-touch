@@ -232,6 +232,8 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
                 self.assertEqual(camera['pose_coordinate_frame'].item(), 'sam_camera')
                 self.assertEqual(camera['pose_rotation_convention'].item(), 'column_vectors')
                 np.testing.assert_array_equal(camera['scale'], np.ones(3))
+                np.testing.assert_array_equal(camera['T_world_from_object'], np.eye(4))
+                np.testing.assert_array_equal(camera['T_camera_from_world'], camera['T_camera_from_object'])
                 posed = (mesh.vertices * camera['scale']) @ camera['rotation'].T + camera['translation']
                 np.testing.assert_allclose(posed, transform_points(mesh.vertices, T), atol=1e-6)
                 # The saved camera must frame the unit cube's enclosing sphere,
@@ -268,6 +270,72 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
         self.assertFalse(list(self.output.rglob('touches.npz')))
         self.assertFalse(list(self.output.rglob('pointmap.npy')))
         self.assertTrue(all('pointmap_path' not in row for row in self.records))
+
+    def test_random_object_rotation_alignment(self):
+        records = [row for row in self.records if row['object_id'].startswith('hierarchy-')]
+        output = self.root / 'rotated_objects'
+        command = list(self.command)
+        command[command.index('--data-root') + 1] = str(output)
+        command += ['--object-id', records[0]['object_id'], '--random-object-rotation']
+        result = subprocess.run(command, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        settings = json.loads((output / 'generated_data/settings.json').read_text())
+        self.assertTrue(settings['random_object_rotation'])
+        for key in ('mesh_path', 'object_transform_path', 'surface_pool_path'):
+            with np.load(output / records[0][key]) as rotated, np.load(self.output / records[0][key]) as original:
+                for name in original.files:
+                    np.testing.assert_array_equal(rotated[name], original[name])
+        mesh = load_normalized_mesh(output / records[0]['mesh_path'])
+        rotations = []
+        for row in records:
+            with np.load(output / row['camera_path']) as camera, np.load(self.output / row['camera_path']) as original:
+                np.testing.assert_array_equal(camera['K'], original['K'])
+                np.testing.assert_array_equal(camera['T_camera_from_world'], original['T_camera_from_world'])
+                rotation = camera['T_world_from_object'][:3, :3]
+                rotations.append(rotation.copy())
+                self.assertFalse(np.allclose(rotation, np.eye(3)))
+                np.testing.assert_allclose(rotation.T @ rotation, np.eye(3), atol=1e-6)
+                self.assertAlmostEqual(np.linalg.det(rotation), 1, places=6)
+                np.testing.assert_array_equal(camera['T_world_from_object'][:3, 3], np.zeros(3))
+                np.testing.assert_allclose(camera['T_camera_from_object'],
+                                           camera['T_camera_from_world'] @ camera['T_world_from_object'], atol=1e-6)
+                transform = np.diag([-1., -1., 1., 1.]) @ camera['T_camera_from_object']
+                np.testing.assert_allclose(camera['rotation'], transform[:3, :3], atol=1e-6)
+                np.testing.assert_array_equal(camera['translation'], original['translation'])
+                np.testing.assert_array_equal(camera['scale'], original['scale'])
+                depth = np.load(output / row['depth_path'])
+                pointmap = depth_to_pointmap(depth, camera['K'])
+            points = pointmap[np.isfinite(pointmap).all(-1)]
+            self.assertGreater(len(points), 30)
+            object_points = transform_points(points, np.linalg.inv(transform))
+            _, distance, _ = trimesh.proximity.closest_point_naive(mesh, object_points[::4])
+            self.assertLess(np.percentile(distance, 95), .001)
+            with np.load(output / row['full_surface_path']) as surface, np.load(self.output / row['full_surface_path']) as original:
+                validate_surface(surface, require_normals=True)
+                with np.load(self.output / row['camera_path']) as camera:
+                    original_transform = np.diag([-1., -1., 1., 1.]) @ camera['T_camera_from_object']
+                np.testing.assert_allclose(transform_points(surface['points_camera'], np.linalg.inv(transform)),
+                                           transform_points(original['points_camera'], np.linalg.inv(original_transform)), atol=1e-6)
+                np.testing.assert_allclose(transform_normals(surface['normals_camera'], np.linalg.inv(transform)),
+                                           mesh.face_normals[surface['face_indices']], atol=1e-6)
+        self.assertFalse(np.array_equal(*rotations))
+        metadata = json.loads((output / records[0]['mesh_path']).with_name('render_metadata.json').read_text())
+        self.assertTrue(metadata['random_object_rotation'])
+        self.assertIn('object_rotation', metadata['render_stream_seeds'])
+        from make_touch_data import make_object, parse_args as touch_args
+        from sample_touch_patches import validate_patches
+        touched = make_object((touch_args(['--data-root', str(output)]), records))
+        for row in touched:
+            with np.load(output / row['camera_path']) as camera, np.load(output / row['touch_path']) as patches:
+                validate_patches(patches)
+                transform = np.diag([-1., -1., 1., 1.]) @ camera['T_camera_from_object']
+                points = transform_points(patches['points_camera'], np.linalg.inv(transform))
+                triangles = mesh.triangles[patches['face_indices']]
+                closest = trimesh.triangles.closest_point(triangles, points)
+                self.assertLess(np.linalg.norm(closest - points, axis=1).max(), 1e-5)
+        result = subprocess.run(command[:-1], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Inputs/settings differ', result.stderr)
 
     def test_texture_survives_baking(self):
         record = next(row for row in self.records if row['object_id'].startswith('hierarchy-'))
@@ -468,6 +536,7 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
         command = list(self.command)
         command[command.index('--objects-root') + 1] = str(inputs)
         command[command.index('--num-views') + 1] = '1'
+        command.append('--random-object-rotation')
         output = self.root / 'observations_full'
         command[command.index('--data-root') + 1] = str(output)
         result = subprocess.run(command, capture_output=True, text=True)
@@ -476,9 +545,10 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
         self.assertEqual(len(rows), 2)
         with np.load(output / rows[0]['camera_path']) as a, np.load(output / rows[1]['camera_path']) as b:
             self.assertFalse(np.array_equal(a['K'], b['K']))
+            self.assertFalse(np.array_equal(a['T_world_from_object'], b['T_world_from_object']))
             self.assertFalse(np.array_equal(a['T_camera_from_object'], b['T_camera_from_object']))
         metadata = [json.loads((output / row['mesh_path']).with_name('render_metadata.json').read_text()) for row in rows]
-        for key in ('angles', 'distance', 'lighting', 'cycles'):
+        for key in ('angles', 'distance', 'lighting', 'cycles', 'object_rotation'):
             self.assertNotEqual(metadata[0]['render_stream_seeds'][key], metadata[1]['render_stream_seeds'][key])
 
         moved = self.root / 'observation_inputs_moved'

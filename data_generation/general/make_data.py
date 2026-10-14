@@ -29,7 +29,7 @@ FORMATS = {".glb", ".gltf", ".obj", ".fbx", ".ply", ".stl", ".blend",
 SETTING_NAMES = ("num_views", "resolution", "seed", "camera_radius", "fov_degrees",
                  "samples", "frame", "rotation", "num_points", "visibility_tolerance",
                  "train_fraction", "val_fraction", "render_device", "camera_mode", "lighting", "ready_marker",
-                 "surface_pool_points")
+                 "surface_pool_points", "random_object_rotation")
 
 
 def pipeline_sha256():
@@ -73,6 +73,8 @@ def parse_args(argv=None):
     parser.add_argument("--frame", type=int, default=1)
     parser.add_argument("--rotation", type=float, nargs=3, default=[0, 0, 0],
                         help="XYZ degrees applied after Blender's format-aware import")
+    parser.add_argument("--random-object-rotation", action="store_true",
+                        help="Sample a uniform 3D object rotation for each view after normalization")
     parser.add_argument("--num-points", type=int, default=8192)
     parser.add_argument("--surface-pool-points", type=int, default=DEFAULT_POOL_POINTS,
                         help="Shared XYZ/normal pool per object; 0 disables the optional larger pool")
@@ -252,6 +254,8 @@ def render_object(obj, output_dir, args, gpu_id):
         "--rotation", *map(str, args.rotation),
         "--camera-mode", args.camera_mode, "--lighting", args.lighting,
     ]
+    if args.random_object_rotation:
+        command.append("--random-object-rotation")
     output_dir.mkdir(parents=True, exist_ok=True)
     log_path = output_dir / "blender.log"
     with log_path.open("w") as log:

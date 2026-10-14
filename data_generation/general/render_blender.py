@@ -6,7 +6,7 @@ from pathlib import Path
 
 import bpy
 import numpy as np
-from mathutils import Vector
+from mathutils import Matrix, Quaternion, Vector
 
 
 def parse_args():
@@ -27,6 +27,7 @@ def parse_args():
     parser.add_argument("--frame", type=int, default=1)
     parser.add_argument("--rotation", type=float, nargs=3, default=[0, 0, 0],
                         help="XYZ Euler rotation in degrees after Blender import")
+    parser.add_argument("--random-object-rotation", action="store_true")
 
     argv = sys.argv[sys.argv.index("--") + 1:]
     return parser.parse_args(argv)
@@ -147,7 +148,6 @@ def normalize_scene(mesh_objects, output_dir):
     transform = np.eye(4, dtype=np.float64)
     transform[:3, :3] *= scale
     transform[:3, 3] = offset
-    from mathutils import Matrix
     for obj in mesh_objects:
         obj.data.transform(Matrix(transform))
         obj.data.update()
@@ -415,7 +415,7 @@ def camera_intrinsics(resolution, fov_degrees):
 
 
 def camera_extrinsics(camera):
-    T_blender_camera_from_object = np.array(
+    T_blender_camera_from_world = np.array(
         camera.matrix_world.inverted(),
         dtype=np.float32,
     )
@@ -432,7 +432,7 @@ def camera_extrinsics(camera):
 
     return (
         T_opencv_from_blender_camera
-        @ T_blender_camera_from_object
+        @ T_blender_camera_from_world
     )
 
 
@@ -459,7 +459,7 @@ def load_depth_exr(path):
 
 
 
-def render_view(view_index, camera, K, output_dir, depth_output):
+def render_view(view_index, camera, K, output_dir, depth_output, object_transform):
     view_id = f"{view_index:03d}"
     view_dir = output_dir / "views" / view_id
     view_dir.mkdir(parents=True, exist_ok=True)
@@ -495,12 +495,15 @@ def render_view(view_index, camera, K, output_dir, depth_output):
 
     np.save(view_dir / "depth.npy", z_depth)
 
-    transform = camera_extrinsics(camera)
+    camera_transform = camera_extrinsics(camera)
+    transform = camera_transform @ object_transform
     pose = np.diag(np.array([-1, -1, 1, 1], dtype=np.float32)) @ transform
     # Column vectors: p_sam_camera = rotation @ (scale * p_object) + translation.
     np.savez(
         view_dir / "camera.npz",
         K=K,
+        T_camera_from_world=camera_transform,
+        T_world_from_object=object_transform,
         T_camera_from_object=transform,
         rotation=pose[:3, :3],
         translation=pose[:3, 3],
@@ -519,8 +522,8 @@ def main():
     stream_seeds = {
         name: int(child.generate_state(1)[0])
         for name, child in zip(
-            ("angles", "distance", "lighting", "cycles"),
-            np.random.SeedSequence(args.seed).spawn(4),
+            ("angles", "distance", "lighting", "cycles", "object_rotation"),
+            np.random.SeedSequence(args.seed).spawn(5),
         )
     }
     stream_seeds["cycles"] &= 0x7fffffff  # Blender's signed integer seed range.
@@ -552,6 +555,7 @@ def main():
                    "render_seed": args.seed, "render_stream_scheme": "seedsequence_spawn_v1",
                    "render_stream_seeds": stream_seeds,
                    "frame": args.frame, "rotation_degrees": args.rotation,
+                   "random_object_rotation": args.random_object_rotation,
                    "camera_mode": args.camera_mode, "lighting": args.lighting,
                    "samples": args.samples, "persistent_data": True,
                    "external_assets": assets,
@@ -563,12 +567,21 @@ def main():
     # TRELLIS.2 data_toolkit/render_cond.py samples inverse squared distance.
     camera_rng = np.random.RandomState(stream_seeds["distance"])
     light_rng = np.random.RandomState(stream_seeds["lighting"])
+    rotation_rng = np.random.RandomState(stream_seeds["object_rotation"])
     radius_min = np.sqrt(3) / 2 / np.sin(np.deg2rad(70 / 2))
     radius_max = np.sqrt(3) / 2 / np.sin(np.deg2rad(10 / 2))
     radii = 1 / np.sqrt(camera_rng.uniform(1 / radius_max**2, 1 / radius_min**2, args.num_views))
     fovs = np.rad2deg(2 * np.arcsin(np.sqrt(3) / 2 / radii))
 
     for view_index in range(args.num_views):
+        object_transform = np.eye(4, dtype=np.float32)
+        if args.random_object_rotation:
+            # A normalized isotropic Gaussian quaternion samples SO(3) uniformly.
+            rotation = Quaternion(rotation_rng.normal(size=4)).normalized()
+            object_transform[:3, :3] = np.array(rotation.to_matrix(), dtype=np.float32)
+        for obj in mesh_objects:
+            obj.matrix_world = Matrix(object_transform)
+
         yaw, pitch = camera_angles(
             view_index,
             args.num_views,
@@ -597,6 +610,7 @@ def main():
             K,
             args.output,
             depth_output,
+            object_transform,
         )
 
         print(
