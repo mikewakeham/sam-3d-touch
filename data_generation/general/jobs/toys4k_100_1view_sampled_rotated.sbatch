@@ -20,7 +20,7 @@ if [[ -d "$toys4k_assets/toys4k_blend_files" ]]; then
     toys4k_assets="$toys4k_assets/toys4k_blend_files"
 fi
 
-data_root=/n/netscratch/qianqian_lab/Lab/mwakeham/toys4k_100_sam3d_1view_sampled_rotated
+data_root=/n/lab_storage/qianqian_lab/Lab/mwakeham/toys4k_100_sam3d_1view_sampled_rotated
 original_split=/n/netscratch/qianqian_lab/Lab/mwakeham/toys4k_100_sam3d_1view/generated_data/splits.json
 mkdir -p "$data_root/generated_data"
 for split in splits.json; do

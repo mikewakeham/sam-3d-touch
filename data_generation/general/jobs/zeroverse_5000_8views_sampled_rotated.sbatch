@@ -15,7 +15,7 @@ set -euo pipefail
 cd /n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
 
-data_root=/n/netscratch/qianqian_lab/Lab/mwakeham/zeroverse_5000_sam3d_8views_sampled_rotated
+data_root=/n/lab_storage/qianqian_lab/Lab/mwakeham/zeroverse_5000_sam3d_8views_sampled_rotated
 original_split=/n/netscratch/qianqian_lab/Lab/mwakeham/zeroverse_5000_sam3d_8views/generated_data/splits_train_val.json
 mkdir -p "$data_root/generated_data"
 for split in splits.json splits_train_val.json; do

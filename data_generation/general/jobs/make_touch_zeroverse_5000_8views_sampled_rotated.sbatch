@@ -15,6 +15,6 @@ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
 
 # Create data_generation/general/logs before submitting.
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python -u data_generation/general/make_touch_data.py \
-    --data-root /n/netscratch/qianqian_lab/Lab/mwakeham/zeroverse_5000_sam3d_8views_sampled_rotated \
+    --data-root /n/lab_storage/qianqian_lab/Lab/mwakeham/zeroverse_5000_sam3d_8views_sampled_rotated \
     --workers 16 \
     --joint-pointmap
