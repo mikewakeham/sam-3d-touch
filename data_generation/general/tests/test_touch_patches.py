@@ -155,13 +155,9 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), content)
         path = self.root / rows[0]['touch_path']
         stamp = path.stat().st_mtime_ns
-        read_array = np.lib.npyio.NpzFile.__getitem__
-        def read_metadata(saved, key):
-            self.assertIn(key, ('radius', 'thickness', 'sample_seed_parts'))
-            return read_array(saved, key)
         with patch('make_touch_data.load_normalized_mesh', side_effect=AssertionError('Completed mesh reloaded')), \
                 patch('make_touch_data.checkpoint_sha256', side_effect=AssertionError('Completed source reread')), \
-                patch.object(np.lib.npyio.NpzFile, '__getitem__', read_metadata):
+                patch('make_touch_data.np.load', side_effect=AssertionError('Completed touch file opened')):
             _, reused, new_views = make_object((self.args, self.records))
         self.assertEqual((reused, new_views), (2, 0))
         self.assertEqual(path.stat().st_mtime_ns, stamp)
@@ -266,8 +262,8 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(before, [(self.root / r['full_surface_path']).read_bytes() for r in self.records])
         arrays['points_camera'] += .01
         np.savez_compressed(path, **arrays)
-        self.args.verify_existing = True
-        with self.assertRaisesRegex(ValueError, 'source differ'):
+        self.args.overwrite = True
+        with self.assertRaisesRegex(ValueError, 'Sampling replay differs'):
             make_object((self.args, self.records))
 
     def test_saved_joint_generation_loader_viewer_and_no_runtime_fps(self):
@@ -398,6 +394,33 @@ class IntegrationTests(unittest.TestCase):
         self.assertFalse(scene['/joint_fps'].visible)
         for path, content in before.items():
             self.assertEqual(path.read_bytes(), content)
+
+    def test_start_object_skips_prefix_and_preserves_full_manifest(self):
+        skipped = [dict(self.records[0], sample_id=name, object_id=name,
+                        mesh_path=f'absent/{name}/mesh.npz',
+                        full_surface_path=f'absent/{name}/surface.npz')
+                   for name in ('z', 'a')]
+        records = skipped + self.records
+        self.manifest.write_text(''.join(json.dumps(row) + '\n' for row in records))
+        command = [sys.executable, str(Path(__file__).resolve().parent.parent / 'make_touch_data.py'),
+                   '--data-root', str(self.root), '--start-object', '3']
+        for workers in (1, 2):
+            result = subprocess.run(command + ['--workers', str(workers)],
+                                    capture_output=True, text=True, timeout=30)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('[3/3] box:', result.stdout)
+            self.assertNotIn('[1/3]', result.stdout)
+            output = self.generated / 'samples_simulated_touches.jsonl'
+            saved = [json.loads(line) for line in output.read_text().splitlines()]
+            self.assertEqual([r['sample_id'] for r in saved], [r['sample_id'] for r in records])
+            for row in saved:
+                self.assertEqual(row['touch_path'],
+                                 str(Path(row['full_surface_path']).with_name('simulated_touches.npz')))
+            self.assertFalse((self.root / 'absent').exists())
+        original = output.read_bytes()
+        with self.assertRaisesRegex(ValueError, '--start-object must be between 1 and 3'):
+            main(['--data-root', str(self.root), '--start-object', '4'])
+        self.assertEqual(output.read_bytes(), original)
 
     def test_cli_parallel_worker_reproducibility(self):
         main(['--data-root', str(self.root)])

@@ -1,11 +1,8 @@
-"""Add adaptive touch banks to an existing rendered/encoded dataset."""
-
 import argparse
 import fcntl
 import hashlib
 import json
 import multiprocessing as mp
-import os
 from pathlib import Path
 import signal
 import sys
@@ -13,19 +10,15 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from concurrent.futures.process import BrokenProcessPool
 from functools import lru_cache
 
-for variable in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS'):
-    os.environ.setdefault(variable, '1')
-
 import numpy as np
 import trimesh
 
 from generate_target_latents import checkpoint_sha256, load_normalized_mesh
 from sample_full_surface import classify_visibility, sam_camera_transform, transform_points, validate_surface
-from sample_touch_patches import make_patch_bank, save_patches, validate_patches, select_patch_indices
+from sample_touch_patches import make_patch_bank, save_patches, select_patch_indices
 
 
 def initialize_worker():
-    # The parent handles Ctrl+C and terminates the pool, including idle workers.
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 
@@ -40,18 +33,19 @@ def parse_args(argv=None):
     parser.add_argument('--workers', type=int, default=1)
     parser.add_argument('--object-id', action='append', help='Process only these objects (repeatable)')
     parser.add_argument('--overwrite', action='store_true')
-    parser.add_argument('--verify-existing', action='store_true', help='Fully validate saved arrays and source hashes when resuming')
+    parser.add_argument('--start-object', type=int, default=1, help='Start at this 1-based object position in the manifest; trust earlier objects as complete')
     parser.add_argument('--joint-pointmap', action='store_true', help='Also save fixed 1024-pointmap + 7168-touch inputs for all three budgets')
     parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'))
     args = parser.parse_args(argv)
     if (not args.name or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-' for c in args.name)
-            or args.workers < 1):
-        parser.error('Use a simple alphanumeric/underscore/hyphen name and positive worker count')
+            or args.workers < 1 or args.start_object < 1):
+        parser.error('Use a simple name and positive worker count/start object')
+    if args.object_id and args.start_object != 1:
+        parser.error('Use either --object-id or --start-object')
     return args
 
 
 def joint_arrays(bank, preprocessor, inputs):
-    """Compute once during generation; training and the viewer only read these arrays."""
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
     import torch
     from train import normalize_touch_to_pointmap_frame
@@ -114,12 +108,7 @@ def save_joint(args, record, arrays, path):
     if config.get('ss_preprocessor') is None:
         sources.append(config_path.parent / config.ss_generator_config_path)
     fingerprint = hashlib.sha256(''.join(checkpoint_sha256(source) for source in sources).encode()).hexdigest()
-    if all(key in arrays for key in (
-        'joint_points_camera', 'joint_points_pre_encoder', 'joint_pointmap_candidates_camera',
-        'joint_pointmap_indices', 'joint_pointmap_scale', 'joint_pointmap_shift',
-    )) and str(arrays.get('joint_source_sha256')) == fingerprint:
-        return
-    print(f"{record['sample_id']}: computing joint pointmap; keeping existing touch patches", flush=True)
+    print(f"{record['sample_id']}: generating joint inputs", flush=True)
     dataset = object.__new__(TouchDataset)
     dataset.root = args.data_root
     with Image.open(args.data_root / record['image_path']) as image:
@@ -129,8 +118,51 @@ def save_joint(args, record, arrays, path):
     inputs = preprocess_pointmap_batch(preprocessor, torch.from_numpy(rgba)[None],
                                       torch.from_numpy(pointmap)[None], 'cpu')
     arrays.update(joint_arrays(arrays, preprocessor, inputs), joint_source_sha256=fingerprint)
-    # Upgrade this file atomically while preserving the existing patch bank.
     save_patches(path, arrays, overwrite=True)
+
+
+def make_patches(args, record, mesh, mesh_hash):
+    root = args.data_root
+    surface_path = root / record['full_surface_path']
+    with np.load(surface_path, allow_pickle=False) as saved:
+        surface = dict(saved)
+    validate_surface(surface)
+    transform = sam_camera_transform(root / record['camera_path'])
+    points, faces = trimesh.sample.sample_surface(mesh, int(surface['requested_point_count']),
+                                                 seed=int(surface['sample_seed']))
+    replayed = transform_points(points, transform).astype(np.float32)
+    if replayed.shape != surface['points_camera'].shape or not np.allclose(
+            replayed, surface['points_camera'], atol=1e-6, rtol=0):
+        raise ValueError(f'Sampling replay differs: {surface_path}; use the original NumPy/Trimesh versions')
+    if ('mesh_sha256' in surface and str(surface['mesh_sha256']) != mesh_hash
+            or 'face_indices' in surface and not np.array_equal(surface['face_indices'], faces)):
+        raise ValueError(f'Saved surface does not match original mesh: {surface_path}')
+    with np.load(root / record['camera_path'], allow_pickle=False) as saved:
+        camera = dict(saved)
+    depth = np.load(root / record['depth_path'], allow_pickle=False)
+    tolerance = float(surface['visibility_tolerance'])
+    visibility = classify_visibility(points, camera['K'], camera['T_camera_from_object'], depth, tolerance)
+    if not np.array_equal(visibility, surface['point_visibility']):
+        raise ValueError(f'Saved surface visibility differs: {surface_path}')
+    identity = int(hashlib.sha256(record['sample_id'].encode()).hexdigest()[:8], 16)
+    seed = [args.seed, identity]
+    bank = make_patch_bank(mesh, points, faces, visibility, seed, args.radius, args.thickness)
+    centers = bank['center_indices']
+    arrays = dict(
+        format_version=np.int64(1), data_kind='touch_patches', coordinate_frame='sam_camera',
+        sampling_method='area_weighted_triangle_ellipsoid', center_method='hidden_euclidean_fps',
+        points_camera=transform_points(bank['points_object'], transform).astype(np.float32),
+        offsets=bank['offsets'], face_indices=bank['face_indices'],
+        center_point_ids=surface['point_ids'][centers],
+        bases_camera=np.einsum('ij,njk->nik', transform[:3, :3], bank['bases_object']).astype(np.float32),
+        radii=bank['radii'].astype(np.float32), support_counts=bank['support_counts'],
+        point_visibility=classify_visibility(bank['points_object'], camera['K'], camera['T_camera_from_object'], depth, tolerance),
+        visibility_tolerance=tolerance, radius=args.radius, thickness=args.thickness,
+        sample_seed_parts=np.array(seed, dtype=np.int64), mesh_sha256=mesh_hash,
+        source_surface_sha256=checkpoint_sha256(surface_path),
+        numpy_version=np.__version__, trimesh_version=trimesh.__version__,
+    )
+    return arrays
 
 
 def make_object(task):
@@ -139,92 +171,48 @@ def make_object(task):
     mesh_paths = {record['mesh_path'] for record in records}
     if len(mesh_paths) != 1:
         raise ValueError('Views of an object must share one mesh')
-    mesh_path = root / records[0]['mesh_path']
     mesh = None
-    mesh_hash = None
     outputs = []
-    reused = 0
-    generated = 0
+    reused = generated = 0
     for record in records:
-        surface_path = root / record['full_surface_path']
-        path = surface_path.with_name(f'{args.name}.npz')
-        identity = int(hashlib.sha256(record['sample_id'].encode()).hexdigest()[:8], 16)
-        seed = [args.seed, identity]
+        path = (root / record['full_surface_path']).with_name(f'{args.name}.npz')
         if path.exists() and not args.overwrite:
-            with np.load(path, allow_pickle=False) as saved:
-                if (float(saved['radius']) != args.radius or float(saved['thickness']) != args.thickness
-                        or not np.array_equal(saved['sample_seed_parts'], seed)):
-                    raise ValueError(f'Existing touch settings differ: {path}; use --overwrite')
-                if not args.verify_existing and (not args.joint_pointmap or all(key in saved.files for key in (
-                    'joint_points_camera', 'joint_points_pre_encoder', 'joint_pointmap_candidates_camera',
-                    'joint_pointmap_indices', 'joint_pointmap_scale', 'joint_pointmap_shift', 'joint_source_sha256',
-                ))):
-                    outputs.append(dict(record, touch_path=str(path.relative_to(root))))
-                    reused += 1
-                    continue
-                arrays = dict(saved)
-            validate_patches(arrays)
-            if mesh_hash is None:
-                mesh_hash = checkpoint_sha256(mesh_path)
-            if (str(arrays['mesh_sha256']) != mesh_hash
-                    or str(arrays['source_surface_sha256']) != checkpoint_sha256(surface_path)):
-                raise ValueError(f'Existing touch settings or source differ: {path}; use --overwrite')
-            save_joint(args, record, arrays, path)
-            outputs.append(dict(record, touch_path=str(path.relative_to(root))))
+            if args.joint_pointmap:
+                with np.load(path, allow_pickle=False) as saved:
+                    if not all(key in saved.files for key in (
+                        'joint_points_camera', 'joint_points_pre_encoder', 'joint_pointmap_candidates_camera',
+                        'joint_pointmap_indices', 'joint_pointmap_scale', 'joint_pointmap_shift',
+                    )):
+                        arrays = dict(saved)
+                    else:
+                        arrays = None
+                if arrays is not None:
+                    save_joint(args, record, arrays, path)
             reused += 1
-            continue
-        print(f"{record['sample_id']}: generating touch patches", flush=True)
-        if mesh_hash is None:
-            mesh_hash = checkpoint_sha256(mesh_path)
-        if mesh is None:
-            print(f"{record['object_id']}: loading mesh", flush=True)
-            mesh = load_normalized_mesh(mesh_path)
-            print(f"{record['object_id']}: {len(mesh.vertices)} vertices, {len(mesh.faces)} faces", flush=True)
-        with np.load(surface_path, allow_pickle=False) as saved:
-            surface = dict(saved)
-        validate_surface(surface)
-        transform = sam_camera_transform(root / record['camera_path'])
-        # Reuse backfill_normals' exact replay. No normals are guessed or written back.
-        points, faces = trimesh.sample.sample_surface(mesh, int(surface['requested_point_count']),
-                                                      seed=int(surface['sample_seed']))
-        replayed = transform_points(points, transform).astype(np.float32)
-        if replayed.shape != surface['points_camera'].shape or not np.allclose(
-                replayed, surface['points_camera'], atol=1e-6, rtol=0):
-            raise ValueError(f'Sampling replay differs: {surface_path}; use the original NumPy/Trimesh versions')
-        if ('mesh_sha256' in surface and str(surface['mesh_sha256']) != mesh_hash
-                or 'face_indices' in surface and not np.array_equal(surface['face_indices'], faces)):
-            raise ValueError(f'Saved surface does not match original mesh: {surface_path}')
-        with np.load(root / record['camera_path'], allow_pickle=False) as saved:
-            camera = dict(saved)
-        depth = np.load(root / record['depth_path'], allow_pickle=False)
-        tolerance = float(surface['visibility_tolerance'])
-        visibility = classify_visibility(points, camera['K'], camera['T_camera_from_object'], depth, tolerance)
-        if not np.array_equal(visibility, surface['point_visibility']):
-            raise ValueError(f'Saved surface visibility differs: {surface_path}')
-        identity = int(hashlib.sha256(record['sample_id'].encode()).hexdigest()[:8], 16)
-        seed = [args.seed, identity]
-        bank = make_patch_bank(mesh, points, faces, visibility, seed, args.radius, args.thickness)
-        centers = bank['center_indices']
-        arrays = dict(
-            format_version=np.int64(1), data_kind='touch_patches', coordinate_frame='sam_camera',
-            sampling_method='area_weighted_triangle_ellipsoid', center_method='hidden_euclidean_fps',
-            points_camera=transform_points(bank['points_object'], transform).astype(np.float32),
-            offsets=bank['offsets'], face_indices=bank['face_indices'],
-            center_point_ids=surface['point_ids'][centers],
-            bases_camera=np.einsum('ij,njk->nik', transform[:3, :3], bank['bases_object']).astype(np.float32),
-            radii=bank['radii'].astype(np.float32), support_counts=bank['support_counts'],
-            point_visibility=classify_visibility(bank['points_object'], camera['K'], camera['T_camera_from_object'], depth, tolerance),
-            visibility_tolerance=tolerance, radius=args.radius, thickness=args.thickness,
-            sample_seed_parts=np.array(seed, dtype=np.int64), mesh_sha256=mesh_hash,
-            source_surface_sha256=checkpoint_sha256(surface_path),
-            numpy_version=np.__version__, trimesh_version=trimesh.__version__,
-        )
-        path = surface_path.with_name(f'{args.name}.npz')
-        save_patches(path, arrays, args.overwrite)
-        save_joint(args, record, arrays, path)
+        else:
+            print(f"{record['sample_id']}: generating touch patches", flush=True)
+            if mesh is None:
+                mesh_path = root / record['mesh_path']
+                mesh_hash = checkpoint_sha256(mesh_path)
+                mesh = load_normalized_mesh(mesh_path)
+            arrays = make_patches(args, record, mesh, mesh_hash)
+            save_patches(path, arrays, args.overwrite)
+            save_joint(args, record, arrays, path)
+            generated += 1
         outputs.append(dict(record, touch_path=str(path.relative_to(root))))
-        generated += 1
     return outputs, reused, generated
+
+
+def select_objects(args, records):
+    groups = {}
+    for record in records:
+        if args.object_id is None or record['object_id'] in args.object_id:
+            groups.setdefault(record['object_id'], []).append(record)
+    if not groups or args.object_id and set(args.object_id) - set(groups):
+        raise ValueError('Requested objects are absent from the input manifest')
+    if args.start_object > len(groups):
+        raise ValueError(f'--start-object must be between 1 and {len(groups)}')
+    return len(groups), list(enumerate(groups.values(), 1))[args.start_object - 1:]
 
 
 def main(argv=None):
@@ -242,67 +230,44 @@ def main(argv=None):
             raise SystemExit(f'Dataset is locked by another generation process: {generated}. '
                              'Stop that process before restarting; do not delete .build.lock.')
         records = [json.loads(line) for line in manifest.read_text().splitlines() if line.strip()]
-        groups = {}
-        for record in records:
-            if args.object_id is None or record['object_id'] in args.object_id:
-                groups.setdefault(record['object_id'], []).append(record)
-        if not groups or args.object_id and set(args.object_id) - set(groups):
-            raise ValueError('Requested objects are absent from the input manifest')
-        tasks = [(args, rows) for rows in groups.values()]
-        print(f'Processing {len(tasks)} objects with {args.workers} workers.', flush=True)
-        if args.overwrite:
-            print('Overwrite enabled: regenerating existing touch files.', flush=True)
-        else:
-            print('Reusing existing touch files and generating missing ones. Progress counts both.', flush=True)
-            if not args.verify_existing:
-                print('Resume checks saved file headers and settings only; --verify-existing enables full source checks.', flush=True)
-        completed = []
+        total, objects = select_objects(args, records)
+        print(f'Processing objects {args.start_object}-{total} of {total} with {args.workers} workers.', flush=True)
         if args.workers == 1:
-            for index, task in enumerate(tasks, 1):
-                rows, reused, new_views = make_object(task)
-                completed.extend(rows)
-                print(f"[{index}/{len(tasks)}] {rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
+            for index, object_records in objects:
+                rows, reused, new_views = make_object((args, object_records))
+                print(f"[{index}/{total}] {rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
         else:
-            # Match make_data.py's spawn context: workers must not inherit the dataset lock.
             pool = ProcessPoolExecutor(max_workers=args.workers, mp_context=mp.get_context('spawn'),
                                        initializer=initialize_worker)
-            remaining = set(groups)
             try:
-                futures = {pool.submit(make_object, task): task[1][0]['object_id'] for task in tasks}
-                for index, future in enumerate(as_completed(futures), 1):
-                    object_id = futures[future]
+                futures = {pool.submit(make_object, (args, rows)): (index, rows[0]['object_id'])
+                           for index, rows in objects}
+                for future in as_completed(futures):
+                    index, object_id = futures[future]
                     try:
                         rows, reused, new_views = future.result()
                     except BrokenProcessPool as error:
-                        raise RuntimeError(
-                            f'Touch worker exited unexpectedly. {len(remaining)} objects have no returned result; '
-                            f'first IDs: {sorted(remaining)[:20]}. Completed touch files are preserved; '
-                            'rerun with --workers 1 to locate the failing object.'
-                        ) from error
+                        raise RuntimeError(f'Touch worker exited unexpectedly while processing {object_id}') from error
                     except Exception as error:
                         raise RuntimeError(f'Touch generation failed for {object_id}') from error
-                    completed.extend(rows)
-                    remaining.remove(object_id)
-                    print(f"[{index}/{len(tasks)}] {rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
+                    print(f"[{index}/{total}] {rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
             finally:
                 previous_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
                 try:
                     if sys.exc_info()[0] is not None:
-                        # Python 3.11 has no public executor method to terminate running workers.
                         for process in list((pool._processes or {}).values()):
                             if process.is_alive():
                                 process.terminate()
                     pool.shutdown(wait=True, cancel_futures=True)
                 finally:
                     signal.signal(signal.SIGINT, previous_handler)
-        # A pilot subset must never replace a previously complete training manifest.
+
         if args.object_id is not None:
-            print(f'Saved simulated touches for {len(completed)} pilot views.', flush=True)
+            print(f'Processed {len(objects)} selected objects.', flush=True)
             return
-        by_id = {row['sample_id']: row for row in completed}
-        if len(by_id) != len(records):
-            raise ValueError('Duplicate or missing sample IDs')
-        content = ''.join(json.dumps(by_id[row['sample_id']]) + '\n' for row in records)
+        for record in records:
+            record['touch_path'] = str(Path(record['full_surface_path']).with_name(f'{args.name}.npz'))
+        content = ''.join(json.dumps(record) + '\n' for record in records)
         if output.exists() and output.read_text() != content and not args.overwrite:
             raise ValueError(f'Existing manifest differs: {output}; use --overwrite')
         temporary = output.with_suffix('.tmp.jsonl')
