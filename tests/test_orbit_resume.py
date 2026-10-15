@@ -156,6 +156,7 @@ class OrbitResumeTests(unittest.TestCase):
         with patch.object(orbit.subprocess, 'run') as child:
             orbit.render_all(args, arguments)
             child.assert_not_called()
+            (self.root / 'config.yaml').rename(self.root / 'config.json')
             (self.output / 'mesh_full.png').unlink()
             orbit.render_all(args, arguments)
             self.assertEqual(child.call_count, 1)

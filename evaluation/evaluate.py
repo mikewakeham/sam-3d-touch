@@ -490,7 +490,7 @@ def append_metric(path, row):
 
 
 def write_metrics(path, rows):
-    temporary = path.with_suffix(".tmp.csv")
+    temporary = path.with_suffix(path.suffix + ".tmp")
     with open(temporary, "w", newline="") as file:
         if rows:
             fields = list(dict.fromkeys(key for row in rows for key in row))
@@ -767,15 +767,15 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
         if any("pose_error" in row for row in samples.values()):
             summary["conditions"][condition]["pose_failed"] = sum(bool(row.get("pose_error")) for row in samples.values())
             summary["conditions"][condition]["pose_completed"] = sum(
-                not row["error"] and not row.get("pose_error")
-                and np.isfinite(float(row.get("pose_add_s", np.nan))) for row in samples.values()
+                1 for row in samples.values() if not row["error"] and not row.get("pose_error")
+                and np.isfinite(float(row.get("pose_add_s", np.nan)))
             )
         for metric in metrics:
             values = np.asarray([row.get(metric, np.nan) for row in samples.values() if not row["error"]], dtype=float)
             values = values[np.isfinite(values)]
             summary["conditions"][condition][metric] = {
-                "mean": float(values.mean()) if len(values) else float("nan"),
-                "median": float(np.median(values)) if len(values) else float("nan"),
+                "mean": float(values.mean()) if len(values) else None,
+                "median": float(np.median(values)) if len(values) else None,
             }
 
     baselines = (["official"] if "official" in by_condition else []) + [name for name in no_touch_runs if name in by_condition]
@@ -833,7 +833,7 @@ def file_digest(path):
 
 def write_json(path, value):
     temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(json.dumps(value, indent=2) + "\n")
+    temporary.write_text(json.dumps(value, indent=2, allow_nan=False) + "\n")
     temporary.replace(path)
 
 
@@ -992,8 +992,12 @@ def main():
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
 
-    previous_config_path = args.output_dir / "config.yaml"
-    previous_config = yaml.safe_load(previous_config_path.read_text()) if previous_config_path.exists() else {}
+    previous_config_path = args.output_dir / "config.json"
+    if previous_config_path.exists():
+        previous_config = json.loads(previous_config_path.read_text())
+    else:
+        previous_config_path = args.output_dir / "config.yaml"
+        previous_config = yaml.safe_load(previous_config_path.read_text()) if previous_config_path.exists() else {}
     settings_path = args.output_dir / "evaluation_settings.json"
     previous_settings = json.loads(settings_path.read_text()) if settings_path.exists() else {}
     with open(checkpoints[0].parent / "config.yaml") as file:
@@ -1008,7 +1012,7 @@ def main():
     selection_data = override_data_root(selection_data, getattr(args, "data_root", None))
     selection_data["dataset"]["split"] = args.split
     loader = build_dataloader(selection_data, 1, args.workers, shuffle=False, include_touch=False)
-    selection_path = args.output_dir / "selected_samples.yaml"
+    selection_path = args.output_dir / "selected_samples.json"
     available_objects = len({record["object_id"] for record in loader.dataset.records})
     selected_objects = (
         min(args.max_samples, available_objects) if args.max_samples else available_objects
@@ -1051,8 +1055,7 @@ def main():
             if not destination.exists():
                 shutil.copy2(source, destination)
             details["image_path"] = str(destination.relative_to(args.output_dir))
-        with open(selection_path, "w") as file:
-            yaml.safe_dump(selection_details, file, sort_keys=False)
+        write_json(selection_path, selection_details)
 
     all_sample_ids = [record["sample_id"] for record in selected]
     local_sample_ids = all_sample_ids[rank::world_size]
@@ -1074,7 +1077,7 @@ def main():
 
     metrics_path = args.output_dir / "metrics.csv"
     rank_metrics_path = (
-        args.output_dir / f"metrics_rank{rank}.csv" if distributed else metrics_path
+        args.output_dir / f"metrics_rank{rank}.tmp.csv" if distributed else metrics_path
     )
     metric_sources = [metrics_path, *sorted(args.output_dir.glob("metrics_rank*.csv"))]
     rows_by_key = merged_metrics(metric_sources, args.output_dir)
@@ -1181,6 +1184,8 @@ def main():
         if row["condition"] in active_conditions and row["sample_id"] in all_sample_ids
     ]
     write_metrics(metrics_path, rows)
+    for path in args.output_dir.glob("metrics_rank*.csv"):
+        path.unlink()
 
     means = {}
     for name, metadata in run_settings.items():
@@ -1201,50 +1206,46 @@ def main():
     summary = summarize(
         summary_rows, primary_conditions, diagnostic_conditions, no_touch, best_touch
     )
-    with open(args.output_dir / "summary.tmp.yaml", "w") as file:
-        yaml.safe_dump(summary, file, sort_keys=False)
-    (args.output_dir / "summary.tmp.yaml").replace(args.output_dir / "summary.yaml")
-    with open(args.output_dir / "config.tmp.yaml", "w") as file:
-        yaml.safe_dump({
-            "arguments": {
-                key: [str(path) for path in value] if key in ("run_dirs", "checkpoints") and value
-                else str(value) if isinstance(value, Path) else value
-                for key, value in vars(args).items()
-            },
-            "selected_objects": len(all_sample_ids),
-            "selection": {
-                "one_view_per_object": True,
-                "mode": args.selection,
-                "method": "uniform objects without replacement, then " + (
-                    "one uniform view per object" if args.selection == "random"
-                    else "the view with the largest hidden fraction per object"
-                ),
-                "seed": args.selection_seed,
-            },
-            "mesh_protocol": {
-                "normalization": "each mesh independently centered and longest bounding-box extent scaled to 2",
-                "alignment": "PCA 24-orientation similarity initialization; best four refined by point-to-point ICP",
-                "icp_threshold": 0.2,
-                "icp_iterations": 50,
-                "stage1_alignment": "each Stage-1 support uses its own Stage-2 mesh registration into the source-mesh frame",
-                "stage1_downsampling": "full decoded occupancy when factor is 1; exact Stage-2 support coordinates otherwise",
-                "fscore_threshold": 0.01,
-                "voxel_resolution": 64,
-                "voxel_iou_64": "sampled surface occupancy, not filled volume",
-                "chamfer": "symmetric mean Euclidean nearest-neighbor distance",
-                "emd": "entropic Sinkhorn approximation of Wasserstein-2; epsilon 0.01; 100 iterations",
-                "normal_consistency": "symmetric mean absolute nearest-neighbor normal dot product",
-            },
-            "pipeline_config": pipeline_config_data,
-            "data_config": data_config,
-            "selection_data_config": selection_data,
-            "runs": run_settings,
-        }, file, sort_keys=False)
-    (args.output_dir / "config.tmp.yaml").replace(args.output_dir / "config.yaml")
+    write_json(args.output_dir / "summary.json", summary)
+    write_json(args.output_dir / "config.json", {
+        "arguments": {
+            key: [str(path) for path in value] if key in ("run_dirs", "checkpoints") and value
+            else str(value) if isinstance(value, Path) else value
+            for key, value in vars(args).items()
+        },
+        "selected_objects": len(all_sample_ids),
+        "selection": {
+            "one_view_per_object": True,
+            "mode": args.selection,
+            "method": "uniform objects without replacement, then " + (
+                "one uniform view per object" if args.selection == "random"
+                else "the view with the largest hidden fraction per object"
+            ),
+            "seed": args.selection_seed,
+        },
+        "mesh_protocol": {
+            "normalization": "each mesh independently centered and longest bounding-box extent scaled to 2",
+            "alignment": "PCA 24-orientation similarity initialization; best four refined by point-to-point ICP",
+            "icp_threshold": 0.2,
+            "icp_iterations": 50,
+            "stage1_alignment": "each Stage-1 support uses its own Stage-2 mesh registration into the source-mesh frame",
+            "stage1_downsampling": "full decoded occupancy when factor is 1; exact Stage-2 support coordinates otherwise",
+            "fscore_threshold": 0.01,
+            "voxel_resolution": 64,
+            "voxel_iou_64": "sampled surface occupancy, not filled volume",
+            "chamfer": "symmetric mean Euclidean nearest-neighbor distance",
+            "emd": "entropic Sinkhorn approximation of Wasserstein-2; epsilon 0.01; 100 iterations",
+            "normal_consistency": "symmetric mean absolute nearest-neighbor normal dot product",
+        },
+        "pipeline_config": pipeline_config_data,
+        "data_config": data_config,
+        "selection_data_config": selection_data,
+        "runs": run_settings,
+    })
+    for name in ("selected_samples.yaml", "summary.yaml", "summary.tmp.yaml", "config.yaml", "config.tmp.yaml"):
+        (args.output_dir / name).unlink(missing_ok=True)
     print(f"saved evaluation to {args.output_dir}")
     if distributed:
-        for path in args.output_dir.glob("metrics_rank*.csv"):
-            path.unlink()
         torch.distributed.destroy_process_group()
 
 

@@ -183,6 +183,10 @@ class PoseTests(unittest.TestCase):
                      pose_box_iou_3d=np.nan, pose_add_s=np.nan, pose_icp_rot_deg=np.nan)]
         summary = evaluate.summarize(rows, ['official', 'touch', 'decoded_gt'], [], [], 'touch')
         self.assertEqual(summary['conditions']['touch']['pose_completed'], 1)
+        evaluate.write_json(self.root / 'summary.json', summary)
+        restored = json.loads((self.root / 'summary.json').read_text())
+        self.assertIs(type(restored['conditions']['touch']['pose_completed']), int)
+        self.assertIsNone(restored['conditions']['decoded_gt']['pose_add_s']['mean'])
         self.assertEqual(summary['conditions']['touch']['pose_failed'], 1)
         self.assertEqual(summary['conditions']['decoded_gt']['pose_completed'], 0)
         for key in ("pose_box_iou_3d", "pose_add_s", "pose_icp_rot_deg"):

@@ -106,7 +106,10 @@ def input_groups(mesh, textured, pointmap, surfaces, surface_names):
 
 def load_input_visualizations(args, previous=None):
     root = args.evaluation_dir
-    with (root / 'config.yaml').open() as file:
+    config_path = root / 'config.json'
+    if not config_path.exists():
+        config_path = root / 'config.yaml'
+    with config_path.open() as file:
         config = yaml.safe_load(file)
     with (root / 'metrics.csv').open(newline='') as file:
         rows = {row['condition']: row for row in csv.DictReader(file)

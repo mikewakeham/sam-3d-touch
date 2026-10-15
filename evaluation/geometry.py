@@ -149,7 +149,10 @@ def load_reference_camera(args):
         import yaml
 
         root = args.evaluation_dir
-        with (root / 'config.yaml').open() as file:
+        config_path = root / 'config.json'
+        if not config_path.exists():
+            config_path = root / 'config.yaml'
+        with config_path.open() as file:
             config = yaml.safe_load(file)
         dataset_root, record = find_record(config['selection_data_config'], args.sample_id)
         camera_path = resolve(dataset_root, record['camera_path'])

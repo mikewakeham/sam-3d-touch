@@ -346,7 +346,10 @@ def render_all(args, arguments):
         rows = list(csv.DictReader(file))
     runs = {}
     if args.with_inputs:
-        with (args.evaluation_dir / 'config.yaml').open() as file:
+        config_path = args.evaluation_dir / 'config.json'
+        if not config_path.exists():
+            config_path = args.evaluation_dir / 'config.yaml'
+        with config_path.open() as file:
             runs = yaml.safe_load(file).get('runs', {})
     sample_ids = sorted({row['sample_id'] for row in rows
                          if row.get('error') == '' and row.get('sample_id')

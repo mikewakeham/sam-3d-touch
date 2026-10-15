@@ -283,8 +283,26 @@ class ResumeTests(unittest.TestCase):
         with patch.dict(sys.modules, modules), patch.dict(os.environ, {'WORLD_SIZE': '1'}):
             with self.assertRaisesRegex(RuntimeError, 'simulated interruption'):
                 ns['main']()
+            write_json = ns['write_json']
+            def fail_summary(path, value):
+                if path.name == 'summary.json':
+                    raise RuntimeError('simulated summary failure')
+                write_json(path, value)
+            with patch.dict(ns, write_json=fail_summary):
+                with self.assertRaisesRegex(RuntimeError, 'simulated summary failure'):
+                    ns['main']()
+            self.assertEqual(calls, ['official', 'decoded_gt', 'a'])
+            for filename in ('metrics_rank0.csv', 'metrics_rank1.tmp.csv'):
+                shutil.copyfile(self.out / 'metrics.csv', self.out / filename)
+            (self.out / 'summary.tmp.yaml').write_text('incomplete summary')
+            (self.out / 'selected_samples.yaml').write_text('old selection')
             ns['main']()
             self.assertEqual(calls, ['official', 'decoded_gt', 'a'])
+            for filename in ('summary.json', 'selected_samples.json', 'config.json'):
+                json.loads((self.out / filename).read_text())
+            self.assertFalse(list(self.out.glob('*.yaml')))
+            self.assertFalse(list(self.out.glob('metrics_rank*.csv')))
+            (self.out / 'config.json').rename(self.out / 'config.yaml')
             args.checkpoints = [b]
             args.run_data_configs = {str(b.resolve()): str(override)}
             ns['main']()
@@ -301,13 +319,13 @@ class ResumeTests(unittest.TestCase):
             ns['main']()
         rows = ns['load_metrics'](self.out / 'metrics.csv')
         self.assertEqual(len(rows), 5)
-        config = json.loads((self.out / 'config.yaml').read_text())
+        config = json.loads((self.out / 'config.json').read_text())
         self.assertEqual(len(config['runs']), 3)
         self.assertEqual(config['runs']['a']['step'], 50)
         self.assertEqual(config['runs']['b']['data']['touch']['source'], 'touch_patches')
         self.assertEqual(ns['build_pipeline'].call_count, 5)
 
-        old_config = (self.out / 'config.yaml').read_bytes()
+        old_config = (self.out / 'config.json').read_bytes()
         args.checkpoints = [a, b]
         args.run_data_configs = {str(b.resolve()): str(override)}
         args.data_root = self.root / 'new_dataset'
@@ -317,7 +335,7 @@ class ResumeTests(unittest.TestCase):
             ns['main']()
             self.assertTrue(loaded_data)
             self.assertTrue(all(data['dataset']['root'] == str(args.data_root) for data in loaded_data))
-            saved = json.loads((args.output_dir / 'config.yaml').read_text())
+            saved = json.loads((args.output_dir / 'config.json').read_text())
             self.assertEqual(saved['runs']['b']['data']['touch']['source'], 'touch_patches')
             self.assertEqual(saved['runs']['b']['data']['dataset']['root'], str(args.data_root))
             before = len(calls)
@@ -327,7 +345,7 @@ class ResumeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Evaluation protocol changed'):
                 ns['main']()
             self.assertEqual(len(calls), before)
-        self.assertEqual((self.out / 'config.yaml').read_bytes(), old_config)
+        self.assertEqual((self.out / 'config.json').read_bytes(), old_config)
         self.assertEqual(self.data['dataset']['root'], str(self.root))
 
 
