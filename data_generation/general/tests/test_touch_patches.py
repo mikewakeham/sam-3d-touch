@@ -155,8 +155,22 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), content)
         path = self.root / rows[0]['touch_path']
         stamp = path.stat().st_mtime_ns
-        with patch('make_touch_data.load_normalized_mesh', side_effect=AssertionError('Completed mesh reloaded')):
-            make_object((self.args, self.records))
+        read_array = np.lib.npyio.NpzFile.__getitem__
+        def read_metadata(saved, key):
+            self.assertIn(key, ('radius', 'thickness', 'sample_seed_parts'))
+            return read_array(saved, key)
+        with patch('make_touch_data.load_normalized_mesh', side_effect=AssertionError('Completed mesh reloaded')), \
+                patch('make_touch_data.checkpoint_sha256', side_effect=AssertionError('Completed source reread')), \
+                patch.object(np.lib.npyio.NpzFile, '__getitem__', read_metadata):
+            _, reused, new_views = make_object((self.args, self.records))
+        self.assertEqual((reused, new_views), (2, 0))
+        self.assertEqual(path.stat().st_mtime_ns, stamp)
+        missing = self.root / rows[1]['touch_path']
+        previous = missing.read_bytes()
+        missing.unlink()
+        _, reused, new_views = make_object((self.args, self.records))
+        self.assertEqual((reused, new_views), (1, 1))
+        self.assertEqual(missing.read_bytes(), previous)
         self.assertEqual(path.stat().st_mtime_ns, stamp)
         selected = []
         for count, per_contact in [(32, 256), (16, 512), (8, 1024)]:
@@ -252,6 +266,7 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(before, [(self.root / r['full_surface_path']).read_bytes() for r in self.records])
         arrays['points_camera'] += .01
         np.savez_compressed(path, **arrays)
+        self.args.verify_existing = True
         with self.assertRaisesRegex(ValueError, 'source differ'):
             make_object((self.args, self.records))
 
@@ -320,11 +335,18 @@ class IntegrationTests(unittest.TestCase):
             make_object((self.args, self.records[:1]))
             stamp = path.stat().st_mtime_ns
             with patch('sam3d_objects.model.backbone.dit.embedder.surface_encoder_utils.farthest_point_indices',
-                       side_effect=AssertionError('Already saved; must skip FPS')):
+                       side_effect=AssertionError('Already saved; must skip FPS')), \
+                    patch('make_touch_data.checkpoint_sha256', side_effect=AssertionError('Completed source reread')):
                 make_object((self.args, self.records[:1]))
             self.assertEqual(path.stat().st_mtime_ns, stamp)
+            with np.load(path) as saved:
+                incomplete = dict(saved)
+            del incomplete['joint_points_pre_encoder']
+            np.savez_compressed(path, **incomplete)
+            make_object((self.args, self.records[:1]))
         with np.load(path) as saved:
             bank = dict(saved)
+        self.assertIn('joint_points_pre_encoder', bank)
         for key, value in original_bank.items():
             np.testing.assert_array_equal(bank[key], value)
         before = {path: path.read_bytes() for path in self.root.rglob('*') if path.is_file()}

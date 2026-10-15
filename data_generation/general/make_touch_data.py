@@ -5,12 +5,16 @@ import fcntl
 import hashlib
 import json
 import multiprocessing as mp
+import os
 from pathlib import Path
 import signal
 import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from concurrent.futures.process import BrokenProcessPool
 from functools import lru_cache
+
+for variable in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS'):
+    os.environ.setdefault(variable, '1')
 
 import numpy as np
 import trimesh
@@ -36,6 +40,7 @@ def parse_args(argv=None):
     parser.add_argument('--workers', type=int, default=1)
     parser.add_argument('--object-id', action='append', help='Process only these objects (repeatable)')
     parser.add_argument('--overwrite', action='store_true')
+    parser.add_argument('--verify-existing', action='store_true', help='Fully validate saved arrays and source hashes when resuming')
     parser.add_argument('--joint-pointmap', action='store_true', help='Also save fixed 1024-pointmap + 7168-touch inputs for all three budgets')
     parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'))
     args = parser.parse_args(argv)
@@ -109,7 +114,10 @@ def save_joint(args, record, arrays, path):
     if config.get('ss_preprocessor') is None:
         sources.append(config_path.parent / config.ss_generator_config_path)
     fingerprint = hashlib.sha256(''.join(checkpoint_sha256(source) for source in sources).encode()).hexdigest()
-    if 'joint_points_camera' in arrays and str(arrays.get('joint_source_sha256')) == fingerprint:
+    if all(key in arrays for key in (
+        'joint_points_camera', 'joint_points_pre_encoder', 'joint_pointmap_candidates_camera',
+        'joint_pointmap_indices', 'joint_pointmap_scale', 'joint_pointmap_shift',
+    )) and str(arrays.get('joint_source_sha256')) == fingerprint:
         return
     print(f"{record['sample_id']}: computing joint pointmap; keeping existing touch patches", flush=True)
     dataset = object.__new__(TouchDataset)
@@ -133,7 +141,7 @@ def make_object(task):
         raise ValueError('Views of an object must share one mesh')
     mesh_path = root / records[0]['mesh_path']
     mesh = None
-    mesh_hash = checkpoint_sha256(mesh_path)
+    mesh_hash = None
     outputs = []
     reused = 0
     generated = 0
@@ -144,18 +152,30 @@ def make_object(task):
         seed = [args.seed, identity]
         if path.exists() and not args.overwrite:
             with np.load(path, allow_pickle=False) as saved:
+                if (float(saved['radius']) != args.radius or float(saved['thickness']) != args.thickness
+                        or not np.array_equal(saved['sample_seed_parts'], seed)):
+                    raise ValueError(f'Existing touch settings differ: {path}; use --overwrite')
+                if not args.verify_existing and (not args.joint_pointmap or all(key in saved.files for key in (
+                    'joint_points_camera', 'joint_points_pre_encoder', 'joint_pointmap_candidates_camera',
+                    'joint_pointmap_indices', 'joint_pointmap_scale', 'joint_pointmap_shift', 'joint_source_sha256',
+                ))):
+                    outputs.append(dict(record, touch_path=str(path.relative_to(root))))
+                    reused += 1
+                    continue
                 arrays = dict(saved)
             validate_patches(arrays)
+            if mesh_hash is None:
+                mesh_hash = checkpoint_sha256(mesh_path)
             if (str(arrays['mesh_sha256']) != mesh_hash
-                    or str(arrays['source_surface_sha256']) != checkpoint_sha256(surface_path)
-                    or float(arrays['radius']) != args.radius or float(arrays['thickness']) != args.thickness
-                    or not np.array_equal(arrays['sample_seed_parts'], seed)):
+                    or str(arrays['source_surface_sha256']) != checkpoint_sha256(surface_path)):
                 raise ValueError(f'Existing touch settings or source differ: {path}; use --overwrite')
             save_joint(args, record, arrays, path)
             outputs.append(dict(record, touch_path=str(path.relative_to(root))))
             reused += 1
             continue
         print(f"{record['sample_id']}: generating touch patches", flush=True)
+        if mesh_hash is None:
+            mesh_hash = checkpoint_sha256(mesh_path)
         if mesh is None:
             print(f"{record['object_id']}: loading mesh", flush=True)
             mesh = load_normalized_mesh(mesh_path)
@@ -234,6 +254,8 @@ def main(argv=None):
             print('Overwrite enabled: regenerating existing touch files.', flush=True)
         else:
             print('Reusing existing touch files and generating missing ones. Progress counts both.', flush=True)
+            if not args.verify_existing:
+                print('Resume checks saved file headers and settings only; --verify-existing enables full source checks.', flush=True)
         completed = []
         if args.workers == 1:
             for index, task in enumerate(tasks, 1):
