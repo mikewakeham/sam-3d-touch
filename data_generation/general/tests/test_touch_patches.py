@@ -155,7 +155,8 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), content)
         path = self.root / rows[0]['touch_path']
         stamp = path.stat().st_mtime_ns
-        make_object((self.args, self.records))
+        with patch('make_touch_data.load_normalized_mesh', side_effect=AssertionError('Completed mesh reloaded')):
+            make_object((self.args, self.records))
         self.assertEqual(path.stat().st_mtime_ns, stamp)
         selected = []
         for count, per_contact in [(32, 256), (16, 512), (8, 1024)]:
@@ -385,7 +386,7 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(before, [(self.root / row['touch_path']).read_bytes() for row in rows])
 
     def test_interrupt_stops_workers_releases_lock_and_allows_restart(self):
-        # Exercise the real pool/lock lifecycle with one busy and one idle worker.
+        # Exercise the real executor/lock lifecycle with an interrupted worker.
         driver = self.root / 'interrupt_driver.py'
         driver.write_text(f'''import os
 from pathlib import Path
@@ -417,7 +418,7 @@ if __name__ == "__main__":
                                    text=True, start_new_session=True)
         try:
             deadline = time.monotonic() + 20
-            while len(list(self.root.glob('worker-*'))) < 2 or not (self.root / 'busy').exists():
+            while not list(self.root.glob('worker-*')) or not (self.root / 'busy').exists():
                 self.assertIsNone(process.poll(), 'Generator exited before workers started')
                 self.assertLess(time.monotonic(), deadline, 'Workers did not start')
                 time.sleep(.05)
@@ -448,6 +449,35 @@ if __name__ == "__main__":
             except ProcessLookupError:
                 pass
             process.communicate(timeout=15)
+
+    def test_worker_exit_fails_releases_lock_and_allows_restart(self):
+        driver = self.root / 'crash_driver.py'
+        driver.write_text(f'''import os
+import sys
+sys.path.insert(0, {str(Path(__file__).resolve().parent.parent)!r})
+import make_touch_data as generator
+
+def crashed_object(task):
+    os._exit(9)
+
+generator.make_object = crashed_object
+if __name__ == "__main__":
+    generator.main()
+''')
+        result = subprocess.run(
+            [sys.executable, str(driver), '--data-root', str(self.root), '--workers', '2'],
+            capture_output=True, text=True, timeout=20)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Touch worker exited unexpectedly', result.stderr)
+        self.assertIn('box', result.stderr)
+        self.assertFalse((self.generated / 'samples_simulated_touches.jsonl').exists())
+        with (self.generated / '.build.lock').open('a') as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        subprocess.run(
+            [sys.executable, str(Path(__file__).resolve().parent.parent / 'make_touch_data.py'),
+             '--data-root', str(self.root), '--workers', '2'],
+            check=True, capture_output=True, timeout=30)
+        self.assertTrue((self.generated / 'samples_simulated_touches.jsonl').exists())
 
 
 class JointInputTests(unittest.TestCase):

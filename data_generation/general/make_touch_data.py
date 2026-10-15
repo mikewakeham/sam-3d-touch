@@ -8,6 +8,8 @@ import multiprocessing as mp
 from pathlib import Path
 import signal
 import sys
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures.process import BrokenProcessPool
 from functools import lru_cache
 
 import numpy as np
@@ -109,6 +111,7 @@ def save_joint(args, record, arrays, path):
     fingerprint = hashlib.sha256(''.join(checkpoint_sha256(source) for source in sources).encode()).hexdigest()
     if 'joint_points_camera' in arrays and str(arrays.get('joint_source_sha256')) == fingerprint:
         return
+    print(f"{record['sample_id']}: computing joint pointmap", flush=True)
     dataset = object.__new__(TouchDataset)
     dataset.root = args.data_root
     with Image.open(args.data_root / record['image_path']) as image:
@@ -129,7 +132,7 @@ def make_object(task):
     if len(mesh_paths) != 1:
         raise ValueError('Views of an object must share one mesh')
     mesh_path = root / records[0]['mesh_path']
-    mesh = load_normalized_mesh(mesh_path)
+    mesh = None
     mesh_hash = checkpoint_sha256(mesh_path)
     outputs = []
     for record in records:
@@ -149,6 +152,11 @@ def make_object(task):
             save_joint(args, record, arrays, path)
             outputs.append(dict(record, touch_path=str(path.relative_to(root))))
             continue
+        print(f"{record['sample_id']}: generating touch patches", flush=True)
+        if mesh is None:
+            print(f"{record['object_id']}: loading mesh", flush=True)
+            mesh = load_normalized_mesh(mesh_path)
+            print(f"{record['object_id']}: {len(mesh.vertices)} vertices, {len(mesh.faces)} faces", flush=True)
         with np.load(surface_path, allow_pickle=False) as saved:
             surface = dict(saved)
         validate_surface(surface)
@@ -226,18 +234,35 @@ def main(argv=None):
                 print(f"[{index}/{len(tasks)}] {rows[0]['object_id']}: {len(rows)} views", flush=True)
         else:
             # Match make_data.py's spawn context: workers must not inherit the dataset lock.
-            pool = mp.get_context('spawn').Pool(args.workers, initializer=initialize_worker)
+            pool = ProcessPoolExecutor(max_workers=args.workers, mp_context=mp.get_context('spawn'),
+                                       initializer=initialize_worker)
+            remaining = set(groups)
             try:
-                for index, rows in enumerate(pool.imap_unordered(make_object, tasks), 1):
+                futures = {pool.submit(make_object, task): task[1][0]['object_id'] for task in tasks}
+                for index, future in enumerate(as_completed(futures), 1):
+                    object_id = futures[future]
+                    try:
+                        rows = future.result()
+                    except BrokenProcessPool as error:
+                        raise RuntimeError(
+                            f'Touch worker exited unexpectedly. {len(remaining)} objects have no returned result; '
+                            f'first IDs: {sorted(remaining)[:20]}. Completed touch files are preserved; '
+                            'rerun with --workers 1 to locate the failing object.'
+                        ) from error
+                    except Exception as error:
+                        raise RuntimeError(f'Touch generation failed for {object_id}') from error
                     completed.extend(rows)
+                    remaining.remove(object_id)
                     print(f"[{index}/{len(tasks)}] {rows[0]['object_id']}: {len(rows)} views", flush=True)
             finally:
-                # Public Pool shutdown API also handles interruption and worker errors.
-                # Finish cleanup even if Ctrl+C is pressed again; keep the lock until then.
                 previous_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
                 try:
-                    pool.terminate()
-                    pool.join()
+                    if sys.exc_info()[0] is not None:
+                        # Python 3.11 has no public executor method to terminate running workers.
+                        for process in list((pool._processes or {}).values()):
+                            if process.is_alive():
+                                process.terminate()
+                    pool.shutdown(wait=True, cancel_futures=True)
                 finally:
                     signal.signal(signal.SIGINT, previous_handler)
         # A pilot subset must never replace a previously complete training manifest.

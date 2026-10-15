@@ -288,7 +288,7 @@ def preprocess_stage2(pipeline, images):
     return {key: torch.cat([item[key] for item in items]) for key in items[0]}
 
 
-def sample_shape(pipeline, condition_args, condition_kwargs, touch_tokens, inference_steps, device):
+def sample_stage1(pipeline, condition_args, condition_kwargs, touch_tokens, inference_steps, device):
     generator = pipeline.ss_generator
     previous_steps = generator.inference_steps
     generator.inference_steps = inference_steps
@@ -303,7 +303,7 @@ def sample_shape(pipeline, condition_args, condition_kwargs, touch_tokens, infer
         result = generator(latent_shapes, device, *condition_args, **condition_kwargs)
     finally:
         generator.inference_steps = previous_steps
-    return result["shape"]
+    return result
 
 
 def trimesh_from_result(result):
@@ -321,6 +321,7 @@ def load_target_mesh(record, dataset, output_dir, surface_points, icp_points, sa
 
     object_id = record["object_id"]
     mesh, dataset_transform = load_dataset_mesh(record, dataset)
+    object_mesh = mesh
     mesh, normalization = normalize_mesh(mesh)
 
     target_dir = output_dir / "targets" / safe_name(object_id)
@@ -344,6 +345,7 @@ def load_target_mesh(record, dataset, output_dir, surface_points, icp_points, sa
         )
     return {
         "mesh": mesh,
+        "object_mesh": object_mesh,
         "icp_points": icp_points_array,
         "points": points,
         "normals": normals,
@@ -525,6 +527,7 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                        shared_pointmap_normalization=False, fixed_joint_patches=False):
     from train import prepare_batch
     from sam3d_objects.pipeline.inference_utils import downsample_sparse_structure, prune_sparse_structure
+    from evaluation.pose_metrics import save_pose, score_pose
 
     rows = []
     dtype = pipeline.shape_model_dtype
@@ -547,6 +550,11 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
             record = records[sample_id]
             seed = stable_seed(args.seed, sample_id)
             stage1_payload = None
+            pose_fields = {
+                "pose_path": "", "pose_error": "",
+                "pose_box_iou_3d": np.nan, "pose_add_s": np.nan, "pose_icp_rot_deg": np.nan,
+            }
+            pose_path = None
             try:
                 touch_xyz = touch_mask = None
                 if not use_gt_latent:
@@ -568,10 +576,11 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                 ):
                     encode_touch = touch_token_fn if touch_token_fn is not None else encoder
                     touch_tokens = encode_touch(touch_xyz, touch_mask) if touch_xyz is not None else None
-                    prediction = batch["target_shape"].to(args.device) if use_gt_latent else sample_shape(
+                    outputs = None if use_gt_latent else sample_stage1(
                         pipeline, condition_args, condition_kwargs, touch_tokens,
                         args.inference_steps, args.device,
                     )
+                    prediction = batch["target_shape"].to(args.device) if use_gt_latent else outputs["shape"]
                     predicted_voxels = decode_voxels(pipeline.models["ss_decoder"], prediction)
                     target_voxels = decode_voxels(
                         pipeline.models["ss_decoder"], batch["target_shape"].to(args.device)
@@ -606,6 +615,16 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                 stage1_payload = (prediction, predicted_voxels[0], target_voxels[0],
                                   coords_original, coords, downsample_factor, touch_centers, joint_input)
 
+                if not use_gt_latent:
+                    pose_path = args.output_dir / "artifacts" / safe_name(name) / safe_name(sample_id) / "pose.npz"
+                    try:
+                        save_pose(pose_path, pipeline, outputs, inputs, downsample_factor,
+                                  loader.dataset.resolve_path(record["camera_path"]))
+                    except Exception as error:
+                        pose_fields["pose_error"] = f"{type(error).__name__}: {error}"
+                    if pose_path.is_file():
+                        pose_fields["pose_path"] = relative(pose_path, args.output_dir)
+
                 torch.manual_seed(seed + 1_000_000)
                 slat = pipeline.sample_slat(
                     stage2_inputs, coords,
@@ -629,6 +648,15 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     points, normals, target["points"], target["normals"],
                     args.emd_points, args.device, args.metric_workers,
                 )
+
+                if not use_gt_latent and not pose_fields["pose_error"]:
+                    try:
+                        pose_fields.update(score_pose(
+                            raw_mesh, target["object_mesh"], pose_path,
+                            args.surface_points, args.icp_points, seed,
+                        ))
+                    except Exception as error:
+                        pose_fields["pose_error"] = f"{type(error).__name__}: {error}"
 
                 paths = save_generated_artifacts(
                     args.output_dir, name, sample_id, prediction, predicted_voxels[0],
@@ -690,6 +718,9 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     "error": f"{type(error).__name__}: {error}",
                 }
                 print(f"{name}: {sample_id} failed: {row['error']}", flush=True)
+            row.update(pose_fields)
+            if pose_fields.get("pose_error"):
+                print(f"{name}: {sample_id} pose scoring failed: {pose_fields['pose_error']}", flush=True)
             rows.append(row)
             append_metric(metrics_path, row)
             if not row["error"]:
@@ -709,6 +740,9 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
         "fscore_0.01", "f_precision_0.01", "f_recall_0.01", "voxel_iou_64",
         "normal_consistency", "icp_fitness", "stage1_aligned_voxel_iou_64",
     }
+    if any("pose_error" in row for row in rows):
+        metrics.extend(("pose_box_iou_3d", "pose_add_s", "pose_icp_rot_deg"))
+        higher_is_better.add("pose_box_iou_3d")
     no_touch_runs = [no_touch] if isinstance(no_touch, str) else (no_touch or [])
     summary = {
         "primary_metric": "fscore_0.01",
@@ -730,6 +764,12 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
             "completed": sum(not row["error"] for row in samples.values()),
             "failed": sum(bool(row["error"]) for row in samples.values()),
         }
+        if any("pose_error" in row for row in samples.values()):
+            summary["conditions"][condition]["pose_failed"] = sum(bool(row.get("pose_error")) for row in samples.values())
+            summary["conditions"][condition]["pose_completed"] = sum(
+                not row["error"] and not row.get("pose_error")
+                and np.isfinite(float(row.get("pose_add_s", np.nan))) for row in samples.values()
+            )
         for metric in metrics:
             values = np.asarray([row.get(metric, np.nan) for row in samples.values() if not row["error"]], dtype=float)
             values = values[np.isfinite(values)]
@@ -771,6 +811,8 @@ def artifacts_complete(row, output_dir):
         return False
     keys = ("stage1_path", "slat_path", "mesh_raw_path", "mesh_normalized_path",
             "mesh_aligned_path", "alignment_path", "target_mesh_path", "target_points_path")
+    if "pose_error" in row and row["condition"] != "decoded_gt" and not row["pose_error"]:
+        keys += ("pose_path",)
     return all(row.get(key) and (output_dir / row[key]).is_file()
                and (output_dir / row[key]).stat().st_size > 0 for key in keys)
 
@@ -812,6 +854,8 @@ def register_runs(output_dir, protocol, checkpoints, describe, previous_config, 
         old_protocol = {key: value for key, value in old.items() if key not in (
             "format_version", "checkpoints", "run_configs", "entries", "base_data",
         )}
+        if isinstance(old_protocol.get("pose_metrics"), dict) and old_protocol["pose_metrics"].get("version") == 1:
+            old_protocol["pose_metrics"] = True
         if old_protocol != protocol:
             changed = sorted(key for key in set(protocol) | set(old_protocol)
                              if protocol.get(key) != old_protocol.get(key))
@@ -889,6 +933,7 @@ def validate_resume(args, checkpoints, selection_data, selected, previous_config
         "split", "selection", "max_samples", "selection_seed", "seed", "inference_steps",
         "stage2_inference_steps", "surface_points", "icp_points", "emd_points", "save_points", "no_amp",
     )}
+    settings["pose_metrics"] = True
     settings["data_override"] = file_identity(args.data_config) if args.data_config else None
     settings["pipeline"] = file_identity(args.pipeline_config)
     settings["selection_data"] = selection_data

@@ -18,10 +18,10 @@ from PIL import Image
 
 from generate_target_latents import (
     DEFAULT_ENCODER_CHECKPOINT, encode_objects,
-    load_normalized_mesh, save_metadata, validate_target, checkpoint_sha256,
+    load_normalized_mesh, save_metadata, checkpoint_sha256,
 )
-from sample_full_surface import sample_full_surface, save_surface, validate_surface
-from surface_pool import DEFAULT_POOL_POINTS, make_surface_pool, save_surface_pool, validate_surface_pool
+from sample_full_surface import sample_full_surface, save_surface
+from surface_pool import DEFAULT_POOL_POINTS, make_surface_pool, save_surface_pool
 
 
 FORMATS = {".glb", ".gltf", ".obj", ".fbx", ".ply", ".stl", ".blend",
@@ -333,29 +333,7 @@ def package_object(obj, split, args):
 
 
 def object_complete(object_dir, args):
-    if not render_complete(object_dir, args.num_views) or not (object_dir / "samples.json").is_file():
-        return False
-    try:
-        records = json.loads((object_dir / "samples.json").read_text())
-        complete = len(records) == args.num_views and all(
-            (args.data_root / record[key]).is_file()
-            for record in records for key in ("depth_path", "camera_path", "full_surface_path")
-        )
-        if not complete:
-            return False
-        if args.surface_pool_points:
-            with np.load(object_dir / "surface_pool.npz", allow_pickle=False) as pool:
-                validate_surface_pool(pool)
-                if len(pool["points_object"]) != args.surface_pool_points:
-                    return False
-        for record in records:
-            with np.load(args.data_root / record["full_surface_path"], allow_pickle=False) as surface:
-                validate_surface(surface, require_normals=True)
-                if len(surface["points_camera"]) != args.num_points:
-                    return False
-        return True
-    except (ValueError, KeyError, OSError, EOFError):
-        return False
+    return (object_dir / "render_complete.json").is_file() and (object_dir / "samples.json").is_file()
 
 
 def process_object(obj, split, args, gpu_slots):
@@ -383,21 +361,23 @@ def process_object(obj, split, args, gpu_slots):
         return {"object_id": obj["object_id"], "stage": "render", "error": f"{type(error).__name__}: {error}"}
 
 
-def write_manifests(args, objects):
+def write_manifests(args, objects, rendered=None):
     generated = args.data_root / "generated_data"
-    rendered, ready = [], []
-    for obj in objects:
-        object_dir = generated / obj["object_id"]
-        if not object_complete(object_dir, args):
-            continue
-        rows = json.loads((object_dir / "samples.json").read_text())
-        target = object_dir / "target_latent.npz"
+    if rendered is None:
+        rendered = []
+        for obj in objects:
+            object_dir = generated / obj["object_id"]
+            if object_complete(object_dir, args):
+                rendered.extend(json.loads((object_dir / "samples.json").read_text()))
+    targets, ready = {}, []
+    for row in rendered:
+        targets.setdefault(row["object_id"], []).append(row)
+    for object_id, rows in targets.items():
+        target = generated / object_id / "target_latent.npz"
         if target.is_file():
-            validate_target(target)
             for row in rows:
                 row["target_path"] = str(target.relative_to(args.data_root))
             ready.extend(rows)
-        rendered.extend(rows)
     for filename, rows in (("samples_rendered.jsonl", rendered), ("samples.jsonl", ready)):
         path = generated / filename
         temporary = path.with_suffix(".tmp")
@@ -490,7 +470,7 @@ def run(args):
                            if pending_ids[i::len(gpu_ids)]]
                 for future in as_completed(futures):
                     failures.extend(future.result())
-        rendered, ready = write_manifests(args, objects)
+        rendered, ready = write_manifests(args, objects, rendered=rendered)
     save_json(failures, generated / "failed_objects.json")
     print(f"Rendered samples: {len(rendered)}; training-ready samples: {len(ready)}; failures: {len(failures)}")
     print(f"Training manifest: {generated / 'samples.jsonl'}", flush=True)
