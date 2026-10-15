@@ -324,7 +324,7 @@ bpy.ops.wm.usd_export(filepath=str(root / 'scene.usdc'))
         self.assertIn('object_rotation', metadata['render_stream_seeds'])
         from make_touch_data import make_object, parse_args as touch_args
         from sample_touch_patches import validate_patches
-        touched = make_object((touch_args(['--data-root', str(output)]), records))
+        touched, _, _ = make_object((touch_args(['--data-root', str(output)]), records))
         for row in touched:
             with np.load(output / row['camera_path']) as camera, np.load(output / row['touch_path']) as patches:
                 validate_patches(patches)

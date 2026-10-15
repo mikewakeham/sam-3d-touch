@@ -111,7 +111,7 @@ def save_joint(args, record, arrays, path):
     fingerprint = hashlib.sha256(''.join(checkpoint_sha256(source) for source in sources).encode()).hexdigest()
     if 'joint_points_camera' in arrays and str(arrays.get('joint_source_sha256')) == fingerprint:
         return
-    print(f"{record['sample_id']}: computing joint pointmap", flush=True)
+    print(f"{record['sample_id']}: computing joint pointmap; keeping existing touch patches", flush=True)
     dataset = object.__new__(TouchDataset)
     dataset.root = args.data_root
     with Image.open(args.data_root / record['image_path']) as image:
@@ -135,6 +135,8 @@ def make_object(task):
     mesh = None
     mesh_hash = checkpoint_sha256(mesh_path)
     outputs = []
+    reused = 0
+    generated = 0
     for record in records:
         surface_path = root / record['full_surface_path']
         path = surface_path.with_name(f'{args.name}.npz')
@@ -151,6 +153,7 @@ def make_object(task):
                 raise ValueError(f'Existing touch settings or source differ: {path}; use --overwrite')
             save_joint(args, record, arrays, path)
             outputs.append(dict(record, touch_path=str(path.relative_to(root))))
+            reused += 1
             continue
         print(f"{record['sample_id']}: generating touch patches", flush=True)
         if mesh is None:
@@ -200,7 +203,8 @@ def make_object(task):
         save_patches(path, arrays, args.overwrite)
         save_joint(args, record, arrays, path)
         outputs.append(dict(record, touch_path=str(path.relative_to(root))))
-    return outputs
+        generated += 1
+    return outputs, reused, generated
 
 
 def main(argv=None):
@@ -225,13 +229,17 @@ def main(argv=None):
         if not groups or args.object_id and set(args.object_id) - set(groups):
             raise ValueError('Requested objects are absent from the input manifest')
         tasks = [(args, rows) for rows in groups.values()]
-        print(f'Generating simulated touches for {len(tasks)} objects with {args.workers} workers.', flush=True)
+        print(f'Processing {len(tasks)} objects with {args.workers} workers.', flush=True)
+        if args.overwrite:
+            print('Overwrite enabled: regenerating existing touch files.', flush=True)
+        else:
+            print('Reusing existing touch files and generating missing ones. Progress counts both.', flush=True)
         completed = []
         if args.workers == 1:
             for index, task in enumerate(tasks, 1):
-                rows = make_object(task)
+                rows, reused, new_views = make_object(task)
                 completed.extend(rows)
-                print(f"[{index}/{len(tasks)}] {rows[0]['object_id']}: {len(rows)} views", flush=True)
+                print(f"[{index}/{len(tasks)}] {rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
         else:
             # Match make_data.py's spawn context: workers must not inherit the dataset lock.
             pool = ProcessPoolExecutor(max_workers=args.workers, mp_context=mp.get_context('spawn'),
@@ -242,7 +250,7 @@ def main(argv=None):
                 for index, future in enumerate(as_completed(futures), 1):
                     object_id = futures[future]
                     try:
-                        rows = future.result()
+                        rows, reused, new_views = future.result()
                     except BrokenProcessPool as error:
                         raise RuntimeError(
                             f'Touch worker exited unexpectedly. {len(remaining)} objects have no returned result; '
@@ -253,7 +261,7 @@ def main(argv=None):
                         raise RuntimeError(f'Touch generation failed for {object_id}') from error
                     completed.extend(rows)
                     remaining.remove(object_id)
-                    print(f"[{index}/{len(tasks)}] {rows[0]['object_id']}: {len(rows)} views", flush=True)
+                    print(f"[{index}/{len(tasks)}] {rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
             finally:
                 previous_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
                 try:

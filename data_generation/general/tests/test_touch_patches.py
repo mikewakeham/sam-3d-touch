@@ -379,7 +379,7 @@ class IntegrationTests(unittest.TestCase):
 
     def test_cli_parallel_worker_reproducibility(self):
         main(['--data-root', str(self.root)])
-        rows = make_object((self.args, self.records))
+        rows, _, _ = make_object((self.args, self.records))
         before = [(self.root / row['touch_path']).read_bytes() for row in rows]
         subprocess.run([sys.executable, str(Path(__file__).resolve().parent.parent / 'make_touch_data.py'),
                         '--data-root', str(self.root), '--workers', '2'], check=True, capture_output=True)
