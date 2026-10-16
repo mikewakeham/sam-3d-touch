@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=zv_pointmap_touch_32x256_sampled
-#SBATCH --partition=kempner_h100
+#SBATCH --partition=kempner_h100,kempner_h200
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
