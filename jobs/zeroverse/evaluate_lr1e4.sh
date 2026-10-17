@@ -24,8 +24,6 @@ export PYTHONUNBUFFERED=1
   outputs/zeroverse/zeroverse_pointmap_touch_32x256 \
   outputs/zeroverse/zeroverse_pointmap_touch_16x512_joint \
   outputs/zeroverse/zeroverse_pointmap_touch_8x1024_joint \
-  outputs/zeroverse/zeroverse_pointmap_lr1e4_sampled_camframe \
-  outputs/zeroverse/zeroverse_pointmap_surface_frozen_lr1e4_sampled_camframe \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --selection-data-config configs/data_zeroverse_5000_8views_full_surface.yaml \
   --output-dir outputs/zeroverse/evaluation_lr1e4 \
