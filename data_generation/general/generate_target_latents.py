@@ -111,11 +111,22 @@ def load_encoder(checkpoint_path, device):
     return encoder.eval().to(device)
 
 
-def validate_target(path):
+def validate_target(path, camera_frame=False):
     with np.load(path, allow_pickle=False) as data:
-        if set(data.files) != {"mean"}:
+        fields = {"mean"}
+        if camera_frame:
+            fields |= {"coordinate_frame", "T_target_from_object", "T_camera_from_target"}
+        if set(data.files) != fields:
             raise ValueError(f"Unexpected target fields: {data.files}")
-
+        if camera_frame:
+            if str(data["coordinate_frame"]) != "normalized_sam_camera":
+                raise ValueError(f"Unexpected target frame: {path}")
+            for key in ("T_target_from_object", "T_camera_from_target"):
+                transform = data[key]
+                if (transform.shape != (4, 4) or not np.isfinite(transform).all()
+                        or not np.allclose(transform[3], [0, 0, 0, 1])
+                        or np.linalg.det(transform[:3, :3]) <= 0):
+                    raise ValueError(f"Invalid {key}: {path}")
         mean = data["mean"]
 
     if mean.shape != (8, 16, 16, 16):
@@ -130,13 +141,13 @@ def validate_target(path):
     return mean
 
 
-def save_target(mean, output_path):
+def save_target(mean, output_path, **metadata):
     temporary_path = output_path.with_name(output_path.name + ".tmp")
 
     with temporary_path.open("wb") as file:
-        np.savez_compressed(file, mean=mean)
+        np.savez_compressed(file, mean=mean, **metadata)
 
-    validate_target(temporary_path)
+    validate_target(temporary_path, camera_frame=bool(metadata))
     temporary_path.replace(output_path)
 
 
@@ -224,7 +235,165 @@ def encode_objects(object_ids, data_root, checkpoint, gpu_id):
     return failures
 
 
-if __name__ == "__main__":
+def camera_target_mesh(mesh, camera_path):
+    from sample_full_surface import sam_camera_transform
+
+    camera = sam_camera_transform(camera_path)
+    vertices = np.asarray(mesh.vertices) @ camera[:3, :3].T
+    lower, upper = vertices.min(axis=0), vertices.max(axis=0)
+    center = (lower + upper) / 2
+    extent = (upper - lower).max()
+    if not np.isfinite(vertices).all() or extent <= 0:
+        raise ValueError(f"Invalid camera-frame mesh: {camera_path}")
+    target = mesh.copy()
+    target.vertices = (vertices - center) / extent
+    target_from_object = np.eye(4)
+    target_from_object[:3, :3] = camera[:3, :3] / extent
+    target_from_object[:3, 3] = -center / extent
+    camera_from_target = np.eye(4)
+    camera_from_target[:3, :3] *= extent
+    camera_from_target[:3, 3] = center + camera[:3, 3]
+    return target, dict(coordinate_frame="normalized_sam_camera",
+                       T_target_from_object=target_from_object,
+                       T_camera_from_target=camera_from_target)
+
+
+def camera_target_path(record):
+    return Path(record["camera_path"]).with_name("target_latent_camframe.npz")
+
+
+def generate_camera_target(record, data_root, mesh, encoder, device):
+    import torch
+
+    target, metadata = camera_target_mesh(mesh, data_root / record["camera_path"])
+    occupancy = voxelize_mesh(target)
+    with torch.inference_mode():
+        mean = encoder(occupancy.unsqueeze(0).to(device))["mean"][0].float().cpu().numpy()
+    path = data_root / camera_target_path(record)
+    save_target(mean, path, **metadata)
+    return path
+
+
+def encode_camera_objects(objects, data_root, checkpoint, gpu_id, overwrite=False):
+    os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id
+    import torch
+    torch.set_num_threads(1)
+    encoder = None
+    for index, records in enumerate(objects, 1):
+        pending = [row for row in records if overwrite or not (data_root / camera_target_path(row)).is_file()
+                   or (data_root / camera_target_path(row)).stat().st_size == 0]
+        if pending:
+            if encoder is None:
+                if not torch.cuda.is_available():
+                    raise RuntimeError("Target encoding requires a CUDA GPU; run this stage on the cluster")
+                encoder = load_encoder(checkpoint, torch.device("cuda:0"))
+            mesh = load_normalized_mesh(data_root / records[0]["mesh_path"])
+            for row in pending:
+                generate_camera_target(row, data_root, mesh, encoder, torch.device("cuda:0"))
+                print(f"[GPU {gpu_id}] latent {row['sample_id']}", flush=True)
+        print(f"[GPU {gpu_id}: {index}/{len(objects)}] {records[0]['object_id']}: "
+              f"{len(records) - len(pending)} reused, {len(pending)} encoded", flush=True)
+
+
+def write_camera_manifests(data_root, records):
+    generated = data_root / "generated_data"
+    by_id = {row["sample_id"]: row for row in records}
+    sources = [(generated / "samples.jsonl", records)]
+    touch_path = generated / "samples_simulated_touches.jsonl"
+    if touch_path.is_file():
+        touches = [json.loads(line) for line in touch_path.read_text().splitlines() if line.strip()]
+        if len(touches) != len(records) or {row["sample_id"] for row in touches} != set(by_id):
+            raise ValueError("Touch manifest must contain the same samples as samples.jsonl")
+        for row in touches:
+            original = by_id[row["sample_id"]]
+            if any(row[key] != value for key, value in original.items() if key != "touch_path"):
+                raise ValueError(f"Touch manifest differs from samples.jsonl: {row['sample_id']}")
+        sources.append((touch_path, touches))
+    for source, rows in sources:
+        destination = source.with_name(source.stem + "_camframe.jsonl")
+        temporary = destination.with_suffix(".tmp.jsonl")
+        with temporary.open("w") as file:
+            for row in rows:
+                file.write(json.dumps(dict(row, target_path=str(camera_target_path(row)))) + "\n")
+        temporary.replace(destination)
+        print(f"Wrote {destination} ({len(rows)} views)", flush=True)
+
+
+def camera_main(argv):
+    import argparse
+    import multiprocessing as mp
+    from concurrent.futures import ProcessPoolExecutor
+    from make_data import save_json
+
+    parser = argparse.ArgumentParser(description="Encode camera-frame targets from existing renders")
+    parser.add_argument("--data-root", type=Path, required=True)
+    parser.add_argument("--encoder-checkpoint", type=Path, default=DEFAULT_ENCODER_CHECKPOINT)
+    parser.add_argument("--limit", type=int, help="Encode only the first N objects; do not publish manifests")
+    parser.add_argument("--overwrite", action="store_true")
+    args = parser.parse_args(argv)
+    args.data_root = args.data_root.resolve()
+    if args.limit is not None and args.limit < 1:
+        parser.error("--limit must be positive")
+    generated = args.data_root / "generated_data"
+    print(f"Reading manifest and encoder metadata from {generated}", flush=True)
+    source = generated / "samples.jsonl"
+    records = [json.loads(line) for line in source.read_text().splitlines() if line.strip()]
+    if not records or len({row["sample_id"] for row in records}) != len(records):
+        raise ValueError("Expected a nonempty manifest with unique sample IDs")
+    if len({camera_target_path(row) for row in records}) != len(records):
+        raise ValueError("Each sample must have its own view directory")
+    groups = {}
+    for row in records:
+        groups.setdefault(row["object_id"], []).append(row)
+    for rows in groups.values():
+        if len({row["mesh_path"] for row in rows}) != 1:
+            raise ValueError(f"Views must share one mesh: {rows[0]['object_id']}")
+    metadata = dict(coordinate_frame="normalized_sam_camera", normalization="aabb_center_longest_extent",
+                    voxel_resolution=64, latent_shape=[8, 16, 16, 16], format_version=1,
+                    encoder_checkpoint_sha256=checkpoint_sha256(args.encoder_checkpoint),
+                    source_manifest_sha256=checkpoint_sha256(source))
+    for name in ("settings.json", "target_latents.json"):
+        if (generated / name).is_file():
+            metadata[name] = checkpoint_sha256(generated / name)
+    metadata_path = generated / "target_latents_camframe.json"
+    if metadata_path.is_file():
+        if json.loads(metadata_path.read_text()) != metadata:
+            raise ValueError("Camera-frame encoding settings or source manifest changed")
+    else:
+        save_json(metadata, metadata_path)
+    objects = list(groups.values())[:args.limit]
+    gpu_ids = [gpu.strip() for gpu in os.environ.get("CUDA_VISIBLE_DEVICES", "").split(",")
+               if gpu.strip() and gpu.strip() != "-1"]
+    if not gpu_ids:
+        raise RuntimeError("Set CUDA_VISIBLE_DEVICES to allocated GPU IDs")
+    print(f"Processing {len(objects)} objects ({sum(map(len, objects))} views). "
+          + ("Replacing camera-frame targets." if args.overwrite else
+             "Reusing existing targets; encoding missing views."), flush=True)
+    with ProcessPoolExecutor(max_workers=len(gpu_ids), mp_context=mp.get_context("spawn")) as executor:
+        futures = [executor.submit(encode_camera_objects, objects[i::len(gpu_ids)], args.data_root,
+                                   args.encoder_checkpoint, gpu, args.overwrite)
+                   for i, gpu in enumerate(gpu_ids) if objects[i::len(gpu_ids)]]
+        for future in futures:
+            future.result()
+    if args.limit is None:
+        write_camera_manifests(args.data_root, records)
+    else:
+        print("Subset complete; rerun without --limit to finish and publish manifests.", flush=True)
+
+
+def main(argv=None):
+    import argparse
     import sys
-    from make_data import main
-    main(["--stage", "latents", *sys.argv[1:]])
+
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--target-frame", choices=["object", "camera"], default="object")
+    args, remaining = parser.parse_known_args(sys.argv[1:] if argv is None else argv)
+    if args.target_frame == "camera":
+        camera_main(remaining)
+    else:
+        from make_data import main as make_data_main
+        make_data_main(["--stage", "latents", *remaining])
+
+
+if __name__ == "__main__":
+    main()

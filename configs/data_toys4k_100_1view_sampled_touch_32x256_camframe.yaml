@@ -1,0 +1,15 @@
+seed: 29
+
+dataset:
+  root: /n/lab_storage/qianqian_lab/Lab/mwakeham/toys4k_100_sam3d_1view_sampled
+  manifest: generated_data/samples_simulated_touches_camframe.jsonl
+  split_file: generated_data/splits.json
+  split: val
+  target_frame: camera
+
+touch:
+  source: touch_patches
+  contacts:
+    count: 32
+  point_sampling:
+    points_per_contact: 256
