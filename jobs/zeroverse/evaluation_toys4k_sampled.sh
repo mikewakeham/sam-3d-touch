@@ -33,6 +33,10 @@ export PYTHONUNBUFFERED=1
   --run-dirs \
   outputs/zeroverse/zeroverse_pointmap_lr1e4_sampled_camframe \
   outputs/zeroverse/zeroverse_pointmap_surface_frozen_lr1e4_sampled_camframe \
+  --data-config configs/data_toys4k_100_1view_sampled_touch_32x256_camframe.yaml \
+  --run-dirs \
+  outputs/zeroverse/zeroverse_pointmap_touch_32x256_sampled_camframe \
+  outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint_sampled_camframe \
   --data-root /n/lab_storage/qianqian_lab/Lab/mwakeham/toys4k_100_sam3d_1view_sampled \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --selection-data-config configs/data_toys4k_100_1view_full_surface.yaml \
