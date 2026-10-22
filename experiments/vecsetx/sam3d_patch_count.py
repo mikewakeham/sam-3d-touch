@@ -13,12 +13,12 @@ from omegaconf import OmegaConf
 from dataloader import TouchDataset, build_dataloader, load_data_config
 from evaluation.evaluate import (
     read_run, restore_run, build_pipeline, select_records, stable_seed,
-    load_target_mesh, evaluate_condition, file_digest, file_identity, write_metrics,
+    load_target_mesh, evaluate_condition, file_digest, file_identity, write_metrics, override_data_root,
 )
 from experiments.vecsetx.sam3d_point_count import touch_tokens, subset_indices
 
 
-PATCH_COUNTS = (32, 28, 24, 16, 12, 8)
+PATCH_COUNTS = (32, 24, 16, 12, 8, 4, 1)
 METRICS = ('stage1_iou', 'chamfer', 'fscore_0.01', 'normal_consistency', 'voxel_iou_64', 'emd')
 
 
@@ -43,7 +43,9 @@ def check_reference(args, selected, selection_data):
     reference = args.reference_evaluation
     if reference is None:
         return
-    saved = yaml.safe_load((reference / 'selected_samples.yaml').read_text())
+    selection_path = reference / 'selected_samples.json'
+    saved = (json.loads(selection_path.read_text()) if selection_path.exists()
+             else yaml.safe_load((reference / 'selected_samples.yaml').read_text()))
     keys = ('sample_id', 'object_id', 'view_id')
     if [tuple(row[key] for key in keys) for row in saved] != [tuple(row[key] for key in keys) for row in selected]:
         raise ValueError('Selected objects/views differ from the reference evaluation')
@@ -59,6 +61,18 @@ def check_reference(args, selected, selection_data):
     for identity in settings['dataset_files']:
         if file_identity(identity['path']) != identity:
             raise ValueError(f'Reference dataset file changed: {identity["path"]}')
+
+
+def check_selected_inputs(selected, selection_dataset, records, dataset, selection_data, data):
+    # The reference can select canonical targets while this model uses camera-frame
+    # targets. Images, geometry and camera/depth observations must still match.
+    keys = ['mesh_path', 'image_path', 'camera_path', 'depth_path']
+    if selection_data['dataset'].get('target_frame', 'canonical') == data['dataset'].get('target_frame', 'canonical'):
+        keys.append('target_path')
+    for record in selected:
+        for key in keys:
+            if selection_dataset.resolve_path(record[key]) != dataset.resolve_path(records[record['sample_id']][key]):
+                raise ValueError(f'Selection and touch manifests disagree on {key}')
 
 
 def summarize(rows, seed, group_key='patch_count', groups=PATCH_COUNTS, reference=32):
@@ -94,12 +108,13 @@ def summarize(rows, seed, group_key='patch_count', groups=PATCH_COUNTS, referenc
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--checkpoint', type=Path, default=Path('outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint/best.pt'))
+    parser.add_argument('--checkpoint', type=Path, default=Path('outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint_sampled_camframe/best.pt'))
     parser.add_argument('--data-config', type=Path)
+    parser.add_argument('--data-root', type=Path, help='Override both evaluation and selection dataset roots')
     parser.add_argument('--selection-data-config', type=Path, required=True)
     parser.add_argument('--reference-evaluation', type=Path, help='Verify selection and protocol against an existing main evaluation')
     parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'))
-    parser.add_argument('--output-dir', type=Path, default=Path('experiments/vecsetx/outputs/sam3d_patch_count'))
+    parser.add_argument('--output-dir', type=Path, default=Path('experiments/vecsetx/outputs/sam3d_patch_count_sampled_camframe'))
     parser.add_argument('--split', default='val')
     parser.add_argument('--max-samples', type=int, default=100, help='Objects; 0 selects all, as in the main evaluator')
     parser.add_argument('--selection', choices=['random', 'hidden'], default='random')
@@ -122,6 +137,9 @@ def main():
            args.stage2_inference_steps, args.metric_workers) < 1 or min(args.max_samples, args.emd_points, args.workers, args.normalization_probe) < 0:
         raise ValueError('Invalid sample counts or worker count')
     checkpoint, run_config, data = read_run(args.checkpoint, args.data_config, args.split)
+    data = override_data_root(data, args.data_root)
+    if run_config['data']['dataset'].get('target_frame', 'canonical') != data['dataset'].get('target_frame', 'canonical'):
+        raise ValueError('Training and evaluation target frames must match')
     conditioning = checkpoint.get('conditioning_config', {})
     if (checkpoint['mode'] != 'image_touch_joint' or conditioning.get('joint_pointmap_points') != 1024
             or checkpoint['touch_config']['encoder_name'] != 'vecsetx'
@@ -134,7 +152,7 @@ def main():
                 or touch['point_sampling']['points_per_contact'] != 256):
             raise ValueError('Training and evaluation data must use 32x256 patches')
 
-    selection_data = load_data_config(args.selection_data_config)
+    selection_data = override_data_root(load_data_config(args.selection_data_config), args.data_root)
     selection_data['dataset']['split'] = args.split
     selection_dataset = TouchDataset(selection_data, include_touch=False)
     selected, details = select_records(selection_dataset, selection_data, args.max_samples, args.selection_seed, args.selection)
@@ -151,11 +169,7 @@ def main():
     loader = build_dataloader(data, 1, args.workers, shuffle=False, joint_pointmap=True)
     records = {record['sample_id']: record for record in loader.dataset.records}
     loader.dataset.records = [records[record['sample_id']] for record in selected]
-    # Match the inputs and target used by the main evaluator's selection dataset.
-    for record in selected:
-        for key in ('mesh_path', 'image_path', 'camera_path', 'depth_path', 'target_path'):
-            if selection_dataset.resolve_path(record[key]) != loader.dataset.resolve_path(records[record['sample_id']][key]):
-                raise ValueError(f'Selection and touch manifests disagree on {key}')
+    check_selected_inputs(selected, selection_dataset, records, loader.dataset, selection_data, data)
 
     args.output_dir.mkdir(parents=True, exist_ok=False)
     (args.output_dir / 'selected_samples.yaml').write_text(yaml.safe_dump(details, sort_keys=False))
