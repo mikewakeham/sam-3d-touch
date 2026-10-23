@@ -23,7 +23,7 @@ export PYTHONUNBUFFERED=1
   --data-config configs/data_zeroverse_5000_8views_sampled_touch_32x256_camframe.yaml \
   --data-root /n/lab_storage/qianqian_lab/Lab/mwakeham/zeroverse_5000_sam3d_8views_sampled \
   --pipeline-config checkpoints/hf/pipeline.yaml \
-  --output-dir experiments/vecsetx/outputs/sam3d_patch_count_sampled_camframe \
+  --output-dir experiments/vecsetx/outputs/sam3d_patch_count_sampled_camframe_2 \
   --selection-data-config configs/data_zeroverse_5000_8views_full_surface.yaml \
   --reference-evaluation outputs/zeroverse/evaluation_lr1e4_sampled \
   --max-samples 100 \

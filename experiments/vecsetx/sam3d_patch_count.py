@@ -48,7 +48,7 @@ def touch_tokens(encoder, points, shift, scale):
         encoder.encoder.num_inputs = previous_count
 
 
-def encode_patches(model, count, points, mask, normalization='full'):
+def encode_patches(model, count, points, mask, normalization='retained'):
     # Keep the exact ordinary evaluation path for the full-input baseline.
     if count == 32:
         return model.get_touch_tokens(points, mask)
@@ -167,7 +167,7 @@ def parse_args():
     parser.add_argument('--selection-data-config', type=Path, required=True)
     parser.add_argument('--reference-evaluation', type=Path, help='Verify selection, protocol and checkpoint against an existing main evaluation')
     parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'))
-    parser.add_argument('--output-dir', type=Path, default=Path('experiments/vecsetx/outputs/sam3d_patch_count_sampled_camframe'))
+    parser.add_argument('--output-dir', type=Path, default=Path('experiments/vecsetx/outputs/sam3d_patch_count_sampled_camframe_retained'))
     parser.add_argument('--split', default='val')
     parser.add_argument('--max-samples', type=int, default=100, help='Objects; 0 selects all, as in the main evaluator')
     parser.add_argument('--selection', choices=['random', 'hidden'], default='random')
@@ -237,7 +237,7 @@ def main():
             raise ValueError('Smoke sample count exceeds the reference sample count')
         selected, details = selected[:args.smoke_samples], details[:args.smoke_samples]
     conditions = ([(16, 'full'), (16, 'retained')] if args.normalization_probe
-                  else [(count, 'full') for count in PATCH_COUNTS])
+                  else [(count, 'retained') for count in PATCH_COUNTS])
     loader = build_dataloader(data, 1, args.workers, shuffle=False, joint_pointmap=True)
     records = {record['sample_id']: record for record in loader.dataset.records}
     if len(records) != len(loader.dataset.records):
@@ -265,7 +265,7 @@ def main():
                     split_sha256=file_digest(loader.dataset.resolve_path(data['dataset']['split_file'])),
                     patch_selection='first K patches in the saved farthest-center order; nested, no resampling',
                     normalization=('paired full-32 vs retained-16 joint normalization, including position embedding'
-                                   if args.normalization_probe else 'fixed from saved 1024 pointmap + 32x224 touch points before removing patches'),
+                                   if args.normalization_probe else 'recomputed from saved 1024 pointmap + retained Kx224 touch points only, including position embedding'),
                     evaluation='evaluation.evaluate.evaluate_condition, including its seeds and mesh metrics',
                     torch_version=torch.__version__, numpy_version=np.__version__)
     (args.output_dir / 'settings.json').write_text(json.dumps(settings, indent=2) + '\n')
@@ -295,8 +295,7 @@ def main():
             touch_token_fn=partial(encode_patches, model, count, normalization=normalization),
             joint_pointmap=True, fixed_joint_patches=True)
         for row in measured:
-            if args.normalization_probe:
-                row['normalization'] = normalization
+            row['normalization'] = normalization
             row.update(patch_count=count, points_per_patch=224, pointmap_points=1024,
                        touch_points=count * 224, total_points=1024 + count * 224, stage1_iou=np.nan)
             if row['stage1_path']:
@@ -304,8 +303,6 @@ def main():
                     row['stage1_iou'] = float(np.logical_and(saved['prediction'], saved['target']).sum()
                                              / max(np.logical_or(saved['prediction'], saved['target']).sum(), 1))
                     stage1 = dict(saved)
-                # The main evaluator sees the dense cloud for normalization; save
-                # only the contacts actually encoded as this condition's touches.
                 indices = subset_indices(224, count)
                 stage1['touch_centers'] = stage1['touch_centers'][indices]
                 stage1['encoder_input_camera'] = stage1['encoder_input_camera'][indices]
@@ -313,8 +310,7 @@ def main():
                 stage1['touch_count'] = np.int64(count * 224)
                 stage1['encoder_input_indices'] = indices
                 stage1['patch_count'] = np.int64(count)
-                if args.normalization_probe:
-                    stage1['encoder_normalization'] = np.asarray(normalization)
+                stage1['encoder_normalization'] = np.asarray(normalization)
                 np.savez_compressed(args.output_dir / row['stage1_path'], **stage1)
         rows.extend(measured)
         write_metrics(args.output_dir / 'metrics.csv', rows)

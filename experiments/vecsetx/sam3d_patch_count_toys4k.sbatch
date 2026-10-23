@@ -23,7 +23,7 @@ export PYTHONUNBUFFERED=1
   --data-config configs/data_toys4k_100_1view_sampled_touch_32x256_camframe.yaml \
   --data-root /n/lab_storage/qianqian_lab/Lab/mwakeham/toys4k_100_sam3d_1view_sampled \
   --pipeline-config checkpoints/hf/pipeline.yaml \
-  --output-dir experiments/vecsetx/outputs/sam3d_patch_count_toys4k_sampled_camframe \
+  --output-dir experiments/vecsetx/outputs/sam3d_patch_count_toys4k_sampled_camframe_2 \
   --selection-data-config configs/data_toys4k_100_1view_full_surface.yaml \
   --reference-evaluation outputs/zeroverse/evaluation_toys4k_sampled \
   --max-samples 0 \
