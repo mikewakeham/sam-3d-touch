@@ -9,6 +9,28 @@ from sam3d_objects.data.dataset.tdfy.transforms_3d import compose_transform, dec
 from pytorch3d.transforms import Transform3d, quaternion_to_matrix, matrix_to_quaternion
 
 
+ROTATION_6D_MEAN = torch.tensor(
+    [
+        -0.06366084883674913,
+        0.008438224692279752,
+        0.00017084786438302483,
+        0.0007126610473540038,
+        -0.0030916726538816417,
+        0.5166093753457688,
+    ]
+)
+ROTATION_6D_STD = torch.tensor(
+    [
+        0.6656971967514863,
+        0.6787012271867754,
+        0.30345010594844524,
+        0.4394504420678794,
+        0.39817973931717104,
+        0.6176286868761914,
+    ]
+)
+
+
 @dataclass
 class InstancePose:
     """
@@ -782,3 +804,47 @@ class LogScaleShiftNormalizer:
 
     def denormalize(self, value: torch.Tensor):
         return torch.exp(value * self.scale_log + self.shift_log)
+
+
+def encode_pose_targets(camera_from_target, scene_scale, scene_shift, convention):
+    """Invert the inference decoder, including its column-stacked 6D rotation."""
+    if convention != "ScaleShiftInvariant":
+        raise ValueError(f"Unsupported pose training convention: {convention}")
+    with torch.no_grad(), torch.autocast(device_type=camera_from_target.device.type, enabled=False):
+        matrix = camera_from_target.float()
+        batch_size = matrix.shape[0]
+        scene_scale = scene_scale.float().reshape(batch_size, 3)
+        scene_shift = scene_shift.float().reshape(batch_size, 3)
+        if (matrix.shape != (batch_size, 4, 4)
+                or not all(torch.isfinite(x).all() for x in (matrix, scene_scale, scene_shift))
+                or not (scene_scale > 0).all()
+                or not torch.allclose(scene_scale, scene_scale[:, :1].expand_as(scene_scale))
+                or not torch.allclose(matrix[:, 3], matrix.new_tensor([0, 0, 0, 1]).expand(batch_size, -1))):
+            raise ValueError("Invalid placement or pointmap normalization")
+        scale = matrix[:, :3, :3].norm(dim=1)
+        rotation = matrix[:, :3, :3] / scale[:, None, :]
+        identity = torch.eye(3, device=matrix.device).expand(batch_size, -1, -1)
+        if (not (scale > 0).all() or not torch.allclose(scale, scale[:, :1].expand_as(scale))
+                or not torch.allclose(rotation.transpose(1, 2) @ rotation, identity, atol=1e-5, rtol=1e-5)
+                or not torch.allclose(torch.linalg.det(rotation), torch.ones_like(scale[:, 0]), atol=1e-5)):
+            raise ValueError("Expected a positive isotropic similarity transform")
+        # Saved matrices act on columns; PyTorch3D composes row-vector transforms.
+        pose = PoseTargetConverter.dicts_instance_pose_to_pose_target(
+            pose_target_convention=convention,
+            instance_scale_l2c=scale[:, None],
+            instance_position_l2c=matrix[:, None, :3, 3],
+            instance_quaternion_l2c=matrix_to_quaternion(rotation.transpose(1, 2))[:, None],
+            scene_scale=scene_scale, scene_shift=scene_shift,
+        )
+        row_rotation = quaternion_to_matrix(pose["x_instance_rotation"])
+        rotation_6d = torch.cat((row_rotation[..., :, 0], row_rotation[..., :, 1]), dim=-1)
+        targets = {
+            "6drotation_normalized": (rotation_6d - ROTATION_6D_MEAN.to(matrix)) / ROTATION_6D_STD.to(matrix),
+            "translation": pose["x_instance_translation"],
+            "scale": pose["x_instance_scale"].log(),
+            # SSI ignores this head; log(1) is its valid clean target, with zero loss weight.
+            "translation_scale": pose["x_translation_scale"].log(),
+        }
+        if not all(torch.isfinite(value).all() for value in targets.values()):
+            raise ValueError("Non-finite encoded pose target")
+        return targets

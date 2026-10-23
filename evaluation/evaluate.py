@@ -45,6 +45,15 @@ def restore_run(pipeline, checkpoint, device):
     conditioning = checkpoint.get(
         "conditioning_config", {"no_pointmap": False, "oracle_point_frame": False}
     )
+    pose_config = checkpoint.get("pose_training_config")
+    if checkpoint_train_scope(checkpoint) == "shape_pose_cross_attention":
+        if (not pose_config or pose_config.get("version") != 1
+                or pose_config.get("coordinate_frame") != "normalized_sam_camera"
+                or pose_config.get("pose_target_convention") != "ScaleShiftInvariant"
+                or getattr(pipeline.pose_decoder, "pose_target_convention", None) != pose_config["pose_target_convention"]):
+            raise ValueError("Checkpoint pose targets and inference decoder do not match")
+    elif pose_config is not None:
+        raise ValueError("Pose training metadata requires the pose cross-attention scope")
     if conditioning["no_pointmap"] or conditioning.get("no_visual", False):
         fuser = pipeline.ss_condition_embedder
         if fuser is None:
@@ -68,7 +77,7 @@ def restore_run(pipeline, checkpoint, device):
 
     pipeline.ss_generator.requires_grad_(False)
     model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, **conditioning,
-                               **checkpoint.get("training_config", {}))
+                               **checkpoint.get("training_config", {}), pose_training_config=pose_config)
     build_optimizer(touch_encoder, pipeline.backbone, argparse.Namespace(
         learning_rate=0.0,
         cross_attention_learning_rate=1.0,
@@ -553,6 +562,8 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
             pose_fields = {
                 "pose_path": "", "pose_error": "",
                 "pose_box_iou_3d": np.nan, "pose_add_s": np.nan, "pose_icp_rot_deg": np.nan,
+                "pose_head_rotation_deg": np.nan, "pose_head_translation_error": np.nan,
+                "pose_head_scale_rel_error": np.nan,
             }
             pose_path = None
             try:
@@ -619,7 +630,9 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     pose_path = args.output_dir / "artifacts" / safe_name(name) / safe_name(sample_id) / "pose.npz"
                     try:
                         save_pose(pose_path, pipeline, outputs, inputs, downsample_factor,
-                                  loader.dataset.resolve_path(record["camera_path"]))
+                                  loader.dataset.resolve_path(record["camera_path"]),
+                                  target_path=(loader.dataset.resolve_path(record["target_path"])
+                                               if loader.dataset.target_frame == "camera" else None))
                     except Exception as error:
                         pose_fields["pose_error"] = f"{type(error).__name__}: {error}"
                     if pose_path.is_file():
@@ -742,6 +755,7 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
     }
     if any("pose_error" in row for row in rows):
         metrics.extend(("pose_box_iou_3d", "pose_add_s", "pose_icp_rot_deg"))
+        metrics.extend(("pose_head_rotation_deg", "pose_head_translation_error", "pose_head_scale_rel_error"))
         higher_is_better.add("pose_box_iou_3d")
     no_touch_runs = [no_touch] if isinstance(no_touch, str) else (no_touch or [])
     summary = {
@@ -934,6 +948,7 @@ def validate_resume(args, checkpoints, selection_data, selected, previous_config
         "stage2_inference_steps", "surface_points", "icp_points", "emd_points", "save_points", "no_amp",
     )}
     settings["pose_metrics"] = True
+    settings["pose_head_metrics_version"] = 1
     settings["data_override"] = file_identity(args.data_config) if args.data_config else None
     settings["pipeline"] = file_identity(args.pipeline_config)
     settings["selection_data"] = selection_data
@@ -953,6 +968,7 @@ def validate_resume(args, checkpoints, selection_data, selected, previous_config
             "mode": checkpoint["mode"],
             "cross_attention_scope": checkpoint.get("cross_attention_scope", "kv"),
             "train_scope": checkpoint_train_scope(checkpoint),
+            "pose_training_config": checkpoint.get("pose_training_config"),
             "data": data,
         }
 
@@ -1118,6 +1134,9 @@ def main():
             checkpoint, _, run_data = read_run(checkpoint_path, run_data_config(args, checkpoint_path), args.split)
             conditioning = checkpoint.get("conditioning_config", conditioning)
         run_data = override_data_root(run_data, getattr(args, "data_root", None))
+        if (checkpoint is not None and checkpoint_train_scope(checkpoint) == "shape_pose_cross_attention"
+                and run_data["dataset"].get("target_frame") != "camera"):
+            raise ValueError("Camera-frame pose checkpoints require camera-frame evaluation targets")
         use_touch = checkpoint is not None and checkpoint["touch_config"] is not None
         if use_touch:
             run_data = configure_encoder_data(run_data, checkpoint["touch_config"]["encoder_name"])

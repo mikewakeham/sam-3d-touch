@@ -36,7 +36,7 @@ def parse_args():
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--cross-attention-learning-rate", type=float, default=1e-4)
     parser.add_argument(
-        "--train-scope", choices=["shape_cross_attention", "shape_full"],
+        "--train-scope", choices=["shape_cross_attention", "shape_full", "shape_pose_cross_attention"],
         help="Generator weights to train (default: shape_cross_attention)",
     )
     parser.add_argument(
@@ -101,7 +101,7 @@ def parse_args():
 def resolve_train_scope(train_scope=None, cross_attention_scope="kv"):
     if train_scope is None:
         return {"kv": "shape_cross_attention_kv", "full": "shape_cross_attention"}[cross_attention_scope]
-    if train_scope not in ("shape_cross_attention_kv", "shape_cross_attention", "shape_full"):
+    if train_scope not in ("shape_cross_attention_kv", "shape_cross_attention", "shape_full", "shape_pose_cross_attention"):
         raise ValueError(f"Unknown training scope: {train_scope}")
     return train_scope
 
@@ -124,7 +124,39 @@ def setup_distributed(args):
     )
 
 
-def build_stage1_pipeline(config_path, device, no_pointmap=False, no_visual=False):
+def read_pose_training_config(pipeline_path):
+    from omegaconf import OmegaConf
+
+    pipeline = OmegaConf.load(pipeline_path)
+    module = OmegaConf.load(Path(pipeline_path).parent / pipeline.ss_generator_config_path)["module"]
+    convention = pipeline.get("pose_decoder_name") or module.get("pose_target_convention")
+    if convention != "ScaleShiftInvariant":
+        raise ValueError(f"Camera-frame pose training requires ScaleShiftInvariant, got {convention!r}")
+    weights = OmegaConf.to_container(module.generator.backbone.loss_weights, resolve=True)
+    weights.pop("_target_", None)
+    if set(weights) != {"shape", "6drotation_normalized", "translation", "scale", "translation_scale"}:
+        raise ValueError("Expected explicit released loss weights for shape and all pose latents")
+    weights = {name: float(value) for name, value in weights.items()}
+    weights["shape"] = 1.0
+    if (not all(np.isfinite(value) and value >= 0 for value in weights.values())
+            or any(weights[name] <= 0 for name in ("6drotation_normalized", "translation", "scale"))
+            or weights["translation_scale"] != 0):
+        raise ValueError("Expected positive layout weights and unused translation_scale weight zero")
+    return {"version": 1, "coordinate_frame": "normalized_sam_camera",
+            "pose_target_convention": convention, "loss_weights": weights}
+
+
+def validate_pose_latents(backbone):
+    channels_by_name = {"6drotation_normalized": 6, "translation": 3, "scale": 3, "translation_scale": 1}
+    if set(backbone.latent_mapping) != {"shape", *channels_by_name}:
+        raise ValueError("Unexpected latent mapping for camera-frame pose training")
+    for name, channels in channels_by_name.items():
+        latent = backbone.latent_mapping[name]
+        if latent.pos_emb.shape[0] != 1 or latent.input_layer.in_features != channels:
+            raise ValueError(f"Expected one {channels}-channel token for {name}")
+
+
+def build_stage1_pipeline(config_path, device, no_pointmap=False, no_visual=False, train_scope=None):
     from hydra.utils import instantiate
     from omegaconf import OmegaConf
     from sam3d_objects.pipeline.inference_pipeline_pointmap import InferencePipelinePointMap
@@ -135,6 +167,9 @@ def build_stage1_pipeline(config_path, device, no_pointmap=False, no_visual=Fals
             config = OmegaConf.load(config_path)
             self.device = torch.device(device)
             self.workspace_dir = str(config_path.parent)
+            self.pose_training_config = None
+            if train_scope == "shape_pose_cross_attention":
+                self.pose_training_config = read_pose_training_config(config_path)
             self.ss_condition_input_mapping = list(
                 config.get("ss_condition_input_mapping", ["image"])
             )
@@ -165,9 +200,17 @@ def build_stage1_pipeline(config_path, device, no_pointmap=False, no_visual=Fals
             self.backbone.eval()
             if hasattr(self.backbone.condition_embedder, "normalize_images"):
                 self.backbone.condition_embedder.normalize_images = True
-            self.ss_generator.loss_weights = {
-                name: float(name == "shape") for name in self.backbone.latent_mapping
-            }
+            if self.pose_training_config is None:
+                self.ss_generator.loss_weights = {
+                    name: float(name == "shape") for name in self.backbone.latent_mapping
+                }
+            else:
+                validate_pose_latents(self.backbone)
+                self.ss_generator.loss_weights = dict(self.pose_training_config["loss_weights"])
+                self.pose_decoder = self.init_pose_decoder(
+                    config.ss_generator_config_path, self.pose_training_config["pose_target_convention"],
+                )
+                self.pose_targets_checked = False
 
     pipeline = Stage1TrainingPipeline(config_path, device)
     if no_pointmap or no_visual:
@@ -213,10 +256,13 @@ def build_stage1_preprocessor(config_path):
 class TouchTrainingModel(torch.nn.Module):
     def __init__(self, generator, touch_encoder=None, no_pointmap=False, oracle_point_frame=False,
                  visual_dropout=0.0, constant_touch=False, no_visual=False,
-                 shared_pointmap_normalization=False, joint_pointmap_points=None):
+                 shared_pointmap_normalization=False, joint_pointmap_points=None,
+                 pose_training_config=None):
         super().__init__()
         self.generator = generator
         self.touch_encoder = touch_encoder
+        self.pose_training_config = copy.deepcopy(pose_training_config)
+        self.last_detail_losses = {}
         self.conditioning_config = {
             "no_pointmap": no_pointmap,
             "oracle_point_frame": oracle_point_frame,
@@ -265,12 +311,13 @@ class TouchTrainingModel(torch.nn.Module):
                 raise ValueError("Visual dropout mask must contain one decision per sample")
             condition_args = (visual.masked_fill(visual_drop_mask[:, None, None], 0),)
         if self.touch_encoder is None:
-            loss, _ = self.generator.loss(targets, *condition_args, **condition_kwargs)
+            loss, details = self.generator.loss(targets, *condition_args, **condition_kwargs)
         else:
             touch_tokens = self.get_touch_tokens(touch_xyz, touch_mask)
-            loss, _ = self.generator.loss(
+            loss, details = self.generator.loss(
                 targets, *condition_args, touch_tokens=touch_tokens, **condition_kwargs
             )
+        self.last_detail_losses = {name: value.detach() for name, value in details.items()}
         return loss
 
 
@@ -382,16 +429,39 @@ def combine_pointmap_and_touch(inputs, touch_xyz, touch_mask):
     return clouds, mask
 
 
-def make_targets(shape, backbone):
+def make_targets(shape, backbone, pose_targets=None):
     targets = {}
     for name, mapping in backbone.latent_mapping.items():
         if name == "shape":
             targets[name] = shape
+        elif pose_targets is not None:
+            target = pose_targets[name]
+            expected = (shape.shape[0], mapping.pos_emb.shape[0], mapping.input_layer.in_features)
+            if target.shape != expected:
+                raise ValueError(f"Invalid {name} target shape: {target.shape}, expected {expected}")
+            targets[name] = target
         else:
             targets[name] = shape.new_zeros(
                 shape.shape[0], mapping.pos_emb.shape[0], mapping.input_layer.in_features
             )
     return targets
+
+
+def check_pose_roundtrip(targets, camera_from_target, inputs, decoder):
+    from pytorch3d.transforms import quaternion_to_matrix
+    from sam3d_objects.data.dataset.tdfy.transforms_3d import compose_transform
+
+    # The production decoder is single-instance, even when training batches are larger.
+    for index, expected in enumerate(camera_from_target):
+        decoded = decoder(
+            {name: value[index:index + 1] for name, value in targets.items()},
+            scene_scale=inputs["pointmap_scale"][index:index + 1].float(),
+            scene_shift=inputs["pointmap_shift"][index:index + 1].float(),
+        )
+        actual = compose_transform(decoded["scale"], quaternion_to_matrix(decoded["rotation"]),
+                                   decoded["translation"]).get_matrix()[0].T
+        if not torch.allclose(actual, expected.to(actual), atol=1e-5, rtol=1e-5):
+            raise ValueError("Pose target does not round-trip through the inference decoder")
 
 
 def prepare_batch(
@@ -449,7 +519,21 @@ def prepare_batch(
                 # Keep the existing five-item batch interface; the new encoders take XYZ+normal.
                 touch_xyz = torch.cat((touch_xyz, normals), dim=-1)
 
-    result = make_targets(shape, pipeline.backbone), condition_args, condition_kwargs, touch_xyz, touch_mask
+    pose_targets = None
+    pose_config = getattr(pipeline, "pose_training_config", None)
+    if pose_config is not None:
+        from sam3d_objects.data.dataset.tdfy.pose_target import encode_pose_targets
+        transform = batch["camera_from_target"].to(device, non_blocking=True)
+        pose_targets = encode_pose_targets(
+            transform, inputs["pointmap_scale"], inputs["pointmap_shift"],
+            pose_config["pose_target_convention"],
+        )
+    targets = make_targets(shape, pipeline.backbone, pose_targets)
+    if pose_config is not None and not pipeline.pose_targets_checked:
+        with torch.no_grad(), torch.autocast(device_type=device.type, enabled=False):
+            check_pose_roundtrip(targets, transform, inputs, pipeline.pose_decoder)
+        pipeline.pose_targets_checked = True
+    result = targets, condition_args, condition_kwargs, touch_xyz, touch_mask
     return (*result, inputs) if return_inputs else result
 
 
@@ -536,6 +620,12 @@ def build_optimizer(touch_encoder, backbone, args):
                 for block in backbone.blocks
                 for module in (block.cross_attn["shape"], block.norm2["shape"])
             ]
+        if scope == "shape_pose_cross_attention":
+            validate_pose_latents(backbone)
+            modules.extend(
+                module for block in backbone.blocks for name in block.cross_attn if name != "shape"
+                for module in (block.cross_attn[name], block.norm2[name])
+            )
         if scope == "shape_full":
             modules.extend(module for group in shape_path_module_groups(backbone).values() for module in group)
         for module in modules:
@@ -604,6 +694,11 @@ def component_gradient_norms(model, include_parameters=False):
             name: (parameter for module in modules for parameter in module.parameters())
             for name, modules in shape_path_module_groups(backbone).items()
         })
+    if getattr(backbone, "train_scope", None) == "shape_pose_cross_attention":
+        groups["pose_cross_attention"] = (
+            parameter for block in backbone.blocks for name in block.cross_attn if name != "shape"
+            for module in (block.cross_attn[name], block.norm2[name]) for parameter in module.parameters()
+        )
     if model.touch_encoder is not None:
         groups.update({
             "touch_output_projection": model.touch_encoder.output_projection.parameters(),
@@ -720,6 +815,7 @@ def save_checkpoint(
         "mode": mode,
         "conditioning_config": model.conditioning_config,
         "training_config": model.training_config,
+        "pose_training_config": model.pose_training_config,
         "constant_touch": (
             {"sample_id": model.constant_touch_sample_id,
              "features": model.constant_touch_features.detach().cpu()}
@@ -739,6 +835,8 @@ def load_checkpoint(path, model, optimizer, mode, cross_attention_scope="kv", tr
         raise ValueError("Checkpoint conditioning configuration does not match this run")
     if checkpoint_train_scope(checkpoint) != resolve_train_scope(train_scope, cross_attention_scope):
         raise ValueError("Checkpoint training scope does not match this run; --resume cannot change scope")
+    if checkpoint.get("pose_training_config") != model.pose_training_config:
+        raise ValueError("Checkpoint pose target convention or loss weights do not match this run")
     if checkpoint.get("training_config", {"visual_dropout": 0.0, "constant_touch": False}) != model.training_config:
         raise ValueError("Checkpoint visual dropout or constant touch setting does not match this run")
     touch_config = (
@@ -772,6 +870,8 @@ def train_epoch(
     total_loss = 0.0
     total_samples = 0
     total_dropped = 0
+    component_totals = (dict.fromkeys(raw_model.pose_training_config["loss_weights"], 0.0)
+                        if raw_model.pose_training_config else {})
     log_start_time = time.perf_counter()
     for batch_index, batch in enumerate(loader):
         should_log = (
@@ -812,6 +912,8 @@ def train_epoch(
         batch_size = batch["target_shape"].shape[0]
         total_loss += loss.item() * batch_size
         total_samples += batch_size
+        for name in component_totals:
+            component_totals[name] += raw_model.last_detail_losses[f"flow_matching/{name}"].item() * batch_size
         if drop_mask is not None:
             total_dropped += int(drop_mask.sum())
 
@@ -829,6 +931,11 @@ def train_epoch(
                 dropped_sum, _ = aggregate(total_dropped, total_samples, device, distributed)
             if distributed:
                 dist.all_reduce(elapsed, op=dist.ReduceOp.MAX)
+
+            component_means = {
+                f"loss/train/{name}": aggregate(value, total_samples, device, distributed)[0] / sample_count
+                for name, value in component_totals.items()
+            }
 
             mean_loss = loss_sum / sample_count
             samples_per_second = sample_count / elapsed.item()
@@ -861,6 +968,7 @@ def train_epoch(
                 if gradient_norm is not None:
                     metrics["optimization/gradient_norm"] = gradient_norm.item()
                 metrics.update(component_gradients)
+                metrics.update(component_means)
                 metrics.update(token_metrics)
                 for group in optimizer.param_groups:
                     metrics[f"learning_rate/{group['name']}"] = group["lr"]
@@ -868,6 +976,7 @@ def train_epoch(
             total_loss = 0.0
             total_samples = 0
             total_dropped = 0
+            component_totals = dict.fromkeys(component_totals, 0.0)
             log_start_time = time.perf_counter()
 
         if args.max_steps and step >= args.max_steps:
@@ -885,6 +994,8 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
     cuda_devices = [torch.cuda.current_device()] if device.type == "cuda" else []
     total_loss = 0.0
     total_samples = 0
+    component_totals = (dict.fromkeys(model.pose_training_config["loss_weights"], 0.0)
+                        if model.pose_training_config else {})
 
     with torch.random.fork_rng(devices=cuda_devices):
         random.seed(seed + rank)
@@ -905,6 +1016,8 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
                 batch_size = batch["target_shape"].shape[0]
                 total_loss += loss.item() * batch_size
                 total_samples += batch_size
+                for name in component_totals:
+                    component_totals[name] += model.last_detail_losses[f"flow_matching/{name}"].item() * batch_size
 
     random.setstate(python_state)
     np.random.set_state(numpy_state)
@@ -913,6 +1026,10 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
     total_loss, total_samples = aggregate(
         total_loss, total_samples, device, distributed
     )
+    model.validation_loss_components = {
+        f"loss/val/{name}": aggregate(value, 0, device, distributed)[0] / total_samples
+        for name, value in component_totals.items()
+    }
     return total_loss / total_samples
 
 
@@ -954,6 +1071,13 @@ def main():
     if args.no_touch and args.joint_pointmap:
         raise ValueError("--joint-pointmap cannot be used with --no-touch")
 
+    train_pose = args.train_scope == "shape_pose_cross_attention"
+    if train_pose and (args.no_pointmap or args.no_visual or args.oracle_point_frame
+                       or args.shared_pointmap_normalization or args.constant_touch):
+        raise ValueError("Pose training requires the existing camera-frame pointmap conditioning")
+    if train_pose and args.cross_attention_learning_rate <= 0:
+        raise ValueError("Pose cross-attention requires a positive learning rate")
+
     distributed, rank, world_size, device = setup_distributed(args)
     main_process = rank == 0
     torch.set_float32_matmul_precision("high")
@@ -976,6 +1100,7 @@ def main():
         include_touch=not args.no_touch or args.shared_pointmap_normalization,
         oracle_point_frame=args.oracle_point_frame,
         joint_pointmap=args.joint_pointmap,
+        include_pose_targets=train_pose,
     )
     if len(train_loader) == 0:
         raise ValueError("Training loader has no batches")
@@ -987,10 +1112,12 @@ def main():
         include_touch=not args.no_touch or args.shared_pointmap_normalization,
         oracle_point_frame=args.oracle_point_frame,
         joint_pointmap=args.joint_pointmap,
+        include_pose_targets=train_pose,
     )
 
     pipeline = build_stage1_pipeline(
         args.pipeline_config, device, no_pointmap=args.no_pointmap, no_visual=args.no_visual,
+        train_scope=args.train_scope,
     )
     touch_encoder = None
     if not args.no_touch:
@@ -1012,6 +1139,7 @@ def main():
         no_visual=args.no_visual,
         shared_pointmap_normalization=args.shared_pointmap_normalization,
         joint_pointmap_points=(1024 if args.joint_pointmap and data_config.get('touch', {}).get('source') == 'touch_patches' else None),
+        pose_training_config=pipeline.pose_training_config,
     )
     optimizer, parameters = build_optimizer(touch_encoder, pipeline.backbone, args)
     if args.no_touch:
@@ -1053,6 +1181,7 @@ def main():
                     touch_encoder.get_config() if touch_encoder is not None else None
                 ),
                 "data": data_config,
+                "pose_training_config": raw_model.pose_training_config,
                 "constant_touch_sample_id": raw_model.constant_touch_sample_id,
             }
             with open(config_path, "w") as file:
@@ -1066,6 +1195,8 @@ def main():
 
         print(f"mode: {mode}")
         print(f"training scope: {args.train_scope}")
+        if raw_model.pose_training_config:
+            print(f"pose supervision: {raw_model.pose_training_config}")
         print(f"precision: {args.precision}")
         print(f"touch position: {touch_encoder is not None and touch_encoder.use_position}")
         if touch_encoder is not None:
@@ -1100,6 +1231,7 @@ def main():
             "mode": mode,
             "world_size": world_size,
             "global_batch_size": args.batch_size * world_size,
+            "pose_training_config": raw_model.pose_training_config,
             "constant_touch_sample_id": raw_model.constant_touch_sample_id,
             "touch_config": (
                 touch_encoder.get_config() if touch_encoder is not None else None
@@ -1133,7 +1265,8 @@ def main():
         best_loss = min(best_loss, val_loss)
 
         if main_process:
-            run.log({"global_step": step, "loss/val": val_loss})
+            run.log({"global_step": step, "loss/val": val_loss,
+                     **getattr(raw_model, "validation_loss_components", {})})
             progress = (
                 f"step {step}/{args.max_steps} epoch {epoch + 1}"
                 if args.max_steps

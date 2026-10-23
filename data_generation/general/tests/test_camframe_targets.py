@@ -138,6 +138,37 @@ class CameraTargetTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 targets.camera_target_mesh(self.mesh, path)
 
+    def test_pose_loader_uses_saved_camera_target_and_rejects_mismatch(self):
+        from dataloader import collate_touch_batch
+        rows, expected = [], []
+        for row in self.records:
+            _, metadata = targets.camera_target_mesh(self.mesh, self.root / row['camera_path'])
+            path = self.root / targets.camera_target_path(row)
+            targets.save_target(np.zeros((8, 16, 16, 16), dtype=np.float32), path, **metadata)
+            rows.append(dict(row, target_path=str(path.relative_to(self.root))))
+            expected.append(metadata['T_camera_from_target'])
+        self.write_rows('samples_camframe.jsonl', rows)
+        config = dict(dataset=dict(root=str(self.root), manifest='generated_data/samples_camframe.jsonl',
+                                   split_file='generated_data/splits.json', split='train', target_frame='camera'),
+                      touch=dict(source='full_surface'))
+        dataset = TouchDataset(config, include_touch=False, include_pose_targets=True)
+        batch = collate_touch_batch([dataset[0], dataset[1]])
+        np.testing.assert_allclose(batch['camera_from_target'].numpy(), expected, atol=1e-6)
+        self.assertEqual(batch['target_shape'].shape, (2, 4096, 8))
+        self.assertNotIn('touch_xyz', batch)
+        self.assertNotIn('camera_from_target', TouchDataset(config, include_touch=False)[0])
+        path = self.root / rows[0]['target_path']
+        with np.load(path) as data:
+            broken = dict(data)
+        broken['T_camera_from_target'] = broken['T_camera_from_target'].copy()
+        broken['T_camera_from_target'][0, 3] += .25
+        np.savez(path, **broken)
+        with self.assertRaisesRegex(ValueError, 'disagree'):
+            dataset[0]
+        config['dataset']['target_frame'] = 'object'
+        with self.assertRaisesRegex(ValueError, 'target_frame'):
+            TouchDataset(config, include_touch=False, include_pose_targets=True)
+
     def test_encoding_manifests_loader_and_original_files(self):
         before = {p: targets.checkpoint_sha256(p) for p in self.root.rglob("*") if p.is_file()}
         self.run_camera()

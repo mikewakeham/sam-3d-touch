@@ -28,14 +28,39 @@ def load_data_config(path):
         return yaml.safe_load(file)
 
 
+def load_camera_target_transform(target_path, camera_path):
+    with np.load(target_path, allow_pickle=False) as data:
+        if str(data["coordinate_frame"]) != "normalized_sam_camera":
+            raise ValueError(f"Pose training requires a camera-oriented target: {target_path}")
+        camera_from_target = data["T_camera_from_target"].astype(np.float64)
+        target_from_object = data["T_target_from_object"].astype(np.float64)
+    for matrix in (camera_from_target, target_from_object):
+        if (matrix.shape != (4, 4) or not np.isfinite(matrix).all()
+                or not np.allclose(matrix[3], [0, 0, 0, 1], atol=1e-7, rtol=0)):
+            raise ValueError(f"Invalid target transform: {target_path}")
+    scale = camera_from_target[0, 0]
+    if scale <= 0 or not np.allclose(camera_from_target[:3, :3], np.eye(3) * scale,
+                                    atol=1e-6, rtol=1e-5):
+        raise ValueError(f"Camera-oriented target must have identity rotation and positive isotropic scale: {target_path}")
+    if not np.allclose(camera_from_target @ target_from_object,
+                       sam_camera_transform(camera_path), atol=1e-5, rtol=1e-5):
+        raise ValueError(f"Target and camera transforms disagree: {target_path}")
+    return np.ascontiguousarray(camera_from_target, dtype=np.float32)
+
+
 class TouchDataset(Dataset):
-    def __init__(self, config, include_touch=True, oracle_point_frame=False, joint_pointmap=False):
+    def __init__(self, config, include_touch=True, oracle_point_frame=False, joint_pointmap=False,
+                 include_pose_targets=False):
         if isinstance(config, (str, Path)):
             config = load_data_config(config)
 
         dataset_config = config["dataset"]
         self.root = Path(dataset_config["root"])
         self.include_touch = include_touch
+        self.include_pose_targets = include_pose_targets
+        self.target_frame = dataset_config.get("target_frame")
+        if include_pose_targets and dataset_config.get("target_frame") != "camera":
+            raise ValueError("Pose training requires dataset.target_frame: camera")
         self.joint_pointmap = joint_pointmap
         self.oracle_point_frame = oracle_point_frame
         self.point_source = config.get("touch", {}).get("source", "touch")
@@ -195,6 +220,10 @@ class TouchDataset(Dataset):
             "target_shape": torch.from_numpy(target_shape),
             "sample_id": record["sample_id"],
         }
+        if self.include_pose_targets:
+            sample["camera_from_target"] = torch.from_numpy(load_camera_target_transform(
+                self.resolve_path(record["target_path"]), self.resolve_path(record["camera_path"]),
+            ))
         if self.include_touch:
             if self.point_source == "full_surface":
                 if self.surface_pool_count is not None:
@@ -284,12 +313,13 @@ def build_dataloader(
     include_touch=True,
     oracle_point_frame=False,
     joint_pointmap=False,
+    include_pose_targets=False,
 ):
     if isinstance(config, (str, Path)):
         config = load_data_config(config)
 
     dataset = TouchDataset(config, include_touch=include_touch, oracle_point_frame=oracle_point_frame,
-                           joint_pointmap=joint_pointmap)
+                           joint_pointmap=joint_pointmap, include_pose_targets=include_pose_targets)
     sampler = None
     rank = 0
 

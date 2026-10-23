@@ -6,7 +6,9 @@ import trimesh
 from pytorch3d.structures import Meshes
 from pytorch3d.transforms import quaternion_to_matrix, Transform3d, matrix_to_quaternion
 from sam3d_objects.data.dataset.tdfy.transforms_3d import compose_transform, decompose_transform
-from sam3d_objects.data.dataset.tdfy.pose_target import PoseTargetConverter
+from sam3d_objects.data.dataset.tdfy.pose_target import (
+    PoseTargetConverter, ROTATION_6D_MEAN, ROTATION_6D_STD,
+)
 from loguru import logger
 from sam3d_objects.pipeline.layout_post_optimization_utils import (
     run_ICP,
@@ -59,26 +61,6 @@ SLAT_MEAN = torch.tensor(
     ]
 )
 
-ROTATION_6D_MEAN = torch.tensor(
-    [
-        -0.06366084883674913,
-        0.008438224692279752,
-        0.00017084786438302483,
-        0.0007126610473540038,
-        -0.0030916726538816417,
-        0.5166093753457688,
-    ]
-)
-ROTATION_6D_STD = torch.tensor(
-    [
-        0.6656971967514863,
-        0.6787012271867754,
-        0.30345010594844524,
-        0.4394504420678794,
-        0.39817973931717104,
-        0.6176286868761914,
-    ]
-)
 
 def layout_post_optimization(
     Mesh,
@@ -565,6 +547,7 @@ def pose_decoder(
             "scale": pose_instance_dict["instance_scale_l2c"].squeeze(0).mean(-1, keepdim=True).expand(1,3),
         }
 
+    decode.pose_target_convention = pose_target_convention
     return decode
 
 def zero_prediction_decoder():

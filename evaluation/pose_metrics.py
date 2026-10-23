@@ -11,7 +11,7 @@ from trimesh.typed import ArrayLike, Optional
 from evaluation.metrics import sample_surface
 
 
-def save_pose(path, pipeline, outputs, inputs, downsample_factor, camera_path):
+def save_pose(path, pipeline, outputs, inputs, downsample_factor, camera_path, target_path=None):
     from pytorch3d.transforms import quaternion_to_matrix
     from sam3d_objects.data.dataset.tdfy.transforms_3d import compose_transform
 
@@ -57,13 +57,35 @@ def save_pose(path, pipeline, outputs, inputs, downsample_factor, camera_path):
     if not np.all(saved_pose["scale"] > 0):
         raise ValueError("Predicted scale must be positive")
     saved_pose["target_transform"] = target
+    if target_path is not None:
+        from dataloader import load_camera_target_transform
+        saved_pose["camera_target_transform"] = load_camera_target_transform(target_path, camera_path)
     np.savez_compressed(path, **saved_pose)
+
+
+def pose_head_errors(prediction_transform, camera_target_transform, downsample_factor):
+    """Compare raw head placement to the normalized camera-shape target, before geometry downsampling."""
+    prediction_scale = np.linalg.norm(prediction_transform[:3, :3], axis=0)
+    target_scale = np.linalg.norm(camera_target_transform[:3, :3], axis=0)
+    if (not np.isfinite(downsample_factor) or downsample_factor <= 0
+            or np.any(prediction_scale <= 0) or np.any(target_scale <= 0)):
+        raise ValueError("Pose head errors require positive scales and downsample factor")
+    prediction_rotation = prediction_transform[:3, :3] / prediction_scale
+    target_rotation = camera_target_transform[:3, :3] / target_scale
+    return {
+        "pose_head_rotation_deg": float(re(prediction_rotation, target_rotation)),
+        "pose_head_translation_error": float(np.linalg.norm(prediction_transform[:3, 3] - camera_target_transform[:3, 3])),
+        "pose_head_scale_rel_error": float(np.mean(np.abs(prediction_scale / downsample_factor / target_scale - 1))),
+    }
 
 
 def score_pose(raw_mesh, object_mesh, pose_path, surface_points, icp_points, seed):
     with np.load(pose_path, allow_pickle=False) as pose:
         prediction = raw_mesh.copy().apply_transform(pose["prediction_transform"])
         target = object_mesh.copy().apply_transform(pose["target_transform"])
+        head_errors = (pose_head_errors(pose["prediction_transform"], pose["camera_target_transform"],
+                                       float(pose["downsample_factor"]))
+                       if "camera_target_transform" in pose else {})
     if not np.isfinite(prediction.vertices).all() or not np.isfinite(target.vertices).all():
         raise ValueError("Non-finite posed mesh")
 
@@ -87,6 +109,7 @@ def score_pose(raw_mesh, object_mesh, pose_path, surface_points, icp_points, see
         max_iterations=100, scale=False, reflection=False,
     )
     return {
+        **head_errors,
         "pose_box_iou_3d": box_iou,
         "pose_add_s": add_s,
         "pose_icp_rot_deg": float(re(correction[:3, :3], np.eye(3))),

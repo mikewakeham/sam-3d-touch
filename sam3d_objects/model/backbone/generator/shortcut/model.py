@@ -390,6 +390,8 @@ class ShortCut(FlowMatching):
             "flow_matching_loss": flow_matching_loss_val,
             "self_consistency_loss": self_consistency_loss_val,
         }
+        if len(flow_matching_indices) > 0 and isinstance(flow_matching_loss, dict):
+            detail_losses.update({f"flow_matching/{name}": value for name, value in flow_matching_loss.items()})
         return total_loss, detail_losses
         
     def _prepare_t_and_d(self, steps=None):
