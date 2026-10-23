@@ -60,12 +60,12 @@ def analyze(output=OUTPUT):
             sns.heatmap(counts.div(counts.sum(axis=1).replace(0, np.nan), axis=0),
                         annot=True, fmt='.2f', vmin=0, vmax=1, ax=ax,
                         xticklabels=view_ids, yticklabels=view_ids)
-            ax.set(title=f'{model}, {camera_set} cameras', xlabel='Predicted nearest old view', ylabel='GT nearest old view')
+            ax.set(title=f'{model}, {camera_set} cameras', xlabel='Pose branch: nearest old view', ylabel='GT nearest old view')
         save(f'{model}_confusion')
 
         plt.figure(figsize=(6, 4))
         sns.ecdfplot(data=subset, x='prediction_nearest_old_deg', hue='camera_set')
-        plt.xlabel('Distance to nearest old rotation (degrees)')
+        plt.xlabel('Pose branch distance to nearest old rotation (degrees)')
         plt.title(model)
         save(f'{model}_distance')
 
@@ -77,14 +77,14 @@ def analyze(output=OUTPUT):
             distance = np.linspace(0, sampled.gt_nearest_old_deg.max(), 100)
             sns.lineplot(x=distance, y=distance, label='Nearest-eight oracle')
         plt.xlabel('GT distance to nearest old rotation (degrees)')
-        plt.ylabel('Rotation from identity (degrees)' if model == 'new' else 'Rotation error (degrees)')
+        plt.ylabel('Pose-branch rotation from identity (degrees)' if model == 'new' else 'Pose-branch rotation error (degrees)')
         plt.title(model)
         save(f'{model}_error')
 
         plt.figure(figsize=(6, 4))
         sns.countplot(data=subset, x='predicted_old_index', hue='camera_set', order=range(8))
         plt.xticks(range(8), view_ids)
-        plt.xlabel('Predicted nearest old view')
+        plt.xlabel('Pose branch: nearest old view')
         plt.title(model)
         save(f'{model}_selections')
 

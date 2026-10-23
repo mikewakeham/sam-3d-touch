@@ -40,12 +40,14 @@ def build_viewer(server, args, items, images):
         with server.gui.add_folder(item['name']):
             server.gui.add_text('Coordinate frame', initial_value=item.get('frame', 'unspecified'), disabled=True)
             if 'mesh' in item:
-                if args.textured:
+                if args.textured and not args.placement:
                     handle = server.scene.add_mesh_trimesh(name, item['mesh'])
                 else:
                     handle = server.scene.add_mesh_simple(
                         name, vertices=item['mesh'].vertices, faces=item['mesh'].faces,
-                        color=(180, 180, 180), flat_shading=True, side='double',
+                        color=item.get('color', (180, 180, 180)),
+                        opacity=None if item.get('opacity', 1.) == 1 else item['opacity'],
+                        flat_shading=True, side='double', visible=not args.placement or index <= 1,
                     )
             else:
                 colors = item.get('colors', (60, 140, 215))

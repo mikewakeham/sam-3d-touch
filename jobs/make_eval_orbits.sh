@@ -42,9 +42,15 @@ shift
 export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 
+orbit_defaults=(--with-inputs --modes mesh voxel)
+for argument in "$@"; do
+  if [[ "$argument" == --placement ]]; then
+    orbit_defaults=(--modes mesh)
+  fi
+done
+
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python -m evaluation.make_orbit \
   --all-samples \
   --max-samples 10 \
-  --with-inputs \
-  --modes mesh voxel \
+  "${orbit_defaults[@]}" \
   --blender /n/holylabs/qianqian_lab/Lab/mwakeham/blender/blender-4.5.9-linux-x64/blender "$@"

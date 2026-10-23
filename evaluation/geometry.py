@@ -160,9 +160,13 @@ def load_reference_camera(args):
         with (root / 'metrics.csv').open(newline='') as file:
             row = next(row for row in csv.DictReader(file)
                        if row['sample_id'] == args.sample_id and row.get('error') == ''
+                       and (not args.placement or (row.get('pose_path') and not row.get('pose_error')))
                        and (not args.conditions or row['condition'] in args.conditions))
         with np.load(resolve(root, row['target_points_path']), allow_pickle=False) as data:
             world_from_object = data['evaluation_normalization'].astype(np.float64)
+        if args.placement:
+            with np.load(resolve(root, row['pose_path']), allow_pickle=False) as data:
+                world_from_object = data['target_transform'].astype(np.float64)
     else:
         view = args.data_root / 'generated_data' / args.object_id / 'views' / f'{args.view_id:03d}'
         camera_path, image_path = view / 'camera.npz', view / 'image.png'
@@ -193,16 +197,42 @@ def load_reference_camera(args):
                 source=str(camera_path), first_frame='input camera', orbit_axis='input_camera_up')
 
 
-def load_evaluation(evaluation_dir, sample_id, conditions=None, modes=('mesh',)):
+def load_evaluation(evaluation_dir, sample_id, conditions=None, modes=('mesh',), placement=False):
     root = Path(evaluation_dir)
     with open(root / 'metrics.csv', newline='') as file:
         rows = [row for row in csv.DictReader(file) if row['sample_id'] == sample_id and not row['error']]
     rows = {row['condition']: row for row in rows}
-    conditions = conditions or list(rows)
+    conditions = conditions or [name for name, row in rows.items()
+                               if not placement or (row.get('pose_path') and not row.get('pose_error'))]
     if not conditions or any(name not in rows for name in conditions):
         raise ValueError(f'No completed results for requested conditions/sample {sample_id}')
     first = rows[conditions[0]]
     items = []
+    if placement:
+        # Reproduce score_pose: raw prediction -> camera, normalized-object GT -> camera.
+        # The saved GT mesh has an extra evaluation normalization that must be undone.
+        if any(not rows[name].get('pose_path') or rows[name].get('pose_error') for name in conditions):
+            raise ValueError('Placement requires successful saved poses; decoded_gt has no predicted pose')
+        with np.load(resolve(root, first['target_points_path']), allow_pickle=False) as data:
+            object_from_evaluation = np.linalg.inv(data['evaluation_normalization'])
+        with np.load(resolve(root, first['pose_path']), allow_pickle=False) as pose:
+            target_transform = pose['target_transform'].copy()
+        target = load_mesh(resolve(root, first['target_mesh_path']))
+        target.apply_transform(target_transform @ object_from_evaluation)
+        items.append(dict(name='ground_truth', mesh=target, frame='sam_camera',
+                          color=(180, 180, 180), opacity=1.0))
+        for name in conditions:
+            row = rows[name]
+            with np.load(resolve(root, row['pose_path']), allow_pickle=False) as pose:
+                np.testing.assert_allclose(pose['target_transform'], target_transform, atol=1e-5)
+                mesh = load_mesh(resolve(root, row['mesh_raw_path']))
+                mesh.apply_transform(pose['prediction_transform'])
+            items.append(dict(name=f'mesh_{name}', mesh=mesh, frame='sam_camera',
+                              color=(45, 125, 210), opacity=.4))
+        image = root / 'selected_views' / f'{sample_id}.png'
+        if not image.exists():
+            image = Path(first['image_path'])
+        return items, [image] if image.exists() else []
     if 'mesh' in modes:
         items.append({'name': 'mesh_ground_truth', 'mesh': load_mesh(resolve(root, first['target_mesh_path']))})
         for name in conditions:
@@ -271,6 +301,7 @@ def add_input_arguments(parser):
     parser.add_argument('--sample-id', help='Required with --evaluation-dir')
     parser.add_argument('--conditions', nargs='+')
     parser.add_argument('--modes', nargs='+', choices=['mesh', 'voxel'], default=['mesh'])
+    parser.add_argument('--placement', action='store_true', help='Overlay saved predicted mesh placement on opaque GT')
     parser.add_argument('--object-id', help='Required with --data-root')
     parser.add_argument('--view-id', type=int, default=0)
     parser.add_argument('--points-key', help='NPZ point array; otherwise recognizes points/points_object/points_camera')
@@ -280,13 +311,16 @@ def add_input_arguments(parser):
 
 
 def load_inputs(args):
+    if args.placement and (not args.evaluation_dir or args.modes != ['mesh']):
+        raise ValueError('--placement requires --evaluation-dir and --modes mesh')
     if args.inputs:
         items = [load_geometry(path, args.points_key, args.voxel_key) for path in args.inputs]
         images = []
     elif args.evaluation_dir:
         if not args.sample_id:
             raise ValueError('--evaluation-dir requires --sample-id')
-        items, images = load_evaluation(args.evaluation_dir, args.sample_id, args.conditions, args.modes)
+        items, images = load_evaluation(args.evaluation_dir, args.sample_id, args.conditions, args.modes,
+                                      placement=args.placement)
     else:
         if not args.object_id:
             raise ValueError('--data-root requires --object-id')

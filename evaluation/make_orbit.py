@@ -35,12 +35,13 @@ def mesh_geometry(mesh):
     return geometry
 
 
-def material(color):
+def material(color, opacity=1.):
     import open3d as o3d
 
     result = o3d.visualization.rendering.MaterialRecord()
-    result.shader = "defaultLit"
-    result.base_color = (*color, 1.0)
+    result.shader = 'defaultLitTransparency' if opacity < 1 else 'defaultLit'
+    result.base_color = (*color, opacity)
+    result.has_alpha = opacity < 1
     result.sRGB_color = True
     return result
 
@@ -99,7 +100,8 @@ def add_geometry(renderer, item, index, args, scale):
                 part.mesh.compute_vertex_normals()
             renderer.scene.add_model(name, model)
         else:
-            renderer.scene.add_geometry(name, mesh_geometry(item['mesh']), material((.71, .71, .71)))
+            color = np.asarray(item['color']) / 255. if 'color' in item else (.71, .71, .71)
+            renderer.scene.add_geometry(name, mesh_geometry(item['mesh']), material(color, item.get('opacity', 1.)))
     else:
         colors = item.get('colors')
         if args.normal_colors and 'normals' in item:
@@ -152,6 +154,8 @@ def save_frames(frames, output, args):
     gif_frames[0].save(output.with_suffix('.gif'), save_all=True, append_images=gif_frames[1:],
                        duration=round(1000 / gif_fps), loop=0, disposal=2, optimize=True)
     Image.fromarray(frames[0]).save(output.with_suffix('.png'))
+    if args.placement:
+        Image.fromarray(frames[len(frames) // 8]).save(output.with_name(output.name + '_oblique.png'))
 
 
 def render(items, center, radius, args, output, scale, reference_camera=None):
@@ -272,11 +276,13 @@ def read_orbit_settings(output):
 
 
 def render_parameters(settings):
-    return {key: settings.get(key) for key in (
+    parameters = {key: settings.get(key) for key in (
         'frames', 'fps', 'gif_fps', 'gif_size', 'width', 'height', 'fit_camera', 'fov',
         'orbit_radius', 'orbit_height', 'light_strength', 'point_size', 'particle_size',
         'mp4', 'textured', 'normal_colors', 'overlay', 'up', 'reference_camera',
     )}
+    parameters['placement'] = settings.get('placement', False)
+    return parameters
 
 
 def completed_renders(settings):
@@ -298,6 +304,8 @@ def render_complete(output, name, args, records):
     if not args.fit_camera and (settings.get('reference_camera') or {}).get('orbit_axis') != 'input_camera_up':
         return False
     extensions = ('.gif', '.png', '.mp4') if args.mp4 else ('.gif', '.png')
+    if args.placement and not (output / (name + '_oblique.png')).is_file():
+        return False
     return all((output / (name + ext)).is_file() and (output / (name + ext)).stat().st_size > 0
                for ext in extensions)
 
@@ -318,7 +326,7 @@ def orbits_complete(output, args, conditions, touch_conditions=()):
                 return False
             required.update(prefix + surface_names[condition] for prefix in (
                 'input_mesh_surface', 'input_mesh_pointmap_surface', 'input_surface', 'input_pointmap_surface'))
-    elif 'mesh' in args.modes:
+    elif 'mesh' in args.modes and not args.placement:
         required.add('mesh_ground_truth')
     if args.overlay:
         if settings.get('conditions') != args.conditions or settings.get('modes') != args.modes:
@@ -353,6 +361,7 @@ def render_all(args, arguments):
             runs = yaml.safe_load(file).get('runs', {})
     sample_ids = sorted({row['sample_id'] for row in rows
                          if row.get('error') == '' and row.get('sample_id')
+                         and (not args.placement or (row.get('pose_path') and not row.get('pose_error')))
                          and (not args.conditions or row['condition'] in args.conditions)})
     if not sample_ids:
         raise ValueError('No completed evaluation samples to render')
@@ -363,13 +372,14 @@ def render_all(args, arguments):
     if args.max_samples:
         random.Random(args.selection_seed).shuffle(sample_ids)
         sample_ids = sample_ids[:args.max_samples]
-    output = args.output_dir or args.evaluation_dir / 'orbits'
+    output = args.output_dir or args.evaluation_dir / ('placements' if args.placement else 'orbits')
     output.mkdir(parents=True, exist_ok=True)
     selection = dict(sample_ids=sample_ids, available_samples=available, selection_seed=args.selection_seed)
     (output / 'selected_samples.json').write_text(json.dumps(selection, indent=2) + '\n')
     pending = []
     for sample_id in sample_ids:
         conditions = {row['condition'] for row in rows if row['sample_id'] == sample_id
+                      and (not args.placement or (row.get('pose_path') and not row.get('pose_error')))
                       and row.get('error') == '' and (not args.conditions or row['condition'] in args.conditions)}
         touch_conditions = {name for name in conditions if runs.get(name, {}).get('touch_config')}
         if args.overwrite or not orbits_complete(output / sample_id, args, conditions, touch_conditions):
@@ -395,6 +405,9 @@ def render_all(args, arguments):
 
 def main():
     args = parse_args()
+    if args.placement and (not args.evaluation_dir or args.modes != ['mesh']
+                           or args.with_inputs or args.overlay or args.textured):
+        raise ValueError('--placement requires evaluation meshes, without --with-inputs, --overlay or --textured')
     if args.with_inputs and (args.evaluation_dir is None or args.overlay or args.labels):
         raise ValueError('--with-inputs requires evaluation mode, without --overlay or --labels')
     if min(args.frames, args.fps, args.gif_fps, args.gif_size, args.width, args.height,
@@ -410,12 +423,15 @@ def main():
     items, images = load_inputs(args)
     if args.row:
         items = prepare_row(items, args.up)
-    output = args.output_dir or (args.evaluation_dir / 'orbits' if args.evaluation_dir else Path('outputs/orbits'))
+    folder = 'placements' if args.placement else 'orbits'
+    output = args.output_dir or (args.evaluation_dir / folder if args.evaluation_dir else Path('outputs/orbits'))
     if args.evaluation_dir:
         output = output / args.sample_id
     incremental = args.evaluation_dir is not None and not args.overlay
     previous = read_orbit_settings(output) if incremental else {}
     groups = [('overlay', items)] if args.overlay else [(item['name'], [item]) for item in items]
+    if args.placement:
+        groups = [(item['name'], [items[0], item]) for item in items[1:]]
     if args.row:
         groups = [('row', items)]
     input_details = None
