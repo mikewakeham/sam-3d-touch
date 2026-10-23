@@ -461,7 +461,9 @@ def check_pose_roundtrip(targets, camera_from_target, inputs, decoder):
         actual = compose_transform(decoded["scale"], quaternion_to_matrix(decoded["rotation"]),
                                    decoded["translation"]).get_matrix()[0].T
         if not torch.allclose(actual, expected.to(actual), atol=1e-5, rtol=1e-5):
-            raise ValueError("Pose target does not round-trip through the inference decoder")
+            error = (actual - expected.to(actual)).abs().max().item()
+            raise ValueError(f"Pose target does not round-trip through the inference decoder "
+                             f"(batch index {index}, max absolute matrix error {error:.6g})")
 
 
 def prepare_batch(
@@ -519,20 +521,27 @@ def prepare_batch(
                 # Keep the existing five-item batch interface; the new encoders take XYZ+normal.
                 touch_xyz = torch.cat((touch_xyz, normals), dim=-1)
 
-    pose_targets = None
     pose_config = getattr(pipeline, "pose_training_config", None)
     if pose_config is not None:
         from sam3d_objects.data.dataset.tdfy.pose_target import encode_pose_targets
         transform = batch["camera_from_target"].to(device, non_blocking=True)
-        pose_targets = encode_pose_targets(
-            transform, inputs["pointmap_scale"], inputs["pointmap_shift"],
-            pose_config["pose_target_convention"],
-        )
-    targets = make_targets(shape, pipeline.backbone, pose_targets)
-    if pose_config is not None and not pipeline.pose_targets_checked:
-        with torch.no_grad(), torch.autocast(device_type=device.type, enabled=False):
-            check_pose_roundtrip(targets, transform, inputs, pipeline.pose_decoder)
-        pipeline.pose_targets_checked = True
+        matmul_precision = torch.get_float32_matmul_precision()
+        try:
+            # Autocast off alone still permits TF32 in the pose transform matrix products.
+            torch.set_float32_matmul_precision("highest")
+            pose_targets = encode_pose_targets(
+                transform, inputs["pointmap_scale"], inputs["pointmap_shift"],
+                pose_config["pose_target_convention"],
+            )
+            targets = make_targets(shape, pipeline.backbone, pose_targets)
+            if not pipeline.pose_targets_checked:
+                with torch.no_grad(), torch.autocast(device_type=device.type, enabled=False):
+                    check_pose_roundtrip(targets, transform, inputs, pipeline.pose_decoder)
+                pipeline.pose_targets_checked = True
+        finally:
+            torch.set_float32_matmul_precision(matmul_precision)
+    else:
+        targets = make_targets(shape, pipeline.backbone)
     result = targets, condition_args, condition_kwargs, touch_xyz, touch_mask
     return (*result, inputs) if return_inputs else result
 
