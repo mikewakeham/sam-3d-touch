@@ -7,7 +7,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-OUTPUT = Path(__file__).resolve().parent / 'results'
+OUTPUT = Path(__file__).resolve().parent / 'outputs'
 
 
 def rotation_matrix(transform):

@@ -11,6 +11,7 @@ import torch
 from omegaconf import OmegaConf
 
 from dataloader import TouchDataset, collate_touch_batch, load_data_config
+from data_generation.general.sample_full_surface import sam_camera_transform
 from train import prepare_batch
 from evaluation.evaluate import (
     build_pipeline, read_run, restore_run, select_records, stable_seed,
@@ -26,7 +27,7 @@ N_OBJECTS = 50
 SEED = 29
 STEPS = 25
 DEVICE = 'cuda'
-OUTPUT = Path(__file__).resolve().parent / 'results'
+OUTPUT = Path(__file__).resolve().parent / 'outputs'
 PIPELINE = Path('checkpoints/hf/pipeline.yaml')
 REFERENCE = Path('outputs/zeroverse/evaluation_lr1e4_sampled/selected_samples.json')
 DATA = {
@@ -74,6 +75,12 @@ def main():
             folder.mkdir(parents=True, exist_ok=True)
             with np.load(dataset.resolve_path(record['camera_path'])) as archive:
                 camera = dict(archive)
+            # Older datasets only saved the extrinsic matrix. Use the same SAM
+            # camera conversion as surface sampling and camera-frame targets.
+            transform = sam_camera_transform(dataset.resolve_path(record['camera_path']))
+            camera.update(rotation=transform[:3, :3], translation=transform[:3, 3], scale=np.ones(3),
+                          pose_source_frame='normalized_object', pose_coordinate_frame='sam_camera',
+                          pose_rotation_convention='column_vectors')
             rotations[name].append(camera['rotation'])
             # Save camera-frame target normalization too, for later shape visualization.
             vertices = meshes[name, obj].vertices @ camera['rotation'].T
@@ -137,7 +144,8 @@ def main():
                     target[0], coords, coords, 1, cloud,
                     dict(encoder_input_camera=camera_cloud, target_coordinate_frame='canonical_reference_only'))
                 pose_path = stage1_path.with_name('pose.npz')
-                save_pose(pose_path, pipeline, outputs, inputs, 1, dataset.resolve_path(record['camera_path']))
+                camera_path = OUTPUT / 'inputs' / camera_set / safe_name(record['sample_id']) / 'camera.npz'
+                save_pose(pose_path, pipeline, outputs, inputs, 1, camera_path)
                 with np.load(pose_path) as pose:
                     metrics = rotation_metrics(rotation_matrix(pose['prediction_transform']),
                                                rotation_matrix(pose['target_transform']), references, name == 'new')
