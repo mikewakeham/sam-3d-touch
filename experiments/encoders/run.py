@@ -42,14 +42,15 @@ def main():
 
     def train_epoch(pipeline, model, raw_model, loader, optimizer, parameters,
                     device, args, epoch, step, total_train_steps, world_size,
-                    distributed, main_process, run, seed=0):
-        if step == 0:
+                    distributed, main_process, run, seed=0, **kwargs):
+        if step == 0 and not args.init_pose_from_shape:
             data = train.configure_encoder_data(train.load_data_config(args.data_config), args.point_encoder)
             data['dataset']['split'] = 'val'
             validation = train.build_dataloader(
                 data, args.batch_size, args.val_workers, shuffle=False, distributed=distributed,
                 include_touch=not args.no_touch or args.shared_pointmap_normalization,
                 oracle_point_frame=args.oracle_point_frame,
+                include_pose_targets=args.train_scope == 'shape_pose_cross_attention',
             )
             loss = train.validate(pipeline, raw_model, validation, device, args, seed + 1, distributed,
                                   torch.distributed.get_rank() if distributed else 0)
@@ -62,7 +63,7 @@ def main():
             del validation
         return original_epoch(pipeline, model, raw_model, loader, optimizer, parameters,
                               device, args, epoch, step, total_train_steps, world_size,
-                              distributed, main_process, run, seed)
+                              distributed, main_process, run, seed, **kwargs)
 
     wandb.init = init_run
     train.train_epoch = train_epoch

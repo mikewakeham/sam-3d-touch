@@ -17,7 +17,7 @@ export OMP_NUM_THREADS=1
 export PYTHONUNBUFFERED=1
 export WANDB_RUN_GROUP=zeroverse
 
-/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 train.py \
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node="${SLURM_GPUS_ON_NODE:-4}" train.py \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data_zeroverse_5000_8views_sampled_full_surface_camframe.yaml \
   --output-dir outputs/zeroverse/zeroverse_pointmap_pose_camframe \

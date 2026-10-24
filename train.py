@@ -5,6 +5,7 @@ import os
 import random
 import time
 from pathlib import Path
+from uuid import uuid4
 
 os.environ.setdefault("LIDRA_SKIP_INIT", "true")
 
@@ -24,6 +25,8 @@ def parse_args():
     parser.add_argument("--pipeline-config", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/touch_stage1"))
     parser.add_argument("--resume", type=Path)
+    parser.add_argument("--init-pose-from-shape", type=Path,
+                        help="Continue matching shape weights and optimizer state, adding trainable pose cross-attention")
     parser.add_argument("--wandb-id")
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--batch-size", type=int, default=4)
@@ -32,7 +35,7 @@ def parse_args():
     parser.add_argument("--epochs", type=int, default=20,
                         help="Number of epochs when --max-steps is not set")
     parser.add_argument("--max-steps", type=int, default=0,
-                        help="Total optimizer steps, including resumed steps; overrides --epochs")
+                        help="Optimizer steps in this stage, including resumed steps; overrides --epochs")
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--cross-attention-learning-rate", type=float, default=1e-4)
     parser.add_argument(
@@ -45,6 +48,8 @@ def parse_args():
     )
     parser.add_argument("--gradient-clip", type=float, default=1.0)
     parser.add_argument("--log-every", type=int, default=10)
+    parser.add_argument("--val-every", type=int, default=0,
+                        help="Validate every N optimizer steps, plus epoch end (default: epoch end only)")
     parser.add_argument("--precision", choices=["bf16", "fp32"], default="bf16")
     parser.add_argument("--no-touch", action="store_true")
     parser.add_argument("--no-pointmap", action="store_true")
@@ -79,6 +84,12 @@ def parse_args():
         default=int(os.environ.get("LOCAL_RANK", -1)),
     )
     args = parser.parse_args()
+    if args.resume and args.init_pose_from_shape:
+        parser.error("Use --resume or --init-pose-from-shape, not both")
+    if args.init_pose_from_shape and args.wandb_id:
+        parser.error("--init-pose-from-shape starts a separate W&B run; omit --wandb-id")
+    if args.val_every < 0:
+        parser.error("--val-every must be nonnegative")
     if args.max_steps < 0:
         parser.error("--max-steps must be nonnegative")
     if args.max_steps:
@@ -262,6 +273,7 @@ class TouchTrainingModel(torch.nn.Module):
         self.generator = generator
         self.touch_encoder = touch_encoder
         self.pose_training_config = copy.deepcopy(pose_training_config)
+        self.initialization = None
         self.last_detail_losses = {}
         self.conditioning_config = {
             "no_pointmap": no_pointmap,
@@ -317,7 +329,12 @@ class TouchTrainingModel(torch.nn.Module):
             loss, details = self.generator.loss(
                 targets, *condition_args, touch_tokens=touch_tokens, **condition_kwargs
             )
-        self.last_detail_losses = {name: value.detach() for name, value in details.items()}
+        if self.pose_training_config:
+            self.last_detail_losses = {
+                "shape": details["flow_matching/shape"].detach(),
+                "pose": sum(details[f"flow_matching/{name}"]
+                            for name in self.pose_training_config["loss_weights"] if name != "shape").detach(),
+            }
         return loss
 
 
@@ -799,27 +816,36 @@ def token_magnitudes(model, prepared=None, drop_mask=None, enabled=True, pipelin
             handle.remove()
 
 
-def load_trainable_state_dict(model, state_dict):
+def load_trainable_state_dict(model, state_dict, shape_only=False):
     parameters = {
         name: parameter
         for name, parameter in model.named_parameters()
         if parameter.requires_grad
     }
+    if shape_only:
+        parameters = {name: parameter for name, parameter in parameters.items()
+                      if name.startswith("touch_encoder.") or ".cross_attn.shape." in name or ".norm2.shape." in name}
     if parameters.keys() != state_dict.keys():
         raise ValueError("Checkpoint trainable parameters do not match this run")
+    if any(parameter.shape != state_dict[name].shape for name, parameter in parameters.items()):
+        raise ValueError("Checkpoint parameter shapes do not match this run")
     with torch.no_grad():
         for name, parameter in parameters.items():
             parameter.copy_(state_dict[name].to(parameter))
 
 
 def save_checkpoint(
-    path, model, optimizer, epoch, step, best_loss, mode, cross_attention_scope="kv", train_scope=None
+    path, model, optimizer, epoch, step, best_loss, mode, cross_attention_scope="kv", train_scope=None,
+    batch_in_epoch=0,
 ):
     torch.save({
         "model": trainable_state_dict(model),
         "optimizer": optimizer.state_dict(),
         "epoch": epoch,
-        "step": step,
+        "step": step + (model.initialization["step"] if model.initialization else 0),
+        "stage_step": step,
+        "initialization": model.initialization,
+        "batch_in_epoch": batch_in_epoch,
         "best_loss": best_loss,
         "mode": mode,
         "conditioning_config": model.conditioning_config,
@@ -838,14 +864,24 @@ def save_checkpoint(
     }, path)
 
 
-def load_checkpoint(path, model, optimizer, mode, cross_attention_scope="kv", train_scope=None):
+def load_checkpoint(path, model, optimizer, mode, cross_attention_scope="kv", train_scope=None,
+                    initialize=False):
     checkpoint = torch.load(path, map_location="cpu", weights_only=False)
     if checkpoint.get("conditioning_config", {"no_pointmap": False, "oracle_point_frame": False}) != model.conditioning_config:
         raise ValueError("Checkpoint conditioning configuration does not match this run")
-    if checkpoint_train_scope(checkpoint) != resolve_train_scope(train_scope, cross_attention_scope):
-        raise ValueError("Checkpoint training scope does not match this run; --resume cannot change scope")
-    if checkpoint.get("pose_training_config") != model.pose_training_config:
-        raise ValueError("Checkpoint pose target convention or loss weights do not match this run")
+    if initialize:
+        if (checkpoint_train_scope(checkpoint) != "shape_cross_attention"
+                or resolve_train_scope(train_scope, cross_attention_scope) != "shape_pose_cross_attention"
+                or checkpoint.get("pose_training_config") is not None):
+            raise ValueError("--init-pose-from-shape requires shape_cross_attention -> shape_pose_cross_attention")
+        source_config = load_data_config(Path(path).parent / "config.yaml")
+        if source_config["data"]["dataset"].get("target_frame") != "camera":
+            raise ValueError("Pose initialization requires a matching camera-frame shape checkpoint")
+    else:
+        if checkpoint_train_scope(checkpoint) != resolve_train_scope(train_scope, cross_attention_scope):
+            raise ValueError("Checkpoint training scope does not match this run; --resume cannot change scope")
+        if checkpoint.get("pose_training_config") != model.pose_training_config:
+            raise ValueError("Checkpoint pose target convention or loss weights do not match this run")
     if checkpoint.get("training_config", {"visual_dropout": 0.0, "constant_touch": False}) != model.training_config:
         raise ValueError("Checkpoint visual dropout or constant touch setting does not match this run")
     touch_config = (
@@ -853,10 +889,38 @@ def load_checkpoint(path, model, optimizer, mode, cross_attention_scope="kv", tr
     )
     if checkpoint["mode"] != mode or checkpoint["touch_config"] != touch_config:
         raise ValueError("Checkpoint mode or touch configuration does not match this run")
-    load_trainable_state_dict(model, checkpoint["model"])
+    load_trainable_state_dict(model, checkpoint["model"], shape_only=initialize)
     model.load_constant_touch(checkpoint.get("constant_touch"))
+    if initialize:
+        saved_optimizer = checkpoint["optimizer"]
+        current_optimizer = optimizer.state_dict()
+        if len(saved_optimizer["param_groups"]) != len(optimizer.param_groups):
+            raise ValueError("Checkpoint optimizer groups do not match this run")
+        parameter_names = {id(parameter): name for name, parameter in model.named_parameters()}
+        state, groups = {}, []
+        for saved_group, current_group, group in zip(
+                saved_optimizer["param_groups"], current_optimizer["param_groups"], optimizer.param_groups):
+            # build_optimizer keeps the existing shape/touch order and appends pose parameters.
+            inherited = [(index, parameter) for index, parameter in zip(current_group["params"], group["params"])
+                         if parameter_names[id(parameter)] in checkpoint["model"]]
+            if (saved_group.get("name") != group["name"]
+                    or len(saved_group["params"]) != len(inherited)):
+                raise ValueError("Checkpoint optimizer parameters do not match this run")
+            for saved_index, (current_index, parameter) in zip(saved_group["params"], inherited):
+                if saved_index in saved_optimizer["state"]:
+                    parameter_state = saved_optimizer["state"][saved_index]
+                    if any(parameter_state[key].shape != parameter.shape
+                           for key in ("exp_avg", "exp_avg_sq", "max_exp_avg_sq") if key in parameter_state):
+                        raise ValueError("Checkpoint optimizer state shapes do not match this run")
+                    state[current_index] = parameter_state
+            groups.append({**saved_group, "params": current_group["params"]})
+        optimizer.load_state_dict({"state": state, "param_groups": groups})
+        model.initialization = {"checkpoint": str(path), "step": checkpoint["step"]}
+        return checkpoint["epoch"], 0, float("inf"), checkpoint.get("batch_in_epoch", 0)
+    model.initialization = checkpoint.get("initialization")
     optimizer.load_state_dict(checkpoint["optimizer"])
-    return checkpoint["epoch"], checkpoint["step"], checkpoint["best_loss"]
+    return (checkpoint["epoch"], checkpoint.get("stage_step", checkpoint["step"]),
+            checkpoint["best_loss"], checkpoint.get("batch_in_epoch", 0))
 
 
 def aggregate(total_loss, total_samples, device, distributed):
@@ -869,24 +933,31 @@ def aggregate(total_loss, total_samples, device, distributed):
 def train_epoch(
     pipeline, model, raw_model, loader, optimizer, parameters,
     device, args, epoch, step, total_train_steps, world_size,
-    distributed, main_process, run, seed=0,
+    distributed, main_process, run, seed=0, start_batch=0, on_validate=None,
 ):
     if distributed:
         loader.sampler.set_epoch(epoch)
+    elif getattr(args, "val_every", 0) or start_batch:
+        # Recreate the same shuffle when resuming a checkpoint saved within an epoch.
+        loader.generator.manual_seed(seed + epoch)
     if raw_model.touch_encoder is not None:
         raw_model.touch_encoder.train()
 
     total_loss = 0.0
     total_samples = 0
     total_dropped = 0
-    component_totals = (dict.fromkeys(raw_model.pose_training_config["loss_weights"], 0.0)
+    component_totals = (dict.fromkeys(("shape", "pose"), 0.0)
                         if raw_model.pose_training_config else {})
+    step_offset = raw_model.initialization["step"] if raw_model.initialization else 0
     log_start_time = time.perf_counter()
     for batch_index, batch in enumerate(loader):
+        if batch_index < start_batch:
+            continue
         should_log = (
             step == 0
             or (step + 1) % args.log_every == 0
             or batch_index + 1 == len(loader)
+            or (args.max_steps and step + 1 >= args.max_steps)
         )
         with token_magnitudes(raw_model, enabled=main_process and should_log, pipeline=pipeline) as token_metrics:
             prepared = prepare_batch(
@@ -922,11 +993,11 @@ def train_epoch(
         total_loss += loss.item() * batch_size
         total_samples += batch_size
         for name in component_totals:
-            component_totals[name] += raw_model.last_detail_losses[f"flow_matching/{name}"].item() * batch_size
+            component_totals[name] += raw_model.last_detail_losses[name].item() * batch_size
         if drop_mask is not None:
             total_dropped += int(drop_mask.sum())
 
-        if step == 1 or step % args.log_every == 0 or batch_index + 1 == len(loader):
+        if should_log:
             elapsed = torch.tensor(
                 time.perf_counter() - log_start_time,
                 dtype=torch.float64,
@@ -942,7 +1013,7 @@ def train_epoch(
                 dist.all_reduce(elapsed, op=dist.ReduceOp.MAX)
 
             component_means = {
-                f"loss/train/{name}": aggregate(value, total_samples, device, distributed)[0] / sample_count
+                f"{name}/train": aggregate(value, total_samples, device, distributed)[0] / sample_count
                 for name, value in component_totals.items()
             }
 
@@ -968,7 +1039,7 @@ def train_epoch(
                     flush=True,
                 )
                 metrics = {
-                    "global_step": step,
+                    "global_step": step + step_offset,
                     "loss/train": mean_loss,
                     "conditioning/visual_dropout_fraction": dropped_sum / sample_count,
                     "performance/samples_per_second": samples_per_second,
@@ -988,6 +1059,11 @@ def train_epoch(
             component_totals = dict.fromkeys(component_totals, 0.0)
             log_start_time = time.perf_counter()
 
+        final_batch = batch_index + 1 == len(loader) or (args.max_steps and step >= args.max_steps)
+        if on_validate and getattr(args, "val_every", 0) and step % args.val_every == 0 and not final_batch:
+            validation_start = time.perf_counter()
+            on_validate(step, epoch, batch_index + 1)
+            log_start_time += time.perf_counter() - validation_start
         if args.max_steps and step >= args.max_steps:
             break
     return step
@@ -1003,7 +1079,7 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
     cuda_devices = [torch.cuda.current_device()] if device.type == "cuda" else []
     total_loss = 0.0
     total_samples = 0
-    component_totals = (dict.fromkeys(model.pose_training_config["loss_weights"], 0.0)
+    component_totals = (dict.fromkeys(("shape", "pose"), 0.0)
                         if model.pose_training_config else {})
 
     with torch.random.fork_rng(devices=cuda_devices):
@@ -1026,7 +1102,7 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
                 total_loss += loss.item() * batch_size
                 total_samples += batch_size
                 for name in component_totals:
-                    component_totals[name] += model.last_detail_losses[f"flow_matching/{name}"].item() * batch_size
+                    component_totals[name] += model.last_detail_losses[name].item() * batch_size
 
     random.setstate(python_state)
     np.random.set_state(numpy_state)
@@ -1036,7 +1112,7 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
         total_loss, total_samples, device, distributed
     )
     model.validation_loss_components = {
-        f"loss/val/{name}": aggregate(value, 0, device, distributed)[0] / total_samples
+        f"{name}/val": aggregate(value, 0, device, distributed)[0] / total_samples
         for name, value in component_totals.items()
     }
     return total_loss / total_samples
@@ -1081,11 +1157,19 @@ def main():
         raise ValueError("--joint-pointmap cannot be used with --no-touch")
 
     train_pose = args.train_scope == "shape_pose_cross_attention"
+    if args.init_pose_from_shape and not train_pose:
+        raise ValueError("--init-pose-from-shape is for shape-to-pose fine-tuning")
     if train_pose and (args.no_pointmap or args.no_visual or args.oracle_point_frame
                        or args.shared_pointmap_normalization or args.constant_touch):
         raise ValueError("Pose training requires the existing camera-frame pointmap conditioning")
     if train_pose and args.cross_attention_learning_rate <= 0:
         raise ValueError("Pose cross-attention requires a positive learning rate")
+
+    config_path = args.output_dir / "config.yaml"
+    if config_path.exists() and not args.resume:
+        raise FileExistsError(f"Run already exists: {config_path}")
+    if args.init_pose_from_shape and not args.init_pose_from_shape.is_file():
+        raise FileNotFoundError(args.init_pose_from_shape)
 
     distributed, rank, world_size, device = setup_distributed(args)
     main_process = rank == 0
@@ -1157,10 +1241,11 @@ def main():
         mode = "image_touch_joint"
     else:
         mode = "image_touch"
-    start_epoch, step, best_loss = 0, 0, float("inf")
-    if args.resume:
-        start_epoch, step, best_loss = load_checkpoint(
-            args.resume, model, optimizer, mode, args.cross_attention_scope, args.train_scope
+    start_epoch, step, best_loss, start_batch = 0, 0, float("inf"), 0
+    if args.resume or args.init_pose_from_shape:
+        start_epoch, step, best_loss, start_batch = load_checkpoint(
+            args.resume or args.init_pose_from_shape, model, optimizer, mode,
+            args.cross_attention_scope, args.train_scope, initialize=bool(args.init_pose_from_shape),
         )
     elif args.constant_touch:
         initialize_constant_touch(model, pipeline, train_loader.dataset, device, args.precision)
@@ -1171,9 +1256,9 @@ def main():
         )
     raw_model = model.module if distributed else model
 
-    config_path = args.output_dir / "config.yaml"
-    if config_path.exists() and not args.resume:
-        raise FileExistsError(f"Run already exists: {config_path}")
+    if not 0 <= start_batch < len(train_loader):
+        raise ValueError("Checkpoint batch position does not match the training loader")
+    step_offset = raw_model.initialization["step"] if raw_model.initialization else 0
 
     if main_process:
         args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -1191,6 +1276,7 @@ def main():
                 ),
                 "data": data_config,
                 "pose_training_config": raw_model.pose_training_config,
+                "initialization": raw_model.initialization,
                 "constant_touch_sample_id": raw_model.constant_touch_sample_id,
             }
             with open(config_path, "w") as file:
@@ -1204,6 +1290,10 @@ def main():
 
         print(f"mode: {mode}")
         print(f"training scope: {args.train_scope}")
+        if raw_model.initialization:
+            print(f"initialized from: {raw_model.initialization['checkpoint']}")
+            print(f"W&B step offset: {step_offset}; step limit: {args.max_steps} additional steps")
+        print(f"validation: every {args.val_every} steps and epoch end" if args.val_every else "validation: epoch end")
         if raw_model.pose_training_config:
             print(f"pose supervision: {raw_model.pose_training_config}")
         print(f"precision: {args.precision}")
@@ -1241,6 +1331,7 @@ def main():
             "world_size": world_size,
             "global_batch_size": args.batch_size * world_size,
             "pose_training_config": raw_model.pose_training_config,
+            "initialization": raw_model.initialization,
             "constant_touch_sample_id": raw_model.constant_touch_sample_id,
             "touch_config": (
                 touch_encoder.get_config() if touch_encoder is not None else None
@@ -1248,24 +1339,19 @@ def main():
         })
         run = wandb.init(
             project="sam-3d-touch",
-            name=args.output_dir.name,
+            name=None if args.wandb_id else args.output_dir.name,
             dir=str(args.output_dir),
             config=run_config,
-            id=args.wandb_id,
-            resume="must" if args.wandb_id else None,
+            id=uuid4().hex if args.init_pose_from_shape else args.wandb_id,
+            resume="never" if args.init_pose_from_shape else ("must" if args.wandb_id else None),
         )
         run.define_metric("global_step")
         run.define_metric("*", step_metric="global_step")
 
     total_train_steps = args.max_steps or args.epochs * len(train_loader)
 
-    epoch = start_epoch
-    while (step < args.max_steps if args.max_steps else epoch < args.epochs):
-        step = train_epoch(
-            pipeline, model, raw_model, train_loader, optimizer, parameters,
-            device, args, epoch, step, total_train_steps, world_size,
-            distributed, main_process, run, seed=seed,
-        )
+    def validate_and_checkpoint(current_step, checkpoint_epoch, batch_in_epoch=0):
+        nonlocal best_loss
         val_loss = validate(
             pipeline, raw_model, val_loader, device, args,
             seed + 1, distributed, rank,
@@ -1274,34 +1360,51 @@ def main():
         best_loss = min(best_loss, val_loss)
 
         if main_process:
-            run.log({"global_step": step, "loss/val": val_loss,
+            components = raw_model.validation_loss_components
+            run.log({"global_step": current_step + step_offset, "loss/val": val_loss,
                      **getattr(raw_model, "validation_loss_components", {})})
             progress = (
-                f"step {step}/{args.max_steps} epoch {epoch + 1}"
+                f"step {current_step}/{args.max_steps}"
                 if args.max_steps
-                else f"epoch {epoch + 1}/{args.epochs}"
+                else f"step {current_step}"
             )
+            breakdown = (f" shape_val {components['shape/val']:.6f} pose_val {components['pose/val']:.6f}"
+                         if components else "")
             print(
-                f"{progress} val_loss {val_loss:.6f}"
+                f"{progress} val_loss {val_loss:.6f}{breakdown}"
                 f"{' best' if improved else ''}",
                 flush=True,
             )
             save_checkpoint(
                 args.output_dir / "last.pt", raw_model, optimizer,
-                epoch + 1, step, best_loss, mode,
-                args.cross_attention_scope,
-                args.train_scope,
+                checkpoint_epoch, current_step, best_loss, mode,
+                args.cross_attention_scope, args.train_scope, batch_in_epoch=batch_in_epoch,
             )
             if improved:
                 save_checkpoint(
                     args.output_dir / "best.pt", raw_model, optimizer,
-                    epoch + 1, step, best_loss, mode,
-                    args.cross_attention_scope,
-                    args.train_scope,
+                    checkpoint_epoch, current_step, best_loss, mode,
+                    args.cross_attention_scope, args.train_scope, batch_in_epoch=batch_in_epoch,
                 )
 
         if distributed:
             dist.barrier()
+
+    if args.init_pose_from_shape:
+        validate_and_checkpoint(0, start_epoch, start_batch)
+    epoch = start_epoch
+    while (step < args.max_steps if args.max_steps else epoch < args.epochs):
+        previous_step = step
+        step = train_epoch(
+            pipeline, model, raw_model, train_loader, optimizer, parameters,
+            device, args, epoch, step, total_train_steps, world_size,
+            distributed, main_process, run, seed=seed, start_batch=start_batch,
+            on_validate=validate_and_checkpoint,
+        )
+        next_batch = start_batch + step - previous_step
+        completed_epoch = next_batch == len(train_loader)
+        validate_and_checkpoint(step, epoch + int(completed_epoch), 0 if completed_epoch else next_batch)
+        start_batch = 0
         epoch += 1
 
     if main_process:
