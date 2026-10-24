@@ -491,6 +491,9 @@ def append_metric(path, row):
     if not write_header:
         with open(path, newline="") as file:
             fields = next(csv.reader(file))
+        if set(row) - set(fields):
+            write_metrics(path, [*load_metrics(path), row])
+            return
     with open(path, "a", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=fields, restval="nan")
         if write_header:
@@ -870,6 +873,9 @@ def register_runs(output_dir, protocol, checkpoints, describe, previous_config, 
         )}
         if isinstance(old_protocol.get("pose_metrics"), dict) and old_protocol["pose_metrics"].get("version") == 1:
             old_protocol["pose_metrics"] = True
+        # Version 1 only adds pose-head columns; completed legacy rows keep them missing.
+        if "pose_head_metrics_version" not in old_protocol and protocol.get("pose_head_metrics_version") == 1:
+            old_protocol["pose_head_metrics_version"] = 1
         if old_protocol != protocol:
             changed = sorted(key for key in set(protocol) | set(old_protocol)
                              if protocol.get(key) != old_protocol.get(key))
