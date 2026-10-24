@@ -28,6 +28,8 @@ export PYTHONUNBUFFERED=1
   outputs/zeroverse/zeroverse_pointmap_surface_frozen_lr1e4_sampled_camframe \
   outputs/zeroverse/zeroverse_pointmap_touch_32x256_sampled_camframe \
   outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint_sampled_camframe \
+  outputs/zeroverse/zeroverse_pointmap_pose_continuation_camframe \
+  outputs/zeroverse/zeroverse_pointmap_surface_pose_continuation_camframe \
   --data-root /n/lab_storage/qianqian_lab/Lab/mwakeham/zeroverse_5000_sam3d_8views_sampled \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --selection-data-config configs/data_zeroverse_5000_8views_full_surface.yaml \
