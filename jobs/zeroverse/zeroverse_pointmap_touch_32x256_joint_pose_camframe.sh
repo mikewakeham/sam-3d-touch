@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=zeroverse_pointmap_surface_pose_camframe
+#SBATCH --job-name=zeroverse_pointmap_touch_32x256_joint_pose_camframe
 #SBATCH --partition=kempner_h200
 #SBATCH --account=kempner_qianqian_lab
 #SBATCH --nodes=1
@@ -20,7 +20,7 @@ export WANDB_RUN_GROUP=zeroverse
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node="${SLURM_GPUS_ON_NODE:-4}" train.py \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --data-config configs/data_zeroverse_5000_8views_sampled_touch_32x256_camframe.yaml \
-  --output-dir outputs/zeroverse/zeroverse_pointmap_surface_pose_camframe \
+  --output-dir outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint_pose_camframe \
   --batch-size 4 \
   --workers 8 \
   --val-workers 2 \
