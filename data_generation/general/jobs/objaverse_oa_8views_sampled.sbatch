@@ -4,9 +4,9 @@
 #SBATCH --partition=kempner_rtx
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=64
-#SBATCH --gres=gpu:4
-#SBATCH --mem=256G
+#SBATCH --cpus-per-task=128
+#SBATCH --gres=gpu:8
+#SBATCH --mem=512G
 #SBATCH --time=16:00:00
 #SBATCH --output=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/data_generation/general/logs/oa-8views-sampled-%j.out
 #SBATCH --error=/n/holylabs/qianqian_lab/Lab/mwakeham/visuotactile-objects/sam-3d-touch/data_generation/general/logs/oa-8views-sampled-%j.err
@@ -32,6 +32,7 @@ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
     --pattern 'chunk_*/*.glb' \
     --blender /n/holylabs/qianqian_lab/Lab/mwakeham/blender/blender-4.5.9-linux-x64/blender \
     --render-device OPTIX \
-    --workers 12 \
+    --workers 24 \
     --render-workers-per-gpu 2 \
+    --blender-threads 6 \
     "$@"
