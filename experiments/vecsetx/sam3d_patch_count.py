@@ -48,7 +48,7 @@ def touch_tokens(encoder, points, shift, scale):
         encoder.encoder.num_inputs = previous_count
 
 
-def encode_patches(model, count, points, mask, normalization='retained'):
+def encode_patches(model, count, points, mask, normalization='full'):
     # Keep the exact ordinary evaluation path for the full-input baseline.
     if count == 32:
         return model.get_touch_tokens(points, mask)
@@ -167,7 +167,7 @@ def parse_args():
     parser.add_argument('--selection-data-config', type=Path, required=True)
     parser.add_argument('--reference-evaluation', type=Path, help='Verify selection, protocol and checkpoint against an existing main evaluation')
     parser.add_argument('--pipeline-config', type=Path, default=Path('checkpoints/hf/pipeline.yaml'))
-    parser.add_argument('--output-dir', type=Path, default=Path('experiments/vecsetx/outputs/sam3d_patch_count_sampled_camframe_retained'))
+    parser.add_argument('--output-dir', type=Path, default=Path('experiments/vecsetx/outputs/sam3d_patch_count_sampled_camframe_full'))
     parser.add_argument('--split', default='val')
     parser.add_argument('--max-samples', type=int, default=100, help='Objects; 0 selects all, as in the main evaluator')
     parser.add_argument('--selection', choices=['random', 'hidden'], default='random')
@@ -237,7 +237,7 @@ def main():
             raise ValueError('Smoke sample count exceeds the reference sample count')
         selected, details = selected[:args.smoke_samples], details[:args.smoke_samples]
     conditions = ([(16, 'full'), (16, 'retained')] if args.normalization_probe
-                  else [(count, 'retained') for count in PATCH_COUNTS])
+                  else [(count, 'full') for count in PATCH_COUNTS])
     loader = build_dataloader(data, 1, args.workers, shuffle=False, joint_pointmap=True)
     records = {record['sample_id']: record for record in loader.dataset.records}
     if len(records) != len(loader.dataset.records):
@@ -265,7 +265,7 @@ def main():
                     split_sha256=file_digest(loader.dataset.resolve_path(data['dataset']['split_file'])),
                     patch_selection='first K patches in the saved farthest-center order; nested, no resampling',
                     normalization=('paired full-32 vs retained-16 joint normalization, including position embedding'
-                                   if args.normalization_probe else 'recomputed from saved 1024 pointmap + retained Kx224 touch points only, including position embedding'),
+                                   if args.normalization_probe else 'fixed from saved 1024 pointmap + 32x224 touch points before removing patches, including position embedding'),
                     evaluation='evaluation.evaluate.evaluate_condition, including its seeds and mesh metrics',
                     torch_version=torch.__version__, numpy_version=np.__version__)
     (args.output_dir / 'settings.json').write_text(json.dumps(settings, indent=2) + '\n')
