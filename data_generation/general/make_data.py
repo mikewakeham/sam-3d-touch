@@ -446,10 +446,15 @@ def run(args):
                 for slot in slots:
                     queue.put(slot)
                 with ProcessPoolExecutor(max_workers=args.workers, mp_context=mp.get_context("spawn")) as executor:
+                    started = time.monotonic()
+                    print(f"Rendering/packaging {len(pending)} objects; {len(selected) - len(pending)} already complete.", flush=True)
                     futures = [executor.submit(process_object, obj, lookup[obj["object_id"]], args, queue) for obj in pending]
                     for index, future in enumerate(as_completed(futures), 1):
                         result = future.result()
-                        print(f"[{index}/{len(pending)}] {json.dumps(result)}", flush=True)
+                        elapsed = time.monotonic() - started
+                        eta = elapsed / index * (len(pending) - index)
+                        print(f"[{index}/{len(pending)}] elapsed={format_time(elapsed)} "
+                              f"render_eta={format_time(eta)} {json.dumps(result)}", flush=True)
                         if "error" in result:
                             failures.append(result)
     rendered, ready = write_manifests(args, objects)
