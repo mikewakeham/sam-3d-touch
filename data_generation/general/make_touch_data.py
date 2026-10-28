@@ -18,7 +18,8 @@ import trimesh
 from generate_target_latents import checkpoint_sha256, load_normalized_mesh
 from make_data import format_time
 from sample_full_surface import classify_visibility, sam_camera_transform, transform_points, validate_surface
-from sample_touch_patches import InsufficientHiddenCandidates, make_patch_bank, save_patches, select_patch_indices
+from sample_touch_patches import (InsufficientHiddenCandidates, InvalidTouchGeometry,
+                                  make_patch_bank, save_patches, select_patch_indices)
 
 
 def initialize_worker():
@@ -198,8 +199,8 @@ def make_object(task):
                 mesh = load_normalized_mesh(mesh_path)
             try:
                 arrays = make_patches(args, record, mesh, mesh_hash)
-            except InsufficientHiddenCandidates as error:
-                raise InsufficientHiddenCandidates(f"{record['sample_id']}: {error}") from error
+            except (InsufficientHiddenCandidates, InvalidTouchGeometry) as error:
+                raise type(error)(f"{record['sample_id']}: {error}") from error
             save_patches(path, arrays, args.overwrite)
             save_joint(args, record, arrays, path)
             generated += 1
@@ -253,7 +254,7 @@ def main(argv=None):
             for completed, (_, object_records) in enumerate(objects, 1):
                 try:
                     rows, reused, new_views = make_object((args, object_records))
-                except InsufficientHiddenCandidates as error:
+                except (InsufficientHiddenCandidates, InvalidTouchGeometry) as error:
                     object_id = object_records[0]['object_id']
                     record_skip(object_id, error, completed)
                     continue
@@ -271,7 +272,7 @@ def main(argv=None):
                     object_id = futures[future]
                     try:
                         rows, reused, new_views = future.result()
-                    except InsufficientHiddenCandidates as error:
+                    except (InsufficientHiddenCandidates, InvalidTouchGeometry) as error:
                         record_skip(object_id, error, completed)
                         continue
                     except BrokenProcessPool as error:

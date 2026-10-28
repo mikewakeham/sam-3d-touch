@@ -7,6 +7,10 @@ class InsufficientHiddenCandidates(ValueError):
     pass
 
 
+class InvalidTouchGeometry(ValueError):
+    pass
+
+
 def farthest_centers(points, count, seed):
     # NumPy version of the minimum-distance loop used by the existing FPS helpers.
     if count < 1:
@@ -75,9 +79,12 @@ def sample_region(mesh, center, basis, radii, count, seed):
     # Bound that disk in the triangle's barycentric coordinates. This avoids sampling
     # an entire large wall triangle to fill a tiny patch, without clipping the mesh.
     edges = triangles[:, 1:] - triangles[:, :1]
-    gradients = np.linalg.pinv(edges)
     normals = np.cross(edges[:, 0], edges[:, 1])
-    normals /= np.linalg.norm(normals, axis=1, keepdims=True)
+    normal_lengths = np.linalg.norm(normals, axis=1, keepdims=True)
+    if not np.isfinite(normal_lengths).all() or np.any(normal_lengths == 0):
+        raise InvalidTouchGeometry('Patch region contains degenerate or nonfinite triangle normals')
+    normals /= normal_lengths
+    gradients = np.linalg.pinv(edges)
     plane_distance = np.sum(normals * triangles[:, 0], axis=1)
     disk_center = normals * plane_distance[:, None]
     uv_center = np.einsum('ni,nij->nj', disk_center - triangles[:, 0], gradients)
@@ -90,6 +97,8 @@ def sample_region(mesh, center, basis, radii, count, seed):
     use_rectangle = rectangle_ratio < 1
     weights = mesh.area_faces[candidates] * np.minimum(1, rectangle_ratio)
     cumulative = np.cumsum(weights)
+    if not np.isfinite(cumulative).all():
+        raise InvalidTouchGeometry('Patch region has nonfinite sampling weights')
     if cumulative[-1] <= 0:
         raise ValueError("Region has no sampleable surface area")
     rng = np.random.default_rng(seed)
