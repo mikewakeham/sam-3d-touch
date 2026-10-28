@@ -408,8 +408,10 @@ class IntegrationTests(unittest.TestCase):
             result = subprocess.run(command + ['--workers', str(workers)],
                                     capture_output=True, text=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn('[3/3] box:', result.stdout)
+            self.assertRegex(result.stdout, r'\[1/1\] elapsed=\d+:\d{2}:\d{2} eta=00:00:00 box:')
             self.assertNotIn('[1/3]', result.stdout)
+            self.assertNotIn('generating touch patches', result.stdout)
+            self.assertNotIn('generating joint inputs', result.stdout)
             output = self.generated / 'samples_simulated_touches.jsonl'
             saved = [json.loads(line) for line in output.read_text().splitlines()]
             self.assertEqual([r['sample_id'] for r in saved], [r['sample_id'] for r in records])

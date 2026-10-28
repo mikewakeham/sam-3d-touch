@@ -6,6 +6,7 @@ import multiprocessing as mp
 from pathlib import Path
 import signal
 import sys
+import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from concurrent.futures.process import BrokenProcessPool
 from functools import lru_cache
@@ -14,6 +15,7 @@ import numpy as np
 import trimesh
 
 from generate_target_latents import checkpoint_sha256, load_normalized_mesh
+from make_data import format_time
 from sample_full_surface import classify_visibility, sam_camera_transform, transform_points, validate_surface
 from sample_touch_patches import make_patch_bank, save_patches, select_patch_indices
 
@@ -108,7 +110,6 @@ def save_joint(args, record, arrays, path):
     if config.get('ss_preprocessor') is None:
         sources.append(config_path.parent / config.ss_generator_config_path)
     fingerprint = hashlib.sha256(''.join(checkpoint_sha256(source) for source in sources).encode()).hexdigest()
-    print(f"{record['sample_id']}: generating joint inputs", flush=True)
     dataset = object.__new__(TouchDataset)
     dataset.root = args.data_root
     with Image.open(args.data_root / record['image_path']) as image:
@@ -190,7 +191,6 @@ def make_object(task):
                     save_joint(args, record, arrays, path)
             reused += 1
         else:
-            print(f"{record['sample_id']}: generating touch patches", flush=True)
             if mesh is None:
                 mesh_path = root / record['mesh_path']
                 mesh_hash = checkpoint_sha256(mesh_path)
@@ -232,25 +232,32 @@ def main(argv=None):
         records = [json.loads(line) for line in manifest.read_text().splitlines() if line.strip()]
         total, objects = select_objects(args, records)
         print(f'Processing objects {args.start_object}-{total} of {total} with {args.workers} workers.', flush=True)
+        started = time.monotonic()
         if args.workers == 1:
-            for index, object_records in objects:
+            for completed, (_, object_records) in enumerate(objects, 1):
                 rows, reused, new_views = make_object((args, object_records))
-                print(f"[{index}/{total}] {rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
+                elapsed = time.monotonic() - started
+                eta = elapsed / completed * (len(objects) - completed)
+                print(f"[{completed}/{len(objects)}] elapsed={format_time(elapsed)} eta={format_time(eta)} "
+                      f"{rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
         else:
             pool = ProcessPoolExecutor(max_workers=args.workers, mp_context=mp.get_context('spawn'),
                                        initializer=initialize_worker)
             try:
-                futures = {pool.submit(make_object, (args, rows)): (index, rows[0]['object_id'])
-                           for index, rows in objects}
-                for future in as_completed(futures):
-                    index, object_id = futures[future]
+                futures = {pool.submit(make_object, (args, rows)): rows[0]['object_id']
+                           for _, rows in objects}
+                for completed, future in enumerate(as_completed(futures), 1):
+                    object_id = futures[future]
                     try:
                         rows, reused, new_views = future.result()
                     except BrokenProcessPool as error:
                         raise RuntimeError(f'Touch worker exited unexpectedly while processing {object_id}') from error
                     except Exception as error:
                         raise RuntimeError(f'Touch generation failed for {object_id}') from error
-                    print(f"[{index}/{total}] {rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
+                    elapsed = time.monotonic() - started
+                    eta = elapsed / completed * (len(objects) - completed)
+                    print(f"[{completed}/{len(objects)}] elapsed={format_time(elapsed)} eta={format_time(eta)} "
+                          f"{rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
             finally:
                 previous_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
                 try:
