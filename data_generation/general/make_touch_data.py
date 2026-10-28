@@ -7,6 +7,7 @@ from pathlib import Path
 import signal
 import sys
 import time
+import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from concurrent.futures.process import BrokenProcessPool
 from functools import lru_cache
@@ -258,13 +259,20 @@ def main(argv=None):
                     eta = elapsed / completed * (len(objects) - completed)
                     print(f"[{completed}/{len(objects)}] elapsed={format_time(elapsed)} eta={format_time(eta)} "
                           f"{rows[0]['object_id']}: {reused} views reused, {new_views} generated", flush=True)
+            except Exception:
+                # Report the actual worker error before waiting for active objects to finish.
+                traceback.print_exc()
+                sys.stderr.flush()
+                raise
             finally:
                 previous_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
                 try:
-                    if sys.exc_info()[0] is not None:
+                    if isinstance(sys.exc_info()[1], KeyboardInterrupt):
                         for process in list((pool._processes or {}).values()):
                             if process.is_alive():
                                 process.terminate()
+                    # On worker errors, cancel queued work and drain active results. Killing
+                    # a worker mid-result can leave the executor blocked reading its pipe.
                     pool.shutdown(wait=True, cancel_futures=True)
                 finally:
                     signal.signal(signal.SIGINT, previous_handler)
