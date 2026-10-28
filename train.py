@@ -49,7 +49,7 @@ def parse_args():
     parser.add_argument("--gradient-clip", type=float, default=1.0)
     parser.add_argument("--log-every", type=int, default=10)
     parser.add_argument("--val-every", type=int, default=0,
-                        help="Validate every N optimizer steps, plus epoch end (default: epoch end only)")
+                        help="Validate every N optimizer steps and at training end (default: epoch end only)")
     parser.add_argument("--precision", choices=["bf16", "fp32"], default="bf16")
     parser.add_argument("--no-touch", action="store_true")
     parser.add_argument("--no-pointmap", action="store_true")
@@ -1293,7 +1293,7 @@ def main():
         if raw_model.initialization:
             print(f"initialized from: {raw_model.initialization['checkpoint']}")
             print(f"W&B step offset: {step_offset}; step limit: {args.max_steps} additional steps")
-        print(f"validation: every {args.val_every} steps and epoch end" if args.val_every else "validation: epoch end")
+        print(f"validation: every {args.val_every} steps and training end" if args.val_every else "validation: epoch end")
         if raw_model.pose_training_config:
             print(f"pose supervision: {raw_model.pose_training_config}")
         print(f"precision: {args.precision}")
@@ -1403,7 +1403,9 @@ def main():
         )
         next_batch = start_batch + step - previous_step
         completed_epoch = next_batch == len(train_loader)
-        validate_and_checkpoint(step, epoch + int(completed_epoch), 0 if completed_epoch else next_batch)
+        training_finished = step >= args.max_steps if args.max_steps else epoch + 1 >= args.epochs
+        if not args.val_every or step % args.val_every == 0 or training_finished:
+            validate_and_checkpoint(step, epoch + int(completed_epoch), 0 if completed_epoch else next_batch)
         start_batch = 0
         epoch += 1
 
