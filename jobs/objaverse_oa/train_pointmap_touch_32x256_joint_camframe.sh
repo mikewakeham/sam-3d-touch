@@ -25,5 +25,6 @@ export WANDB_RUN_GROUP=objaverse_oa
   --workers 8 \
   --val-workers 2 \
   --max-steps 50000 \
+  --val-every 2500 \
   --joint-pointmap \
   --train-scope shape_cross_attention "$@"

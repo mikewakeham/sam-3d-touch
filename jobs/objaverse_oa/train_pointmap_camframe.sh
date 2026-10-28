@@ -26,5 +26,6 @@ export WANDB_RUN_GROUP=objaverse_oa
   --val-workers 2 \
   --cross-attention-learning-rate 1e-4 \
   --max-steps 50000 \
+  --val-every 2500 \
   --no-touch \
   --train-scope shape_cross_attention "$@"
