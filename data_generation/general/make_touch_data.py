@@ -22,6 +22,10 @@ from sample_touch_patches import (InsufficientHiddenCandidates, InvalidTouchGeom
                                   make_patch_bank, save_patches, select_patch_indices)
 
 
+class EmptyPointmapMask(ValueError):
+    pass
+
+
 def initialize_worker():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
@@ -102,6 +106,7 @@ def save_joint(args, record, arrays, path):
     from dataloader import TouchDataset
     from train import preprocess_pointmap_batch
     from omegaconf import OmegaConf
+    from torchvision.transforms import InterpolationMode, functional as TF
 
     config_path = args.pipeline_config.resolve()
     config = OmegaConf.load(config_path)
@@ -117,6 +122,11 @@ def save_joint(args, record, arrays, path):
     with Image.open(args.data_root / record['image_path']) as image:
         rgba = np.array(image.convert('RGBA'))
     pointmap = dataset.load_pointmap(record)
+    # Match the normalizer's alpha threshold and nearest-neighbor resize.
+    mask = torch.from_numpy((rgba[..., 3] / 255).astype(np.float32))[None]
+    mask = TF.resize(mask, pointmap.shape[:2], interpolation=InterpolationMode.NEAREST)
+    if not (mask > .5).any():
+        raise EmptyPointmapMask(f"{record['sample_id']}: Empty foreground mask at pointmap resolution")
     preprocessor = joint_preprocessor(str(config_path))
     inputs = preprocess_pointmap_batch(preprocessor, torch.from_numpy(rgba)[None],
                                       torch.from_numpy(pointmap)[None], 'cpu')
@@ -254,7 +264,7 @@ def main(argv=None):
             for completed, (_, object_records) in enumerate(objects, 1):
                 try:
                     rows, reused, new_views = make_object((args, object_records))
-                except (InsufficientHiddenCandidates, InvalidTouchGeometry) as error:
+                except (InsufficientHiddenCandidates, InvalidTouchGeometry, EmptyPointmapMask) as error:
                     object_id = object_records[0]['object_id']
                     record_skip(object_id, error, completed)
                     continue
@@ -272,7 +282,7 @@ def main(argv=None):
                     object_id = futures[future]
                     try:
                         rows, reused, new_views = future.result()
-                    except (InsufficientHiddenCandidates, InvalidTouchGeometry) as error:
+                    except (InsufficientHiddenCandidates, InvalidTouchGeometry, EmptyPointmapMask) as error:
                         record_skip(object_id, error, completed)
                         continue
                     except BrokenProcessPool as error:
