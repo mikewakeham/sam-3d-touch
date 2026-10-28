@@ -18,7 +18,7 @@ import trimesh
 from generate_target_latents import checkpoint_sha256, load_normalized_mesh
 from make_data import format_time
 from sample_full_surface import classify_visibility, sam_camera_transform, transform_points, validate_surface
-from sample_touch_patches import make_patch_bank, save_patches, select_patch_indices
+from sample_touch_patches import InsufficientHiddenCandidates, make_patch_bank, save_patches, select_patch_indices
 
 
 def initialize_worker():
@@ -196,7 +196,10 @@ def make_object(task):
                 mesh_path = root / record['mesh_path']
                 mesh_hash = checkpoint_sha256(mesh_path)
                 mesh = load_normalized_mesh(mesh_path)
-            arrays = make_patches(args, record, mesh, mesh_hash)
+            try:
+                arrays = make_patches(args, record, mesh, mesh_hash)
+            except InsufficientHiddenCandidates as error:
+                raise InsufficientHiddenCandidates(f"{record['sample_id']}: {error}") from error
             save_patches(path, arrays, args.overwrite)
             save_joint(args, record, arrays, path)
             generated += 1
@@ -234,9 +237,26 @@ def main(argv=None):
         total, objects = select_objects(args, records)
         print(f'Processing objects {args.start_object}-{total} of {total} with {args.workers} workers.', flush=True)
         started = time.monotonic()
+        skipped = set()
+        skip_path = generated / f'skipped_{args.name}.json'
+        skip_reasons = json.loads(skip_path.read_text()) if skip_path.exists() else {}
+
+        def record_skip(object_id, error, completed):
+            skipped.add(object_id)
+            skip_reasons[object_id] = str(error)
+            temporary = skip_path.with_suffix('.tmp.json')
+            temporary.write_text(json.dumps(skip_reasons, indent=2) + '\n')
+            temporary.replace(skip_path)
+            print(f'[{completed}/{len(objects)}] {object_id}: SKIPPED entire object: {error}', flush=True)
+
         if args.workers == 1:
             for completed, (_, object_records) in enumerate(objects, 1):
-                rows, reused, new_views = make_object((args, object_records))
+                try:
+                    rows, reused, new_views = make_object((args, object_records))
+                except InsufficientHiddenCandidates as error:
+                    object_id = object_records[0]['object_id']
+                    record_skip(object_id, error, completed)
+                    continue
                 elapsed = time.monotonic() - started
                 eta = elapsed / completed * (len(objects) - completed)
                 print(f"[{completed}/{len(objects)}] elapsed={format_time(elapsed)} eta={format_time(eta)} "
@@ -251,6 +271,9 @@ def main(argv=None):
                     object_id = futures[future]
                     try:
                         rows, reused, new_views = future.result()
+                    except InsufficientHiddenCandidates as error:
+                        record_skip(object_id, error, completed)
+                        continue
                     except BrokenProcessPool as error:
                         raise RuntimeError(f'Touch worker exited unexpectedly while processing {object_id}') from error
                     except Exception as error:
@@ -276,6 +299,19 @@ def main(argv=None):
                     pool.shutdown(wait=True, cancel_futures=True)
                 finally:
                     signal.signal(signal.SIGINT, previous_handler)
+
+        if skipped:
+            # Keep the base and touch sample sets identical for camera targets and training.
+            # Existing files stay on disk; only these objects' manifest rows are excluded.
+            records = [record for record in records if record['object_id'] not in skipped]
+            for path in (manifest, output):
+                if path.exists():
+                    lines = [line for line in path.read_text().splitlines()
+                             if line.strip() and json.loads(line)['object_id'] not in skipped]
+                    temporary = path.with_suffix('.tmp.jsonl')
+                    temporary.write_text(''.join(line + '\n' for line in lines))
+                    temporary.replace(path)
+            print(f'Excluded {len(skipped)} objects from manifests; {len(records)} views remain.', flush=True)
 
         if args.object_id is not None:
             print(f'Processed {len(objects)} selected objects.', flush=True)

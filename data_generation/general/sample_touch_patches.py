@@ -3,10 +3,16 @@
 import numpy as np
 
 
+class InsufficientHiddenCandidates(ValueError):
+    pass
+
+
 def farthest_centers(points, count, seed):
     # NumPy version of the minimum-distance loop used by the existing FPS helpers.
-    if count < 1 or len(points) < count:
-        raise ValueError(f"Need {count} hidden candidates, got {len(points)}")
+    if count < 1:
+        raise ValueError('Contact count must be positive')
+    if len(points) < count:
+        raise InsufficientHiddenCandidates(f"Need {count} hidden candidates, got {len(points)}")
     selected = np.empty(count, dtype=np.int64)
     distance = np.full(len(points), np.inf)
     current = int(np.random.default_rng(seed).integers(len(points)))
