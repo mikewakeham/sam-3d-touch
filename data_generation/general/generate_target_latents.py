@@ -290,7 +290,6 @@ def encode_camera_objects(objects, data_root, checkpoint, gpu_id, overwrite=Fals
             mesh = load_normalized_mesh(data_root / records[0]["mesh_path"])
             for row in pending:
                 generate_camera_target(row, data_root, mesh, encoder, torch.device("cuda:0"))
-                print(f"[GPU {gpu_id}] latent {row['sample_id']}", flush=True)
         print(f"[GPU {gpu_id}: {index}/{len(objects)}] {records[0]['object_id']}: "
               f"{len(records) - len(pending)} reused, {len(pending)} encoded", flush=True)
 
