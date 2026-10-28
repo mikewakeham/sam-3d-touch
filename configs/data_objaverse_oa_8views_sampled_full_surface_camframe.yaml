@@ -1,0 +1,11 @@
+seed: 29
+
+dataset:
+  root: /n/lab_storage/qianqian_lab/Lab/mwakeham/datasets/objaverse_oa/sam3d_8views_sampled
+  manifest: generated_data/samples_camframe.jsonl
+  split_file: generated_data/splits.json
+  split: train
+  target_frame: camera
+
+touch:
+  source: full_surface
