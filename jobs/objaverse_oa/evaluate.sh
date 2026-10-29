@@ -19,8 +19,11 @@ export PYTHONUNBUFFERED=1
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/torchrun --standalone --nproc_per_node=4 -m evaluation.evaluate \
   --run-dirs \
   outputs/objaverse_oa/pointmap_camframe \
+  outputs/objaverse_oa/pointmap_pose_continuation_camframe \
   outputs/objaverse_oa/pointmap_touch_32x256_joint_camframe \
+  outputs/objaverse_oa/pointmap_touch_32x256_joint_pose_continuation_camframe \
   outputs/objaverse_oa/pointmap_surface_camframe \
+  outputs/objaverse_oa/pointmap_surface_pose_continuation_camframe \
   --data-root /n/lab_storage/qianqian_lab/Lab/mwakeham/datasets/objaverse_oa/sam3d_8views_sampled \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --selection-data-config configs/data_objaverse_oa_8views_sampled_full_surface_camframe.yaml \

@@ -20,10 +20,13 @@ export PYTHONUNBUFFERED=1
   --data-config configs/data_toys4k_100_1view_sampled_full_surface_camframe.yaml \
   --run-dirs \
   outputs/objaverse_oa/pointmap_camframe \
+  outputs/objaverse_oa/pointmap_pose_continuation_camframe \
   outputs/objaverse_oa/pointmap_surface_camframe \
+  outputs/objaverse_oa/pointmap_surface_pose_continuation_camframe \
   --data-config configs/data_toys4k_100_1view_sampled_touch_32x256_camframe.yaml \
   --run-dirs \
   outputs/objaverse_oa/pointmap_touch_32x256_joint_camframe \
+  outputs/objaverse_oa/pointmap_touch_32x256_joint_pose_continuation_camframe \
   --data-root /n/lab_storage/qianqian_lab/Lab/mwakeham/toys4k_100_sam3d_1view_sampled \
   --pipeline-config checkpoints/hf/pipeline.yaml \
   --selection-data-config configs/data_toys4k_100_1view_full_surface.yaml \

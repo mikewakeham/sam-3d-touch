@@ -26,6 +26,7 @@ export PYTHONUNBUFFERED=1
   outputs/zeroverse/zeroverse_pointmap_touch_8x1024_joint \
   outputs/zeroverse/zeroverse_pointmap_lr1e4_sampled_camframe \
   outputs/zeroverse/zeroverse_pointmap_surface_frozen_lr1e4_sampled_camframe \
+  outputs/zeroverse/zeroverse_pointmap_surface_pose_continuation_camframe \
   outputs/zeroverse/zeroverse_pointmap_touch_32x256_sampled_camframe \
   outputs/zeroverse/zeroverse_pointmap_touch_32x256_joint_sampled_camframe \
   outputs/zeroverse/zeroverse_pointmap_pose_continuation_camframe \

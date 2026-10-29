@@ -33,6 +33,7 @@ export PYTHONUNBUFFERED=1
   --run-dirs \
   outputs/zeroverse/zeroverse_pointmap_lr1e4_sampled_camframe \
   outputs/zeroverse/zeroverse_pointmap_surface_frozen_lr1e4_sampled_camframe \
+  outputs/zeroverse/zeroverse_pointmap_surface_pose_continuation_camframe \
   outputs/zeroverse/zeroverse_pointmap_pose_continuation_camframe \
   --data-config configs/data_toys4k_100_1view_sampled_touch_32x256_camframe.yaml \
   --run-dirs \
