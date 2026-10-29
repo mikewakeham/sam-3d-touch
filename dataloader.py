@@ -1,5 +1,6 @@
 import json
 import hashlib
+from itertools import islice
 from pathlib import Path
 
 import numpy as np
@@ -9,10 +10,13 @@ import yaml
 from PIL import Image
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import (
+    BatchSampler,
     DataLoader,
     Dataset,
     DistributedSampler,
     Sampler,
+    RandomSampler,
+    SequentialSampler,
     default_collate,
 )
 
@@ -282,6 +286,14 @@ def collate_touch_batch(samples):
     return batch
 
 
+class ResumableBatchSampler(BatchSampler):
+    # Keep the full epoch length for checkpoint positions and validation timing.
+    start_batch = 0
+
+    def __iter__(self):
+        return islice(super().__iter__(), self.start_batch, None)
+
+
 class DistributedEvalSampler(Sampler):
     """Shard validation data across ranks without adding duplicate samples."""
 
@@ -334,16 +346,18 @@ def build_dataloader(
         else:
             sampler = DistributedEvalSampler(dataset)
 
+    generator = torch.Generator().manual_seed(int(config.get("seed", 0)) + rank)
+    if sampler is None:
+        sampler = RandomSampler(dataset, generator=generator) if shuffle else SequentialSampler(dataset)
+
     loader_options = {
         "dataset": dataset,
-        "batch_size": batch_size,
-        "shuffle": shuffle and sampler is None,
-        "sampler": sampler,
+        "batch_sampler": ResumableBatchSampler(sampler, batch_size, drop_last=False),
         "num_workers": num_workers,
         "collate_fn": collate_touch_batch,
         "pin_memory": torch.cuda.is_available(),
         "persistent_workers": num_workers > 0,
-        "generator": torch.Generator().manual_seed(int(config.get("seed", 0)) + rank),
+        "generator": generator,
     }
     if distributed and num_workers > 0:
         loader_options["multiprocessing_context"] = "spawn"

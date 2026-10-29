@@ -936,7 +936,7 @@ def train_epoch(
     distributed, main_process, run, seed=0, start_batch=0, on_validate=None,
 ):
     if distributed:
-        loader.sampler.set_epoch(epoch)
+        loader.batch_sampler.sampler.set_epoch(epoch)
     elif getattr(args, "val_every", 0) or start_batch:
         # Recreate the same shuffle when resuming a checkpoint saved within an epoch.
         loader.generator.manual_seed(seed + epoch)
@@ -950,9 +950,11 @@ def train_epoch(
                         if raw_model.pose_training_config else {})
     step_offset = raw_model.initialization["step"] if raw_model.initialization else 0
     log_start_time = time.perf_counter()
-    for batch_index, batch in enumerate(loader):
-        if batch_index < start_batch:
-            continue
+    loader.batch_sampler.start_batch = start_batch
+    if main_process and start_batch:
+        print(f'Resuming epoch {epoch + 1} at batch {start_batch + 1}/{len(loader)}; '
+              'skipping earlier batches without loading samples', flush=True)
+    for batch_index, batch in enumerate(loader, start=start_batch):
         should_log = (
             step == 0
             or (step + 1) % args.log_every == 0
