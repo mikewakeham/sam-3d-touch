@@ -200,9 +200,9 @@ def render(items, center, radius, args, output, scale, reference_camera=None):
             # Keep empty background pixels pure white after tone mapping.
             image[np.asarray(renderer.render_to_depth_image()) >= 1.] = 255
             frames.append(image)
-            print(f'{output.name}: [{frame + 1}/{args.frames}]', end='\r', flush=True)
-        print()
         save_frames(frames, output, args)
+        formats = 'GIF, MP4, PNG' if args.mp4 else 'GIF, PNG'
+        print(f'Completed orbit: {output.name} ({formats})', flush=True)
     finally:
         del renderer
 
