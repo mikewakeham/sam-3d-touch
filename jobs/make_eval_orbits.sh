@@ -53,4 +53,9 @@ done
   --all-samples \
   --max-samples 10 \
   "${orbit_defaults[@]}" \
-  --blender /n/holylabs/qianqian_lab/Lab/mwakeham/blender/blender-4.5.9-linux-x64/blender "$@"
+  --blender /n/holylabs/qianqian_lab/Lab/mwakeham/blender/blender-4.5.9-linux-x64/blender "$@" |
+  sed -u -E \
+    -e '/^\[Open3D INFO\] EGL headless mode enabled\.$/d' \
+    -e '/^FEngine \([0-9]+ bits\) created at 0x[[:xdigit:]]+ \(threading is enabled\)$/d' \
+    -e '/^EGL\([0-9.]+\)$/d' \
+    -e '/^OpenGL\([0-9.]+\)$/d'
