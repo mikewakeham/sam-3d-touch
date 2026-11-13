@@ -4,7 +4,9 @@ Per object (one per worker):
   1. grasps: from grasp_pipeline's final set (tables/grasps_final.parquet). 8 per size bin by default, distinct types
      first, random within (bin, type); cycled when an object has fewer grasps than views. A grasp whose required
      fingers are farther than --max-render-gap from the rendered (original) mesh is replaced.
-  2. hand: Dexonomy forward kinematics at grasp_qpos, mapped into render_blender.py's normalized object frame.
+  2. hand: by default the settled pose after Dexonomy's closing motion (pregrasp -> grasp -> squeeze in MuJoCo,
+     before validation's forces), mapped into render_blender.py's normalized object frame; its contacts are saved
+     for the touch step.
   3. cameras: --candidates per view, evenly spread directions, FOV from the TRELLIS distribution, distance solved so
      the object and the whole hand fit (camera aimed at the object centre).
   4. low-res ray cast of every candidate (Warp): object share, hand share, occluded fraction, contacts visible.
@@ -27,14 +29,17 @@ import trimesh
 import warp as wp
 
 wp.config.quiet = True
+import mujoco  # noqa: E402
 import dexonomy  # noqa: E402
-from dexonomy.sim import HandCfg, MuJoCo_VisEnv  # noqa: E402
-from dexonomy.util.file_util import load_yaml  # noqa: E402
+from omegaconf import OmegaConf  # noqa: E402
+from dexonomy.sim import HandCfg, MuJoCo_EvalCfg, MuJoCo_EvalEnv, MuJoCo_VisEnv  # noqa: E402
+from dexonomy.util.file_util import load_json, load_scene_cfg  # noqa: E402
+from dexonomy.util.traj_util import get_planner  # noqa: E402
 
 DEX_ASSETS = Path(dexonomy.__path__[0]).parent / "assets" / "hand"
 CUBE_RADIUS = np.sqrt(3) / 2  # render_blender.py: radius of the normalized unit cube's bounding sphere
 CONTACT_THRE = 0.002  # Dexonomy's contact distance, as in grasp_pipeline build_grasp_table.py
-SETTINGS = ("num_views", "candidates", "stats_res", "margin", "visibility_tolerance", "seed", "hand")
+SETTINGS = ("num_views", "candidates", "stats_res", "margin", "visibility_tolerance", "seed", "hand", "hand_pose")
 
 
 # ---------- frames ----------
@@ -194,6 +199,7 @@ def init_worker(hand):
     WORKER["env"] = MuJoCo_VisEnv(hand_cfg=HandCfg(xml_path=str(DEX_ASSETS / hand / "right.xml"), freejoint=True),
                                   vis_mode="visual")
     WORKER["groups"] = {}
+    WORKER["eval"] = dexonomy_eval_settings()
 
 
 def required_groups(grasp_dir, hand, t):
@@ -203,10 +209,58 @@ def required_groups(grasp_dir, hand, t):
     return WORKER["groups"][t]
 
 
-def grasp_contacts(z, g, a, b, obj_mesh, groups, device):
-    """Required-finger contacts of grasp g in the render frame: finger points, the surface points under them, and
+def dexonomy_eval_settings():
+    """Validation settings from Dexonomy's configs, as grasp_pipeline's validate_grasps.py reads them."""
+    cfg_dir = Path(dexonomy.__path__[0]) / "config"
+    base, ev = OmegaConf.load(cfg_dir / "base.yaml"), OmegaConf.load(cfg_dir / "op/eval.yaml")
+    return dict(obj_mass=float(base.obj_mass), miu_coef=list(ev.miu_coef), hard=bool(ev.hard),
+                skip_pregrasp=bool(ev.skip_pregrasp))
+
+
+def eval_scene(scene_path, hand, st):
+    """The validation scene exactly as op/eval_data.py builds it (density from the info file, friction)."""
+    scene = load_scene_cfg(str(scene_path))
+    for o in scene["scene"].values():
+        if o["type"] == "rigid_object":
+            info = load_json(o["info_path"])
+            o["density"] = st["obj_mass"] / (info["mass"] / (info["density"] * info["scale"] ** 3) * np.prod(o["scale"]))
+    env = MuJoCo_EvalEnv(hand_cfg=HandCfg(str(DEX_ASSETS / hand / "right.xml"), freejoint=True), scene_cfg=scene,
+                         sim_cfg=MuJoCo_EvalCfg(miu_coef=st["miu_coef"]), debug_render=False, debug_view=False,
+                         hard=st["hard"])
+    return env, scene, np.copy(env.get_active_obj_pose())
+
+
+def settle_grasp(z, g, env, scene, init_pose, st):
+    """Hand state after Dexonomy's closing motion (pregrasp -> grasp -> squeeze, no external force), the moment
+    before validation applies its forces: the fingers rest on the object. Returns the hand qpos and the
+    hand-object contacts in the object frame (object at the origin, as the grasp files), and how far the object moved."""
+    pre = z["grasp_qpos"][g] if st["skip_pregrasp"] else np.asarray(z["pregrasp_qpos"][g])
+    ctrl, ctype, ext, _ = get_planner(scene["task"]).plan_trajectory(
+        np.copy(init_pose), pre, z["grasp_qpos"][g], z["squeeze_qpos"][g], None)
+    env.reset_qpos(ctrl[0])
+    env.run_trajectory(ctrl, ctype, ext)
+    hand, obj = env.get_hand_qpos().astype(np.float64).copy(), env.get_active_obj_pose().astype(np.float64)
+    ho, _ = env.get_contacts(obj_margin=CONTACT_THRE)  # contacts within Dexonomy's 2 mm, as the grasp files
+    R = np.zeros(9)
+    mujoco.mju_quat2Mat(R, obj[3:])
+    R = R.reshape(3, 3)
+    conj, q = np.zeros(4), np.zeros(4)
+    mujoco.mju_negQuat(conj, obj[3:])
+    mujoco.mju_mulQuat(q, conj, hand[3:7])
+    hand[:3], hand[3:7] = R.T @ (hand[:3] - obj[:3]), q
+    contacts = dict(pos=(np.asarray(ho["pos"]).reshape(-1, 3) - obj[:3]) @ R,
+                    normal=np.asarray(ho["normal"]).reshape(-1, 3) @ R,
+                    dist=np.asarray(ho["dist"]).reshape(-1), bn1=list(ho["bn1"]))
+    d = np.zeros(4)
+    mujoco.mju_mulQuat(d, conj, init_pose[3:])
+    motion = dict(object_shift_m=float(np.linalg.norm(obj[:3] - init_pose[:3])),
+                  object_turn_deg=float(np.rad2deg(2 * np.arccos(min(1.0, abs(d[0]))))))
+    return hand, contacts, motion
+
+
+def grasp_contacts(c, a, b, obj_mesh, groups, device):
+    """Required-finger contacts in the render frame: finger points, the surface points under them, normals, and
     the worst required group's distance to the rendered mesh in metres (same contact rule as build_grasp_table)."""
-    c = z["contacts"][g]
     pos, dist, normal = np.asarray(c["pos"]), np.asarray(c["dist"]), np.asarray(c["normal"])
     bodies = np.asarray(c["bn1"])
     near = dist < CONTACT_THRE
@@ -214,8 +268,8 @@ def grasp_contacts(z, g, a, b, obj_mesh, groups, device):
     surface, d = closest(obj_mesh, finger, device)
     gaps = [float(d[near & np.isin(bodies, grp)].min()) / a if (near & np.isin(bodies, grp)).any() else np.inf
             for grp in groups]
-    return dict(finger=finger[near], surface=surface[near], bodies=bodies[near].tolist(),
-                render_gap_m=max(gaps) if gaps else np.inf)
+    return dict(finger=finger[near], surface=surface[near], normal=normal[near], dist_m=dist[near],
+                bodies=bodies[near].tolist(), render_gap_m=max(gaps) if gaps else np.inf)
 
 
 def select_grasps(table_rows, n_views, rng, check):
@@ -324,12 +378,20 @@ def process_object(task):
     obj_mesh = wp_mesh(obj_v, loaded["faces"], device)
     obj_hull = trimesh.Trimesh(obj_v, loaded["faces"], process=False).convex_hull.vertices
 
-    contacts = {}
+    contacts, hand_qpos, motion, scenes = {}, {}, {}, {}
 
     def check(row):
         a, b = hand_affine(s1["clean"]["normalize"], s_r, off_r, float(z["scale"][row]))
-        contacts[row] = grasp_contacts(z, row, a, b, obj_mesh, required_groups(args.grasp_dir, args.hand,
-                                                                                str(z["type"][row])), device)
+        if args.hand_pose == "settled":
+            size = int(z["size_bin"][row])
+            if size not in scenes:  # one validation scene per object size, as validate_grasps.py
+                scenes[size] = eval_scene(Path(args.grasp_dir) / "objects" / uid / "scene_cfg" / f"size{size}.npy",
+                                          args.hand, WORKER["eval"])
+            hand_qpos[row], c, motion[row] = settle_grasp(z, row, *scenes[size], WORKER["eval"])
+        else:  # the stored grasp pose and its contacts, before the squeeze
+            hand_qpos[row], c, motion[row] = z["grasp_qpos"][row].astype(np.float64), z["contacts"][row], {}
+        contacts[row] = grasp_contacts(c, a, b, obj_mesh, required_groups(args.grasp_dir, args.hand,
+                                                                           str(z["type"][row])), device)
         return args.max_render_gap is None or contacts[row]["render_gap_m"] <= args.max_render_gap
 
     picked, reused, rejected = select_grasps(table_rows, args.num_views, rng, check)
@@ -340,7 +402,7 @@ def process_object(task):
     rows, views, masks = [], [], []
     for v, (g, re_used) in enumerate(zip(picked, reused)):
         a, b = hand_affine(s1["clean"]["normalize"], s_r, off_r, float(z["scale"][g]))
-        xmat, xpos = env.forward_kinematics(z["grasp_qpos"][g].astype(np.float64))
+        xmat, xpos = env.forward_kinematics(hand_qpos[g])
         hand_m = env.get_posed_mesh(xmat, xpos, "hand")
         hand_v = hand_m.vertices * a + b
         hand_mesh = wp_mesh(hand_v, hand_m.faces, device)
@@ -382,7 +444,9 @@ def process_object(task):
     od.mkdir(parents=True, exist_ok=True)
     info = dict(uid=uid, object_id=oid, views=len(picked), distinct_grasps=len(set(picked)),
                 reused=int(sum(reused)), rejected_render_gap=len(rejected),
-                max_hand_gap=float(st["hand_gap"].max()), seconds=round(time.perf_counter() - t0, 2))
+                max_hand_gap=float(st["hand_gap"].max()),
+                max_squeeze_shift_mm=round(1000 * max((m.get("object_shift_m", 0) for m in motion.values()), default=0), 2),
+                seconds=round(time.perf_counter() - t0, 2))
     if args.view_stats_only:
         np.save(od / "masks_lowres.npy", np.stack(masks))  # (views, candidates, 3, R, R/8) packed bits
         np.savez_compressed(od / "candidates.npz", **st)
@@ -397,11 +461,13 @@ def process_object(task):
         out_views.append(dict(
             view=v, candidate=c, fallback=fallback[v], grasp_row=g, reused=w["reused"], type=str(z["type"][g]),
             size_bin=int(z["size_bin"][g]), scale=float(z["scale"][g]),
-            grasp_qpos=z["grasp_qpos"][g].tolist(), hand_a=float(w["a"]), hand_b=w["b"].tolist(),
+            hand_pose=args.hand_pose, hand_qpos=hand_qpos[g].tolist(), grasp_qpos=z["grasp_qpos"][g].tolist(),
+            squeeze_motion=motion[g], hand_a=float(w["a"]), hand_b=w["b"].tolist(),
             body_xmat=w["xmat"].tolist(), body_xpos=w["xpos"].tolist(),
             camera_matrix_world=M.tolist(), fov=fov,
-            contacts=dict(finger=contacts[g]["finger"].tolist(), surface=contacts[g]["surface"].tolist(),
-                          bodies=contacts[g]["bodies"]),
+            contacts=dict(frame="normalized_object", finger=contacts[g]["finger"].tolist(),
+                          surface=contacts[g]["surface"].tolist(), normal=contacts[g]["normal"].tolist(),
+                          dist_m=contacts[g]["dist_m"].tolist(), bodies=contacts[g]["bodies"]),
             stats={k: float(st[k][i]) for k in ("object_share", "object_visible_share", "hand_share", "occluded",
                                                "contacts_visible_object_only", "contacts_visible", "distance",
                                                "hand_gap", "render_gap_m")}))
@@ -446,6 +512,9 @@ def main():
     p.add_argument("--max-render-gap", type=opt_float, default=0.005,
                    help="m, worst required finger to the rendered mesh; failing grasps are replaced (same 5 mm as "
                         "filter_grasps.py's real-gap limit, which is measured on stage 1's closed mesh); none = off")
+    p.add_argument("--hand-pose", choices=["settled", "grasp"], default="settled",
+                   help="settled: fingers resting on the object after the squeeze (what the tactile step uses); "
+                        "grasp: the stored pre-squeeze grasp pose")
     p.add_argument("--seed", type=int, default=29)
     p.add_argument("--workers", type=int, default=1)
     p.add_argument("--limit", type=int, help="first N objects only")

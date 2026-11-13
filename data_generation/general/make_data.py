@@ -85,8 +85,13 @@ def parse_args(argv=None):
     parser.add_argument("--grasp-views", type=Path,
                         help="Grasp mode: grasp_views folder from select_grasp_views.py; renders each view with its "
                              "Shadow-hand grasp and camera instead of the orbit cameras")
+    parser.add_argument("--shard", type=int, nargs=2, metavar=("INDEX", "COUNT"),
+                        help="Process objects INDEX, INDEX+COUNT, ... only; shards of one dataset run at the same time "
+                             "(e.g. a Slurm array) and the last shard to finish writes the shared manifests")
     parser.add_argument("--dry-run", action="store_true", help="Discover inputs and print settings without generating data")
     args = parser.parse_args(argv)
+    if args.shard is not None and not 0 <= args.shard[0] < args.shard[1]:
+        parser.error("--shard needs 0 <= INDEX < COUNT")
     if args.grasp_views is not None:
         args.grasp_views = args.grasp_views.expanduser().resolve()
         if any(args.rotation) or args.random_object_rotation:
@@ -184,7 +189,8 @@ def get_objects(objects_root, pattern="**/*", ready_marker=None, objects_manifes
 
 
 def save_json(value, path):
-    temporary = path.with_suffix(path.suffix + ".tmp")
+    # Per-process temporary name: concurrent shards may write the same (identical) shared file.
+    temporary = path.with_name(f"{path.name}.{os.getpid()}.tmp")
     temporary.write_text(json.dumps(value, indent=2) + "\n")
     temporary.replace(path)
 
@@ -286,7 +292,7 @@ def render_complete(object_dir, num_views, grasp=False):
         return False
     files = [object_dir / name for name in ("mesh.npz", "object_transform.npz", "render_metadata.json")]
     files += [object_dir / "views" / f"{i:03d}" / name for i in range(num_views)
-              for name in ("image.png", "depth.npy", "camera.npz") + (("mask.npy",) if grasp else ())]
+              for name in ("image.png", "depth.npy", "camera.npz") + (("object_mask.png", "hand_mask.png") if grasp else ())]
     if not all(path.is_file() and path.stat().st_size > 0 for path in files):
         return False
     metadata = json.loads((object_dir / "render_metadata.json").read_text())
@@ -327,7 +333,12 @@ def package_object(obj, split, args):
         if any(np.any(edge > 0) for edge in (alpha[0], alpha[-1], alpha[:, 0], alpha[:, -1])):
             raise ValueError(f"Object touches image boundary: {view_dir}; use a larger camera radius in a new dataset")
         # Ignore transparent background while retaining NaNs expected by SAM 3D.
-        depth[rgba[..., 3] == 0] = np.nan
+        if args.grasp_views is not None:  # alpha is the object only; keep the hand's depth, blank the background
+            with Image.open(view_dir / "object_mask.png") as om, Image.open(view_dir / "hand_mask.png") as hm:
+                background = (np.asarray(om) == 0) & (np.asarray(hm) == 0)
+            depth[background] = np.nan
+        else:
+            depth[rgba[..., 3] == 0] = np.nan
         if not np.any(np.isfinite(depth) & (depth > 0)):
             raise ValueError(f"No finite foreground depth: {view_dir}")
         np.save(view_dir / "depth.npy", depth)
@@ -349,7 +360,8 @@ def package_object(obj, split, args):
         if args.grasp_views is not None:
             # Hand and object masks; the grasp and its contacts are in grasp_views_path, entry grasp_view_index.
             g = grasp_views[index]
-            record.update(mask_path=str((view_dir / "mask.npy").relative_to(args.data_root)),
+            record.update(object_mask_path=str((view_dir / "object_mask.png").relative_to(args.data_root)),
+                          hand_mask_path=str((view_dir / "hand_mask.png").relative_to(args.data_root)),
                           grasp_views_path=str(views_path), grasp_view_index=index, grasp_row=g["grasp_row"],
                           grasp_type=g["type"], grasp_size_bin=g["size_bin"], grasp_reused=g["reused"],
                           grasp_view_stats=g["stats"])
@@ -389,14 +401,19 @@ def process_object(obj, split, args, gpu_slots):
         return {"object_id": obj["object_id"], "stage": "render", "error": f"{type(error).__name__}: {error}"}
 
 
+def collect_rendered(args, objects):
+    rendered = []
+    for obj in objects:
+        object_dir = args.data_root / "generated_data" / obj["object_id"]
+        if object_complete(object_dir, args):
+            rendered.extend(json.loads((object_dir / "samples.json").read_text()))
+    return rendered
+
+
 def write_manifests(args, objects, rendered=None):
     generated = args.data_root / "generated_data"
     if rendered is None:
-        rendered = []
-        for obj in objects:
-            object_dir = generated / obj["object_id"]
-            if object_complete(object_dir, args):
-                rendered.extend(json.loads((object_dir / "samples.json").read_text()))
+        rendered = collect_rendered(args, objects)
     targets, ready = {}, []
     for row in rendered:
         targets.setdefault(row["object_id"], []).append(row)
@@ -408,12 +425,39 @@ def write_manifests(args, objects, rendered=None):
             ready.extend(rows)
     for filename, rows in (("samples_rendered.jsonl", rendered), ("samples.jsonl", ready)):
         path = generated / filename
-        temporary = path.with_suffix(".tmp")
+        temporary = path.with_name(f"{path.name}.{os.getpid()}.tmp")
         with temporary.open("w") as file:
             for row in rows:
                 file.write(json.dumps(row) + "\n")
         temporary.replace(path)
     return rendered, ready
+
+
+def finish_shard(args, objects, selected, failures):
+    """Write this shard's done marker; if every shard of the run has one, write the shared outputs
+    (latent metadata, samples manifests, merged failed_objects.json) under the dataset lock."""
+    generated = args.data_root / "generated_data"
+    index, count = args.shard
+    markers = generated / "shards"
+    markers.mkdir(exist_ok=True)
+    save_json({"shard": index, "count": count, "objects": len(selected), "failures": failures,
+               "finished": time.strftime("%Y-%m-%d %H:%M:%S")}, markers / f"shard_{index}_of_{count}.json")
+    print(f"Shard {index}/{count}: {len(selected)} objects, {len(failures)} failures", flush=True)
+    with (generated / ".build.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)  # wait: another shard may be finalizing
+        paths = [markers / f"shard_{i}_of_{count}.json" for i in range(count)]
+        missing = [i for i, path in enumerate(paths) if not path.is_file()]
+        if missing:
+            print(f"Shard {index}/{count}: waiting for shards {missing}; the last one writes the manifests", flush=True)
+            return
+        if args.stage in {"all", "latents"}:
+            save_metadata(generated, args.encoder_checkpoint)
+        rendered, ready = write_manifests(args, objects)
+        all_failures = [f for path in paths for f in json.loads(path.read_text())["failures"]]
+        save_json(all_failures, generated / "failed_objects.json")
+        print(f"All {count} shards done | rendered samples: {len(rendered)}; training-ready samples: {len(ready)}; "
+              f"failures: {len(all_failures)}", flush=True)
+        print(f"Training manifest: {generated / 'samples.jsonl'}", flush=True)
 
 
 def run(args):
@@ -458,6 +502,10 @@ def run(args):
             check_existing_objects(objects, previous, generated)
         save_json(settings, settings_path)
         save_json(objects, objects_path)
+    if args.shard is not None:
+        selected = selected[args.shard[0]::args.shard[1]]
+        # A rerun of this shard is not done until it finishes again.
+        (generated / "shards" / f"shard_{args.shard[0]}_of_{args.shard[1]}.json").unlink(missing_ok=True)
     splits_path = generated / "splits.json"
     existing_splits = json.loads(splits_path.read_text()) if splits_path.exists() else None
     splits = make_splits(objects, args.seed, args.train_fraction, args.val_fraction, existing_splits)
@@ -487,13 +535,19 @@ def run(args):
                               f"render_eta={format_time(eta)} {json.dumps(result)}", flush=True)
                         if "error" in result:
                             failures.append(result)
-    rendered, ready = write_manifests(args, objects)
+    sharded = args.shard is not None
+    # A shard only reads its own objects; the shared manifests are written once all shards are done.
+    if sharded:
+        rendered, ready = collect_rendered(args, selected), []
+    else:
+        rendered, ready = write_manifests(args, objects)
     if args.stage in {"all", "latents"}:
         eligible = {row["object_id"] for row in rendered}
         for obj in selected:
             if obj["object_id"] not in eligible:
                 failures.append({"object_id": obj["object_id"], "stage": "latents", "error": "Render/package incomplete"})
-        save_metadata(generated, args.encoder_checkpoint)
+        if not sharded:
+            save_metadata(generated, args.encoder_checkpoint)
         pending_ids = [obj["object_id"] for obj in selected if obj["object_id"] in eligible
                        and not (generated / obj["object_id"] / "target_latent.npz").is_file()]
         if pending_ids:
@@ -505,7 +559,13 @@ def run(args):
                            if pending_ids[i::len(gpu_ids)]]
                 for future in as_completed(futures):
                     failures.extend(future.result())
-        rendered, ready = write_manifests(args, objects, rendered=rendered)
+        if not sharded:
+            rendered, ready = write_manifests(args, objects, rendered=rendered)
+    if sharded:
+        finish_shard(args, objects, selected, failures)
+        if failures:
+            raise SystemExit(1)
+        return
     save_json(failures, generated / "failed_objects.json")
     print(f"Rendered samples: {len(rendered)}; training-ready samples: {len(ready)}; failures: {len(failures)}")
     print(f"Training manifest: {generated / 'samples.jsonl'}", flush=True)
@@ -527,13 +587,15 @@ def main(argv=None):
         raise FileNotFoundError(f"Encoder checkpoint: {args.encoder_checkpoint}; use --stage render to prepare geometry first")
     generated = args.data_root / "generated_data"
     generated.mkdir(parents=True, exist_ok=True)
-    # Prevent two independent jobs from racing on this dataset's manifests.
+    # Prevent two independent jobs from racing on this dataset's manifests (or two copies of one shard).
     # Parallelism within one job uses independent per-object outputs and GPU slots.
-    with (generated / ".build.lock").open("a") as lock:
+    lock_name = ".build.lock" if args.shard is None else f".build.lock.shard{args.shard[0]}of{args.shard[1]}"
+    with (generated / lock_name).open("a") as lock:
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            raise RuntimeError(f"Another builder is writing {args.data_root}") from None
+            raise RuntimeError(f"Another builder is writing {args.data_root}"
+                               + (f" as shard {args.shard[0]}/{args.shard[1]}" if args.shard else "")) from None
         run(args)
 
 

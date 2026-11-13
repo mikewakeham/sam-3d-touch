@@ -1,13 +1,16 @@
 """Blender: render one object with the Shadow-hand grasp chosen for each view (make_data.py --grasp-views).
 
 Same scene as render_blender.py (import, freeze, normalization, Cycles settings, TRELLIS or fixed lighting); the
-cameras and hand poses come from select_grasp_views.py's views.json. Per view: image.png, depth.npy (object + hand,
-camera-axis z), mask.npy (0 background, 1 object, 2 hand) and camera.npz in render_blender.py's format.
+cameras and hand poses come from select_grasp_views.py's views.json. Per view: image.png (RGB with the hand; alpha =
+visible object only, the mask SAM 3D reads), object_mask.png and hand_mask.png (visible pixels, 0/255), depth.npy
+(object + hand, camera-axis z) and camera.npz in render_blender.py's format.
 """
 import argparse
 import json
+import struct
 import sys
 import time
+import zlib
 from pathlib import Path
 
 import bpy
@@ -58,6 +61,32 @@ def add_hand(path):
         bpy.context.scene.collection.objects.link(obj)
         bodies.append((obj, int(z[f"{i}_body_id"])))
     return bodies
+
+
+def write_mask_png(path, mask):
+    """8-bit grayscale PNG (0/255), rows top to bottom; plain zlib, no colour management involved."""
+    h, w = mask.shape
+    raw = b"".join(b"\x00" + row.tobytes() for row in (mask.astype(np.uint8) * 255))
+    chunk = lambda kind, data: (struct.pack(">I", len(data)) + kind + data
+                                + struct.pack(">I", zlib.crc32(kind + data) & 0xffffffff))
+    path.write_bytes(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 0, 0, 0, 0))
+                     + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b""))
+
+
+def object_only_alpha(image_path, object_mask):
+    """Keep the rendered RGB (hand included) and the object's own alpha; zero the alpha on the hand and background.
+    Non-Color + straight alpha: the 8-bit values are rewritten exactly (checked: RGB bit-identical)."""
+    image = bpy.data.images.load(str(image_path), check_existing=False)
+    image.colorspace_settings.name = "Non-Color"
+    image.alpha_mode = "STRAIGHT"
+    w, h = image.size
+    pixels = np.array(image.pixels[:], dtype=np.float32).reshape(h, w, 4)
+    pixels[..., 3] *= np.flipud(object_mask)  # Blender pixel rows start at the bottom
+    image.pixels = pixels.ravel()
+    image.filepath_raw = str(image_path)
+    image.file_format = "PNG"
+    image.save()
+    bpy.data.images.remove(image)
 
 
 def initialize_outputs():
@@ -140,7 +169,7 @@ def main():
                    "color_transform": "Filmic", "pointmap_convention": "x_left_y_up_z_forward",
                    "grasp_views": str(args.views), "normalization_check_max_abs_diff": diff,
                    "hand_material": {"base_color": HAND_COLOR, "roughness": HAND_ROUGHNESS},
-                   "mask_values": {"background": 0, "object": 1, "hand": 2}}, file, indent=2)
+                   "image_alpha": "visible object only", "masks": ["object_mask.png", "hand_mask.png"]}, file, indent=2)
 
     for v in views:
         t_view = time.perf_counter()
@@ -173,7 +202,10 @@ def main():
         depth = load_depth_exr(depth_files[0])  # camera-axis z, as render_blender.render_view
         depth[~(np.isfinite(depth) & (depth > 0) & (depth < camera_data.clip_end))] = np.nan
         np.save(view_dir / "depth.npy", depth)
-        np.save(view_dir / "mask.npy", np.rint(load_depth_exr(index_files[0])).astype(np.uint8))
+        index = np.rint(load_depth_exr(index_files[0])).astype(np.uint8)  # 1 object, 2 hand (pass_index)
+        write_mask_png(view_dir / "object_mask.png", index == 1)
+        write_mask_png(view_dir / "hand_mask.png", index == 2)
+        object_only_alpha(view_dir / "image.png", index == 1)
         for f in depth_files + index_files:
             f.unlink()
         K = camera_intrinsics(args.resolution, v["fov"])
