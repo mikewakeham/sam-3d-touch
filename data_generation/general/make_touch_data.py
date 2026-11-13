@@ -119,8 +119,7 @@ def save_joint(args, record, arrays, path):
     fingerprint = hashlib.sha256(''.join(checkpoint_sha256(source) for source in sources).encode()).hexdigest()
     dataset = object.__new__(TouchDataset)
     dataset.root = args.data_root
-    with Image.open(args.data_root / record['image_path']) as image:
-        rgba = np.array(image.convert('RGBA'))
+    rgba = dataset.load_rgba(record)
     pointmap = dataset.load_pointmap(record)
     # Match the normalizer's alpha threshold and nearest-neighbor resize.
     mask = torch.from_numpy((rgba[..., 3] / 255).astype(np.float32))[None]

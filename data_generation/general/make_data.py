@@ -333,12 +333,7 @@ def package_object(obj, split, args):
         if any(np.any(edge > 0) for edge in (alpha[0], alpha[-1], alpha[:, 0], alpha[:, -1])):
             raise ValueError(f"Object touches image boundary: {view_dir}; use a larger camera radius in a new dataset")
         # Ignore transparent background while retaining NaNs expected by SAM 3D.
-        if args.grasp_views is not None:  # alpha is the object only; keep the hand's depth, blank the background
-            with Image.open(view_dir / "object_mask.png") as om, Image.open(view_dir / "hand_mask.png") as hm:
-                background = (np.asarray(om) == 0) & (np.asarray(hm) == 0)
-            depth[background] = np.nan
-        else:
-            depth[rgba[..., 3] == 0] = np.nan
+        depth[rgba[..., 3] == 0] = np.nan
         if not np.any(np.isfinite(depth) & (depth > 0)):
             raise ValueError(f"No finite foreground depth: {view_dir}")
         np.save(view_dir / "depth.npy", depth)

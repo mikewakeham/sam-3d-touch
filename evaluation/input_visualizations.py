@@ -128,7 +128,9 @@ def load_input_visualizations(args, previous=None):
         evaluation_from_object = data['evaluation_normalization']
     evaluation_from_sam = evaluation_from_object @ np.linalg.inv(sam_from_object)
     image_path = resolve(dataset_root, record['image_path'])
-    rgba = np.asarray(Image.open(image_path).convert('RGBA'))
+    rgba = np.array(Image.open(image_path).convert('RGBA'))
+    if record.get('object_mask_path'):  # grasp renders: the object mask, not the object + hand alpha
+        rgba[..., 3] = np.asarray(Image.open(resolve(dataset_root, record['object_mask_path'])).convert('L'))
     if record.get('pointmap_path'):
         points = np.load(resolve(dataset_root, record['pointmap_path']), allow_pickle=False)
     else:

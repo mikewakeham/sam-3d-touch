@@ -209,11 +209,20 @@ class TouchDataset(Dataset):
         with np.load(self.resolve_path(record["camera_path"]), allow_pickle=False) as camera:
             return depth_to_pointmap(depth, camera["K"])
 
+    def load_rgba(self, record):
+        """RGBA as SAM 3D takes it: alpha is the object mask. Grasp renders show the hand as well, so their alpha
+        is replaced by object_mask.png (the hand stays visible in RGB, outside the mask)."""
+        with Image.open(self.resolve_path(record["image_path"])) as image:
+            image = np.array(image.convert("RGBA"), dtype=np.uint8)
+        if record.get("object_mask_path"):
+            with Image.open(self.resolve_path(record["object_mask_path"])) as mask:
+                image[..., 3] = np.asarray(mask.convert("L"))
+        return image
+
     def __getitem__(self, index):
         record = self.records[index]
 
-        with Image.open(self.resolve_path(record["image_path"])) as image:
-            image = np.array(image.convert("RGBA"), dtype=np.uint8)
+        image = self.load_rgba(record)
 
         pointmap = self.load_pointmap(record)
         target_shape = self.load_target(self.resolve_path(record["target_path"]))
