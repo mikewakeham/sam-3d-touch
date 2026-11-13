@@ -34,7 +34,7 @@ SETTING_NAMES = ("num_views", "resolution", "seed", "camera_radius", "fov_degree
 
 def pipeline_sha256():
     digest = hashlib.sha256()
-    for name in ("make_data.py", "render_blender.py", "sample_full_surface.py", "surface_pool.py", "generate_target_latents.py", "pointmaps.py", "sparse_structure_vae.py", "vae_utils.py"):
+    for name in ("make_data.py", "render_blender.py", "render_grasp_views.py", "sample_full_surface.py", "surface_pool.py", "generate_target_latents.py", "pointmaps.py", "sparse_structure_vae.py", "vae_utils.py"):
         digest.update(Path(__file__).with_name(name).read_bytes())
     return digest.hexdigest()
 
@@ -55,7 +55,7 @@ def parse_args(argv=None):
     selection.add_argument("--object-ids", type=Path,
                            help="Restrict processing to a JSON list of IDs from objects.json; discovery and splits remain complete")
     parser.add_argument("--blender", default="blender")
-    parser.add_argument("--render-device", choices=["CUDA", "OPTIX", "CPU"], default="CUDA")
+    parser.add_argument("--render-device", choices=["CUDA", "OPTIX", "CPU", "METAL"], default="CUDA")
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--render-workers-per-gpu", type=int, default=1)
     parser.add_argument("--blender-threads", type=int, default=4)
@@ -82,8 +82,15 @@ def parse_args(argv=None):
     parser.add_argument("--train-fraction", type=float, default=0.8)
     parser.add_argument("--val-fraction", type=float, default=0.1)
     parser.add_argument("--encoder-checkpoint", type=Path, default=DEFAULT_ENCODER_CHECKPOINT)
+    parser.add_argument("--grasp-views", type=Path,
+                        help="Grasp mode: grasp_views folder from select_grasp_views.py; renders each view with its "
+                             "Shadow-hand grasp and camera instead of the orbit cameras")
     parser.add_argument("--dry-run", action="store_true", help="Discover inputs and print settings without generating data")
     args = parser.parse_args(argv)
+    if args.grasp_views is not None:
+        args.grasp_views = args.grasp_views.expanduser().resolve()
+        if any(args.rotation) or args.random_object_rotation:
+            parser.error("--grasp-views places the hand in the unrotated object frame; drop --rotation/--random-object-rotation")
     if args.surface_pool_points < 0:
         parser.error("--surface-pool-points must be nonnegative")
     if min(args.workers, args.render_workers_per_gpu, args.blender_threads,
@@ -256,6 +263,16 @@ def render_object(obj, output_dir, args, gpu_id):
     ]
     if args.random_object_rotation:
         command.append("--random-object-rotation")
+    if args.grasp_views is not None:
+        command = command[:command.index("--python") + 1] + [
+            str(Path(__file__).with_name("render_grasp_views.py")), "--",
+            "--object", obj["model_path"], "--output", str(output_dir),
+            "--views", str(args.grasp_views / obj["object_id"] / "views.json"),
+            "--hand", str(args.grasp_views / "hand_template.npz"),
+            "--num-views", str(args.num_views), "--resolution", str(args.resolution),
+            "--seed", str(render_seed), "--samples", str(args.samples),
+            "--device", args.render_device, "--frame", str(args.frame), "--lighting", args.lighting,
+        ]
     output_dir.mkdir(parents=True, exist_ok=True)
     log_path = output_dir / "blender.log"
     with log_path.open("w") as log:
@@ -264,12 +281,12 @@ def render_object(obj, output_dir, args, gpu_id):
         raise RuntimeError(f"Blender exited {result.returncode}; see {log_path}")
 
 
-def render_complete(object_dir, num_views):
+def render_complete(object_dir, num_views, grasp=False):
     if not (object_dir / "render_complete.json").is_file():
         return False
     files = [object_dir / name for name in ("mesh.npz", "object_transform.npz", "render_metadata.json")]
-    files += [object_dir / "views" / f"{i:03d}" / name
-              for i in range(num_views) for name in ("image.png", "depth.npy", "camera.npz")]
+    files += [object_dir / "views" / f"{i:03d}" / name for i in range(num_views)
+              for name in ("image.png", "depth.npy", "camera.npz") + (("mask.npy",) if grasp else ())]
     if not all(path.is_file() and path.stat().st_size > 0 for path in files):
         return False
     metadata = json.loads((object_dir / "render_metadata.json").read_text())
@@ -292,6 +309,10 @@ def package_object(obj, split, args):
         pool = make_surface_pool(mesh, args.surface_pool_points, sample_seed, mesh_hash)
         save_surface_pool(object_dir / "surface_pool.npz", pool)
     records = []
+    if args.grasp_views is not None:
+        views_path = args.grasp_views / obj["object_id"] / "views.json"
+        grasp_views = json.loads(views_path.read_text())["views"]
+        views_path = views_path.relative_to(args.data_root) if views_path.is_relative_to(args.data_root) else views_path
     for index in range(args.num_views):
         view_id = f"{index:03d}"
         view_dir = object_dir / "views" / view_id
@@ -325,6 +346,13 @@ def package_object(obj, split, args):
             "object_transform_path": object_dir / "object_transform.npz", "mesh_path": object_dir / "mesh.npz",
         }.items():
             record[key] = str(path.relative_to(args.data_root))
+        if args.grasp_views is not None:
+            # Hand and object masks; the grasp and its contacts are in grasp_views_path, entry grasp_view_index.
+            g = grasp_views[index]
+            record.update(mask_path=str((view_dir / "mask.npy").relative_to(args.data_root)),
+                          grasp_views_path=str(views_path), grasp_view_index=index, grasp_row=g["grasp_row"],
+                          grasp_type=g["type"], grasp_size_bin=g["size_bin"], grasp_reused=g["reused"],
+                          grasp_view_stats=g["stats"])
         records.append(record)
         if args.surface_pool_points:
             record["surface_pool_path"] = str((object_dir / "surface_pool.npz").relative_to(args.data_root))
@@ -342,7 +370,7 @@ def process_object(obj, split, args, gpu_slots):
     try:
         if object_complete(object_dir, args):
             return {"object_id": obj["object_id"], "status": "already complete"}
-        if not render_complete(object_dir, args.num_views):
+        if not render_complete(object_dir, args.num_views, args.grasp_views is not None):
             object_dir.mkdir(parents=True, exist_ok=True)
             for name in ("render_complete.json", "samples.json", "target_latent.npz"):
                 (object_dir / name).unlink(missing_ok=True)
@@ -419,6 +447,8 @@ def run(args):
                         color_transform="Filmic",
                         normalization="evaluated_blender_world_centered_unit_cube")
         settings["pipeline_sha256"] = pipeline_sha256()
+        if args.grasp_views is not None:
+            settings.update(grasp_views=str(args.grasp_views), camera_schedule="grasp_views")
         if settings_path.exists() and json.loads(settings_path.read_text()) != settings:
             raise ValueError(f"Inputs/settings differ from {settings_path}; use a new --data-root")
         if objects_path.exists():
