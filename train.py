@@ -32,6 +32,8 @@ def parse_args():
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--val-workers", type=int, default=2)
+    parser.add_argument("--val-views-per-object", type=int, default=8,
+                        help="Validate on the first N views of each val object (0 = all views)")
     parser.add_argument("--epochs", type=int, default=20,
                         help="Number of epochs when --max-steps is not set")
     parser.add_argument("--max-steps", type=int, default=0,
@@ -1201,6 +1203,8 @@ def main():
         raise ValueError("Training loader has no batches")
     val_config = copy.deepcopy(data_config)
     val_config["dataset"]["split"] = "val"
+    if args.val_views_per_object:
+        val_config["dataset"]["max_views_per_object"] = args.val_views_per_object
     val_loader = build_dataloader(
         val_config, args.batch_size, args.val_workers,
         shuffle=False, distributed=distributed,

@@ -109,6 +109,16 @@ class TouchDataset(Dataset):
                 record = json.loads(line)
                 if record["object_id"] in object_ids:
                     self.records.append(record)
+        # Optional cap (used for validation): the first N views of each object, by view id.
+        max_views = dataset_config.get("max_views_per_object")
+        if max_views:
+            kept = {}
+            for record in sorted(self.records, key=lambda r: (r["object_id"], r["view_id"])):
+                kept.setdefault(record["object_id"], [])
+                if len(kept[record["object_id"]]) < max_views:
+                    kept[record["object_id"]].append(record["sample_id"])
+            keep = {sample_id for ids in kept.values() for sample_id in ids}
+            self.records = [record for record in self.records if record["sample_id"] in keep]
 
     def resolve_path(self, path):
         path = Path(path)
