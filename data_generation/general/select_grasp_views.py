@@ -324,6 +324,10 @@ def passes_limits(st, args):
     ok = np.ones(len(st["view"]), bool)
     if args.min_object_share is not None:
         ok &= st["object_share"] >= args.min_object_share
+    if args.max_object_share is not None:
+        ok &= st["object_share"] <= args.max_object_share
+    if args.min_hand_share is not None:
+        ok &= st["hand_share"] >= args.min_hand_share
     if args.max_occluded is not None:
         ok &= st["occluded"] <= args.max_occluded
     if args.min_occluded is not None:
@@ -473,6 +477,7 @@ def process_object(task):
                                                "hand_gap", "render_gap_m")}))
     np.savez_compressed(od / "candidates.npz", **st)
     selection = {k: getattr(args, k) for k in ("selection", "balance_on", "occlusion_bins", "min_object_share",
+                                                "max_object_share", "min_hand_share",
                                                 "max_occluded", "min_occluded", "max_render_gap")}
     doc = dict(uid=uid, object_id=oid, source_relative_path=relative, source_sha256=s1["source_sha256"],
                coordinate_frame="normalized_object", s_render=s_r, offset_render=off_r.tolist(),
@@ -506,6 +511,10 @@ def main():
     p.add_argument("--occlusion-bins", type=float, nargs="+", default=[0, .1, .2, .3, .4, .5, .6],
                    help="bin edges for balanced selection (chosen from the 100-object stats run)")
     p.add_argument("--min-object-share", type=opt_float, default=None, help="none = off")
+    p.add_argument("--max-object-share", type=opt_float, default=0.35,
+                   help="largest fraction of the image the object may cover (from the 100-object stats run); none = off")
+    p.add_argument("--min-hand-share", type=opt_float, default=0.05,
+                   help="smallest fraction of the image the visible hand must cover (from the 100-object stats run); none = off")
     p.add_argument("--max-occluded", type=opt_float, default=0.6,
                    help="largest fraction of the object hidden by the hand (from the 100-object stats run); none = off")
     p.add_argument("--min-occluded", type=opt_float, default=None, help="none = off")
