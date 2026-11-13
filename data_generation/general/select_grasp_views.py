@@ -189,6 +189,7 @@ WORKER = {}
 
 
 def init_worker(hand):
+    wp.config.quiet = True  # one Warp banner per worker otherwise
     wp.init()
     WORKER["env"] = MuJoCo_VisEnv(hand_cfg=HandCfg(xml_path=str(DEX_ASSETS / hand / "right.xml"), freejoint=True),
                                   vis_mode="visual")
@@ -433,11 +434,14 @@ def main():
     p.add_argument("--margin", type=float, default=0.05, help="fraction of the half-frame kept empty")
     p.add_argument("--visibility-tolerance", type=float, default=0.005)
     p.add_argument("--view-stats-only", action="store_true", help="write candidate stats and low-res masks only")
-    p.add_argument("--selection", choices=["random", "balanced"], default="random")
+    p.add_argument("--selection", choices=["random", "balanced"], default="balanced",
+                   help="balanced: views spread evenly over --occlusion-bins; random: any candidate within the limits")
     p.add_argument("--balance-on", default="occluded")
-    p.add_argument("--occlusion-bins", type=float, nargs="+", default=[0, .1, .2, .3, .4, .5, .6, 1.0001])
+    p.add_argument("--occlusion-bins", type=float, nargs="+", default=[0, .1, .2, .3, .4, .5, .6],
+                   help="bin edges for balanced selection (chosen from the 100-object stats run)")
     p.add_argument("--min-object-share", type=opt_float, default=None, help="none = off")
-    p.add_argument("--max-occluded", type=opt_float, default=None, help="none = off")
+    p.add_argument("--max-occluded", type=opt_float, default=0.6,
+                   help="largest fraction of the object hidden by the hand (from the 100-object stats run); none = off")
     p.add_argument("--min-occluded", type=opt_float, default=None, help="none = off")
     p.add_argument("--max-render-gap", type=opt_float, default=0.005,
                    help="m, worst required finger to the rendered mesh; failing grasps are replaced (same 5 mm as "
