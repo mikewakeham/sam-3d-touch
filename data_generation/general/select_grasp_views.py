@@ -14,7 +14,7 @@ Per object (one per worker):
      candidate per view and write views.json.
 
 Outputs in DATA_ROOT/grasp_views/: hand_template.npz, <object_id>/candidates.npz, <object_id>/views.json,
-objects_manifest.json (for make_data.py --objects-manifest), settings.json, summary.json.
+object_ids.json (for make_data.py --object-ids), settings.json, summary.json.
 """
 import argparse
 import json
@@ -320,24 +320,27 @@ def select_grasps(table_rows, n_views, rng, check):
     return accepted, reused, rejected
 
 
+def limits_broken(st, args):
+    """Per candidate: how many of the limits it breaks (0 = passes)."""
+    broken = np.zeros(len(st["view"]), int)
+    for key, value, too_low in (("object_share", args.min_object_share, True),
+                                ("object_share", args.max_object_share, False),
+                                ("hand_share", args.min_hand_share, True),
+                                ("occluded", args.max_occluded, False),
+                                ("occluded", args.min_occluded, True)):
+        if value is not None:
+            broken += (st[key] < value) if too_low else (st[key] > value)
+    return broken
+
+
 def passes_limits(st, args):
-    ok = np.ones(len(st["view"]), bool)
-    if args.min_object_share is not None:
-        ok &= st["object_share"] >= args.min_object_share
-    if args.max_object_share is not None:
-        ok &= st["object_share"] <= args.max_object_share
-    if args.min_hand_share is not None:
-        ok &= st["hand_share"] >= args.min_hand_share
-    if args.max_occluded is not None:
-        ok &= st["occluded"] <= args.max_occluded
-    if args.min_occluded is not None:
-        ok &= st["occluded"] >= args.min_occluded
-    return ok
+    return limits_broken(st, args) == 0
 
 
 def select_views(st, args, rng):
     """One candidate per view. Returns candidate indices and whether each view had to fall back."""
-    ok = passes_limits(st, args)
+    broken = limits_broken(st, args)
+    ok = broken == 0
     edges = np.array(args.occlusion_bins)
     nb = len(edges) - 1
     bin_of = np.clip(np.digitize(st[args.balance_on], edges) - 1, 0, nb - 1)
@@ -348,9 +351,10 @@ def select_views(st, args, rng):
     for v in range(n_views):
         m = st["view"] == v
         cand = np.where(m & ok)[0]
-        if len(cand) == 0:  # nothing passes the limits: largest object share
+        if len(cand) == 0:  # nothing passes the limits: a candidate breaking the fewest of them
             cand = np.where(m)[0]
-            sel.append(int(st["candidate"][cand[np.argmax(st["object_share"][cand])]]))
+            cand = cand[broken[cand] == broken[cand].min()]
+            sel.append(int(st["candidate"][rng.choice(cand)]))
             fallback.append(True)
             continue
         if args.selection == "balanced":
@@ -573,13 +577,10 @@ def main():
 
     errors = [r for r in results if "error" in r]
     if not args.view_stats_only:
-        manifest = []
-        for d in sorted(out_root.iterdir()):
-            if (d / "views.json").exists():
-                doc = json.loads((d / "views.json").read_text())
-                manifest.append({"source_relative_path": doc["source_relative_path"], "sha256": doc["source_sha256"]})
-        (out_root / "objects_manifest.json").write_text(json.dumps({"objects": manifest}, indent=1))
-        print(f"Manifest | {len(manifest)} objects | {out_root / 'objects_manifest.json'}", flush=True)
+        # make_data.py --object-ids: the objects with views (folder name = make_data's object id)
+        ids = sorted(d.name for d in out_root.iterdir() if (d / "views.json").exists())
+        (out_root / "object_ids.json").write_text(json.dumps(ids, indent=1))
+        print(f"Object ids | {len(ids)} objects | {out_root / 'object_ids.json'}", flush=True)
     done = [r for r in results if "seconds" in r]
     summary = dict(objects=len(uids), processed=len(done), errors=errors,
                    already_done=sum(r.get("status") == "already done" for r in results),

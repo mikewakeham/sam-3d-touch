@@ -18,7 +18,8 @@ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
 
 /n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-data/bin/python -u data_generation/general/make_data.py \
     --objects-root /n/lab_storage/qianqian_lab/Lab/mwakeham/datasets/objaverse_oa/meshes \
-    --objects-manifest /n/lab_storage/qianqian_lab/Lab/mwakeham/datasets/objaverse_oa/sam3d_32views_grasp/grasp_views/objects_manifest.json \
+    --pattern 'chunk_*/*.glb' \
+    --object-ids /n/lab_storage/qianqian_lab/Lab/mwakeham/datasets/objaverse_oa/sam3d_32views_grasp/grasp_views/object_ids.json \
     --grasp-views /n/lab_storage/qianqian_lab/Lab/mwakeham/datasets/objaverse_oa/sam3d_32views_grasp/grasp_views \
     --data-root /n/lab_storage/qianqian_lab/Lab/mwakeham/datasets/objaverse_oa/sam3d_32views_grasp \
     --shard "$SLURM_ARRAY_TASK_ID" "$SLURM_ARRAY_TASK_COUNT" \
