@@ -6,6 +6,7 @@ import numpy as np
 import trimesh
 
 import os
+import time
 os.environ["LIDRA_SKIP_INIT"] = "true"
 
 
@@ -278,7 +279,9 @@ def encode_camera_objects(objects, data_root, checkpoint, gpu_id, overwrite=Fals
     os.environ["CUDA_VISIBLE_DEVICES"] = gpu_id
     import torch
     torch.set_num_threads(1)
+    from make_data import format_time
     encoder = None
+    started = time.monotonic()
     for index, records in enumerate(objects, 1):
         pending = [row for row in records if overwrite or not (data_root / camera_target_path(row)).is_file()
                    or (data_root / camera_target_path(row)).stat().st_size == 0]
@@ -290,7 +293,10 @@ def encode_camera_objects(objects, data_root, checkpoint, gpu_id, overwrite=Fals
             mesh = load_normalized_mesh(data_root / records[0]["mesh_path"])
             for row in pending:
                 generate_camera_target(row, data_root, mesh, encoder, torch.device("cuda:0"))
-        print(f"[GPU {gpu_id}: {index}/{len(objects)}] {records[0]['object_id']}: "
+        elapsed = time.monotonic() - started
+        eta = elapsed / index * (len(objects) - index)
+        print(f"[GPU {gpu_id}: {index}/{len(objects)}] elapsed={format_time(elapsed)} eta={format_time(eta)} "
+              f"{records[0]['object_id']}: "
               f"{len(records) - len(pending)} reused, {len(pending)} encoded", flush=True)
 
 
