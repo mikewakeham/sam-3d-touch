@@ -6,3 +6,4 @@ dataset:
   split_file: generated_data/splits.json
   split: train
   target_frame: camera
+  min_object_mask_share: 0.008

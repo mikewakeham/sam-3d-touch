@@ -71,6 +71,10 @@ class TouchDataset(Dataset):
         self.include_normals = bool(config.get("touch", {}).get("include_normals", False))
         self.surface_pool_count = config.get("touch", {}).get("pool_points")
         self.surface_subset_seed = int(config.get("seed", 0))
+        # Grasp views: views whose object mask covers less than this share of the image are replaced by the next view
+        # (same measure as select_grasp_views.py --min-object-visible-share, on the full-res mask). 0 = only SAM 3D's
+        # own minimum (a 2x2 px mask box).
+        self.min_object_mask_share = float(dataset_config.get("min_object_mask_share", 0))
         if (self.include_normals or self.surface_pool_count is not None) and self.point_source != "full_surface":
             raise ValueError("Normals and surface pools require full-surface data")
         if self.surface_pool_count is not None:
@@ -247,6 +251,13 @@ class TouchDataset(Dataset):
         record = self.records[index]
 
         image = self.load_rgba(record)
+        if not mask_ok(image[..., 3], self.min_object_mask_share):
+            # The object barely shows (e.g. a sliver between fingers): SAM 3D cannot crop it, or it is under the
+            # dataset's minimum visible share. The view is replaced by the next one; each skip is printed once.
+            if record["sample_id"] not in SKIPPED:
+                SKIPPED.add(record["sample_id"])
+                print(f"Skipping {record['sample_id']}: object mask under the minimum size", flush=True)
+            return self[(index + 1) % len(self)]
 
         pointmap = self.load_pointmap(record)
         target_shape = self.load_target(self.resolve_path(record["target_path"]))
@@ -294,6 +305,17 @@ class TouchDataset(Dataset):
                     np.linalg.inv(transform).astype(np.float32)
                 )
         return sample
+
+
+SKIPPED = set()
+
+
+def mask_ok(alpha, min_share=0.0):
+    """True when the object mask (nonzero alpha) covers at least min_share of the image and its box spans at least
+    2 px each way, as SAM 3D's compute_mask_bbox requires."""
+    ys, xs = np.nonzero(alpha)
+    return (len(xs) > 0 and xs.max() - xs.min() >= 2 and ys.max() - ys.min() >= 2
+            and len(xs) >= min_share * alpha.size)
 
 
 def collate_touch_batch(samples):
