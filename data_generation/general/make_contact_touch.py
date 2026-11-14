@@ -301,6 +301,7 @@ def save_joint(record, root, path, args):
     training does, 1024 farthest-point pointmap points, then the first 7168 touch points (saved in farthest-point
     order; repeated cyclically when a view has fewer), in the pointmap's normalized frame. Adds the joint arrays to
     the view's touch file."""
+    import os
     import sys
     import torch
     from omegaconf import OmegaConf
@@ -343,7 +344,11 @@ def save_joint(record, root, path, args):
         points = points[valid]
         if not len(points):
             raise ValueError("No valid foreground pointmap points")
-        chosen = farthest_point_indices(points[None], min(1024, len(points)))[0]
+        if torch.cuda.is_available():  # PyTorch3D's GPU FPS; workers share the job's GPUs
+            device = f"cuda:{os.getpid() % torch.cuda.device_count()}"
+            chosen = farthest_point_indices(points[None].to(device), min(1024, len(points)))[0].cpu()
+        else:
+            chosen = farthest_point_indices(points[None], min(1024, len(points)))[0]
         chosen = chosen[torch.arange(1024, device=chosen.device) % len(chosen)]
         touch = torch.as_tensor(touch_camera)[None]
         touch_mask = torch.ones(touch.shape[:2], dtype=torch.bool)
