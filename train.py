@@ -932,6 +932,23 @@ def aggregate(total_loss, total_samples, device, distributed):
     return totals.tolist()
 
 
+# Requested views the dataloader replaced because their object mask was under the minimum size (dataset
+# min_object_mask_share or SAM 3D's 2x2 px crop limit), and all views delivered, on this process since the run started.
+SKIPPED_VIEWS = {"skipped": 0, "delivered": 0}
+
+
+def report_skipped_views(device, distributed, main_process, run, global_step):
+    counts = torch.tensor([SKIPPED_VIEWS["skipped"], SKIPPED_VIEWS["delivered"]], dtype=torch.float64, device=device)
+    if distributed:
+        dist.all_reduce(counts)
+    skipped, delivered = counts.tolist()
+    if main_process and delivered:
+        share = skipped / delivered
+        print(f"skipped views since this run started: {int(skipped)} of {int(delivered)} "
+              f"({100 * share:.2f}%), object mask under the minimum size", flush=True)
+        run.log({"global_step": global_step, "data/skipped_view_share": share})
+
+
 def train_epoch(
     pipeline, model, raw_model, loader, optimizer, parameters,
     device, args, epoch, step, total_train_steps, world_size,
@@ -996,6 +1013,9 @@ def train_epoch(
         batch_size = batch["target_shape"].shape[0]
         total_loss += loss.item() * batch_size
         total_samples += batch_size
+        SKIPPED_VIEWS["delivered"] += batch_size
+        if "skipped_views" in batch:
+            SKIPPED_VIEWS["skipped"] += int(batch["skipped_views"].sum())
         for name in component_totals:
             component_totals[name] += raw_model.last_detail_losses[name].item() * batch_size
         if drop_mask is not None:
@@ -1358,6 +1378,7 @@ def main():
 
     def validate_and_checkpoint(current_step, checkpoint_epoch, batch_in_epoch=0):
         nonlocal best_loss
+        report_skipped_views(device, distributed, main_process, run, current_step + step_offset)
         val_loss = validate(
             pipeline, raw_model, val_loader, device, args,
             seed + 1, distributed, rank,

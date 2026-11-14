@@ -248,16 +248,20 @@ class TouchDataset(Dataset):
         return image
 
     def __getitem__(self, index):
-        record = self.records[index]
-
-        image = self.load_rgba(record)
-        if not mask_ok(image[..., 3], self.min_object_mask_share):
-            # The object barely shows (e.g. a sliver between fingers): SAM 3D cannot crop it, or it is under the
-            # dataset's minimum visible share. The view is replaced by the next one; each skip is printed once.
-            if record["sample_id"] not in SKIPPED:
-                SKIPPED.add(record["sample_id"])
-                print(f"Skipping {record['sample_id']}: object mask under the minimum size", flush=True)
-            return self[(index + 1) % len(self)]
+        # A view whose object barely shows (e.g. a sliver between fingers) cannot be cropped by SAM 3D, or is under
+        # the dataset's minimum visible share: it is replaced by the next view that passes. sample["skipped_views"]
+        # is 1 when the requested view was replaced, so train.py can report the share of views skipped.
+        skipped = 0
+        requested = index
+        while True:
+            record = self.records[index]
+            image = self.load_rgba(record)
+            if mask_ok(image[..., 3], self.min_object_mask_share):
+                break
+            skipped += 1
+            if skipped >= len(self):
+                raise ValueError("No view passes the minimum object mask size")
+            index = (index + 1) % len(self)
 
         pointmap = self.load_pointmap(record)
         target_shape = self.load_target(self.resolve_path(record["target_path"]))
@@ -267,6 +271,7 @@ class TouchDataset(Dataset):
             "pointmap": torch.from_numpy(np.ascontiguousarray(pointmap)),
             "target_shape": torch.from_numpy(target_shape),
             "sample_id": record["sample_id"],
+            "skipped_views": int(index != requested),
         }
         if self.include_pose_targets:
             sample["camera_from_target"] = torch.from_numpy(load_camera_target_transform(
@@ -305,9 +310,6 @@ class TouchDataset(Dataset):
                     np.linalg.inv(transform).astype(np.float32)
                 )
         return sample
-
-
-SKIPPED = set()
 
 
 def mask_ok(alpha, min_share=0.0):
