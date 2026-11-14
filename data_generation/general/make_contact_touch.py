@@ -1,4 +1,5 @@
-"""Grasp-contact touch: the object surface the settled hand presses on, as 8192 points per view. Run in the grasp env.
+"""Grasp-contact touch: the object surface the settled hand presses on, as 8192 points per view. Run in the grasp env
+(with --joint-pointmap: the sam3d-objects env, with warp-lang and fpsample installed).
 
 Per view (all lengths in render_blender.py's normalized object frame, where the object's longest side is 1):
   1. pose the object (mesh.npz) and the settled hand (grasp_views/hand_template.npz + views.json body poses).
@@ -11,6 +12,10 @@ Per view (all lengths in render_blender.py's normalized object frame, where the 
   5. confirm: only pieces that contain a saved MuJoCo contact point are kept.
   6. --points points by farthest-point sampling, shared between hand parts by touched area with at least
      --min-part-share of the budget each, then reordered by one global farthest-point pass (any prefix is spread out).
+
+--joint-pointmap also saves the joint pointmap + touch input, as make_touch_data.py --joint-pointmap: 1024
+farthest-point pointmap points then the first 7168 touch points, in the pointmap's normalized frame. Views whose touch
+file already exists only get the joint arrays added (when missing).
 
 Writes <view>/touch_grasp_contact.npz next to full_surface.npz and generated_data/samples_touch_grasp_contact.jsonl
 (+ _camframe.jsonl when samples_camframe.jsonl exists). Views with no confirmed contact are listed in
@@ -36,6 +41,9 @@ wp.config.quiet = True
 CONTACT_THRE = 0.002  # Dexonomy's contact distance in metres, as select_grasp_views.py
 NAME = "touch_grasp_contact"
 FORMAT_VERSION = 1
+JOINT_TOUCH_POINTS = 7168  # as make_touch_data.py --joint-pointmap: 1024 pointmap + 7168 touch points
+JOINT_KEYS = ("joint_points_camera", "joint_points_pre_encoder", "joint_pointmap_candidates_camera",
+              "joint_pointmap_indices", "joint_pointmap_scale", "joint_pointmap_shift", "joint_source_sha256")
 
 
 @wp.kernel
@@ -283,6 +291,79 @@ def save_view(record, root, path, points, normals, part, names, stats, obj_hash,
     temporary.replace(path)
 
 
+def has_joint(path):
+    with np.load(path, allow_pickle=False) as saved:
+        return all(key in saved.files for key in JOINT_KEYS)
+
+
+def save_joint(record, root, path, args):
+    """make_touch_data.py's save_joint + joint_arrays for one touch set: the view's image and pointmap preprocessed as
+    training does, 1024 farthest-point pointmap points, then the first 7168 touch points (saved in farthest-point
+    order; repeated cyclically when a view has fewer), in the pointmap's normalized frame. Adds the joint arrays to
+    the view's touch file."""
+    import sys
+    import torch
+    from omegaconf import OmegaConf
+    from torchvision.transforms import InterpolationMode, functional as TF
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from dataloader import TouchDataset
+    from evaluation.input_visualizations import joint_camera_points
+    from generate_target_latents import checkpoint_sha256
+    from make_touch_data import EmptyPointmapMask, joint_preprocessor
+    from sam3d_objects.model.backbone.dit.embedder.surface_encoder_utils import farthest_point_indices
+    from train import normalize_touch_to_pointmap_frame, preprocess_pointmap_batch
+
+    config_path = args.pipeline_config.resolve()
+    config = OmegaConf.load(config_path)
+    sources = [root / record[key] for key in ("image_path", "camera_path", "depth_path")]
+    for key in ("pointmap_path", "object_mask_path"):
+        if record.get(key):
+            sources.append(root / record[key])
+    sources.append(config_path)
+    if config.get("ss_preprocessor") is None:
+        sources.append(config_path.parent / config.ss_generator_config_path)
+    fingerprint = hashlib.sha256("".join(checkpoint_sha256(source) for source in sources).encode()).hexdigest()
+    dataset = object.__new__(TouchDataset)
+    dataset.root = root
+    rgba = dataset.load_rgba(record)
+    pointmap = dataset.load_pointmap(record)
+    # Match the normalizer's alpha threshold and nearest-neighbor resize.
+    mask = torch.from_numpy((rgba[..., 3] / 255).astype(np.float32))[None]
+    mask = TF.resize(mask, pointmap.shape[:2], interpolation=InterpolationMode.NEAREST)
+    if not (mask > .5).any():
+        raise EmptyPointmapMask(f"{record['sample_id']}: Empty foreground mask at pointmap resolution")
+    preprocessor = joint_preprocessor(str(config_path))
+    inputs = preprocess_pointmap_batch(preprocessor, torch.from_numpy(rgba)[None], torch.from_numpy(pointmap)[None], "cpu")
+    with np.load(path, allow_pickle=False) as saved:
+        arrays = dict(saved)
+    touch_camera = arrays["points_camera"][np.arange(JOINT_TOUCH_POINTS) % len(arrays["points_camera"])]
+    with torch.no_grad():
+        points = inputs["pointmap"][0].permute(1, 2, 0).reshape(-1, 3)
+        valid = (inputs["mask"][0].reshape(-1) > .5) & points.isfinite().all(dim=-1)
+        points = points[valid]
+        if not len(points):
+            raise ValueError("No valid foreground pointmap points")
+        chosen = farthest_point_indices(points[None], min(1024, len(points)))[0]
+        chosen = chosen[torch.arange(1024, device=chosen.device) % len(chosen)]
+        touch = torch.as_tensor(touch_camera)[None]
+        touch_mask = torch.ones(touch.shape[:2], dtype=torch.bool)
+        touch = normalize_touch_to_pointmap_frame(touch, touch_mask, inputs, preprocessor)[0]
+        cloud = torch.cat((points[chosen], touch))
+        restored = joint_camera_points(cloud, inputs, preprocessor)
+        if not np.allclose(restored[1024:], touch_camera, atol=1e-5, rtol=1e-5):
+            raise ValueError("Joint points do not round-trip to the saved touch points")
+        arrays.update(joint_points_camera=np.asarray(restored, dtype=np.float32),
+                      joint_points_pre_encoder=cloud.float().cpu().numpy(),
+                      joint_pointmap_candidates_camera=joint_camera_points(points, inputs, preprocessor),
+                      joint_pointmap_indices=chosen.cpu().numpy(),
+                      joint_pointmap_scale=inputs["pointmap_scale"][0].float().cpu().numpy(),
+                      joint_pointmap_shift=inputs["pointmap_shift"][0].float().cpu().numpy(),
+                      joint_source_sha256=fingerprint)
+    temporary = path.with_name(f".{path.stem}.tmp.npz")
+    np.savez_compressed(temporary, **arrays)
+    temporary.replace(path)
+
+
 def make_object(task):
     args, records = task
     root = args.data_root
@@ -294,6 +375,12 @@ def make_object(task):
     for record in records:
         path = (root / record["full_surface_path"]).with_name(f"{NAME}.npz")
         if path.exists() and not args.overwrite:
+            if args.joint_pointmap and not has_joint(path):
+                try:
+                    save_joint(record, root, path, args)
+                except Exception as error:  # listed and left out of the manifests, as for touch errors
+                    failures.append(dict(sample_id=record["sample_id"], reason=f"joint: {type(error).__name__}: {error}"))
+                    continue
             outputs.append(dict(record, touch_path=str(path.relative_to(root))))
             continue
         started = time.perf_counter()
@@ -309,6 +396,8 @@ def make_object(task):
         try:
             points, normals, part, names, stats = view_contact_touch(record, root, view, tmpl, obj, args, device)
             save_view(record, root, path, points, normals, part, names, stats, obj_hash, args)
+            if args.joint_pointmap:
+                save_joint(record, root, path, args)
         except NoContact as error:
             failures.append(dict(sample_id=record["sample_id"], reason=str(error)))
             continue
@@ -368,6 +457,9 @@ def main(argv=None):
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--object-id", action="append", help="Process only these objects (repeatable); no manifests")
     parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--joint-pointmap", action="store_true", help="Also save fixed 1024-pointmap + 7168-touch "
+                        "inputs (as make_touch_data.py); existing touch files only get these added")
+    parser.add_argument("--pipeline-config", type=Path, default=Path("checkpoints/hf/pipeline.yaml"))
     args = parser.parse_args(argv)
     if args.points < 1 or args.hand_samples < 1 or args.gap < 0 or not 0 <= args.min_part_share <= 1:
         parser.error("Need positive --points/--hand-samples, --gap >= 0, 0 <= --min-part-share <= 1")

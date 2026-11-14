@@ -521,12 +521,12 @@ def prepare_batch(
                     normals = normals @ torch.linalg.inv(transform[:, :3, :3])
                     normals = torch.nn.functional.normalize(normals, dim=-1)
             elif not shared_pointmap_normalization and not use_normals and not (
-                    joint_pointmap and fixed_joint_patches and 'touch_patch_count' in batch):
+                    joint_pointmap and fixed_joint_patches and ('touch_patch_count' in batch or 'joint_xyz' in batch)):
                 touch_xyz = normalize_touch_to_pointmap_frame(
                     touch_xyz, touch_mask, inputs, pipeline.ss_preprocessor,
                 )
             if joint_pointmap:
-                if fixed_joint_patches and 'touch_patch_count' in batch:
+                if fixed_joint_patches and ('touch_patch_count' in batch or 'joint_xyz' in batch):
                     if 'joint_xyz' not in batch:
                         raise ValueError('Saved joint inputs are missing; rerun make_touch_data.py with --joint-pointmap')
                     for key in ('pointmap_scale', 'pointmap_shift'):
@@ -1257,7 +1257,7 @@ def main():
         args.oracle_point_frame, args.visual_dropout, args.constant_touch,
         no_visual=args.no_visual,
         shared_pointmap_normalization=args.shared_pointmap_normalization,
-        joint_pointmap_points=(1024 if args.joint_pointmap and data_config.get('touch', {}).get('source') == 'touch_patches' else None),
+        joint_pointmap_points=(1024 if args.joint_pointmap and data_config.get('touch', {}).get('source') in ('touch_patches', 'grasp_contact') else None),
         pose_training_config=pipeline.pose_training_config,
     )
     optimizer, parameters = build_optimizer(touch_encoder, pipeline.backbone, args)

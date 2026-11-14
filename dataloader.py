@@ -289,6 +289,14 @@ class TouchDataset(Dataset):
                     sample["touch_normals"] = torch.from_numpy(np.ascontiguousarray(normals))
             elif self.point_source == "grasp_contact":
                 touch_xyz = self.load_grasp_contact(self.resolve_path(record["touch_path"]))
+                if self.joint_pointmap:
+                    # Saved by make_contact_touch.py --joint-pointmap: 1024 pointmap + 7168 touch points.
+                    with np.load(self.resolve_path(record["touch_path"]), allow_pickle=False) as data:
+                        if "joint_points_pre_encoder" not in data.files:
+                            raise ValueError("Saved joint inputs are missing; rerun make_contact_touch.py with --joint-pointmap")
+                        sample["joint_xyz"] = torch.from_numpy(np.ascontiguousarray(data["joint_points_pre_encoder"]))
+                        for key in ("pointmap_scale", "pointmap_shift"):
+                            sample["joint_" + key] = torch.from_numpy(data["joint_" + key].copy())
             elif self.point_source == 'touch_patches':
                 touch_xyz = self.load_touch_patches(self.resolve_path(record['touch_path']))
                 sample['touch_patch_count'] = self.contact_count
