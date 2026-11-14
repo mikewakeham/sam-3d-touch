@@ -242,12 +242,45 @@ class NoContact(ValueError):
     pass
 
 
-def face_normals(v, f):
-    return np.asarray(trimesh.Trimesh(v, f, process=False).face_normals, float)
+def object_mesh(v, f, device):
+    """The object for touch: (vertices, faces, Warp mesh, face normals). Degenerate triangles (zero area, so no normal)
+    are dropped: they add no surface, and a closest-point query landing on one would give a touch point without a
+    normal."""
+    tm = trimesh.Trimesh(v, f, process=False)
+    normals = np.asarray(tm.face_normals, float)
+    keep = np.isfinite(normals).all(1) & (np.linalg.norm(normals, axis=1) > 0.5) & (np.asarray(tm.area_faces) > 0)
+    f = f[keep]
+    return v, f, wp_mesh(v, f, device), normals[keep]
 
 
 def mesh_sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def save_view(record, root, path, points, normals, part, names, stats, obj_hash, args):
+    transform = sam_camera_transform(root / record["camera_path"])
+    with np.load(root / record["camera_path"], allow_pickle=False) as camera:
+        K, T = camera["K"], camera["T_camera_from_object"]
+    with np.load(root / record["full_surface_path"], allow_pickle=False) as surface:
+        vis_tol = float(surface["visibility_tolerance"])
+    depth = np.load(root / record["depth_path"], allow_pickle=False)
+    arrays = dict(
+        format_version=np.int64(FORMAT_VERSION), data_kind="grasp_contact", coordinate_frame="sam_camera",
+        points_camera=transform_points(points, transform).astype(np.float32),
+        normals_camera=transform_normals(normals, transform),
+        points_object=points.astype(np.float32), normals_object=normals.astype(np.float32),
+        part_index=part, part_names=np.array(names),
+        point_visibility=classify_visibility(points, K, T, depth, vis_tol), visibility_tolerance=vis_tol,
+        tolerance=np.float64(stats["tolerance"]), part_offset=np.bool_(args.part_offset),
+        part_gap=np.array(stats["part_gap"]), gap=np.float64(args.gap),
+        min_part_share=np.float64(args.min_part_share), hand_samples=np.int64(args.hand_samples),
+        seed=np.int64(args.seed), contacts=np.int64(stats["contacts"]),
+        contacts_in_region=np.int64(stats["contacts_in_region"]), pieces=np.int64(stats["pieces"]),
+        part_area=np.array(stats["part_area"]), part_points=np.array(stats["part_points"]),
+        mesh_sha256=obj_hash, numpy_version=np.__version__, warp_version=wp.__version__)
+    temporary = path.with_name(f".{path.stem}.tmp.npz")
+    np.savez_compressed(temporary, **arrays)
+    temporary.replace(path)
 
 
 def make_object(task):
@@ -269,38 +302,19 @@ def make_object(task):
                 if str(m["coordinate_frame"]) != "normalized_object":
                     raise ValueError(f"Unexpected mesh frame: {record['mesh_path']}")
                 v, f = m["vertices"].astype(np.float64), m["faces"].astype(np.int64)
-            obj = (v, f, wp_mesh(v, f, device), face_normals(v, f))
+            obj = object_mesh(v, f, device)
             obj_hash = mesh_sha256(root / record["mesh_path"])
             views = json.loads((root / record["grasp_views_path"]).read_text())["views"]
         view = views[int(record["grasp_view_index"])]
         try:
             points, normals, part, names, stats = view_contact_touch(record, root, view, tmpl, obj, args, device)
+            save_view(record, root, path, points, normals, part, names, stats, obj_hash, args)
         except NoContact as error:
             failures.append(dict(sample_id=record["sample_id"], reason=str(error)))
             continue
-        transform = sam_camera_transform(root / record["camera_path"])
-        with np.load(root / record["camera_path"], allow_pickle=False) as camera:
-            K, T = camera["K"], camera["T_camera_from_object"]
-        with np.load(root / record["full_surface_path"], allow_pickle=False) as surface:
-            vis_tol = float(surface["visibility_tolerance"])
-        depth = np.load(root / record["depth_path"], allow_pickle=False)
-        arrays = dict(
-            format_version=np.int64(FORMAT_VERSION), data_kind="grasp_contact", coordinate_frame="sam_camera",
-            points_camera=transform_points(points, transform).astype(np.float32),
-            normals_camera=transform_normals(normals, transform),
-            points_object=points.astype(np.float32), normals_object=normals.astype(np.float32),
-            part_index=part, part_names=np.array(names),
-            point_visibility=classify_visibility(points, K, T, depth, vis_tol), visibility_tolerance=vis_tol,
-            tolerance=np.float64(stats["tolerance"]), part_offset=np.bool_(args.part_offset),
-            part_gap=np.array(stats["part_gap"]), gap=np.float64(args.gap),
-            min_part_share=np.float64(args.min_part_share), hand_samples=np.int64(args.hand_samples),
-            seed=np.int64(args.seed), contacts=np.int64(stats["contacts"]),
-            contacts_in_region=np.int64(stats["contacts_in_region"]), pieces=np.int64(stats["pieces"]),
-            part_area=np.array(stats["part_area"]), part_points=np.array(stats["part_points"]),
-            mesh_sha256=obj_hash, numpy_version=np.__version__, warp_version=wp.__version__)
-        temporary = path.with_name(f".{path.stem}.tmp.npz")
-        np.savez_compressed(temporary, **arrays)
-        temporary.replace(path)
+        except Exception as error:  # one bad view must not stop the run; it is listed and left out of the manifests
+            failures.append(dict(sample_id=record["sample_id"], reason=f"error: {type(error).__name__}: {error}"))
+            continue
         outputs.append(dict(record, touch_path=str(path.relative_to(root))))
         timings.append(dict(sample_id=record["sample_id"], seconds=time.perf_counter() - started, **stats))
     return outputs, failures, timings
@@ -393,7 +407,7 @@ def main(argv=None):
         return
     path = generated / f"{NAME}_failures.json"
     path.write_text(json.dumps(sorted(failures, key=lambda f: f["sample_id"]), indent=1) + "\n")
-    print(f"{len(failures)} views without confirmed contact: {path}", flush=True)
+    print(f"{len(failures)} views without touch (no confirmed contact, or an error; reasons in {path})", flush=True)
     write_manifest(generated / "samples.jsonl", generated / f"samples_{NAME}.jsonl", outputs)
     write_manifest(generated / "samples_camframe.jsonl", generated / f"samples_{NAME}_camframe.jsonl", outputs)
 

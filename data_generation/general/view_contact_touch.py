@@ -170,7 +170,7 @@ class Viewer:
             self.rows = {r["view_id"]: r for r in rows}
             with np.load(self.root / rows[0]["mesh_path"], allow_pickle=False) as m:
                 v, f = m["vertices"].astype(np.float64), m["faces"].astype(np.int64)
-            self.obj = (v, f, mct.wp_mesh(v, f, self.device), mct.face_normals(v, f))
+            self.obj = mct.object_mesh(v, f, self.device)
             self.views = json.loads((self.root / rows[0]["grasp_views_path"]).read_text())["views"]
         self.gui_view.options = list(self.rows)
         self.gui_view.value = rows[0]["view_id"]
