@@ -171,7 +171,7 @@ def finish_object(task):
         k: s[k] for k in ("num_views", "num_points", "resolution", "seed", "surface_pool_points", "visibility_tolerance")})
     make_data.package_object(obj, ctx["splits"][oid], pack)
     (gv / "views_before_redo.json").unlink()
-    shutil.rmtree(tmp)
+    shutil.rmtree(tmp, ignore_errors=True)  # network storage can briefly keep .nfs files; leftovers are cleanup only
     return oid, len(view_ids), changed_grasp, still_small
 
 
