@@ -82,6 +82,15 @@ def report(root, args):
 
 
 def apply(root, out, args, flagged):
+    in_progress = sorted(root.glob("grasp_views/*/views_before_redo.json"))
+    if (out / "redo_views.json").exists() or in_progress:
+        raise SystemExit(f"A redo is already in progress ({out / 'redo_views.json'} or {len(in_progress)} "
+                         "views_before_redo.json files exist); continue with the selection rerun / --finish instead")
+    # Objects that never rendered (in generated_data/failed_objects.json) are not in the dataset: leave them alone.
+    unrendered = {v["object_id"] for v in flagged if not (root / "generated_data" / v["object_id"] / "samples.json").is_file()}
+    if unrendered:
+        print(f"skipping {len(unrendered)} flagged objects that have no renders: {sorted(unrendered)}")
+        flagged = [v for v in flagged if v["object_id"] not in unrendered]
     objects = sorted({(v["uid"], v["object_id"]) for v in flagged})
     (out / "redo_views.json").write_text(json.dumps(dict(min_object_visible_share=args.min_object_visible_share,
                                                          views=flagged), indent=1))
@@ -100,7 +109,8 @@ def apply(root, out, args, flagged):
     share = f" --min-object-visible-share {args.min_object_visible_share:g}"
     print(f"Moved {len(objects)} views.json aside. Next, from sam-3d-touch:")
     print(f"  1. sbatch data_generation/general/jobs/select_grasp_views_objaverse_oa.sbatch --uids $(cat {out / 'redo_uids.txt'}){share}")
-    print(f"  2. sbatch data_generation/general/jobs/redo_small_object_views_once.sbatch --out-dir {out}")
+    print("  2. sbatch --gres=gpu:1 --cpus-per-task=32 --mem=64G data_generation/general/jobs/redo_small_object_views_once.sbatch "
+          f"--out-dir {out} --render-workers-per-gpu 8 --blender-threads 4")
     print(f"  3. rm {root / 'generated_data' / 'target_latents_camframe.json'} && "
           "sbatch --mem=128G data_generation/general/jobs/make_latents_objaverse_oa_32views_grasp_camframe.sbatch")
     print("  4. the make_contact_touch full-run command (only the replaced views are redone)")
@@ -112,6 +122,10 @@ def finish_object(task):
     oid, view_ids, ctx = task
     root, out = Path(ctx["root"]), Path(ctx["out"])
     gv = root / "grasp_views" / oid
+    if not (gv / "views_before_redo.json").exists() and (gv / "views.json").exists():
+        return oid, 0, 0, []  # finished before a crash, but not yet recorded in redo_finished.txt
+    if not (gv / "views.json").exists():
+        raise FileNotFoundError(f"{oid}: no new views.json; the selection rerun did not produce this object")
     old = json.loads((gv / "views_before_redo.json").read_text())
     new = json.loads((gv / "views.json").read_text())
     if [v["view"] for v in old["views"]] != [v["view"] for v in new["views"]]:
