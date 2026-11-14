@@ -323,7 +323,8 @@ def select_grasps(table_rows, n_views, rng, check):
 def limits_broken(st, args):
     """Per candidate: how many of the limits it breaks (0 = passes)."""
     broken = np.zeros(len(st["view"]), int)
-    for key, value, too_low in (("object_share", args.min_object_share, True),
+    for key, value, too_low in (("object_visible_share", args.min_object_visible_share, True),
+                                ("object_share", args.min_object_share, True),
                                 ("object_share", args.max_object_share, False),
                                 ("hand_share", args.min_hand_share, True),
                                 ("occluded", args.max_occluded, False),
@@ -353,6 +354,9 @@ def select_views(st, args, rng):
         cand = np.where(m & ok)[0]
         if len(cand) == 0:  # nothing passes the limits: a candidate breaking the fewest of them
             cand = np.where(m)[0]
+            # the minimum visible object size is kept even here; with no candidate meeting it, the most visible one
+            seen = cand[st["object_visible_share"][cand] >= (args.min_object_visible_share or 0)]
+            cand = seen if len(seen) else cand[[np.argmax(st["object_visible_share"][cand])]]
             cand = cand[broken[cand] == broken[cand].min()]
             sel.append(int(st["candidate"][rng.choice(cand)]))
             fallback.append(True)
@@ -440,7 +444,8 @@ def process_object(task):
                              object_share=n_obj[c] / R**2,
                              object_visible_share=(obj_hit[c] & ~hidden[c]).sum() / R**2,
                              hand_share=hand_seen[c].sum() / R**2,
-                             occluded=hidden[c].sum() / max(n_obj[c], 1),
+                             # an object the low-res pass cannot see counts as fully hidden, not 0% hidden
+                             occluded=hidden[c].sum() / n_obj[c] if n_obj[c] else 1.0,
                              contacts_visible_object_only=cvis_obj[c], contacts_visible=cvis_all[c],
                              object_on_border=bool((obj_hit[c] & border).any()),
                              hand_on_border=bool((hand_hit[c] & border).any()),
@@ -480,7 +485,8 @@ def process_object(task):
                                                "contacts_visible_object_only", "contacts_visible", "distance",
                                                "hand_gap", "render_gap_m")}))
     np.savez_compressed(od / "candidates.npz", **st)
-    selection = {k: getattr(args, k) for k in ("selection", "balance_on", "occlusion_bins", "min_object_share",
+    selection = {k: getattr(args, k) for k in ("selection", "balance_on", "occlusion_bins", "min_object_visible_share",
+                                                "min_object_share",
                                                 "max_object_share", "min_hand_share",
                                                 "max_occluded", "min_occluded", "max_render_gap")}
     doc = dict(uid=uid, object_id=oid, source_relative_path=relative, source_sha256=s1["source_sha256"],
@@ -515,6 +521,9 @@ def main():
     p.add_argument("--occlusion-bins", type=float, nargs="+", default=[0, .1, .2, .3, .4, .5, .6],
                    help="bin edges for balanced selection (chosen from the 100-object stats run)")
     p.add_argument("--min-object-share", type=opt_float, default=None, help="none = off")
+    p.add_argument("--min-object-visible-share", type=opt_float, default=0.002,
+                   help="smallest fraction of the low-res image the object must cover where the hand does not hide "
+                        "it; also kept by the fallback (SAM 3D cannot crop around a sliver); none = off")
     p.add_argument("--max-object-share", type=opt_float, default=0.35,
                    help="largest fraction of the image the object may cover (from the 100-object stats run); none = off")
     p.add_argument("--min-hand-share", type=opt_float, default=0.05,

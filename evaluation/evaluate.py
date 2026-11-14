@@ -386,7 +386,7 @@ def save_stage1_artifact(output_dir, condition, sample_id, prediction, predicted
 
 def save_generated_artifacts(output_dir, condition, sample_id, prediction, predicted_voxels,
                              target_voxels, coords_original, coords, downsample_factor, slat,
-                             raw_mesh, normalized_mesh, aligned_mesh, normalization, alignment,
+                             aligned_mesh, normalization, alignment,
                              icp_error, icp_fitness, icp_inlier_rmse, points, normals,
                              touch_centers, seed, save_points, joint_input=None):
     stage1_path = save_stage1_artifact(
@@ -395,8 +395,6 @@ def save_generated_artifacts(output_dir, condition, sample_id, prediction, predi
     )
     artifact_dir = stage1_path.parent
     slat_path = artifact_dir / "slat.npz"
-    raw_path = artifact_dir / "mesh_raw.ply"
-    normalized_path = artifact_dir / "mesh_normalized.ply"
     aligned_path = artifact_dir / "mesh_aligned.ply"
     alignment_path = artifact_dir / "alignment.npz"
     np.savez_compressed(
@@ -404,8 +402,6 @@ def save_generated_artifacts(output_dir, condition, sample_id, prediction, predi
         coords=slat.coords.detach().cpu().numpy(),
         feats=slat.feats.detach().float().cpu().numpy(),
     )
-    raw_mesh.export(raw_path)
-    normalized_mesh.export(normalized_path)
     aligned_mesh.export(aligned_path)
     np.savez_compressed(
         alignment_path,
@@ -421,7 +417,7 @@ def save_generated_artifacts(output_dir, condition, sample_id, prediction, predi
         icp_seed=np.int64(seed + 1),
         surface_seed=np.int64(seed + 2),
     )
-    return stage1_path, slat_path, raw_path, normalized_path, aligned_path, alignment_path
+    return stage1_path, slat_path, aligned_path, alignment_path
 
 
 def aligned_stage1_points(row, output_dir):
@@ -677,11 +673,11 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                 paths = save_generated_artifacts(
                     args.output_dir, name, sample_id, prediction, predicted_voxels[0],
                     target_voxels[0], coords_original, coords, downsample_factor, slat,
-                    raw_mesh, normalized_mesh, aligned_mesh, normalization, alignment,
+                    aligned_mesh, normalization, alignment,
                     icp_error, icp_fitness, icp_inlier_rmse, points, normals,
                     touch_centers, seed, args.save_points, joint_input=joint_input,
                 )
-                stage1_path, slat_path, raw_path, normalized_path, aligned_path, alignment_path = paths
+                stage1_path, slat_path, aligned_path, alignment_path = paths
                 row = {
                     "condition": name,
                     "sample_id": sample_id,
@@ -690,8 +686,6 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     "image_path": str(loader.dataset.resolve_path(record["image_path"])),
                     "stage1_path": relative(stage1_path, args.output_dir),
                     "slat_path": relative(slat_path, args.output_dir),
-                    "mesh_raw_path": relative(raw_path, args.output_dir),
-                    "mesh_normalized_path": relative(normalized_path, args.output_dir),
                     "mesh_aligned_path": relative(aligned_path, args.output_dir),
                     "alignment_path": relative(alignment_path, args.output_dir),
                     "target_mesh_path": relative(target["mesh_path"], args.output_dir),
@@ -715,8 +709,6 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     "image_path": str(loader.dataset.resolve_path(record["image_path"])),
                     "stage1_path": relative(failed_stage1, args.output_dir) if failed_stage1 is not None else "",
                     "slat_path": "",
-                    "mesh_raw_path": "",
-                    "mesh_normalized_path": "",
                     "mesh_aligned_path": "",
                     "alignment_path": "",
                     "target_mesh_path": relative(target_cache[record["object_id"]]["mesh_path"], args.output_dir),
@@ -826,8 +818,7 @@ def summarize(rows, primary_conditions, diagnostic_conditions, no_touch, best_to
 def artifacts_complete(row, output_dir):
     if row.get("error") != "":
         return False
-    keys = ("stage1_path", "slat_path", "mesh_raw_path", "mesh_normalized_path",
-            "mesh_aligned_path", "alignment_path", "target_mesh_path", "target_points_path")
+    keys = ("stage1_path", "slat_path", "mesh_aligned_path", "alignment_path", "target_mesh_path", "target_points_path")
     if "pose_error" in row and row["condition"] != "decoded_gt" and not row["pose_error"]:
         keys += ("pose_path",)
     return all(row.get(key) and (output_dir / row[key]).is_file()

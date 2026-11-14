@@ -223,9 +223,13 @@ def load_evaluation(evaluation_dir, sample_id, conditions=None, modes=('mesh',),
                           color=(180, 180, 180), opacity=1.0))
         for name in conditions:
             row = rows[name]
+            # Only the aligned mesh is saved; undo ICP and normalization to get the raw prediction.
+            with np.load(resolve(root, row['alignment_path']), allow_pickle=False) as alignment:
+                raw_from_aligned = np.linalg.inv(alignment['icp_transform'] @ alignment['prediction_normalization'])
             with np.load(resolve(root, row['pose_path']), allow_pickle=False) as pose:
                 np.testing.assert_allclose(pose['target_transform'], target_transform, atol=1e-5)
-                mesh = load_mesh(resolve(root, row['mesh_raw_path']))
+                mesh = load_mesh(resolve(root, row['mesh_aligned_path']))
+                mesh.apply_transform(raw_from_aligned)
                 mesh.apply_transform(pose['prediction_transform'])
             items.append(dict(name=f'mesh_{name}', mesh=mesh, frame='sam_camera',
                               color=(45, 125, 210), opacity=.4))
