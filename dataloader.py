@@ -79,7 +79,7 @@ class TouchDataset(Dataset):
                 raise ValueError("touch.pool_points must be positive")
         if oracle_point_frame and (not include_touch or self.point_source != "full_surface"):
             raise ValueError("Oracle point frame requires full-surface conditioning")
-        if self.point_source not in ("touch", "full_surface", "touch_patches"):
+        if self.point_source not in ("touch", "full_surface", "touch_patches", "grasp_contact"):
             raise ValueError(f"Unknown point source: {self.point_source}")
         if include_touch and self.point_source == "touch":
             touch_config = config["touch"]
@@ -92,6 +92,11 @@ class TouchDataset(Dataset):
                 raise ValueError("Contact and point counts must be positive")
             if self.radius < 0:
                 raise ValueError("Neighborhood radius must be non-negative")
+        if include_touch and self.point_source == "grasp_contact":
+            # Saved in farthest-point order, so the first N points are spread over the whole contact.
+            self.contact_points = int(config["touch"].get("points", 8192))
+            if self.contact_points < 1:
+                raise ValueError("touch.points must be positive")
         if include_touch and self.point_source == "touch_patches":
             self.contact_count = int(config['touch']['contacts']['count'])
             self.points_per_contact = int(config['touch']['point_sampling']['points_per_contact'])
@@ -190,6 +195,15 @@ class TouchDataset(Dataset):
             indices = select_patch_indices(data, self.contact_count, self.points_per_contact)
             return np.ascontiguousarray(data['points_camera'][indices])
 
+    def load_grasp_contact(self, path):
+        with np.load(path, allow_pickle=False) as data:
+            if str(data["data_kind"]) != "grasp_contact" or str(data["coordinate_frame"]) != "sam_camera":
+                raise ValueError(f"Unsupported grasp-contact touch file: {path}")
+            points = data["points_camera"][:self.contact_points]
+        if len(points) == 0 or not np.isfinite(points).all():
+            raise ValueError(f"Grasp-contact touch in {path} is empty or non-finite")
+        return np.ascontiguousarray(points, dtype=np.float32)
+
     def load_full_surface(self, path, include_normals=False):
         with np.load(path, allow_pickle=False) as data:
             validate_surface(data, require_normals=include_normals)
@@ -257,6 +271,8 @@ class TouchDataset(Dataset):
                     touch_xyz = self.load_full_surface(self.resolve_path(record["full_surface_path"]))
                 if self.include_normals:
                     sample["touch_normals"] = torch.from_numpy(np.ascontiguousarray(normals))
+            elif self.point_source == "grasp_contact":
+                touch_xyz = self.load_grasp_contact(self.resolve_path(record["touch_path"]))
             elif self.point_source == 'touch_patches':
                 touch_xyz = self.load_touch_patches(self.resolve_path(record['touch_path']))
                 sample['touch_patch_count'] = self.contact_count

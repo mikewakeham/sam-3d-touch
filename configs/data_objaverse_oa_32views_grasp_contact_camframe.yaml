@@ -1,0 +1,12 @@
+seed: 29
+
+dataset:
+  root: /n/lab_storage/qianqian_lab/Lab/mwakeham/datasets/objaverse_oa/sam3d_32views_grasp
+  manifest: generated_data/samples_touch_grasp_contact_camframe.jsonl
+  split_file: generated_data/splits.json
+  split: train
+  target_frame: camera
+
+touch:
+  source: grasp_contact
+  points: 8192
