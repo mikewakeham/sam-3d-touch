@@ -16,7 +16,8 @@ export PYTHONNOUSERSITE=1 PYTHONUNBUFFERED=1
 
 OA=/n/lab_storage/qianqian_lab/Lab/mwakeham/datasets/objaverse_oa
 
-/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/grasp-generation/bin/python -u data_generation/general/make_contact_touch.py \
+/n/holylabs/qianqian_lab/Lab/mwakeham/.conda/envs/sam3d-objects/bin/python -u data_generation/general/make_contact_touch.py \
     --data-root "$OA/sam3d_32views_grasp" \
     --workers "$SLURM_CPUS_PER_TASK" \
+    --joint-pointmap \
     "$@"
