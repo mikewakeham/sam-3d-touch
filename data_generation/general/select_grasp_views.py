@@ -521,7 +521,7 @@ def main():
     p.add_argument("--occlusion-bins", type=float, nargs="+", default=[0, .1, .2, .3, .4, .5, .6],
                    help="bin edges for balanced selection (chosen from the 100-object stats run)")
     p.add_argument("--min-object-share", type=opt_float, default=None, help="none = off")
-    p.add_argument("--min-object-visible-share", type=opt_float, default=0.002,
+    p.add_argument("--min-object-visible-share", type=opt_float, default=0.008,
                    help="smallest fraction of the low-res image the object must cover where the hand does not hide "
                         "it; also kept by the fallback (SAM 3D cannot crop around a sliver); none = off")
     p.add_argument("--max-object-share", type=opt_float, default=0.35,
