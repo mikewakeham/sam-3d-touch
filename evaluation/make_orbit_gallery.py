@@ -1,11 +1,13 @@
 """Write index.html next to make_orbit.py's orbits: one row per sample with the input image and every condition's
-orbit side by side (metrics underneath), the input-point orbits in a dropdown, and a download link per GIF.
+orbit side by side (metrics underneath), the input-point orbits in a dropdown, and download links per orbit.
 
     python -m evaluation.make_orbit_gallery --evaluation-dir outputs/objaverse_oa/evaluation_grasp_camframe
 
-Open orbits/index.html, or serve the folder (python -m http.server) so download links save with readable names.
-Rerun after rendering more orbits; it only reads files that exist. The grid shows small preview GIFs (saved in each
-sample's preview/ folder, remade only when the orbit changes); enlarging or downloading uses the full GIF.
+Serve the folder (python -m http.server 8000 --directory .../orbits) and open http://localhost:8000.
+Each orbit is shown as an MP4 with a small poster image, as the persistent-dynamic-state viewers do: the page only
+downloads posters up front, and a video downloads and plays only while it is on screen. Orbits rendered without
+make_orbit --mp4 are converted once from their GIF (ffmpeg); posters go in each sample's preview/ folder. Both are
+remade only when the orbit changes. Rerun after rendering more orbits; it only reads files that exist.
 """
 import argparse
 import csv
@@ -13,10 +15,12 @@ import html
 import json
 import math
 import re
+import shutil
+import subprocess
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-from PIL import Image, ImageSequence
+from PIL import Image
 
 FIXED_LABELS = {"official": "SAM 3D (official)", "decoded_gt": "decoded GT"}
 # input_visualizations.input_groups names; longer prefixes first.
@@ -24,6 +28,9 @@ INPUT_LABELS = [("input_mesh_textured", "mesh (textured)"), ("input_mesh_pointma
                 ("input_mesh_pointmap", "mesh + pointmap"), ("input_mesh_surface", "mesh + points"),
                 ("input_mesh", "mesh"), ("input_pointmap_surface", "pointmap + points"),
                 ("input_pointmap", "pointmap"), ("input_surface", "points")]
+# Display order, as input_visualizations.input_groups: the shared inputs, then each touch run's four views.
+INPUT_ORDER = ["input_mesh_textured", "input_mesh", "input_mesh_pointmap", "input_pointmap", "input_mesh_surface",
+               "input_mesh_pointmap_surface", "input_surface", "input_pointmap_surface"]
 METRICS = [("fscore_0.01", "F@1%", 3), ("chamfer", "CD", 4)]
 
 CSS = """
@@ -39,15 +46,9 @@ button { font: inherit; background: #fff; border: 1px solid #bbb; padding: 3px 1
 .sample-id { color: #555; margin-bottom: 8px; font-size: 13px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(var(--size, 240px), 100%), 1fr));
         gap: 10px; }
-.cell img { cursor: zoom-in; }
-#zoom { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.97); z-index: 10; display: flex;
-        flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
-#zoom img { width: min(94vw, 84vh); height: min(94vw, 84vh); object-fit: contain; border: 1px solid #eee;
-            cursor: zoom-out; }
-#zoom .name, #zoom .meta { font-size: 14px; text-align: center; }
 .cell { min-width: 0; }
-.cell img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; border: 1px solid #eee;
-            background: #fff; }
+.media { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; border: 1px solid #eee;
+         background: #fff; cursor: zoom-in; }
 .name { font-size: 13px; margin-top: 4px; overflow-wrap: anywhere; }
 .meta { font-size: 12px; color: #555; }
 .meta a { color: #2859a5; text-decoration: none; margin-right: 8px; }
@@ -55,6 +56,11 @@ button { font: inherit; background: #fff; border: 1px solid #bbb; padding: 3px 1
 details { margin-top: 10px; }
 summary { cursor: pointer; color: #555; font-size: 13px; }
 details .grid { margin-top: 8px; }
+#zoom { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.97); z-index: 10; display: flex;
+        flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+#zoom .big { width: min(94vw, 84vh); height: min(94vw, 84vh); object-fit: contain; border: 1px solid #eee;
+             cursor: zoom-out; }
+#zoom .name, #zoom .meta { font-size: 14px; text-align: center; }
 .hidden { display: none !important; }
 """
 
@@ -69,36 +75,61 @@ function apply() {
 }
 const size = document.getElementById('size');
 size.addEventListener('input', () => document.documentElement.style.setProperty('--size', size.value + 'px'));
-// Click a GIF to see it large; arrow keys step through the visible ones, Esc or a click closes.
+
+// Videos have preload="none" and a poster, so only posters download up front. A video plays (and so downloads)
+// only while it is on screen and pauses when it scrolls away. Still images load the same way.
+const media = [...document.querySelectorAll('.media')];
+const onScreen = new IntersectionObserver(entries => entries.forEach(e => {
+  const m = e.target;
+  if (m.tagName === 'VIDEO') {
+    if (e.isIntersecting) m.play().catch(() => {}); else m.pause();
+  } else if (e.isIntersecting && !m.getAttribute('src')) {
+    m.src = m.dataset.src;
+  }
+}), { rootMargin: '200px 0px' });
+media.forEach(m => onScreen.observe(m));
+// Retry media that fail to load (dropped requests through a port forward), up to three times.
+media.forEach(m => m.addEventListener('error', () => {
+  const tries = Number(m.dataset.tries || 0);
+  if (tries >= 3) return;
+  m.dataset.tries = tries + 1;
+  setTimeout(() => {
+    if (m.tagName === 'VIDEO') { m.load(); m.play().catch(() => {}); } else { m.src = m.dataset.src + '?retry=' + (tries + 1); }
+  }, 1000 * (tries + 1));
+}, true));
+
+// Click any orbit to see it large; arrow keys step through the visible ones, Esc or a click closes.
 const zoom = document.getElementById('zoom');
 let current = null;
-function visible() { return [...document.querySelectorAll('.cell img')].filter(i => i.offsetParent !== null); }
-function show(img) {
-  current = img;
-  const cell = img.closest('.cell');
-  zoom.innerHTML = '<img src="' + (img.dataset.full || img.dataset.src) + '" alt="">' + cell.querySelector('.name').outerHTML
-    + cell.querySelector('.meta').outerHTML + '<div class="meta">' + cell.closest('.sample').querySelector('.sample-id').textContent + '</div>';
+function visible() { return media.filter(m => m.offsetParent !== null); }
+function show(m) {
+  current = m;
+  const cell = m.closest('.cell');
+  let big;
+  if (m.tagName === 'VIDEO') {
+    // Built as an element (not an HTML string) so muted is set before play(); the poster shows right away and
+    // controls are there if the browser still refuses to start it.
+    big = document.createElement('video');
+    big.muted = true; big.loop = true; big.playsInline = true; big.controls = true; big.preload = 'auto';
+    if (m.poster) big.poster = m.poster;
+    big.src = m.dataset.full;
+    const start = m.currentTime;
+    big.addEventListener('loadedmetadata', () => { if (start > 0) big.currentTime = start; }, { once: true });
+    big.addEventListener('error', () => setTimeout(() => { big.load(); big.play().catch(() => {}); }, 1000), { once: true });
+  } else {
+    big = document.createElement('img');
+    big.src = m.dataset.full;
+  }
+  big.className = 'big';
+  zoom.replaceChildren(big);
+  zoom.insertAdjacentHTML('beforeend', cell.querySelector('.name').outerHTML + cell.querySelector('.meta').outerHTML
+    + '<div class="meta">' + cell.closest('.sample').querySelector('.sample-id').textContent + '</div>');
   zoom.classList.remove('hidden');
+  if (big.tagName === 'VIDEO') big.play().catch(() => {});
 }
-function close() { zoom.classList.add('hidden'); current = null; }
-document.querySelectorAll('.cell img').forEach(img => img.addEventListener('click', () => show(img)));
-// Load an image only while it is on screen (plus a small margin) and unload it once it scrolls away, so only the
-// visible GIFs download and animate.
-const onScreen = new IntersectionObserver(entries => entries.forEach(e => {
-  const img = e.target;
-  if (e.isIntersecting) { if (!img.getAttribute('src')) img.src = img.dataset.src; }
-  else if (img.getAttribute('src')) { img.removeAttribute('src'); img.dataset.tries = 0; }
-}), { rootMargin: '300px 0px' });
-document.querySelectorAll('.cell img').forEach(img => onScreen.observe(img));
-// Retry images that fail to load (dropped requests through a port forward), up to three times.
-document.querySelectorAll('.cell img').forEach(img => img.addEventListener('error', () => {
-  const tries = Number(img.dataset.tries || 0);
-  if (tries >= 3 || !img.getAttribute('src')) return;
-  img.dataset.tries = tries + 1;
-  setTimeout(() => { if (img.getAttribute('src')) img.src = img.dataset.src + '?retry=' + (tries + 1); },
-             1000 * (tries + 1));
-}));
-zoom.addEventListener('click', e => { if (!e.target.closest('a')) close(); });
+function close() { zoom.classList.add('hidden'); zoom.innerHTML = ''; current = null; }
+media.forEach(m => m.addEventListener('click', () => show(m)));
+zoom.addEventListener('click', e => { if (!e.target.closest('a') && !e.target.closest('video')) close(); });
 document.addEventListener('keydown', e => {
   if (!current) return;
   if (e.key === 'Escape') close();
@@ -108,48 +139,63 @@ document.addEventListener('keydown', e => {
   }
 });
 document.querySelectorAll('.controls input').forEach(i => i.addEventListener('change', apply));
+// Restart every playing video at frame 0 so the visible orbits line up.
 document.getElementById('restart').addEventListener('click', () => {
-  document.querySelectorAll('.cell img[src]').forEach(img => { img.removeAttribute('src'); img.src = img.dataset.src; });
+  media.filter(m => m.tagName === 'VIDEO' && !m.paused).forEach(v => { v.currentTime = 0; });
 });
 apply();
 """
 
 
-def make_preview(task):
-    """Downscaled copy of one orbit GIF, keeping every `step`-th frame at the same playback speed."""
-    source, target, size, step = task
-    if target.is_file() and target.stat().st_mtime >= source.stat().st_mtime:
-        return None
+def ffmpeg_exe():
     try:
-        write_preview(source, target, size, step)
-    except Exception as error:  # e.g. an orbit still being written; the grid then uses the full GIF
-        return f"{source}: {type(error).__name__}: {error}"
+        import imageio_ffmpeg  # ships with moviepy, which make_orbit --mp4 uses
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except ImportError:
+        return shutil.which("ffmpeg")
+
+
+def stale(target, source):
+    return not target.is_file() or target.stat().st_mtime < source.stat().st_mtime
+
+
+def prepare(task):
+    """MP4 (from the GIF, unless make_orbit --mp4 already wrote one) and a small JPG poster for one orbit."""
+    gif, poster_size, ffmpeg = task
+    try:
+        poster = gif.parent / "preview" / (gif.stem + ".jpg")
+        if stale(poster, gif):
+            write_poster(gif.with_suffix(".png") if gif.with_suffix(".png").is_file() else gif, poster, poster_size)
+        mp4 = gif.with_suffix(".mp4")
+        # make_orbit --mp4 writes its MP4 just before the GIF, so only an MP4 clearly older than its GIF is stale.
+        if not mp4.is_file() or mp4.stat().st_size == 0 or mp4.stat().st_mtime < gif.stat().st_mtime - 60:
+            if ffmpeg is None:
+                raise RuntimeError("no ffmpeg (pip install imageio-ffmpeg)")
+            temporary = mp4.with_name(f".{mp4.stem}.tmp.mp4")
+            subprocess.run([ffmpeg, "-y", "-loglevel", "error", "-i", str(gif), "-movflags", "+faststart",
+                            "-pix_fmt", "yuv420p", "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2", "-c:v", "libx264",
+                            "-crf", "20", str(temporary)], check=True, capture_output=True, text=True)
+            temporary.replace(mp4)
+    except subprocess.CalledProcessError as error:
+        lines = error.stderr.strip().splitlines()
+        return f"{gif.name}: ffmpeg failed: {lines[-1][-200:] if lines else error}"
+    except Exception as error:  # e.g. an orbit still being written; the page then shows the GIF itself
+        return f"{gif}: {type(error).__name__}: {error}"
     return None
 
 
-def write_preview(source, target, size, step):
-    with Image.open(source) as gif:
-        duration = gif.info.get("duration", 100)
-        frames = []
-        for index, frame in enumerate(ImageSequence.Iterator(gif)):
-            if index % step == 0:
-                image = frame.convert("RGB")
-                image.thumbnail((size, size), Image.Resampling.LANCZOS)
-                frames.append(image)
-    target.parent.mkdir(exist_ok=True)
-    temporary = target.with_name(f".{target.name}.tmp.gif")
-    frames[0].save(temporary, save_all=True, append_images=frames[1:], duration=duration * step, loop=0,
-                   disposal=2, optimize=True)
-    temporary.replace(target)
+def write_poster(source, target, size):
+    with Image.open(source) as image:
+        image = image.convert("RGB")
+        image.thumbnail((size, size), Image.Resampling.LANCZOS)
+        target.parent.mkdir(exist_ok=True)
+        temporary = target.with_name(f".{target.stem}.tmp.jpg")
+        image.save(temporary, quality=85)
+        temporary.replace(target)
 
 
 def safe(name):
     return re.sub(r"[^A-Za-z0-9_-]+", "_", name)  # make_orbit.orbit_names
-
-
-# Display order, as input_visualizations.input_groups: the shared inputs, then each touch run's four views.
-INPUT_ORDER = ["input_mesh_textured", "input_mesh", "input_mesh_pointmap", "input_pointmap", "input_mesh_surface",
-               "input_mesh_pointmap_surface", "input_surface", "input_pointmap_surface"]
 
 
 def split_input(stem):
@@ -181,24 +227,30 @@ def metric_text(row):
     return " · ".join(parts)
 
 
-def links(sample, stem, path):
+def links(sample, stem, folder):
     out = []
-    for ext in (".gif", ".png"):
-        if path.with_suffix(ext).is_file():
+    for ext in (".mp4", ".gif", ".png"):
+        if (folder / f"{stem}{ext}").is_file():
             href = html.escape(f"{sample}/{stem}{ext}")
             out.append(f'<a href="{href}" download="{html.escape(f"{sample}_{stem}{ext}")}">{ext[1:]}</a>')
     return "".join(out)
 
 
-def cell(sample, stem, path, label, extra="", cond=None, mode=None):
+def cell(sample, folder, stem, label, extra="", cond=None, mode=None):
     attrs = (f' data-cond="{html.escape(cond)}"' if cond else "") + (f' data-mode="{mode}"' if mode else "")
-    full = f"{sample}/{stem}{path.suffix}"
-    preview = path.parent / "preview" / path.name
-    src = f"{sample}/preview/{path.name}" if path.suffix == ".gif" and preview.is_file() else full
-    return (f'<div class="cell"{attrs}><img data-src="{html.escape(src)}" '
-            f'data-full="{html.escape(full)}" alt="">'
-            f'<div class="name">{html.escape(label)}</div>'
-            f'<div class="meta">{html.escape(extra)}{" · " if extra else ""}{links(sample, stem, path)}</div></div>')
+    mp4, gif, png = (folder / f"{stem}{ext}" for ext in (".mp4", ".gif", ".png"))
+    poster = folder / "preview" / f"{stem}.jpg"
+    if mp4.is_file() and mp4.stat().st_size > 0:
+        poster_attr = f' poster="{html.escape(f"{sample}/preview/{stem}.jpg")}"' if poster.is_file() else ""
+        src = html.escape(f"{sample}/{stem}.mp4")
+        tag = (f'<video class="media" src="{src}" data-full="{src}" preload="none" muted loop playsinline'
+               f'{poster_attr}></video>')
+    else:  # still image (input view), or an orbit whose MP4 could not be made
+        full = gif if gif.is_file() else png
+        src = html.escape(f"{sample}/{full.name}")
+        tag = f'<img class="media" data-src="{src}" data-full="{src}" alt="">'
+    return (f'<div class="cell"{attrs}>{tag}<div class="name">{html.escape(label)}</div>'
+            f'<div class="meta">{html.escape(extra)}{" · " if extra else ""}{links(sample, stem, folder)}</div></div>')
 
 
 def main():
@@ -208,8 +260,7 @@ def main():
     parser.add_argument("--label", action="append", default=[], metavar="CONDITION=TEXT",
                         help="Display name for a condition (repeatable)")
     parser.add_argument("--title", help="Default: the evaluation folder name")
-    parser.add_argument("--preview-size", type=int, default=256, help="Largest side of the grid's preview GIFs")
-    parser.add_argument("--preview-step", type=int, default=2, help="Keep every Nth frame in the previews")
+    parser.add_argument("--poster-size", type=int, default=384, help="Largest side of the poster images")
     parser.add_argument("--workers", type=int, default=8)
     args = parser.parse_args()
     orbits = args.orbits_dir or args.evaluation_dir / "orbits"
@@ -234,16 +285,20 @@ def main():
     sample_ids = json.loads(selected.read_text())["sample_ids"] if selected.is_file() else []
     sample_ids += sorted(p.name for p in orbits.iterdir() if p.is_dir() and p.name not in sample_ids)
     sample_ids = [s for s in sample_ids if (orbits / s).is_dir() and any((orbits / s).glob("*.gif"))]
-    tasks = [(gif, gif.parent / "preview" / gif.name, args.preview_size, args.preview_step)
-             for s in sample_ids for gif in (orbits / s).glob("*.gif")]
-    with ProcessPoolExecutor(args.workers) as pool:
-        for done, error in enumerate(pool.map(make_preview, tasks), 1):
-            if error:
-                print(f"preview skipped: {error}", flush=True)
-            if done % 50 == 0 or done == len(tasks):
-                print(f"previews {done}/{len(tasks)}", flush=True)
     if not sample_ids:
         raise SystemExit(f"No orbit GIFs under {orbits}")
+    ffmpeg = ffmpeg_exe()
+    tasks = [(gif, args.poster_size, ffmpeg) for s in sample_ids for gif in sorted((orbits / s).glob("*.gif"))]
+    with ProcessPoolExecutor(args.workers) as pool:
+        for done, error in enumerate(pool.map(prepare, tasks), 1):
+            if error:
+                print(f"skipped: {error}", flush=True)
+            if done % 50 == 0 or done == len(tasks):
+                print(f"videos and posters {done}/{len(tasks)}", flush=True)
+    for s in sample_ids:  # the input image as a poster too
+        view = orbits / s / "input_view.png"
+        if view.is_file() and stale(view.parent / "preview" / "input_view.jpg", view):
+            write_poster(view, view.parent / "preview" / "input_view.jpg", args.poster_size)
 
     modes = [m for m in ("mesh", "voxel") if any(orbits.glob(f"*/{m}_*.gif"))]
     shown = [c for c in order if any(orbits.glob(f"*/{m}_{safe(c)}.gif") for m in modes)]
@@ -252,19 +307,23 @@ def main():
         folder = orbits / sample
         cells = []
         if (folder / "input_view.png").is_file():
-            cells.append(cell(sample, "input_view", folder / "input_view.png", "input image"))
+            view = f"{sample}/preview/input_view.jpg" if (folder / "preview" / "input_view.jpg").is_file() \
+                else f"{sample}/input_view.png"
+            cells.append(f'<div class="cell"><img class="media" data-src="{html.escape(view)}" '
+                         f'data-full="{html.escape(f"{sample}/input_view.png")}" alt="">'
+                         f'<div class="name">input image</div>'
+                         f'<div class="meta">{links(sample, "input_view", folder)}</div></div>')
         if (folder / "mesh_ground_truth.gif").is_file():
-            cells.append(cell(sample, "mesh_ground_truth", folder / "mesh_ground_truth.gif", "ground truth"))
+            cells.append(cell(sample, folder, "mesh_ground_truth", "ground truth"))
         for condition in shown:
             for mode in modes:
-                path = folder / f"{mode}_{safe(condition)}.gif"
-                if path.is_file():
-                    cells.append(cell(sample, path.stem, path, labels.get(condition, condition),
+                stem = f"{mode}_{safe(condition)}"
+                if (folder / f"{stem}.gif").is_file():
+                    cells.append(cell(sample, folder, stem, labels.get(condition, condition),
                                       metric_text(metrics.get((condition, sample), {})), condition, mode))
         inputs = sorted(folder.glob("input_*.gif"), key=lambda p: input_key(p.stem))
-        input_cells = "".join(cell(sample, p.stem, p, input_label(p.stem, labels)) for p in inputs)
-        dropdown = (f'<details><summary>inputs ({len(inputs)})</summary>'
-                    f'<div class="grid">{input_cells}</div></details>'
+        input_cells = "".join(cell(sample, folder, p.stem, input_label(p.stem, labels)) for p in inputs)
+        dropdown = (f'<details><summary>inputs ({len(inputs)})</summary><div class="grid">{input_cells}</div></details>'
                     if inputs else "")
         body.append(f'<div class="sample"><div class="sample-id">{html.escape(sample)}</div>'
                     f'<div class="grid main">{"".join(cells)}</div>{dropdown}</div>')
@@ -275,7 +334,7 @@ def main():
         controls += "".join(f'<label><input type="radio" name="mode" value="{m}"{" checked" if m == "mesh" else ""}>'
                             f' {m}</label>' for m in modes)
     controls += ('<label>size <input id="size" type="range" min="140" max="900" step="20" value="240"></label>'
-                 '<button id="restart" type="button">restart GIFs</button>')
+                 '<button id="restart" type="button">sync orbits</button>')
     title = args.title or args.evaluation_dir.resolve().name
     page = (f'<!doctype html><html lang="en"><head><meta charset="utf-8">'
             f'<meta name="viewport" content="width=device-width, initial-scale=1"><title>{html.escape(title)}</title>'
