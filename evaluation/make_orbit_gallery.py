@@ -3,7 +3,8 @@ orbit side by side (metrics underneath), the input-point orbits in a dropdown, a
 
     python -m evaluation.make_orbit_gallery --evaluation-dir outputs/objaverse_oa/evaluation_grasp_camframe
 
-Serve the folder (python -m http.server 8000 --directory .../orbits) and open http://localhost:8000.
+Add --serve 8000 to also serve the page and open http://localhost:8000. Use this rather than python -m http.server:
+it answers partial-file (Range) requests, which Safari needs to play MP4s at all and every browser needs to seek.
 Each orbit is shown as an MP4 with a small poster image, as the persistent-dynamic-state viewers do: the page only
 downloads posters up front, and a video downloads and plays only while it is on screen. Orbits rendered without
 make_orbit --mp4 are converted once from their GIF (ffmpeg); posters go in each sample's preview/ folder. Both are
@@ -11,9 +12,12 @@ remade only when the orbit changes. Rerun after rendering more orbits; it only r
 """
 import argparse
 import csv
+import functools
 import html
+import http.server
 import json
 import math
+import os
 import re
 import shutil
 import subprocess
@@ -194,6 +198,71 @@ def write_poster(source, target, size):
         temporary.replace(target)
 
 
+class RangeHandler(http.server.SimpleHTTPRequestHandler):
+    """http.server's file handler plus single byte-range requests (206 Partial Content) for video playback."""
+
+    remaining = None
+
+    def end_headers(self):
+        self.send_header("Accept-Ranges", "bytes")
+        super().end_headers()
+
+    def send_head(self):
+        match = re.fullmatch(r"bytes=(\d*)-(\d*)", self.headers.get("Range", "").strip())
+        path = self.translate_path(self.path)
+        if not match or os.path.isdir(path) or match.groups() == ("", ""):
+            return super().send_head()
+        try:
+            file = open(path, "rb")
+        except OSError:
+            self.send_error(404, "File not found")
+            return None
+        size = os.fstat(file.fileno()).st_size
+        first, last = match.groups()
+        if first == "":  # "bytes=-N": the last N bytes
+            start, end = max(0, size - int(last)), size - 1
+        else:
+            start, end = int(first), min(int(last), size - 1) if last else size - 1
+        if start >= size or start > end:
+            file.close()
+            self.send_response(416)
+            self.send_header("Content-Range", f"bytes */{size}")
+            self.end_headers()
+            return None
+        self.send_response(206)
+        self.send_header("Content-Type", self.guess_type(path))
+        self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+        self.send_header("Content-Length", str(end - start + 1))
+        self.end_headers()
+        file.seek(start)
+        self.remaining = end - start + 1
+        return file
+
+    def copyfile(self, source, outputfile):
+        remaining, self.remaining = self.remaining, None
+        try:
+            if remaining is None:
+                return super().copyfile(source, outputfile)
+            while remaining > 0:
+                chunk = source.read(min(1 << 16, remaining))
+                if not chunk:
+                    break
+                outputfile.write(chunk)
+                remaining -= len(chunk)
+        except (BrokenPipeError, ConnectionResetError):  # the browser dropped a request it no longer needs
+            pass
+
+
+def serve(directory, port):
+    handler = functools.partial(RangeHandler, directory=str(directory))
+    with http.server.ThreadingHTTPServer(("", port), handler) as server:
+        print(f"Serving {directory} at http://localhost:{port} (Ctrl+C to stop)", flush=True)
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            pass
+
+
 def safe(name):
     return re.sub(r"[^A-Za-z0-9_-]+", "_", name)  # make_orbit.orbit_names
 
@@ -262,6 +331,7 @@ def main():
     parser.add_argument("--title", help="Default: the evaluation folder name")
     parser.add_argument("--poster-size", type=int, default=384, help="Largest side of the poster images")
     parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--serve", type=int, metavar="PORT", help="After writing the page, serve the orbits folder")
     args = parser.parse_args()
     orbits = args.orbits_dir or args.evaluation_dir / "orbits"
     labels = dict(FIXED_LABELS)
@@ -343,6 +413,8 @@ def main():
             f'<script>{JS}</script></body></html>\n')
     (orbits / "index.html").write_text(page)
     print(f"Wrote {orbits / 'index.html'} ({len(sample_ids)} samples, {len(shown)} conditions)")
+    if args.serve:
+        serve(orbits.resolve(), args.serve)
 
 
 if __name__ == "__main__":
