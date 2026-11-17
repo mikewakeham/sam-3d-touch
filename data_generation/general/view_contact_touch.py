@@ -162,15 +162,15 @@ class Viewer:
         self.layers = {}
         with gui.add_folder("Layers"):
             for key, label, on, opacity, size in [
-                ("object", "Object", True, 0.6, None),
+                ("object", "Object", True, 1.0, None),
                 ("pieces", "Object convex pieces (used for grasping)", False, 1.0, None),
                 ("hand", "Hand (rendered)", True, 0.25, None),
                 ("collision", "Hand (MuJoCo collision shapes)", False, 0.35, None),
-                ("contacts", "MuJoCo contact points", True, 1.0, 0.8),
+                ("contacts", "MuJoCo contact points", False, 1.0, 0.8),
                 ("distance", "Candidates by distance to hand", False, 1.0, 0.15),
                 ("touched", "Touched surface", False, 1.0, 0.15),
                 ("filled", "Gap-filled surface", False, 1.0, 0.2),
-                ("dropped", "Dropped pieces (no MuJoCo contact)", True, 1.0, 0.25),
+                ("dropped", "Dropped pieces (no MuJoCo contact)", False, 1.0, 0.25),
                 ("final", "Final touch points", True, 1.0, 0.2),
                 ("camera", "Image camera", True, None, None),
             ]:
