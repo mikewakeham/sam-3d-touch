@@ -127,6 +127,8 @@ class Viewer:
         wp.init()
         self.device = "cpu" if not wp.is_cuda_available() else "cuda:0"
         self.lock = threading.Lock()
+        self.request_lock = threading.Lock()
+        self.requested = None
         self.steps = None
         self.handles = {}
         self.server = viser.ViserServer(port=port, label="contact touch")
@@ -162,7 +164,7 @@ class Viewer:
             for key, label, on, opacity, size in [
                 ("object", "Object", True, 0.6, None),
                 ("pieces", "Object convex pieces (used for grasping)", False, 1.0, None),
-                ("hand", "Hand (rendered)", True, 1.0, None),
+                ("hand", "Hand (rendered)", True, 0.25, None),
                 ("collision", "Hand (MuJoCo collision shapes)", False, 0.35, None),
                 ("contacts", "MuJoCo contact points", True, 1.0, 0.8),
                 ("distance", "Candidates by distance to hand", False, 1.0, 0.15),
@@ -170,11 +172,11 @@ class Viewer:
                 ("filled", "Gap-filled surface", False, 1.0, 0.2),
                 ("dropped", "Dropped pieces (no MuJoCo contact)", True, 1.0, 0.25),
                 ("final", "Final touch points", True, 1.0, 0.2),
-                ("camera", "Image camera", True, 1.0, None),
+                ("camera", "Image camera", True, None, None),
             ]:
                 with gui.add_folder(label, expand_by_default=False):
                     show = gui.add_checkbox("Show", on)
-                    alpha = gui.add_slider("Opacity", 0.0, 1.0, 0.05, opacity)
+                    alpha = gui.add_slider("Opacity", 0.0, 1.0, 0.05, opacity) if opacity is not None else None
                     radius = gui.add_slider("Point size %", 0.05, 3.0, 0.05, size) if size is not None else None
                 self.layers[key] = (show, alpha, radius)
                 for h in (show, alpha, radius):
@@ -184,6 +186,7 @@ class Viewer:
             self.gui_labels.on_update(lambda _: self.draw("contacts"))
             self.gui_hand_color = gui.add_dropdown("Hand color", ["by finger", "as rendered"])
             self.gui_hand_color.on_update(lambda _: self.draw("hand"))
+            self.gui_pieces_note = gui.add_markdown("")
             self.gui_wire = gui.add_checkbox("Collision shapes as wireframe", False)
             self.gui_wire.on_update(lambda _: self.draw("collision"))
         with gui.add_folder("Contacts"):
@@ -192,8 +195,15 @@ class Viewer:
             self.gui_contacts = gui.add_markdown("")
         self.gui_object.on_update(lambda _: self.load_object(self.gui_object.value))
         self.gui_view.on_update(lambda _: self.load_view())
-        self.gui_default_tol.on_update(lambda _: setattr(self.gui_tol, "disabled", self.gui_default_tol.value))
-        self.gui_recompute.on_click(lambda _: self.recompute())
+        def on_default_tol(_):
+            self.gui_tol.disabled = self.gui_default_tol.value
+            if self.gui_default_tol.value and hasattr(self, "default_tol"):
+                self.gui_tol.value = round(100 * self.default_tol, 2)
+            self.recompute()
+        self.gui_default_tol.on_update(on_default_tol)
+        for h in (self.gui_tol, self.gui_gap, self.gui_offset):
+            h.on_update(lambda _: self.recompute())
+        self.gui_recompute.on_click(lambda _: self.recompute(force=True))
         self.gui_source.on_update(lambda _: self.draw("final"))
         self.gui_fly.on_update(lambda _: self.fly())
         self.gui_cam.on_click(lambda _: self.look_from_camera())
@@ -216,6 +226,8 @@ class Viewer:
                     self.pieces_error = None
                 except Exception as error:
                     self.pieces, self.pieces_error = None, f"{type(error).__name__}: {error}"
+        self.gui_pieces_note.content = (f"Convex pieces: {len(self.pieces)}" if self.pieces is not None
+                                        else f"Convex pieces not available: {self.pieces_error}")
         self.gui_view.options = list(self.rows)
         self.gui_view.value = rows[0]["view_id"]
         self.load_view()
@@ -247,18 +259,31 @@ class Viewer:
         self.gui_fly.value = "-"
         self.recompute()
 
-    def recompute(self):
+    def recompute(self, force=False):
+        """Settings changes, view loads and viser's own callbacks for programmatic value changes all land here.
+        Same view + same settings as the last run is skipped (unless forced); while one run is busy, only the newest
+        request runs next, so dragging a slider does not queue a run per step."""
+        if not hasattr(self, "record"):
+            return
         tol = None if self.gui_default_tol.value else self.gui_tol.value / 100
+        key = (self.record["sample_id"], tol, self.gui_gap.value, self.gui_offset.value)
+        with self.request_lock:
+            if not force and key == self.requested:
+                return
+            self.requested = key
         args = argparse.Namespace(tolerance=tol, gap=self.gui_gap.value / 100, part_offset=self.gui_offset.value,
                                   points=8192, min_part_share=0.02, hand_samples=65536, seed=29)
+        record, view = self.record, self.view
         self.gui_info.content = "Computing..."
-        try:
-            with self.lock:
-                *_, stats, steps = mct.view_contact_touch(self.record, self.root, self.view, self.tmpl, self.obj, args,
+        with self.lock:
+            if key != self.requested:  # a newer request came in while waiting; it runs instead
+                return
+            try:
+                *_, stats, steps = mct.view_contact_touch(record, self.root, view, self.tmpl, self.obj, args,
                                                           self.device, debug=True)
-            self.steps, self.stats, self.error = steps, stats, None
-        except mct.NoContact as error:
-            self.steps, self.stats, self.error = None, None, str(error)
+                self.steps, self.stats, self.error = steps, stats, None
+            except mct.NoContact as error:
+                self.steps, self.stats, self.error = None, None, str(error)
         self.update_text()
         for key in self.layers:
             self.draw(key)
@@ -309,9 +334,9 @@ class Viewer:
             return
         self.clear(key)
         show, alpha, size = self.layers[key]
-        if not show.value or alpha.value == 0:
+        op = float(alpha.value) if alpha is not None else 1.0
+        if not show.value or op == 0:
             return
-        op = float(alpha.value)
         radius = size.value / 100 if size is not None else None
         names = [str(n) for n in self.tmpl["names"]]
         a, b = float(self.view["hand_a"]), np.asarray(self.view["hand_b"], float)
@@ -325,14 +350,10 @@ class Viewer:
             out.append(sc.add_mesh_simple("/object", v, f, color=(205, 200, 190), opacity=op if op < 1 else None,
                                           side="double", flat_shading=False))
         elif key == "pieces":
-            if self.pieces is None:
-                print(f"convex pieces not shown: {self.pieces_error}", flush=True)
             for j, (v, f) in enumerate(self.pieces or []):
                 out.append(sc.add_mesh_simple(f"/pieces/{j}", v, f, color=piece_color(j),
-                                              opacity=op if op < 1 else None,
-                                              side="double" if op >= 1 else "front"))
+                                              opacity=op if op < 1 else None, side="double"))
         elif key == "hand":
-            groups = {}
             for i, n in enumerate(names):
                 bid = int(self.tmpl[f"{i}_body_id"])
                 v = self.tmpl[f"{i}_vertices"].astype(float) @ xmat[bid].T * a + a * xpos[bid] + b
@@ -340,13 +361,8 @@ class Viewer:
                     color = RENDER_HAND
                 else:
                     color = finger_color(n) if n in touching_names else GREY
-                groups.setdefault(color, []).append((v, self.tmpl[f"{i}_faces"]))
-            for k, (color, parts) in enumerate(groups.items()):
-                offsets = np.cumsum([0] + [len(v) for v, _ in parts[:-1]])
-                v = np.concatenate([v for v, _ in parts])
-                f = np.concatenate([f + o for (_, f), o in zip(parts, offsets)])
-                out.append(sc.add_mesh_simple(f"/hand/{k}", v, f, color=color, opacity=op if op < 1 else None,
-                                              side="double" if op >= 1 else "front"))
+                out.append(sc.add_mesh_simple(f"/hand/{i}", v, self.tmpl[f"{i}_faces"], color=color,
+                                              opacity=op if op < 1 else None, side="double"))
         elif key == "collision":
             for j, (n, bid, v0, f0) in enumerate(self.collision):
                 v = v0 @ xmat[bid].T * a + a * xpos[bid] + b
