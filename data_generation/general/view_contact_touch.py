@@ -211,6 +211,7 @@ class Viewer:
     # ---------- data ----------
 
     def load_object(self, object_id):
+        self.ready = False
         with self.lock:
             rows = sorted(self.by_object[object_id], key=lambda r: r["view_id"])
             self.rows = {r["view_id"]: r for r in rows}
@@ -235,6 +236,7 @@ class Viewer:
     def load_view(self):
         if self.gui_view.value not in self.rows:
             return
+        self.ready = False  # callbacks fired by the value changes below wait for the explicit recompute at the end
         self.record = self.rows[self.gui_view.value]
         self.view = self.views[int(self.record["grasp_view_index"])]
         d = self.root / Path(self.record["camera_path"]).parent
@@ -257,13 +259,14 @@ class Viewer:
         self.contact_bodies = list(c["bodies"])
         self.gui_fly.options = ["-"] + [f"{i}: {short(b)}" for i, b in enumerate(self.contact_bodies)]
         self.gui_fly.value = "-"
+        self.ready = True
         self.recompute()
 
     def recompute(self, force=False):
         """Settings changes, view loads and viser's own callbacks for programmatic value changes all land here.
         Same view + same settings as the last run is skipped (unless forced); while one run is busy, only the newest
         request runs next, so dragging a slider does not queue a run per step."""
-        if not hasattr(self, "record"):
+        if not getattr(self, "ready", False):
             return
         tol = None if self.gui_default_tol.value else self.gui_tol.value / 100
         key = (self.record["sample_id"], tol, self.gui_gap.value, self.gui_offset.value)
@@ -330,7 +333,7 @@ class Viewer:
             batched_colors=colors, opacity=opacity if opacity < 1 else None, lod="off")]
 
     def draw(self, key):
-        if not hasattr(self, "record"):
+        if not getattr(self, "ready", False):
             return
         self.clear(key)
         show, alpha, size = self.layers[key]
