@@ -609,6 +609,8 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     if fixed_joint_patches and 'touch_patch_count' in batch:
                         from data_generation.general.sample_touch_patches import joint_touch_indices as touch_indices
                         source_indices = touch_indices(int(batch['touch_patch_count'][0]))
+                    elif fixed_joint_patches and 'joint_xyz' in batch:
+                        source_indices = np.arange(7168) % len(source_indices)
                     touch_count = len(source_indices)
                     if not np.allclose(camera_points[-touch_count:],
                                        batch['touch_xyz'][0, batch['touch_mask'][0]].numpy()[source_indices],
