@@ -4,7 +4,8 @@ orbit side by side (metrics underneath), the input-point orbits in a dropdown, a
     python -m evaluation.make_orbit_gallery --evaluation-dir outputs/objaverse_oa/evaluation_grasp_camframe
 
 Open orbits/index.html, or serve the folder (python -m http.server) so download links save with readable names.
-Rerun after rendering more orbits; it only reads files that exist.
+Rerun after rendering more orbits; it only reads files that exist. The grid shows small preview GIFs (saved in each
+sample's preview/ folder, remade only when the orbit changes); enlarging or downloading uses the full GIF.
 """
 import argparse
 import csv
@@ -12,7 +13,10 @@ import html
 import json
 import math
 import re
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
+
+from PIL import Image, ImageSequence
 
 FIXED_LABELS = {"official": "SAM 3D (official)", "decoded_gt": "decoded GT"}
 # input_visualizations.input_groups names; longer prefixes first.
@@ -33,7 +37,14 @@ h1 { font-size: 22px; font-weight: 500; margin: 0 0 16px; }
 button { font: inherit; background: #fff; border: 1px solid #bbb; padding: 3px 10px; cursor: pointer; }
 .sample { border-bottom: 1px solid #ddd; padding: 14px 0; }
 .sample-id { color: #555; margin-bottom: 8px; font-size: 13px; }
-.grid { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 10px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(var(--size, 240px), 100%), 1fr));
+        gap: 10px; }
+.cell img { cursor: zoom-in; }
+#zoom { position: fixed; inset: 0; background: rgba(255, 255, 255, 0.97); z-index: 10; display: flex;
+        flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+#zoom img { width: min(94vw, 84vh); height: min(94vw, 84vh); object-fit: contain; border: 1px solid #eee;
+            cursor: zoom-out; }
+#zoom .name, #zoom .meta { font-size: 14px; text-align: center; }
 .cell { min-width: 0; }
 .cell img { width: 100%; display: block; border: 1px solid #eee; background: #fff; }
 .name { font-size: 13px; margin-top: 4px; overflow-wrap: anywhere; }
@@ -54,16 +65,73 @@ function apply() {
   document.querySelectorAll('.cell[data-cond]').forEach(c => {
     c.classList.toggle('hidden', off.has(c.dataset.cond) || (mode && c.dataset.mode && c.dataset.mode !== mode.value));
   });
-  document.querySelectorAll('.grid.main').forEach(g => {
-    g.style.setProperty('--cols', [...g.children].filter(c => !c.classList.contains('hidden')).length || 1);
-  });
 }
+const size = document.getElementById('size');
+size.addEventListener('input', () => document.documentElement.style.setProperty('--size', size.value + 'px'));
+// Click a GIF to see it large; arrow keys step through the visible ones, Esc or a click closes.
+const zoom = document.getElementById('zoom');
+let current = null;
+function visible() { return [...document.querySelectorAll('.cell img')].filter(i => i.offsetParent !== null); }
+function show(img) {
+  current = img;
+  const cell = img.closest('.cell');
+  zoom.innerHTML = '<img src="' + (img.dataset.full || img.src) + '" alt="">' + cell.querySelector('.name').outerHTML
+    + cell.querySelector('.meta').outerHTML + '<div class="meta">' + cell.closest('.sample').querySelector('.sample-id').textContent + '</div>';
+  zoom.classList.remove('hidden');
+}
+function close() { zoom.classList.add('hidden'); current = null; }
+document.querySelectorAll('.cell img').forEach(img => img.addEventListener('click', () => show(img)));
+// Retry images that fail to load (dropped requests through a port forward), up to three times.
+document.querySelectorAll('img').forEach(img => img.addEventListener('error', () => {
+  const tries = Number(img.dataset.tries || 0);
+  if (tries >= 3) return;
+  img.dataset.tries = tries + 1;
+  const base = img.src.split('?')[0];
+  setTimeout(() => { img.src = base + '?retry=' + (tries + 1); }, 1000 * (tries + 1));
+}));
+zoom.addEventListener('click', e => { if (!e.target.closest('a')) close(); });
+document.addEventListener('keydown', e => {
+  if (!current) return;
+  if (e.key === 'Escape') close();
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+    const list = visible(), i = list.indexOf(current);
+    if (i >= 0) show(list[(i + (e.key === 'ArrowRight' ? 1 : list.length - 1)) % list.length]);
+  }
+});
 document.querySelectorAll('.controls input').forEach(i => i.addEventListener('change', apply));
 document.getElementById('restart').addEventListener('click', () => {
   document.querySelectorAll('img[src$=".gif"]').forEach(img => { const s = img.src; img.src = ''; img.src = s; });
 });
 apply();
 """
+
+
+def make_preview(task):
+    """Downscaled copy of one orbit GIF, keeping every `step`-th frame at the same playback speed."""
+    source, target, size, step = task
+    if target.is_file() and target.stat().st_mtime >= source.stat().st_mtime:
+        return None
+    try:
+        write_preview(source, target, size, step)
+    except Exception as error:  # e.g. an orbit still being written; the grid then uses the full GIF
+        return f"{source}: {type(error).__name__}: {error}"
+    return None
+
+
+def write_preview(source, target, size, step):
+    with Image.open(source) as gif:
+        duration = gif.info.get("duration", 100)
+        frames = []
+        for index, frame in enumerate(ImageSequence.Iterator(gif)):
+            if index % step == 0:
+                image = frame.convert("RGB")
+                image.thumbnail((size, size), Image.Resampling.LANCZOS)
+                frames.append(image)
+    target.parent.mkdir(exist_ok=True)
+    temporary = target.with_name(f".{target.name}.tmp.gif")
+    frames[0].save(temporary, save_all=True, append_images=frames[1:], duration=duration * step, loop=0,
+                   disposal=2, optimize=True)
+    temporary.replace(target)
 
 
 def safe(name):
@@ -115,8 +183,11 @@ def links(sample, stem, path):
 
 def cell(sample, stem, path, label, extra="", cond=None, mode=None):
     attrs = (f' data-cond="{html.escape(cond)}"' if cond else "") + (f' data-mode="{mode}"' if mode else "")
-    src = html.escape(f"{sample}/{stem}{path.suffix}")
-    return (f'<div class="cell"{attrs}><img loading="lazy" src="{src}" alt="">'
+    full = f"{sample}/{stem}{path.suffix}"
+    preview = path.parent / "preview" / path.name
+    src = f"{sample}/preview/{path.name}" if path.suffix == ".gif" and preview.is_file() else full
+    return (f'<div class="cell"{attrs}><img loading="lazy" src="{html.escape(src)}" '
+            f'data-full="{html.escape(full)}" alt="">'
             f'<div class="name">{html.escape(label)}</div>'
             f'<div class="meta">{html.escape(extra)}{" · " if extra else ""}{links(sample, stem, path)}</div></div>')
 
@@ -128,6 +199,9 @@ def main():
     parser.add_argument("--label", action="append", default=[], metavar="CONDITION=TEXT",
                         help="Display name for a condition (repeatable)")
     parser.add_argument("--title", help="Default: the evaluation folder name")
+    parser.add_argument("--preview-size", type=int, default=256, help="Largest side of the grid's preview GIFs")
+    parser.add_argument("--preview-step", type=int, default=2, help="Keep every Nth frame in the previews")
+    parser.add_argument("--workers", type=int, default=8)
     args = parser.parse_args()
     orbits = args.orbits_dir or args.evaluation_dir / "orbits"
     labels = dict(FIXED_LABELS)
@@ -151,6 +225,14 @@ def main():
     sample_ids = json.loads(selected.read_text())["sample_ids"] if selected.is_file() else []
     sample_ids += sorted(p.name for p in orbits.iterdir() if p.is_dir() and p.name not in sample_ids)
     sample_ids = [s for s in sample_ids if (orbits / s).is_dir() and any((orbits / s).glob("*.gif"))]
+    tasks = [(gif, gif.parent / "preview" / gif.name, args.preview_size, args.preview_step)
+             for s in sample_ids for gif in (orbits / s).glob("*.gif")]
+    with ProcessPoolExecutor(args.workers) as pool:
+        for done, error in enumerate(pool.map(make_preview, tasks), 1):
+            if error:
+                print(f"preview skipped: {error}", flush=True)
+            if done % 50 == 0 or done == len(tasks):
+                print(f"previews {done}/{len(tasks)}", flush=True)
     if not sample_ids:
         raise SystemExit(f"No orbit GIFs under {orbits}")
 
@@ -173,22 +255,24 @@ def main():
         inputs = sorted(folder.glob("input_*.gif"), key=lambda p: input_key(p.stem))
         input_cells = "".join(cell(sample, p.stem, p, input_label(p.stem, labels)) for p in inputs)
         dropdown = (f'<details><summary>inputs ({len(inputs)})</summary>'
-                    f'<div class="grid" style="--cols: {min(len(inputs), 6)}">{input_cells}</div></details>'
+                    f'<div class="grid">{input_cells}</div></details>'
                     if inputs else "")
         body.append(f'<div class="sample"><div class="sample-id">{html.escape(sample)}</div>'
-                    f'<div class="grid main" style="--cols: {len(cells)}">{"".join(cells)}</div>{dropdown}</div>')
+                    f'<div class="grid main">{"".join(cells)}</div>{dropdown}</div>')
 
     controls = "".join(f'<label><input type="checkbox" data-cond="{html.escape(c)}" checked> '
                        f'{html.escape(labels.get(c, c))}</label>' for c in shown)
     if len(modes) > 1:
         controls += "".join(f'<label><input type="radio" name="mode" value="{m}"{" checked" if m == "mesh" else ""}>'
                             f' {m}</label>' for m in modes)
-    controls += '<button id="restart" type="button">restart GIFs</button>'
+    controls += ('<label>size <input id="size" type="range" min="140" max="900" step="20" value="240"></label>'
+                 '<button id="restart" type="button">restart GIFs</button>')
     title = args.title or args.evaluation_dir.resolve().name
     page = (f'<!doctype html><html lang="en"><head><meta charset="utf-8">'
             f'<meta name="viewport" content="width=device-width, initial-scale=1"><title>{html.escape(title)}</title>'
             f'<style>{CSS}</style></head><body><div class="page"><h1>{html.escape(title)}</h1>'
-            f'<div class="controls">{controls}</div>{"".join(body)}</div><script>{JS}</script></body></html>\n')
+            f'<div class="controls">{controls}</div>{"".join(body)}</div><div id="zoom" class="hidden"></div>'
+            f'<script>{JS}</script></body></html>\n')
     (orbits / "index.html").write_text(page)
     print(f"Wrote {orbits / 'index.html'} ({len(sample_ids)} samples, {len(shown)} conditions)")
 
