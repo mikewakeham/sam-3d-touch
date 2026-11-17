@@ -46,7 +46,8 @@ button { font: inherit; background: #fff; border: 1px solid #bbb; padding: 3px 1
             cursor: zoom-out; }
 #zoom .name, #zoom .meta { font-size: 14px; text-align: center; }
 .cell { min-width: 0; }
-.cell img { width: 100%; display: block; border: 1px solid #eee; background: #fff; }
+.cell img { width: 100%; aspect-ratio: 1; object-fit: contain; display: block; border: 1px solid #eee;
+            background: #fff; }
 .name { font-size: 13px; margin-top: 4px; overflow-wrap: anywhere; }
 .meta { font-size: 12px; color: #555; }
 .meta a { color: #2859a5; text-decoration: none; margin-right: 8px; }
@@ -75,19 +76,27 @@ function visible() { return [...document.querySelectorAll('.cell img')].filter(i
 function show(img) {
   current = img;
   const cell = img.closest('.cell');
-  zoom.innerHTML = '<img src="' + (img.dataset.full || img.src) + '" alt="">' + cell.querySelector('.name').outerHTML
+  zoom.innerHTML = '<img src="' + (img.dataset.full || img.dataset.src) + '" alt="">' + cell.querySelector('.name').outerHTML
     + cell.querySelector('.meta').outerHTML + '<div class="meta">' + cell.closest('.sample').querySelector('.sample-id').textContent + '</div>';
   zoom.classList.remove('hidden');
 }
 function close() { zoom.classList.add('hidden'); current = null; }
 document.querySelectorAll('.cell img').forEach(img => img.addEventListener('click', () => show(img)));
+// Load an image only while it is on screen (plus a small margin) and unload it once it scrolls away, so only the
+// visible GIFs download and animate.
+const onScreen = new IntersectionObserver(entries => entries.forEach(e => {
+  const img = e.target;
+  if (e.isIntersecting) { if (!img.getAttribute('src')) img.src = img.dataset.src; }
+  else if (img.getAttribute('src')) { img.removeAttribute('src'); img.dataset.tries = 0; }
+}), { rootMargin: '300px 0px' });
+document.querySelectorAll('.cell img').forEach(img => onScreen.observe(img));
 // Retry images that fail to load (dropped requests through a port forward), up to three times.
-document.querySelectorAll('img').forEach(img => img.addEventListener('error', () => {
+document.querySelectorAll('.cell img').forEach(img => img.addEventListener('error', () => {
   const tries = Number(img.dataset.tries || 0);
-  if (tries >= 3) return;
+  if (tries >= 3 || !img.getAttribute('src')) return;
   img.dataset.tries = tries + 1;
-  const base = img.src.split('?')[0];
-  setTimeout(() => { img.src = base + '?retry=' + (tries + 1); }, 1000 * (tries + 1));
+  setTimeout(() => { if (img.getAttribute('src')) img.src = img.dataset.src + '?retry=' + (tries + 1); },
+             1000 * (tries + 1));
 }));
 zoom.addEventListener('click', e => { if (!e.target.closest('a')) close(); });
 document.addEventListener('keydown', e => {
@@ -100,7 +109,7 @@ document.addEventListener('keydown', e => {
 });
 document.querySelectorAll('.controls input').forEach(i => i.addEventListener('change', apply));
 document.getElementById('restart').addEventListener('click', () => {
-  document.querySelectorAll('img[src$=".gif"]').forEach(img => { const s = img.src; img.src = ''; img.src = s; });
+  document.querySelectorAll('.cell img[src]').forEach(img => { img.removeAttribute('src'); img.src = img.dataset.src; });
 });
 apply();
 """
@@ -186,7 +195,7 @@ def cell(sample, stem, path, label, extra="", cond=None, mode=None):
     full = f"{sample}/{stem}{path.suffix}"
     preview = path.parent / "preview" / path.name
     src = f"{sample}/preview/{path.name}" if path.suffix == ".gif" and preview.is_file() else full
-    return (f'<div class="cell"{attrs}><img loading="lazy" src="{html.escape(src)}" '
+    return (f'<div class="cell"{attrs}><img data-src="{html.escape(src)}" '
             f'data-full="{html.escape(full)}" alt="">'
             f'<div class="name">{html.escape(label)}</div>'
             f'<div class="meta">{html.escape(extra)}{" · " if extra else ""}{links(sample, stem, path)}</div></div>')
