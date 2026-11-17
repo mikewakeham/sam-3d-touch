@@ -152,14 +152,16 @@ def load_input_visualizations(args, previous=None):
             continue
         joint = settings['mode'] == 'image_touch_joint'
         run_data = copy.deepcopy(settings['data'])
-        if run_data.get('touch', {}).get('source') not in ('full_surface', 'touch_patches'):
-            raise ValueError(f'{condition} needs full-surface or adaptive touch inputs')
+        if run_data.get('touch', {}).get('source') not in ('full_surface', 'touch_patches', 'grasp_contact'):
+            raise ValueError(f'{condition} needs full-surface, adaptive or grasp-contact touch inputs')
         dataset = TouchDataset(run_data, include_touch=True)
         run_record = next((item for item in dataset.records if item['sample_id'] == args.sample_id), None)
         if run_record is None:
             raise ValueError(f'{args.sample_id} missing from {condition} dataset')
         if dataset.point_source == 'touch_patches':
             camera_points = dataset.load_touch_patches(dataset.resolve_path(run_record['touch_path']))
+        elif dataset.point_source == 'grasp_contact':
+            camera_points = dataset.load_grasp_contact(dataset.resolve_path(run_record['touch_path']))
         elif dataset.surface_pool_count is not None:
             camera_points, _ = dataset.load_surface_pool(run_record)
         else:
