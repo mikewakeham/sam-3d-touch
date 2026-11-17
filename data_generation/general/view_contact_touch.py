@@ -16,6 +16,37 @@ import make_contact_touch as mct
 FINGER = {"th": (230, 25, 75), "ff": (0, 130, 200), "mf": (40, 160, 60), "rf": (245, 130, 48), "lf": (145, 30, 180),
           "palm": (240, 50, 230)}
 GREY = (170, 170, 170)
+RENDER_HAND = (225, 225, 225)  # render_grasp_views.py HAND_COLOR 0.75 (linear) shown in sRGB
+
+
+def piece_color(i):
+    import colorsys
+    return tuple(int(255 * c) for c in colorsys.hsv_to_rgb((i * 0.618034) % 1, 0.55, 0.9))
+
+
+def load_convex_pieces(grasp_dir, uid, s_render, offset_render):
+    """CoACD pieces Dexonomy grasped against (grasp_pipeline L4, stage-1 normalized frame), in the render frame:
+    x = (center + scale * p) * s_render + offset_render, as select_grasp_views.hand_affine. Pieces that
+    convert_objects.py skipped as too flat for MuJoCo are left out, so these are the object's collision geoms."""
+    rec = json.loads((grasp_dir / "objects" / uid / "object_record.json").read_text())
+    skipped = set(rec.get("pieces_skipped_flat", []))
+    s1_dir = Path(rec["stage1"]["dir"])
+    s1 = json.loads((s1_dir / "record.json").read_text())
+    name = s1.get("files", {}).get("L4") or s1.get("files", {}).get("L4_is")
+    if not name or not (s1_dir / name).is_dir():
+        raise FileNotFoundError(f"no L4 pieces saved in {s1_dir}")
+    n = s1["clean"]["normalize"]
+    c, k = np.asarray(n["center"], float), float(n["scale"])
+    pieces = []
+    for p in sorted((s1_dir / name).glob("piece_*.npz")):
+        if p.name in skipped:
+            continue
+        with np.load(p, allow_pickle=False) as z:
+            v = (c + k * z["vertices"].astype(float)) * s_render + np.asarray(offset_render, float)
+            pieces.append((v, z["faces"].astype(np.int64)))
+    if not pieces:
+        raise FileNotFoundError(f"no piece_*.npz in {s1_dir / name}")
+    return pieces
 
 
 def finger_color(name):
@@ -79,8 +110,10 @@ def patch_viser_camera():
 
 
 class Viewer:
-    def __init__(self, root, port):
+    def __init__(self, root, port, grasp_dir=None):
         self.root = root
+        self.grasp_dir = grasp_dir
+        self.pieces, self.pieces_error = None, "pass --grasp-dir to show them"
         self.records = [json.loads(line) for line in (root / "generated_data" / "samples.jsonl").read_text().splitlines()
                         if line.strip()]
         self.by_object = {}
@@ -128,7 +161,8 @@ class Viewer:
         with gui.add_folder("Layers"):
             for key, label, on, opacity, size in [
                 ("object", "Object", True, 0.6, None),
-                ("hand", "Hand (rendered)", True, 0.25, None),
+                ("pieces", "Object convex pieces (used for grasping)", False, 1.0, None),
+                ("hand", "Hand (rendered)", True, 1.0, None),
                 ("collision", "Hand (MuJoCo collision shapes)", False, 0.35, None),
                 ("contacts", "MuJoCo contact points", True, 1.0, 0.8),
                 ("distance", "Candidates by distance to hand", False, 1.0, 0.15),
@@ -148,6 +182,8 @@ class Viewer:
                         h.on_update(lambda _, k=key: self.draw(k))
             self.gui_labels = gui.add_checkbox("Contact numbers", True)
             self.gui_labels.on_update(lambda _: self.draw("contacts"))
+            self.gui_hand_color = gui.add_dropdown("Hand color", ["by finger", "as rendered"])
+            self.gui_hand_color.on_update(lambda _: self.draw("hand"))
             self.gui_wire = gui.add_checkbox("Collision shapes as wireframe", False)
             self.gui_wire.on_update(lambda _: self.draw("collision"))
         with gui.add_folder("Contacts"):
@@ -171,7 +207,15 @@ class Viewer:
             with np.load(self.root / rows[0]["mesh_path"], allow_pickle=False) as m:
                 v, f = m["vertices"].astype(np.float64), m["faces"].astype(np.int64)
             self.obj = mct.object_mesh(v, f, self.device)
-            self.views = json.loads((self.root / rows[0]["grasp_views_path"]).read_text())["views"]
+            doc = json.loads((self.root / rows[0]["grasp_views_path"]).read_text())
+            self.views = doc["views"]
+            if self.grasp_dir is not None:
+                try:
+                    self.pieces = load_convex_pieces(self.grasp_dir, doc["uid"], doc["s_render"],
+                                                     doc["offset_render"])
+                    self.pieces_error = None
+                except Exception as error:
+                    self.pieces, self.pieces_error = None, f"{type(error).__name__}: {error}"
         self.gui_view.options = list(self.rows)
         self.gui_view.value = rows[0]["view_id"]
         self.load_view()
@@ -280,13 +324,29 @@ class Viewer:
             v, f = self.obj[0], self.obj[1]
             out.append(sc.add_mesh_simple("/object", v, f, color=(205, 200, 190), opacity=op if op < 1 else None,
                                           side="double", flat_shading=False))
+        elif key == "pieces":
+            if self.pieces is None:
+                print(f"convex pieces not shown: {self.pieces_error}", flush=True)
+            for j, (v, f) in enumerate(self.pieces or []):
+                out.append(sc.add_mesh_simple(f"/pieces/{j}", v, f, color=piece_color(j),
+                                              opacity=op if op < 1 else None,
+                                              side="double" if op >= 1 else "front"))
         elif key == "hand":
+            groups = {}
             for i, n in enumerate(names):
                 bid = int(self.tmpl[f"{i}_body_id"])
                 v = self.tmpl[f"{i}_vertices"].astype(float) @ xmat[bid].T * a + a * xpos[bid] + b
-                color = finger_color(n) if n in touching_names else GREY
-                out.append(sc.add_mesh_simple(f"/hand/{i}", v, self.tmpl[f"{i}_faces"], color=color,
-                                              opacity=op if op < 1 else None, side="double"))
+                if self.gui_hand_color.value == "as rendered":
+                    color = RENDER_HAND
+                else:
+                    color = finger_color(n) if n in touching_names else GREY
+                groups.setdefault(color, []).append((v, self.tmpl[f"{i}_faces"]))
+            for k, (color, parts) in enumerate(groups.items()):
+                offsets = np.cumsum([0] + [len(v) for v, _ in parts[:-1]])
+                v = np.concatenate([v for v, _ in parts])
+                f = np.concatenate([f + o for (_, f), o in zip(parts, offsets)])
+                out.append(sc.add_mesh_simple(f"/hand/{k}", v, f, color=color, opacity=op if op < 1 else None,
+                                              side="double" if op >= 1 else "front"))
         elif key == "collision":
             for j, (n, bid, v0, f0) in enumerate(self.collision):
                 v = v0 @ xmat[bid].T * a + a * xpos[bid] + b
@@ -380,9 +440,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--data-root", type=Path, required=True)
     parser.add_argument("--port", type=int, default=8080)
+    parser.add_argument("--grasp-dir", type=Path,
+                        help="grasp_pipeline grasp_generation folder (select_grasp_views.py --grasp-dir), "
+                             "for the convex pieces layer")
     args = parser.parse_args()
     patch_viser_camera()
-    Viewer(args.data_root.resolve(), args.port)
+    Viewer(args.data_root.resolve(), args.port, args.grasp_dir.resolve() if args.grasp_dir else None)
     threading.Event().wait()
 
 
