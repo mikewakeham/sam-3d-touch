@@ -1,4 +1,4 @@
-"""Settled-hand surface points per view (<view>/hand_points.npz), plus joint pointmap inputs with --joint-pointmap."""
+"""Settled-hand surface points per view (<view>/hand_points.npz), plus joint hand-pointmap inputs with --joint-pointmap."""
 import argparse
 import json
 import multiprocessing as mp
@@ -82,10 +82,85 @@ def save_view(record, root, path, points, part, names, args):
     temporary.replace(path)
 
 
+JOINT_HAND_POINTS = 7168  # as the touch joint: 1024 pointmap + 7168 points
+
+
+def hand_joint_arrays(pointmap, hand_mask, mesh_camera, normalize, denormalize):
+    """1024 farthest-point hand pixels (full-resolution pointmap under the hand mask) then the first 7168 hand mesh
+    points, in the pointmap's normalized frame; normalize/denormalize map camera <-> that frame."""
+    import torch
+    from sam3d_objects.model.backbone.dit.embedder.surface_encoder_utils import farthest_point_indices
+    pixels = pointmap[hand_mask & np.isfinite(pointmap).all(axis=-1)].astype(np.float32)
+    if not len(pixels):
+        raise ValueError("No valid hand pixels in the pointmap")
+    mesh_camera = mesh_camera[np.arange(JOINT_HAND_POINTS) % len(mesh_camera)].astype(np.float32)
+    with torch.no_grad():
+        normalized = normalize(torch.from_numpy(pixels))
+        chosen = farthest_point_indices(normalized[None], min(1024, len(pixels)))[0]
+        chosen = chosen[torch.arange(1024) % len(chosen)]
+        cloud = torch.cat((normalized[chosen], normalize(torch.from_numpy(mesh_camera))))
+    restored = denormalize(cloud)
+    if not np.allclose(restored, np.concatenate((pixels[chosen.numpy()], mesh_camera)), atol=1e-5, rtol=1e-5):
+        raise ValueError("Joint points do not round-trip to the hand pixels and hand points")
+    return dict(joint_points_camera=np.asarray(restored, dtype=np.float32),
+                joint_points_pre_encoder=cloud.float().numpy(),
+                joint_pointmap_candidates_camera=pixels,
+                joint_pointmap_indices=chosen.numpy())
+
+
 def save_joint(record, root, path, args):
-    # Imported here: make_contact_touch needs Warp and the joint step needs the sam3d-objects env.
-    from make_contact_touch import save_joint as contact_save_joint
-    contact_save_joint(record, root, path, args)
+    """make_contact_touch.save_joint with the hand's pointmap: the image and pointmap are preprocessed as training
+    does (object-mask normalization), but the 1024 pointmap points come from the hand mask."""
+    import hashlib
+    import sys
+    import torch
+    from omegaconf import OmegaConf
+    from PIL import Image
+    from torchvision.transforms import InterpolationMode, functional as TF
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+    from dataloader import TouchDataset
+    from evaluation.input_visualizations import joint_camera_points
+    from generate_target_latents import checkpoint_sha256
+    from make_touch_data import EmptyPointmapMask, joint_preprocessor
+    from train import normalize_touch_to_pointmap_frame, preprocess_pointmap_batch
+
+    config_path = args.pipeline_config.resolve()
+    config = OmegaConf.load(config_path)
+    sources = [root / record[key] for key in ("image_path", "camera_path", "depth_path", "hand_mask_path")]
+    for key in ("pointmap_path", "object_mask_path"):
+        if record.get(key):
+            sources.append(root / record[key])
+    sources.append(config_path)
+    if config.get("ss_preprocessor") is None:
+        sources.append(config_path.parent / config.ss_generator_config_path)
+    fingerprint = hashlib.sha256("".join(checkpoint_sha256(source) for source in sources).encode()).hexdigest()
+    dataset = object.__new__(TouchDataset)
+    dataset.root = root
+    rgba = dataset.load_rgba(record)  # alpha = object mask, as training
+    pointmap = dataset.load_pointmap(record)
+    mask = torch.from_numpy((rgba[..., 3] / 255).astype(np.float32))[None]
+    mask = TF.resize(mask, pointmap.shape[:2], interpolation=InterpolationMode.NEAREST)
+    if not (mask > .5).any():
+        raise EmptyPointmapMask(f"{record['sample_id']}: Empty foreground mask at pointmap resolution")
+    preprocessor = joint_preprocessor(str(config_path))
+    inputs = preprocess_pointmap_batch(preprocessor, torch.from_numpy(rgba)[None], torch.from_numpy(pointmap)[None], "cpu")
+    hand = torch.from_numpy((np.asarray(Image.open(root / record["hand_mask_path"]).convert("L")) > 127).astype(np.float32))[None]
+    hand = TF.resize(hand, pointmap.shape[:2], interpolation=InterpolationMode.NEAREST)[0].numpy() > .5
+
+    def normalize(points):
+        mask = torch.ones(points.shape[0], dtype=torch.bool)[None]
+        return normalize_touch_to_pointmap_frame(points[None], mask, inputs, preprocessor)[0]
+
+    with np.load(path, allow_pickle=False) as saved:
+        arrays = dict(saved)
+    arrays.update(hand_joint_arrays(pointmap, hand, arrays["points_camera"], normalize,
+                                    lambda cloud: joint_camera_points(cloud, inputs, preprocessor)))
+    arrays.update(joint_pointmap_scale=inputs["pointmap_scale"][0].float().cpu().numpy(),
+                  joint_pointmap_shift=inputs["pointmap_shift"][0].float().cpu().numpy(),
+                  joint_source_sha256=fingerprint)
+    temporary = path.with_name(f".{path.stem}.tmp.npz")
+    np.savez_compressed(temporary, **arrays)
+    temporary.replace(path)
 
 
 def make_object(task):
@@ -149,8 +224,8 @@ def main(argv=None):
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--object-id", action="append", help="Process only these objects (repeatable)")
     parser.add_argument("--overwrite", action="store_true")
-    parser.add_argument("--joint-pointmap", action="store_true", help="Also save fixed 1024-pointmap + 7168-hand "
-                        "inputs (make_contact_touch.save_joint); existing hand files only get these added")
+    parser.add_argument("--joint-pointmap", action="store_true", help="Also save fixed 1024 hand-pointmap + 7168 "
+                        "hand-mesh inputs; existing hand files only get these added")
     parser.add_argument("--pipeline-config", type=Path, default=Path("checkpoints/hf/pipeline.yaml"))
     args = parser.parse_args(argv)
     if args.points < 1 or args.hand_samples < args.points:

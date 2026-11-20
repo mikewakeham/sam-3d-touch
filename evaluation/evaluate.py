@@ -74,20 +74,28 @@ def restore_run(pipeline, checkpoint, device):
             for name in checkpoint["model"]
         ))
         touch_encoder = TouchEncoder(**config).to(device)
+    hand_encoder = None
+    if checkpoint.get("hand_config") is not None:
+        from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
+
+        hand_encoder = TouchEncoder(**checkpoint["hand_config"]).to(device)
 
     pipeline.ss_generator.requires_grad_(False)
     model = TouchTrainingModel(pipeline.ss_generator, touch_encoder, **conditioning,
-                               **checkpoint.get("training_config", {}), pose_training_config=pose_config)
+                               **checkpoint.get("training_config", {}), pose_training_config=pose_config,
+                               hand_encoder=hand_encoder)
     build_optimizer(touch_encoder, pipeline.backbone, argparse.Namespace(
         learning_rate=0.0,
         cross_attention_learning_rate=1.0,
         cross_attention_scope=checkpoint.get("cross_attention_scope", "kv"),
         train_scope=checkpoint_train_scope(checkpoint),
-    ))
+    ), hand_encoder)
     load_trainable_state_dict(model, checkpoint["model"])
     model.load_constant_touch(checkpoint.get("constant_touch"))
     if touch_encoder is not None:
         touch_encoder.eval()
+    if hand_encoder is not None:
+        hand_encoder.eval()
     return model
 
 
@@ -532,7 +540,7 @@ def merged_metrics(sources, output_dir):
 def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                        completed, metrics_path, args, joint_pointmap=False,
                        oracle_point_frame=False, use_gt_latent=False, touch_token_fn=None,
-                       shared_pointmap_normalization=False, fixed_joint_patches=False):
+                       shared_pointmap_normalization=False, fixed_joint_patches=False, use_hand=False):
     from train import prepare_batch
     from sam3d_objects.pipeline.inference_utils import downsample_sparse_structure, prune_sparse_structure
     from evaluation.pose_metrics import save_pose, score_pose
@@ -566,9 +574,9 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
             }
             pose_path = None
             try:
-                touch_xyz = touch_mask = None
+                touch_xyz = touch_mask = hand_xyz = hand_mask = None
                 if not use_gt_latent:
-                    _, condition_args, condition_kwargs, touch_xyz, touch_mask, inputs = prepare_batch(
+                    prepared = prepare_batch(
                         pipeline, batch, torch.device(args.device),
                         "fp32" if args.no_amp else "bf16", encoder is not None,
                         joint_pointmap, oracle_point_frame,
@@ -576,7 +584,12 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                         use_normals=bool(encoder is not None and getattr(encoder, "requires_normals", False)),
                         return_inputs=True,
                         fixed_joint_patches=fixed_joint_patches,
+                        use_hand=use_hand,
                     )
+                    _, condition_args, condition_kwargs, touch_xyz, touch_mask = prepared[:5]
+                    inputs = prepared[-1]
+                    if use_hand:
+                        hand_xyz, hand_mask = prepared[5:7]
                 stage2_inputs = preprocess_stage2(pipeline, batch["image"])
                 torch.manual_seed(seed)
                 with torch.autocast(
@@ -584,8 +597,11 @@ def evaluate_condition(name, pipeline, encoder, loader, records, target_cache,
                     dtype=dtype,
                     enabled=not args.no_amp and torch.device(args.device).type == "cuda",
                 ):
-                    encode_touch = touch_token_fn if touch_token_fn is not None else encoder
-                    touch_tokens = encode_touch(touch_xyz, touch_mask) if touch_xyz is not None else None
+                    if touch_token_fn is not None:  # the trained model: touch tokens, then hand tokens
+                        touch_tokens = (touch_token_fn(touch_xyz, touch_mask, hand_xyz, hand_mask)
+                                        if touch_xyz is not None or hand_xyz is not None else None)
+                    else:
+                        touch_tokens = encoder(touch_xyz, touch_mask) if touch_xyz is not None else None
                     outputs = None if use_gt_latent else sample_stage1(
                         pipeline, condition_args, condition_kwargs, touch_tokens,
                         args.inference_steps, args.device,
@@ -1140,11 +1156,13 @@ def main():
         if use_touch:
             run_data = configure_encoder_data(run_data, checkpoint["touch_config"]["encoder_name"])
         shared_pointmap_normalization = conditioning.get("shared_pointmap_normalization", False)
+        use_hand = checkpoint is not None and checkpoint.get("hand_config") is not None
         loader = build_dataloader(
             run_data, 1, args.workers, shuffle=False,
             include_touch=use_touch or shared_pointmap_normalization,
             oracle_point_frame=conditioning["oracle_point_frame"],
             joint_pointmap=conditioning.get('joint_pointmap_points') == 1024,
+            include_hand=use_hand,
         )
         run_records = {record["sample_id"]: record for record in loader.dataset.records}
         missing = set(local_sample_ids) - run_records.keys()
@@ -1163,12 +1181,13 @@ def main():
             new_rows = evaluate_condition(
                 condition, pipeline, encoder, loader, run_records, target_cache, completed,
                 rank_metrics_path, args,
-                joint_pointmap=checkpoint is not None and checkpoint["mode"] == "image_touch_joint",
+                joint_pointmap=checkpoint is not None and checkpoint["mode"] in ("image_touch_joint", "image_touch_hand_joint"),
                 oracle_point_frame=conditioning["oracle_point_frame"],
-                touch_token_fn=model.get_touch_tokens if model is not None else None,
+                touch_token_fn=model.condition_tokens if model is not None else None,
                 shared_pointmap_normalization=shared_pointmap_normalization,
                 fixed_joint_patches=conditioning.get('joint_pointmap_points') == 1024,
                 use_gt_latent=condition == "decoded_gt",
+                use_hand=use_hand,
             )
             for row in new_rows:
                 rows_by_key[(row["condition"], row["sample_id"])] = row

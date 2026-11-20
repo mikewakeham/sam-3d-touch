@@ -54,7 +54,7 @@ def load_camera_target_transform(target_path, camera_path):
 
 class TouchDataset(Dataset):
     def __init__(self, config, include_touch=True, oracle_point_frame=False, joint_pointmap=False,
-                 include_pose_targets=False):
+                 include_pose_targets=False, include_hand=False):
         if isinstance(config, (str, Path)):
             config = load_data_config(config)
 
@@ -85,6 +85,9 @@ class TouchDataset(Dataset):
             raise ValueError("Oracle point frame requires full-surface conditioning")
         if self.point_source not in ("touch", "full_surface", "touch_patches", "grasp_contact"):
             raise ValueError(f"Unknown point source: {self.point_source}")
+        self.include_hand = include_hand
+        if include_hand and (self.point_source != "grasp_contact" or not joint_pointmap):
+            raise ValueError("Hand points need grasp_contact data with joint pointmap inputs")
         if include_touch and self.point_source == "touch":
             touch_config = config["touch"]
             self.contact_count = int(touch_config["contacts"]["count"])
@@ -317,6 +320,15 @@ class TouchDataset(Dataset):
                 sample["object_from_camera"] = torch.from_numpy(
                     np.linalg.inv(transform).astype(np.float32)
                 )
+        if self.include_hand:
+            # Saved by make_hand_points.py --joint-pointmap beside the view's touch file: 1024 pointmap + 7168 hand points.
+            path = self.resolve_path(record["touch_path"]).with_name("hand_points.npz")
+            with np.load(path, allow_pickle=False) as data:
+                if "joint_points_pre_encoder" not in data.files:
+                    raise ValueError(f"Saved joint hand inputs are missing in {path}; rerun make_hand_points.py with --joint-pointmap")
+                sample["hand_xyz"] = torch.from_numpy(np.ascontiguousarray(data["joint_points_pre_encoder"]))
+                for key in ("pointmap_scale", "pointmap_shift"):
+                    sample["hand_joint_" + key] = torch.from_numpy(data["joint_" + key].copy())
         return sample
 
 
@@ -393,12 +405,14 @@ def build_dataloader(
     oracle_point_frame=False,
     joint_pointmap=False,
     include_pose_targets=False,
+    include_hand=False,
 ):
     if isinstance(config, (str, Path)):
         config = load_data_config(config)
 
     dataset = TouchDataset(config, include_touch=include_touch, oracle_point_frame=oracle_point_frame,
-                           joint_pointmap=joint_pointmap, include_pose_targets=include_pose_targets)
+                           joint_pointmap=joint_pointmap, include_pose_targets=include_pose_targets,
+                           include_hand=include_hand)
     sampler = None
     rank = 0
 

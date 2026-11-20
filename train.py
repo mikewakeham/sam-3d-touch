@@ -68,18 +68,16 @@ def parse_args():
     parser.add_argument("--constant-touch", action="store_true",
                         help="Use one fixed training surface's VecSetX features for every example")
     parser.add_argument("--point-encoder", choices=["vecsetx", "craftsman", "triposg"], default="vecsetx")
-    parser.add_argument("--point-encoder-checkpoint", type=Path,
-                        help="Local official encoder/VAE checkpoint instead of the default pretrained file")
     parser.add_argument("--train-point-encoder", "--train-vecsetx", dest="train_vecsetx", action="store_true")
     parser.add_argument("--point-encoder-from-scratch", "--vecsetx-from-scratch", dest="vecsetx_from_scratch", action="store_true",
                         help="Skip pretrained weights; requires --train-point-encoder")
     parser.add_argument("--vecsetx-learn", action="store_true",
                         help="Use frozen VecSetX decoder features before touch projection")
     parser.add_argument("--joint-pointmap", action="store_true")
+    parser.add_argument("--hand-points", action="store_true",
+                        help="Also condition on the settled hand's surface points (make_hand_points.py joint inputs)")
     parser.add_argument("--touch-position", dest="no_touch_position", action="store_false",
                         help="Enable touch position embeddings (disabled by default)")
-    parser.add_argument("--no-touch-position", action="store_true",
-                        help="Disable touch position embeddings (the default; kept for existing jobs)")
     parser.set_defaults(no_touch_position=True)
     parser.add_argument(
         "--local-rank", "--local_rank", type=int,
@@ -98,10 +96,8 @@ def parse_args():
         args.epochs = None
     elif args.epochs < 1:
         parser.error("--epochs must be positive when --max-steps is not set")
-    if args.vecsetx_from_scratch and (not args.train_vecsetx or args.no_touch or args.vecsetx_learn):
+    if args.vecsetx_from_scratch and (not args.train_vecsetx or (args.no_touch and not args.hand_points) or args.vecsetx_learn):
         parser.error("--point-encoder-from-scratch requires --train-point-encoder, surface conditioning, and no --vecsetx-learn")
-    if args.vecsetx_from_scratch and args.point_encoder_checkpoint:
-        parser.error("Random initialization cannot load --point-encoder-checkpoint")
     if args.point_encoder != "vecsetx" and (args.vecsetx_learn or args.joint_pointmap or args.constant_touch or args.no_touch):
         parser.error("CraftsMan/TripoSG require full surfaces with normals; joint pointmap, constant touch, decoder features and --no-touch are unsupported")
     if args.train_scope is not None and args.cross_attention_scope is not None:
@@ -270,10 +266,11 @@ class TouchTrainingModel(torch.nn.Module):
     def __init__(self, generator, touch_encoder=None, no_pointmap=False, oracle_point_frame=False,
                  visual_dropout=0.0, constant_touch=False, no_visual=False,
                  shared_pointmap_normalization=False, joint_pointmap_points=None,
-                 pose_training_config=None):
+                 pose_training_config=None, hand_encoder=None):
         super().__init__()
         self.generator = generator
         self.touch_encoder = touch_encoder
+        self.hand_encoder = hand_encoder
         self.pose_training_config = copy.deepcopy(pose_training_config)
         self.initialization = None
         self.last_detail_losses = {}
@@ -302,6 +299,15 @@ class TouchTrainingModel(torch.nn.Module):
             return self.touch_encoder.output_projection(features) + self.touch_encoder.touch_embedding
         return self.touch_encoder(touch_xyz, touch_mask)
 
+    def condition_tokens(self, touch_xyz, touch_mask, hand_xyz=None, hand_mask=None):
+        """Touch tokens, then hand tokens, appended after the image/pointmap tokens; None without either."""
+        tokens = []
+        if self.touch_encoder is not None:
+            tokens.append(self.get_touch_tokens(touch_xyz, touch_mask))
+        if self.hand_encoder is not None:
+            tokens.append(self.hand_encoder(hand_xyz, hand_mask))
+        return torch.cat(tokens, dim=1) if tokens else None
+
     def load_constant_touch(self, state):
         if not self.training_config["constant_touch"]:
             if state is not None:
@@ -316,7 +322,7 @@ class TouchTrainingModel(torch.nn.Module):
         self.constant_touch_sample_id = state["sample_id"]
 
     def forward(self, targets, condition_args, condition_kwargs, touch_xyz, touch_mask,
-                visual_drop_mask=None):
+                hand_xyz=None, hand_mask=None, visual_drop_mask=None):
         if visual_drop_mask is not None:
             if len(condition_args) != 1 or condition_kwargs:
                 raise ValueError("Visual dropout expects a single precomputed visual-token context")
@@ -324,10 +330,10 @@ class TouchTrainingModel(torch.nn.Module):
             if visual_drop_mask.shape != (visual.shape[0],):
                 raise ValueError("Visual dropout mask must contain one decision per sample")
             condition_args = (visual.masked_fill(visual_drop_mask[:, None, None], 0),)
-        if self.touch_encoder is None:
+        touch_tokens = self.condition_tokens(touch_xyz, touch_mask, hand_xyz, hand_mask)
+        if touch_tokens is None:
             loss, details = self.generator.loss(targets, *condition_args, **condition_kwargs)
         else:
-            touch_tokens = self.get_touch_tokens(touch_xyz, touch_mask)
             loss, details = self.generator.loss(
                 targets, *condition_args, touch_tokens=touch_tokens, **condition_kwargs
             )
@@ -488,7 +494,7 @@ def check_pose_roundtrip(targets, camera_from_target, inputs, decoder):
 def prepare_batch(
     pipeline, batch, device, precision, use_touch, joint_pointmap=False,
     oracle_point_frame=False, shared_pointmap_normalization=False, use_normals=False,
-    return_inputs=False, fixed_joint_patches=True,
+    return_inputs=False, fixed_joint_patches=True, use_hand=False,
 ):
     inputs = preprocess_batch(
         pipeline, batch["image"], batch["pointmap"],
@@ -540,6 +546,15 @@ def prepare_batch(
                 # Keep the existing five-item batch interface; the new encoders take XYZ+normal.
                 touch_xyz = torch.cat((touch_xyz, normals), dim=-1)
 
+    hand_xyz = hand_mask = None
+    if use_hand:
+        # Saved joint hand inputs, checked against this batch's preprocessing as the joint touch inputs are.
+        for key in ('pointmap_scale', 'pointmap_shift'):
+            if not torch.allclose(batch['hand_joint_' + key].to(inputs[key]), inputs[key], atol=1e-5, rtol=1e-5):
+                raise ValueError('Saved joint hand preprocessing differs; regenerate hand points with the training pipeline config')
+        hand_xyz = batch['hand_xyz'].to(device, non_blocking=True)
+        hand_mask = torch.ones(hand_xyz.shape[:2], dtype=torch.bool, device=device)
+
     pose_config = getattr(pipeline, "pose_training_config", None)
     if pose_config is not None:
         from sam3d_objects.data.dataset.tdfy.pose_target import encode_pose_targets
@@ -562,6 +577,8 @@ def prepare_batch(
     else:
         targets = make_targets(shape, pipeline.backbone)
     result = targets, condition_args, condition_kwargs, touch_xyz, touch_mask
+    if use_hand:  # hand inputs only when requested, so existing five-item callers are unchanged
+        result = (*result, hand_xyz, hand_mask)
     return (*result, inputs) if return_inputs else result
 
 
@@ -628,7 +645,7 @@ def shape_path_module_groups(backbone):
     return groups
 
 
-def build_optimizer(touch_encoder, backbone, args):
+def build_optimizer(touch_encoder, backbone, args, hand_encoder=None):
     scope = resolve_train_scope(getattr(args, "train_scope", None), getattr(args, "cross_attention_scope", "full"))
     backbone.requires_grad_(False)
     backbone.train_scope = scope
@@ -638,6 +655,12 @@ def build_optimizer(touch_encoder, backbone, args):
             "params": list(touch_encoder.get_trainable_parameters()),
             "lr": args.learning_rate,
             "name": "touch_encoder",
+        })
+    if hand_encoder is not None:
+        groups.append({
+            "params": list(hand_encoder.get_trainable_parameters()),
+            "lr": args.learning_rate,
+            "name": "hand_encoder",
         })
 
     if args.cross_attention_learning_rate > 0:
@@ -679,11 +702,11 @@ def trainable_state_dict(model):
     }
 
 
-def touch_adapter_state_dict(model):
+def touch_adapter_state_dict(model, encoder_name="touch_encoder"):
     prefixes = (
-        "touch_encoder.output_projection.",
-        "touch_encoder.position_projection.",
-        "touch_encoder.touch_embedding",
+        f"{encoder_name}.output_projection.",
+        f"{encoder_name}.position_projection.",
+        f"{encoder_name}.touch_embedding",
     )
     return {
         name: parameter.detach().cpu()
@@ -734,6 +757,13 @@ def component_gradient_norms(model, include_parameters=False):
             "touch_embedding": (model.touch_encoder.touch_embedding,),
             f"{model.touch_encoder.encoder_name}_encoder": model.touch_encoder.encoder.parameters(),
         })
+    if model.hand_encoder is not None:
+        groups.update({
+            "hand_output_projection": model.hand_encoder.output_projection.parameters(),
+            "hand_position_projection": model.hand_encoder.position_projection.parameters(),
+            "hand_embedding": (model.hand_encoder.touch_embedding,),
+            f"hand_{model.hand_encoder.encoder_name}_encoder": model.hand_encoder.encoder.parameters(),
+        })
     metrics = {}
     for name, parameters in groups.items():
         parameters = list(parameters)
@@ -777,6 +807,13 @@ def token_magnitudes(model, prepared=None, drop_mask=None, enabled=True, pipelin
     def encoder_hook(module, inputs, output):
         record('surface_conditioning', output)
 
+    def hand_projection_hook(module, inputs, output):
+        record('hand_before_projection', inputs[0])
+        record('hand_after_projection', output)
+
+    def hand_encoder_hook(module, inputs, output):
+        record('hand_conditioning', output)
+
     def fuser_hook(module, inputs, output):
         # Channel compression mixes modalities, so separate final tokens no longer exist.
         if getattr(module, 'compression_projection_multiplier', 0) > 0:
@@ -812,6 +849,9 @@ def token_magnitudes(model, prepared=None, drop_mask=None, enabled=True, pipelin
             if model.touch_encoder is not None:
                 handles.append(model.touch_encoder.output_projection.register_forward_hook(projection_hook))
                 handles.append(model.touch_encoder.register_forward_hook(encoder_hook))
+            if model.hand_encoder is not None:
+                handles.append(model.hand_encoder.output_projection.register_forward_hook(hand_projection_hook))
+                handles.append(model.hand_encoder.register_forward_hook(hand_encoder_hook))
         yield metrics
     finally:
         for handle in handles:
@@ -826,7 +866,8 @@ def load_trainable_state_dict(model, state_dict, shape_only=False):
     }
     if shape_only:
         parameters = {name: parameter for name, parameter in parameters.items()
-                      if name.startswith("touch_encoder.") or ".cross_attn.shape." in name or ".norm2.shape." in name}
+                      if name.startswith(("touch_encoder.", "hand_encoder."))
+                      or ".cross_attn.shape." in name or ".norm2.shape." in name}
     if parameters.keys() != state_dict.keys():
         raise ValueError("Checkpoint trainable parameters do not match this run")
     if any(parameter.shape != state_dict[name].shape for name, parameter in parameters.items()):
@@ -863,6 +904,9 @@ def save_checkpoint(
         "touch_config": (
             model.touch_encoder.get_config() if model.touch_encoder is not None else None
         ),
+        "hand_config": (
+            model.hand_encoder.get_config() if model.hand_encoder is not None else None
+        ),
     }, path)
 
 
@@ -889,8 +933,12 @@ def load_checkpoint(path, model, optimizer, mode, cross_attention_scope="kv", tr
     touch_config = (
         model.touch_encoder.get_config() if model.touch_encoder is not None else None
     )
-    if checkpoint["mode"] != mode or checkpoint["touch_config"] != touch_config:
-        raise ValueError("Checkpoint mode or touch configuration does not match this run")
+    hand_config = (
+        model.hand_encoder.get_config() if model.hand_encoder is not None else None
+    )
+    if (checkpoint["mode"] != mode or checkpoint["touch_config"] != touch_config
+            or checkpoint.get("hand_config") != hand_config):
+        raise ValueError("Checkpoint mode or touch/hand configuration does not match this run")
     load_trainable_state_dict(model, checkpoint["model"], shape_only=initialize)
     model.load_constant_touch(checkpoint.get("constant_touch"))
     if initialize:
@@ -961,6 +1009,8 @@ def train_epoch(
         loader.generator.manual_seed(seed + epoch)
     if raw_model.touch_encoder is not None:
         raw_model.touch_encoder.train()
+    if raw_model.hand_encoder is not None:
+        raw_model.hand_encoder.train()
 
     total_loss = 0.0
     total_samples = 0
@@ -988,6 +1038,7 @@ def train_epoch(
                 args.oracle_point_frame,
                 getattr(args, "shared_pointmap_normalization", False),
                 use_normals=bool(raw_model.touch_encoder is not None and getattr(raw_model.touch_encoder, "requires_normals", False)),
+                use_hand=raw_model.hand_encoder is not None,
             )
             optimizer.zero_grad(set_to_none=True)
             drop_mask = make_visual_drop_mask(
@@ -1097,6 +1148,9 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
     was_training = model.touch_encoder is not None and model.touch_encoder.training
     if model.touch_encoder is not None:
         model.touch_encoder.eval()
+    hand_was_training = model.hand_encoder is not None and model.hand_encoder.training
+    if model.hand_encoder is not None:
+        model.hand_encoder.eval()
 
     python_state = random.getstate()
     numpy_state = np.random.get_state()
@@ -1119,6 +1173,7 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
                     args.oracle_point_frame,
                     getattr(args, "shared_pointmap_normalization", False),
                     use_normals=bool(model.touch_encoder is not None and getattr(model.touch_encoder, "requires_normals", False)),
+                    use_hand=model.hand_encoder is not None,
                 )
                 with amp(device, args.precision):
                     loss = model(*prepared)
@@ -1132,6 +1187,8 @@ def validate(pipeline, model, loader, device, args, seed, distributed, rank):
     np.random.set_state(numpy_state)
     if was_training:
         model.touch_encoder.train()
+    if hand_was_training:
+        model.hand_encoder.train()
     total_loss, total_samples = aggregate(
         total_loss, total_samples, device, distributed
     )
@@ -1173,12 +1230,15 @@ def main():
         raise ValueError("--constant-touch requires oracle full surfaces and frozen raw VecSetX features")
     if args.oracle_point_frame and (args.no_touch or args.joint_pointmap or not args.no_touch_position):
         raise ValueError("Oracle point frame requires touch, disabled touch position, and no joint pointmap")
-    if args.no_touch and args.train_vecsetx:
+    # With --hand-points, the point-encoder flags configure the hand encoder too (hand-only runs use --no-touch).
+    if args.no_touch and not args.hand_points and args.train_vecsetx:
         raise ValueError("--train-vecsetx cannot be used with --no-touch")
-    if args.no_touch and args.vecsetx_learn:
+    if args.no_touch and not args.hand_points and args.vecsetx_learn:
         raise ValueError("--vecsetx-learn cannot be used with --no-touch")
-    if args.no_touch and args.joint_pointmap:
+    if args.no_touch and not args.hand_points and args.joint_pointmap:
         raise ValueError("--joint-pointmap cannot be used with --no-touch")
+    if args.hand_points and not args.joint_pointmap:
+        raise ValueError("--hand-points requires --joint-pointmap")
 
     train_pose = args.train_scope == "shape_pose_cross_attention"
     if args.init_pose_from_shape and not train_pose:
@@ -1218,6 +1278,7 @@ def main():
         oracle_point_frame=args.oracle_point_frame,
         joint_pointmap=args.joint_pointmap,
         include_pose_targets=train_pose,
+        include_hand=args.hand_points,
     )
     if len(train_loader) == 0:
         raise ValueError("Training loader has no batches")
@@ -1232,25 +1293,28 @@ def main():
         oracle_point_frame=args.oracle_point_frame,
         joint_pointmap=args.joint_pointmap,
         include_pose_targets=train_pose,
+        include_hand=args.hand_points,
     )
 
     pipeline = build_stage1_pipeline(
         args.pipeline_config, device, no_pointmap=args.no_pointmap, no_visual=args.no_visual,
         train_scope=args.train_scope,
     )
-    touch_encoder = None
-    if not args.no_touch:
+    def make_point_encoder():
         from sam3d_objects.model.backbone.dit.embedder.touch import TouchEncoder
-        touch_encoder = TouchEncoder(
+        return TouchEncoder(
             encoder_name=args.point_encoder,
             output_dim=pipeline.backbone.cond_channels,
             trainable=args.train_vecsetx,
             pretrained=not args.vecsetx_from_scratch,
-            encoder_checkpoint=args.point_encoder_checkpoint,
             use_learn=args.vecsetx_learn,
             use_position=not args.no_touch_position,
             position_scale="log",
         ).to(device)
+
+    touch_encoder = make_point_encoder() if not args.no_touch else None
+    # The hand branch is a second, separate copy of the touch encoder (same arguments, its own weights).
+    hand_encoder = make_point_encoder() if args.hand_points else None
 
     model = TouchTrainingModel(
         pipeline.ss_generator, touch_encoder, args.no_pointmap,
@@ -1259,12 +1323,13 @@ def main():
         shared_pointmap_normalization=args.shared_pointmap_normalization,
         joint_pointmap_points=(1024 if args.joint_pointmap and data_config.get('touch', {}).get('source') in ('touch_patches', 'grasp_contact') else None),
         pose_training_config=pipeline.pose_training_config,
+        hand_encoder=hand_encoder,
     )
-    optimizer, parameters = build_optimizer(touch_encoder, pipeline.backbone, args)
+    optimizer, parameters = build_optimizer(touch_encoder, pipeline.backbone, args, hand_encoder)
     if args.no_touch:
-        mode = "image"
+        mode = "image_hand_joint" if args.hand_points else "image"
     elif args.joint_pointmap:
-        mode = "image_touch_joint"
+        mode = "image_touch_hand_joint" if args.hand_points else "image_touch_joint"
     else:
         mode = "image_touch"
     start_epoch, step, best_loss, start_batch = 0, 0, float("inf"), 0
@@ -1300,6 +1365,9 @@ def main():
                 "touch_config": (
                     touch_encoder.get_config() if touch_encoder is not None else None
                 ),
+                "hand_config": (
+                    hand_encoder.get_config() if hand_encoder is not None else None
+                ),
                 "data": data_config,
                 "pose_training_config": raw_model.pose_training_config,
                 "initialization": raw_model.initialization,
@@ -1312,6 +1380,11 @@ def main():
                 torch.save(
                     touch_adapter_state_dict(raw_model),
                     args.output_dir / "initial_touch_adapter.pt",
+                )
+            if hand_encoder is not None and not args.resume:
+                torch.save(
+                    touch_adapter_state_dict(raw_model, "hand_encoder"),
+                    args.output_dir / "initial_hand_adapter.pt",
                 )
 
         print(f"mode: {mode}")
@@ -1326,6 +1399,7 @@ def main():
         print(f"touch position: {touch_encoder is not None and touch_encoder.use_position}")
         if touch_encoder is not None:
             print(f"point encoder: {args.point_encoder}; pretrained={touch_encoder.pretrained}; trainable={touch_encoder.encoder_trainable}")
+        print(f"hand points: {hand_encoder is not None}")
         print(f"visual dropout: {args.visual_dropout} per sample (training only)")
         if args.shared_pointmap_normalization:
             print("pointmap normalization: full-surface center and radius")
@@ -1361,6 +1435,9 @@ def main():
             "constant_touch_sample_id": raw_model.constant_touch_sample_id,
             "touch_config": (
                 touch_encoder.get_config() if touch_encoder is not None else None
+            ),
+            "hand_config": (
+                hand_encoder.get_config() if hand_encoder is not None else None
             ),
         })
         run = wandb.init(
