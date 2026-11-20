@@ -172,6 +172,8 @@ class Viewer:
                 ("filled", "Gap-filled surface", False, 1.0, 0.2),
                 ("dropped", "Dropped pieces (no MuJoCo contact)", False, 1.0, 0.25),
                 ("final", "Final touch points", True, 1.0, 0.2),
+                ("hand_mesh_points", "Hand surface points (saved, 7168)", False, 1.0, 0.15),
+                ("hand_pixels", "Hand pointmap points (saved, 1024)", False, 1.0, 0.25),
                 ("camera", "Image camera", True, None, None),
             ]:
                 with gui.add_folder(label, expand_by_default=False):
@@ -249,6 +251,12 @@ class Viewer:
         if (d / f"{mct.NAME}.npz").is_file():
             with np.load(d / f"{mct.NAME}.npz", allow_pickle=False) as z:
                 self.saved = dict(points=z["points_object"], part=z["part_index"])
+        self.hand_saved = None
+        if (d / "hand_points.npz").is_file():
+            with np.load(d / "hand_points.npz", allow_pickle=False) as z:
+                if "joint_points_camera" in z:
+                    cam = z["joint_points_camera"].astype(float) * [-1, -1, 1]  # SAM camera -> camera of T
+                    self.hand_saved = (cam - self.T[:3, 3]) @ self.T[:3, :3]  # camera -> object frame
         self.default_tol = mct.CONTACT_THRE * float(self.view["hand_a"])
         self.gui_default_tol.label = f"MuJoCo contact distance as tolerance ({100 * self.default_tol:.2f}%)"
         if self.gui_default_tol.value:
@@ -383,6 +391,11 @@ class Viewer:
                 if self.gui_labels.value:
                     out.append(sc.add_label(f"/contact_labels/{i}", f"{i}" + ("" if covered[i] else " ✗"),
                                             position=tuple(p), font_screen_scale=0.7))
+        elif key in ("hand_mesh_points", "hand_pixels"):
+            if self.hand_saved is None:
+                return
+            pts, color = (self.hand_saved[1024:], (60, 120, 230)) if key == "hand_mesh_points" else (self.hand_saved[:1024], (230, 60, 160))
+            out += self.spheres(f"/{key}", pts, color, radius, op)
         elif self.steps is None:
             return
         elif key == "distance":
