@@ -13,8 +13,9 @@ from sample_full_surface import classify_visibility, sam_camera_transform, trans
 
 NAME = "hand_points"
 FORMAT_VERSION = 1
-JOINT_KEYS = ("joint_points_camera", "joint_points_pre_encoder", "joint_pointmap_candidates_camera",
-              "joint_pointmap_indices", "joint_pointmap_scale", "joint_pointmap_shift", "joint_source_sha256")
+# Only the 1024 chosen hand pixels are kept (in joint_points_camera), not every hand pixel.
+JOINT_KEYS = ("joint_points_camera", "joint_points_pre_encoder", "joint_pointmap_indices",
+              "joint_pointmap_scale", "joint_pointmap_shift", "joint_source_sha256")
 
 
 def fps(points, count, rng):
@@ -104,8 +105,7 @@ def hand_joint_arrays(pointmap, hand_mask, mesh_camera, normalize, denormalize):
         raise ValueError("Joint points do not round-trip to the hand pixels and hand points")
     return dict(joint_points_camera=np.asarray(restored, dtype=np.float32),
                 joint_points_pre_encoder=cloud.float().numpy(),
-                joint_pointmap_candidates_camera=pixels,
-                joint_pointmap_indices=chosen.numpy())
+                joint_pointmap_indices=chosen.numpy().astype(np.int32))
 
 
 def save_joint(record, root, path, args):
@@ -153,6 +153,7 @@ def save_joint(record, root, path, args):
 
     with np.load(path, allow_pickle=False) as saved:
         arrays = dict(saved)
+    arrays.pop("joint_pointmap_candidates_camera", None)  # from earlier versions that kept every pixel
     arrays.update(hand_joint_arrays(pointmap, hand, arrays["points_camera"], normalize,
                                     lambda cloud: joint_camera_points(cloud, inputs, preprocessor)))
     arrays.update(joint_pointmap_scale=inputs["pointmap_scale"][0].float().cpu().numpy(),
